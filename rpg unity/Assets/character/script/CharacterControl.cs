@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class CharacterConstrol : MonoBehaviour
+public class CharacterControl : MonoBehaviour
 {
     // Start is called before the first frame update   
 
@@ -19,6 +19,10 @@ public class CharacterConstrol : MonoBehaviour
     private GameObject gettingItem;
     private Dictionary<string, int> itemsInInventory = new Dictionary<string, int>();
     public int maxInventoryCnt = 24;
+    public bool attackable = true;
+    public GameObject skillAbleArea;
+    public GameObject skillCastingArea;
+    private bool isActivingSkill = false;
     void Start()
     {
         itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;
@@ -35,6 +39,7 @@ public class CharacterConstrol : MonoBehaviour
                 RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
                 if (hit.collider != null)
                 {
+                    Debug.Log(hit.collider.name);
                     if (hit.collider.CompareTag("Ground"))
                     {
                         goalPos = hit.point;
@@ -61,6 +66,35 @@ public class CharacterConstrol : MonoBehaviour
                 }
             }
         }
+        if (attackable)
+        {
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                int attack = Random.Range(1, 4);
+                characterAnimator.SetTrigger("attack"+attack.ToString());
+                goalPos = transform.position;
+            }
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                isActivingSkill = !isActivingSkill;
+            }
+        }
+        if (isActivingSkill)
+        {
+            skillAbleArea.SetActive(true);
+            skillCastingArea.SetActive(true);
+            Vector3 mousePos = Input.mousePosition;
+            mousePos = new Vector3(mousePos.x, mousePos.y, -1);
+            skillCastingArea.transform.position = mousePos;
+
+        }
+        else
+        {
+            skillAbleArea.SetActive(false);
+            skillCastingArea.SetActive(false);
+        }
+        
+        
     }
     void getItem(GameObject got_item)
     {
