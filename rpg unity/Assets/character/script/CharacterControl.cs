@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+
 public class CharacterControl : MonoBehaviour
 {
     // Start is called before the first frame update   
@@ -20,13 +21,34 @@ public class CharacterControl : MonoBehaviour
     private Dictionary<string, int> itemsInInventory = new Dictionary<string, int>();
     public int maxInventoryCnt = 24;
     public bool attackable = true;
-    public GameObject skillAbleArea;
-    public GameObject skillCastingArea;
+    public GameObject skillRadiusArea;
+    public GameObject skillRangeArea;
     private bool isActivingSkill = false;
+    private string current_casting_skill;
+
+    struct skill_spec
+    {
+        public (float x, float y) radius;
+
+        public (float x, float y) range;
+        public skill_spec((float x, float y) _radius, (float x, float y) _range)
+        {
+            radius = _radius;
+            range = _range;
+        }
+    };
+    private Dictionary<string, skill_spec> skill_info = new Dictionary<string, skill_spec>();
+    
+    
+
     void Start()
     {
         itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;
         gettingItem = inventoryUi.transform.GetChild(1).gameObject;
+        skill_info.Add("Q", new skill_spec((1f, 1f), (1f, 1f)));
+        skill_info.Add("W", new skill_spec((1f, 1f), (2f, 2f)));
+        skill_info.Add("E", new skill_spec((2f, 2f), (1f, 1f)));
+        skill_info.Add("R", new skill_spec((1.5f, 1.5f), (1.5f, 1.5f)));
     }
 
     // Update is called once per frame
@@ -40,10 +62,12 @@ public class CharacterControl : MonoBehaviour
                 if (hit.collider != null)
                 {
                     Debug.Log(hit.collider.name);
-                    if (hit.collider.CompareTag("Ground"))
+                    if (hit.collider.CompareTag("Ground") || (hit.collider.CompareTag("SkillArea")))
                     {
                         goalPos = hit.point;
-                        StartCoroutine(pointingGoal(goalPos));                  
+                        StartCoroutine(pointingGoal(goalPos));
+                        if (isActivingSkill)
+                            isActivingSkill = false;                        
                     }
                 }                
                 characterAnimator.SetBool("IsRunning", true);
@@ -64,6 +88,14 @@ public class CharacterControl : MonoBehaviour
                     if(hit.transform.GetChild(1).gameObject.activeSelf)
                         getItem(hit.transform.gameObject);
                 }
+                if (hit.collider.CompareTag("SkillArea"))
+                {
+                    if (isActivingSkill)
+                    {
+                        CastingSkill();
+                    }
+                }
+                
             }
         }
         if (attackable)
@@ -74,27 +106,52 @@ public class CharacterControl : MonoBehaviour
                 characterAnimator.SetTrigger("attack"+attack.ToString());
                 goalPos = transform.position;
             }
-            if (Input.GetKeyDown(KeyCode.Q))
+            if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.R))
             {
-                isActivingSkill = !isActivingSkill;
+                string now_input = Input.inputString.ToUpper();
+                if (now_input == current_casting_skill)
+                    isActivingSkill = false;
+                else
+                    isActivingSkill = true;
+                current_casting_skill = now_input;               
+                
             }
         }
         if (isActivingSkill)
         {
-            skillAbleArea.SetActive(true);
-            skillCastingArea.SetActive(true);
-            Vector3 mousePos = Input.mousePosition;
+            skillRadiusArea.SetActive(true);
+            skillRangeArea.SetActive(true);
+
+            Vector3 mousePos = Input.mousePosition;                        
+            mousePos = Camera.main.ScreenToWorldPoint(mousePos);
             mousePos = new Vector3(mousePos.x, mousePos.y, -1);
-            skillCastingArea.transform.position = mousePos;
+
+            (float x, float y)radius_xy = skill_info[current_casting_skill].radius;
+            Vector2 radius_area = new Vector2(radius_xy.x, radius_xy.y);
+            skillRadiusArea.transform.localScale = radius_area;
+
+            (float x, float y) range_xy = skill_info[current_casting_skill].range;
+            Vector2 range_area = new Vector2(range_xy.x, range_xy.y);
+            skillRangeArea.transform.localScale = range_area;
+
+
+            skillRangeArea.transform.position = mousePos;
 
         }
         else
         {
-            skillAbleArea.SetActive(false);
-            skillCastingArea.SetActive(false);
+            skillRadiusArea.SetActive(false);
+            skillRangeArea.SetActive(false);
+            current_casting_skill = "";
         }
         
         
+    }
+
+    void CastingSkill()
+    {
+
+        isActivingSkill = false;
     }
     void getItem(GameObject got_item)
     {
