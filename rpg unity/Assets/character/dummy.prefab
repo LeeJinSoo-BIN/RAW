@@ -1952,7 +1952,7 @@ MonoBehaviour:
   inventoryUi: {fileID: 0}
   maxInventoryCnt: 24
   attackable: 1
-  skillRadiusArea: {fileID: 0}
+  skillRadiusArea: {fileID: 3635528587176741216}
   skillRangeArea: {fileID: 0}
 --- !u!1 &3626921524466427112
 GameObject:
@@ -1996,7 +1996,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2941576708757385281}
   m_Layer: 5
-  m_Name: skill area
+  m_Name: skill radius area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2784,7 +2784,7 @@ GameObject:
   - component: {fileID: 6687503959437293724}
   - component: {fileID: 6661469994061875682}
   m_Layer: 5
-  m_Name: skill area
+  m_Name: circle
   m_TagString: SkillArea
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -45,10 +45,10 @@ public class CharacterControl : MonoBehaviour
     {
         itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;
         gettingItem = inventoryUi.transform.GetChild(1).gameObject;
-        skill_info.Add("Q", new skill_spec((1f, 1f), (1f, 1f)));
-        skill_info.Add("W", new skill_spec((1f, 1f), (2f, 2f)));
-        skill_info.Add("E", new skill_spec((2f, 2f), (1f, 1f)));
-        skill_info.Add("R", new skill_spec((1.5f, 1.5f), (1.5f, 1.5f)));
+        skill_info.Add("Q", new skill_spec((1f, 1f), (0.5f, 0.5f)));
+        skill_info.Add("W", new skill_spec((1f, 1f), (0.7f, 0.7f)));
+        skill_info.Add("E", new skill_spec((2f, 2f), (0.4f, 0.4f)));
+        skill_info.Add("R", new skill_spec((2.2f, 2.2f), (1.1f, 1.1f)));
     }
 
     // Update is called once per frame
