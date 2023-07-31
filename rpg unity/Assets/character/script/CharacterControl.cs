@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using static UnityEngine.GraphicsBuffer;
 
 
 public class CharacterControl : MonoBehaviour
@@ -22,22 +23,11 @@ public class CharacterControl : MonoBehaviour
     public int maxInventoryCnt = 24;
     public bool attackable = true;
     public GameObject skillRadiusArea;
-    public GameObject skillRangeArea;
+    public GameObject skillRangeAreaCircle;
+    public GameObject skillRangeAreaBar;
     private bool isActivingSkill = false;
     private string current_casting_skill;
 
-    struct skill_spec
-    {
-        public (float x, float y) radius;
-
-        public (float x, float y) range;
-        public skill_spec((float x, float y) _radius, (float x, float y) _range)
-        {
-            radius = _radius;
-            range = _range;
-        }
-    };
-    private Dictionary<string, skill_spec> skill_info = new Dictionary<string, skill_spec>();
     
     
 
@@ -45,10 +35,7 @@ public class CharacterControl : MonoBehaviour
     {
         itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;
         gettingItem = inventoryUi.transform.GetChild(1).gameObject;
-        skill_info.Add("Q", new skill_spec((1f, 1f), (0.5f, 0.5f)));
-        skill_info.Add("W", new skill_spec((1f, 1f), (0.7f, 0.7f)));
-        skill_info.Add("E", new skill_spec((2f, 2f), (0.4f, 0.4f)));
-        skill_info.Add("R", new skill_spec((2.2f, 2.2f), (1.1f, 1.1f)));
+        deactivateSkill();
     }
 
     // Update is called once per frame
@@ -67,7 +54,9 @@ public class CharacterControl : MonoBehaviour
                         goalPos = hit.point;
                         StartCoroutine(pointingGoal(goalPos));
                         if (isActivingSkill)
-                            isActivingSkill = false;                        
+                        {
+                            isActivingSkill = false;                            
+                        }
                     }
                 }                
                 characterAnimator.SetBool("IsRunning", true);
@@ -103,49 +92,78 @@ public class CharacterControl : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.A))
             {
                 int attack = Random.Range(1, 4);
-                characterAnimator.SetTrigger("attack"+attack.ToString());
+                characterAnimator.SetTrigger("attack" + attack.ToString());
                 goalPos = transform.position;
             }
             if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.R))
             {
+
                 string now_input = Input.inputString.ToUpper();
                 if (now_input == current_casting_skill)
-                    isActivingSkill = false;
+                    deactivateSkill();
                 else
-                    isActivingSkill = true;
-                current_casting_skill = now_input;               
+                {
+                    deactivateSkill();
+                    activeSkill(now_input);
+                }
                 
             }
         }
         if (isActivingSkill)
-        {
-            skillRadiusArea.SetActive(true);
-            skillRangeArea.SetActive(true);
-
+        { 
             Vector3 mousePos = Input.mousePosition;                        
             mousePos = Camera.main.ScreenToWorldPoint(mousePos);
             mousePos = new Vector3(mousePos.x, mousePos.y, -1);
 
-            (float x, float y)radius_xy = skill_info[current_casting_skill].radius;
+            (float x, float y)radius_xy = SkillManager.instance.skillData[current_casting_skill].radius;
             Vector2 radius_area = new Vector2(radius_xy.x, radius_xy.y);
             skillRadiusArea.transform.localScale = radius_area;
-
-            (float x, float y) range_xy = skill_info[current_casting_skill].range;
-            Vector2 range_area = new Vector2(range_xy.x, range_xy.y);
-            skillRangeArea.transform.localScale = range_area;
+            skillRadiusArea.SetActive(true);
 
 
-            skillRangeArea.transform.position = mousePos;
+            if (SkillManager.instance.skillData[current_casting_skill].type == 0)
+            {
+                skillRangeAreaCircle.transform.position = mousePos;
+            }
+            else if(SkillManager.instance.skillData[current_casting_skill].type == 1)
+            {
+                Vector2 target = skillRangeAreaBar.transform.position;
+                float angle = Mathf.Atan2(mousePos.y - target.y, mousePos.x - target.x) * Mathf.Rad2Deg;
+                Debug.Log(angle);
+                skillRangeAreaBar.transform.rotation = Quaternion.AngleAxis(angle - 180, Vector3.forward);
+            }
+
+
+            
 
         }
-        else
+                
+        
+    }
+    void deactivateSkill()
+    {
+        skillRadiusArea.SetActive(false);
+        skillRangeAreaCircle.SetActive(false);
+        skillRangeAreaBar.SetActive(false);
+        current_casting_skill = "";
+        isActivingSkill = false;
+    }
+    void activeSkill(string now_skill)
+    {
+        current_casting_skill = now_skill;
+        (float x, float y) range_xy = SkillManager.instance.skillData[current_casting_skill].range;
+        Vector2 range_area = new Vector2(range_xy.x, range_xy.y);
+        if (SkillManager.instance.skillData[current_casting_skill].type == 0)
+        {            
+            skillRangeAreaCircle.transform.localScale = range_area;            
+            skillRangeAreaCircle.SetActive(true);
+        }
+        else if (SkillManager.instance.skillData[current_casting_skill].type == 1)
         {
-            skillRadiusArea.SetActive(false);
-            skillRangeArea.SetActive(false);
-            current_casting_skill = "";
+            skillRangeAreaBar.transform.localScale = range_area;
+            skillRangeAreaBar.SetActive(true);
         }
-        
-        
+        isActivingSkill = true;
     }
 
     void CastingSkill()
@@ -153,6 +171,10 @@ public class CharacterControl : MonoBehaviour
 
         isActivingSkill = false;
     }
+
+
+
+
     void getItem(GameObject got_item)
     {
         string got_item_name = got_item.transform.GetChild(0).name.Split(" ")[0];
@@ -228,3 +250,4 @@ public class CharacterControl : MonoBehaviour
 
 
 }
+
