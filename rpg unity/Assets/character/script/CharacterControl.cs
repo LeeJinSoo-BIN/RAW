@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using static UnityEngine.GraphicsBuffer;
-
+using UnityEditor.Experimental.GraphView;
 
 public class CharacterControl : MonoBehaviour
 {
@@ -12,6 +12,8 @@ public class CharacterControl : MonoBehaviour
 
     public bool movable = true;
     public GameObject movePointer;
+    public LayerMask groundLayer;
+
     private Vector3 goalPos;
     public float pointSpeed = 1.0f;
     public float characterMoveSpeed = 1.0f;
@@ -27,7 +29,7 @@ public class CharacterControl : MonoBehaviour
     public GameObject skillRangeAreaBar;
     private bool isActivingSkill = false;
     private string current_casting_skill;
-
+    private Vector2 oriSkillRangeAreaBar;
     
     
 
@@ -45,7 +47,11 @@ public class CharacterControl : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(1))
             {
-                RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+                Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                RaycastHit2D hit;
+                Debug.Log(ray);
+                hit = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
+                
                 if (hit.collider != null)
                 {
                     Debug.Log(hit.collider.name);
@@ -55,10 +61,10 @@ public class CharacterControl : MonoBehaviour
                         StartCoroutine(pointingGoal(goalPos));
                         if (isActivingSkill)
                         {
-                            isActivingSkill = false;                            
+                            deactivateSkill();
                         }
                     }
-                }                
+                }
                 characterAnimator.SetBool("IsRunning", true);
             }
             Move_Character();
@@ -74,7 +80,7 @@ public class CharacterControl : MonoBehaviour
             {
                 if (hit.collider.CompareTag("Item"))
                 {
-                    if(hit.transform.GetChild(1).gameObject.activeSelf)
+                    if (hit.transform.GetChild(1).gameObject.activeSelf)
                         getItem(hit.transform.gameObject);
                 }
                 if (hit.collider.CompareTag("SkillArea"))
@@ -84,7 +90,7 @@ public class CharacterControl : MonoBehaviour
                         CastingSkill();
                     }
                 }
-                
+
             }
         }
         if (attackable)
@@ -106,16 +112,16 @@ public class CharacterControl : MonoBehaviour
                     deactivateSkill();
                     activeSkill(now_input);
                 }
-                
+
             }
         }
         if (isActivingSkill)
-        { 
-            Vector3 mousePos = Input.mousePosition;                        
+        {
+            Vector3 mousePos = Input.mousePosition;
             mousePos = Camera.main.ScreenToWorldPoint(mousePos);
             mousePos = new Vector3(mousePos.x, mousePos.y, -1);
 
-            (float x, float y)radius_xy = SkillManager.instance.skillData[current_casting_skill].radius;
+            (float x, float y) radius_xy = SkillManager.instance.skillData[current_casting_skill].radius;
             Vector2 radius_area = new Vector2(radius_xy.x, radius_xy.y);
             skillRadiusArea.transform.localScale = radius_area;
             skillRadiusArea.SetActive(true);
@@ -125,20 +131,26 @@ public class CharacterControl : MonoBehaviour
             {
                 skillRangeAreaCircle.transform.position = mousePos;
             }
-            else if(SkillManager.instance.skillData[current_casting_skill].type == 1)
+            else if (SkillManager.instance.skillData[current_casting_skill].type == 1)
             {
                 Vector2 target = skillRangeAreaBar.transform.position;
-                float angle = Mathf.Atan2(mousePos.y - target.y, mousePos.x - target.x) * Mathf.Rad2Deg;
-                Debug.Log(angle);
-                skillRangeAreaBar.transform.rotation = Quaternion.AngleAxis(angle - 180, Vector3.forward);
+                float angle_pi = Mathf.Atan2(mousePos.y - target.y, mousePos.x - target.x);
+                float angle_rad = angle_pi * Mathf.Rad2Deg;
+
+                if (transform.localScale.x > 0)
+                    angle_rad -= 180;
+                skillRangeAreaBar.transform.rotation = Quaternion.AngleAxis(angle_rad, Vector3.forward);
+
+                //with cosine function
+                //float ratio = (float)(Mathf.Cos(2 * angle_pi) / 4 + 0.75);
+
+                angle_pi = Mathf.Abs(angle_pi) / Mathf.PI;
+                float ratio = 2 * angle_pi * angle_pi - 2 * angle_pi + 1;
+                Debug.Log(angle_pi);
+                float scaled_x = oriSkillRangeAreaBar.x * ratio;
+                skillRangeAreaBar.transform.localScale = new Vector2(scaled_x, oriSkillRangeAreaBar.y);
             }
-
-
-            
-
         }
-                
-        
     }
     void deactivateSkill()
     {
@@ -161,6 +173,7 @@ public class CharacterControl : MonoBehaviour
         else if (SkillManager.instance.skillData[current_casting_skill].type == 1)
         {
             skillRangeAreaBar.transform.localScale = range_area;
+            oriSkillRangeAreaBar = range_area;
             skillRangeAreaBar.SetActive(true);
         }
         isActivingSkill = true;
