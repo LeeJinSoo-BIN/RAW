@@ -6,7 +6,6 @@ TagManager:
   tags:
   - Ground
   - Item
-  - SkillArea
   layers:
   - Default
   - TransparentFX

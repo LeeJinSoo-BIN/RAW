@@ -55,7 +55,7 @@ public class CharacterSkill : MonoBehaviour
             skillRadiusArea.SetActive(true);
 
 
-            if (SkillManager.instance.skillData[current_casting_skill].type == 0)
+            if (SkillManager.instance.skillData[current_casting_skill].castType == 0)
             {
                 (float x, float y) range_xy = SkillManager.instance.skillData[current_casting_skill].range;
                 Vector2 range_area = new Vector2(range_xy.x, range_xy.y);
@@ -63,7 +63,7 @@ public class CharacterSkill : MonoBehaviour
                 skillRangeArea.transform.position = mousePos;
                 skillRangeArea.SetActive(true);
             }
-            else if (SkillManager.instance.skillData[current_casting_skill].type == 1)
+            else if (SkillManager.instance.skillData[current_casting_skill].castType == 1)
             {
 
             }

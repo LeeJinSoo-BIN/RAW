@@ -25,12 +25,13 @@ public class CharacterControl : MonoBehaviour
     public int maxInventoryCnt = 24;
     public bool attackable = true;
     public GameObject skillRadiusArea;
+    public GameObject skillRadiusLengthPoint;
     public GameObject skillRangeAreaCircle;
-    public GameObject skillRangeAreaBar;
+    public GameObject skillRangeAreaBar;    
     private bool isActivingSkill = false;
     private string current_casting_skill;
     private Vector2 oriSkillRangeAreaBar;
-    
+    private IEnumerator castSkill;
     
 
     void Start()
@@ -38,6 +39,7 @@ public class CharacterControl : MonoBehaviour
         itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;
         gettingItem = inventoryUi.transform.GetChild(1).gameObject;
         deactivateSkill();
+        
     }
 
     // Update is called once per frame
@@ -48,21 +50,15 @@ public class CharacterControl : MonoBehaviour
             if (Input.GetMouseButtonDown(1))
             {
                 Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                RaycastHit2D hit;
-                Debug.Log(ray);
-                hit = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
-                
+                RaycastHit2D hit = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
+
                 if (hit.collider != null)
                 {
-                    Debug.Log(hit.collider.name);
-                    if (hit.collider.CompareTag("Ground") || (hit.collider.CompareTag("SkillArea")))
+                    goalPos = hit.point;
+                    StartCoroutine(pointingGoal(goalPos));
+                    if (isActivingSkill)
                     {
-                        goalPos = hit.point;
-                        StartCoroutine(pointingGoal(goalPos));
-                        if (isActivingSkill)
-                        {
-                            deactivateSkill();
-                        }
+                        deactivateSkill();
                     }
                 }
                 characterAnimator.SetBool("IsRunning", true);
@@ -72,6 +68,12 @@ public class CharacterControl : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.I))
         {
             inventoryUi.SetActive(!inventoryUi.activeSelf);
+        }
+        if( Input.GetKeyDown(KeyCode.S))
+        {
+            goalPos = transform.position;
+            StopCoroutine(castSkill);
+            deactivateSkill();
         }
         if (Input.GetMouseButtonDown(0))
         {
@@ -83,14 +85,15 @@ public class CharacterControl : MonoBehaviour
                     if (hit.transform.GetChild(1).gameObject.activeSelf)
                         getItem(hit.transform.gameObject);
                 }
-                if (hit.collider.CompareTag("SkillArea"))
+            }
+            if (isActivingSkill)
+            {
+                Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                RaycastHit2D hit_ground = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
+                if (hit_ground.collider != null)
                 {
-                    if (isActivingSkill)
-                    {
-                        CastingSkill();
-                    }
+                    CastingSkill(hit_ground.point);
                 }
-
             }
         }
         if (attackable)
@@ -127,13 +130,14 @@ public class CharacterControl : MonoBehaviour
             skillRadiusArea.SetActive(true);
 
 
-            if (SkillManager.instance.skillData[current_casting_skill].type == 0)
+            if (SkillManager.instance.skillData[current_casting_skill].castType == 0)
             {
                 skillRangeAreaCircle.transform.position = mousePos;
             }
-            else if (SkillManager.instance.skillData[current_casting_skill].type == 1)
+            else if (SkillManager.instance.skillData[current_casting_skill].castType == 1)
             {
-                Vector2 target = skillRangeAreaBar.transform.position;
+                //Vector2 target = skillRangeAreaBar.transform.position;
+                Vector2 target = transform.position;
                 float angle_pi = Mathf.Atan2(mousePos.y - target.y, mousePos.x - target.x);
                 float angle_rad = angle_pi * Mathf.Rad2Deg;
 
@@ -144,10 +148,25 @@ public class CharacterControl : MonoBehaviour
                 //with cosine function
                 //float ratio = (float)(Mathf.Cos(2 * angle_pi) / 4 + 0.75);
 
+                /*
+                 * 2차 방정식으로 구하기
                 angle_pi = Mathf.Abs(angle_pi) / Mathf.PI;
                 float ratio = 2 * angle_pi * angle_pi - 2 * angle_pi + 1;
-                Debug.Log(angle_pi);
+                
+                */
+
+                //연립방정식
+                float a = 1f; // 타원의 장축
+                float b = 0.5f; //타원의 단축
+                float slope = (mousePos.y - target.y) / (mousePos.x - target.x);
+                float t = Mathf.Atan((slope * a) / b);
+                float x_intersect = target.x + a * Mathf.Cos(t);
+                float y_intersect = target.y + b * Mathf.Sin(t);
+                float ratio = Mathf.Sqrt((x_intersect - target.x) * (x_intersect - target.x) + (y_intersect - target.y) * (y_intersect - target.y));
+
+                
                 float scaled_x = oriSkillRangeAreaBar.x * ratio;
+                
                 skillRangeAreaBar.transform.localScale = new Vector2(scaled_x, oriSkillRangeAreaBar.y);
             }
         }
@@ -159,18 +178,19 @@ public class CharacterControl : MonoBehaviour
         skillRangeAreaBar.SetActive(false);
         current_casting_skill = "";
         isActivingSkill = false;
+        //StopCoroutine("CastSkill");
     }
     void activeSkill(string now_skill)
     {
         current_casting_skill = now_skill;
         (float x, float y) range_xy = SkillManager.instance.skillData[current_casting_skill].range;
         Vector2 range_area = new Vector2(range_xy.x, range_xy.y);
-        if (SkillManager.instance.skillData[current_casting_skill].type == 0)
+        if (SkillManager.instance.skillData[current_casting_skill].castType == 0)
         {            
             skillRangeAreaCircle.transform.localScale = range_area;            
             skillRangeAreaCircle.SetActive(true);
         }
-        else if (SkillManager.instance.skillData[current_casting_skill].type == 1)
+        else if (SkillManager.instance.skillData[current_casting_skill].castType == 1)
         {
             skillRangeAreaBar.transform.localScale = range_area;
             oriSkillRangeAreaBar = range_area;
@@ -179,12 +199,74 @@ public class CharacterControl : MonoBehaviour
         isActivingSkill = true;
     }
 
-    void CastingSkill()
+    void CastingSkill(Vector2 skillPos)
     {
+        //점과 케릭터 위치간의 거리 계산
+        float skill_casting_point_len = Vector2.Distance(skillPos, transform.position);
 
-        isActivingSkill = false;
+        //스킬 사거리와 비교
+        float skill_radius_len = Vector2.Distance(skillRadiusLengthPoint.transform.position, transform.position);
+
+                
+        float angle_pi = Mathf.Atan2(skillPos.y - transform.position.y, skillPos.x - transform.position.x);
+        angle_pi = Mathf.Abs(angle_pi) / Mathf.PI;
+        float ratio = 2 * angle_pi * angle_pi - 2 * angle_pi + 1;
+
+        skill_radius_len *= ratio;
+
+        //사거리 범위 내면 스킬 발동
+
+
+        //사거리 범위 외면 범위까지 이동후 발동
+        castSkill = CastSkill(skillPos);
+        StartCoroutine(castSkill);
+        deactivateSkill();
+
     }
 
+    IEnumerator CastSkill(Vector2 skillPos)
+    {
+        float skill_radius_len = Vector2.Distance(skillRadiusLengthPoint.transform.position, transform.position);
+
+        /*
+        float angle_pi = Mathf.Atan2(skillPos.y - transform.position.y, skillPos.x - transform.position.x);
+        angle_pi = Mathf.Abs(angle_pi) / Mathf.PI;
+        float ratio = 2 * angle_pi * angle_pi - 2 * angle_pi + 1;
+        */
+
+
+        float a = 1f; // 타원의 장축
+        float b = 0.5f; //타원의 단축
+        Vector2 target = transform.position;
+        float slope = (skillPos.y - target.y) / (skillPos.x - target.x);
+        float t = Mathf.Atan((slope * a) / b);
+        float x_intersect = target.x + a * Mathf.Cos(t);
+        float y_intersect = target.y + b * Mathf.Sin(t);
+        float ratio = Mathf.Sqrt((x_intersect - target.x) * (x_intersect - target.x) + (y_intersect - target.y) * (y_intersect - target.y));
+
+        skill_radius_len *= ratio;
+
+        if (SkillManager.instance.skillData[current_casting_skill].castType == 0) // 장판형인경우 사거리까지 이동 후 캐스팅
+        {
+            goalPos = skillPos;
+            characterAnimator.SetBool("IsRunning", true);
+            Move_Character();
+            while (true)
+            {
+                float skill_casting_point_len = Vector2.Distance(skillPos, transform.position);
+                if (skill_radius_len >= skill_casting_point_len)
+                {
+                    goalPos = transform.position;
+                    break;
+                }
+                Debug.Log("moving for skill");
+                yield return null;
+            }
+        }
+
+        // 스킬 이팩트 날리기
+
+    }
 
 
 

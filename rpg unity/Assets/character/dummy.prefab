@@ -1827,6 +1827,7 @@ MonoBehaviour:
   maxInventoryCnt: 24
   attackable: 1
   skillRadiusArea: {fileID: 0}
+  skillRadiusLengthPoint: {fileID: 0}
   skillRangeAreaCircle: {fileID: 0}
   skillRangeAreaBar: {fileID: 0}
 --- !u!1 &3626921524466427112
