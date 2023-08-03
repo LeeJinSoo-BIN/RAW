@@ -3,15 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-//using static UnityEngine.GraphicsBuffer;
-//using UnityEditor.Experimental.GraphView;
 using Photon.Pun;
 using Photon.Realtime;
 
 public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 {
-    // Start is called before the first frame update   
-
     public bool movable = true;
     public GameObject movePointer;
     public LayerMask groundLayer;
@@ -20,7 +16,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public float pointSpeed = 1.0f;
     public float characterMoveSpeed = 1.0f;
     public Animator characterAnimator;
-    public GameObject inventoryUi;
+    //public GameObject inventoryUi;
     private GameObject itemBox;
     private GameObject gettingItem;
     private Dictionary<string, int> itemsInInventory = new Dictionary<string, int>();
@@ -29,7 +25,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public GameObject skillRadiusArea;
     public GameObject skillRadiusLengthPoint;
     public GameObject skillRangeAreaCircle;
-    public GameObject skillRangeAreaBar;    
+    public GameObject skillRangeAreaBar;
     private bool isActivingSkill = false;
     private string current_casting_skill;
     private Vector2 oriSkillRangeAreaBar;
@@ -40,146 +36,147 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public PhotonView PV;
     public Text NickNameText;
 
+    Vector3 curPos;
+
     private void Awake()
     {
+        //inventoryUi = GameObject.Find("Canvas").transform.GetChild(0).gameObject;
+        //itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;
+        //gettingItem = inventoryUi.transform.GetChild(1).gameObject;
+        deactivateSkill();
+
         NickNameText.text = PV.IsMine ? PhotonNetwork.NickName : PV.Owner.NickName;
         NickNameText.color = PV.IsMine ? Color.green : Color.red;
     }
 
-    void Start()
-    {
-        itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;
-        gettingItem = inventoryUi.transform.GetChild(1).gameObject;
-        deactivateSkill();
-        
-    }
-
-    // Update is called once per frame
     void Update()
     {
-        if (PV.IsMine && movable)
+        if (PV.IsMine)
         {
-            if (Input.GetMouseButtonDown(1))
+            if (movable)
             {
-                Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                RaycastHit2D hit = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
+                if (Input.GetMouseButtonDown(1))
+                {
+                    Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    RaycastHit2D hit = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
 
+                    if (hit.collider != null)
+                    {
+                        goalPos = hit.point;
+                        StartCoroutine(pointingGoal(goalPos));
+                        if (isActivingSkill)
+                        {
+                            deactivateSkill();
+                        }
+                    }
+                    characterAnimator.SetBool("IsRunning", true);
+                }
+                Move_Character();
+            }
+            //if (Input.GetKeyDown(KeyCode.I))
+            //{
+            //    inventoryUi.SetActive(!inventoryUi.activeSelf);
+            //}
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                goalPos = transform.position;
+                StopCoroutine(castSkill);
+                deactivateSkill();
+            }
+            if (Input.GetMouseButtonDown(0))
+            {
+                RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
                 if (hit.collider != null)
                 {
-                    goalPos = hit.point;
-                    StartCoroutine(pointingGoal(goalPos));
-                    if (isActivingSkill)
+                    if (hit.collider.CompareTag("Item"))
                     {
-                        deactivateSkill();
+                        if (hit.transform.GetChild(1).gameObject.activeSelf)
+                            getItem(hit.transform.gameObject);
                     }
                 }
-                characterAnimator.SetBool("IsRunning", true);
-            }
-            Move_Character();
-        }
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            inventoryUi.SetActive(!inventoryUi.activeSelf);
-        }
-        if( Input.GetKeyDown(KeyCode.S))
-        {
-            goalPos = transform.position;
-            StopCoroutine(castSkill);
-            deactivateSkill();
-        }
-        if (Input.GetMouseButtonDown(0))
-        {
-            RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-            if (hit.collider != null)
-            {
-                if (hit.collider.CompareTag("Item"))
+                if (isActivingSkill)
                 {
-                    if (hit.transform.GetChild(1).gameObject.activeSelf)
-                        getItem(hit.transform.gameObject);
+                    Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    RaycastHit2D hit_ground = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
+                    if (hit_ground.collider != null)
+                    {
+                        CastingSkill(hit_ground.point);
+                    }
+                }
+            }
+            if (attackable)
+            {
+                if (Input.GetKeyDown(KeyCode.A))
+                {
+                    int attack = Random.Range(1, 4);
+                    characterAnimator.SetTrigger("attack" + attack.ToString());
+                    goalPos = transform.position;
+                }
+                if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.R))
+                {
+
+                    string now_input = Input.inputString.ToUpper();
+                    if (now_input == current_casting_skill)
+                        deactivateSkill();
+                    else
+                    {
+                        deactivateSkill();
+                        activeSkill(now_input);
+                    }
+
                 }
             }
             if (isActivingSkill)
             {
-                Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                RaycastHit2D hit_ground = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
-                if (hit_ground.collider != null)
+                Vector3 mousePos = Input.mousePosition;
+                mousePos = Camera.main.ScreenToWorldPoint(mousePos);
+                mousePos = new Vector3(mousePos.x, mousePos.y, -1);
+
+                (float x, float y) radius_xy = SkillManager.instance.skillData[current_casting_skill].radius;
+                Vector2 radius_area = new Vector2(radius_xy.x, radius_xy.y);
+                skillRadiusArea.transform.localScale = radius_area;
+                skillRadiusArea.SetActive(true);
+
+
+                if (SkillManager.instance.skillData[current_casting_skill].castType == 0)
                 {
-                    CastingSkill(hit_ground.point);
+                    skillRangeAreaCircle.transform.position = mousePos;
                 }
-            }
-        }
-        if (PV.IsMine && attackable)
-        {
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                int attack = Random.Range(1, 4);
-                characterAnimator.SetTrigger("attack" + attack.ToString());
-                goalPos = transform.position;
-            }
-            if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.R))
-            {
-
-                string now_input = Input.inputString.ToUpper();
-                if (now_input == current_casting_skill)
-                    deactivateSkill();
-                else
+                else if (SkillManager.instance.skillData[current_casting_skill].castType == 1)
                 {
-                    deactivateSkill();
-                    activeSkill(now_input);
+                    //Vector2 target = skillRangeAreaBar.transform.position;
+                    Vector2 target = transform.position;
+                    float angle_pi = Mathf.Atan2(mousePos.y - target.y, mousePos.x - target.x);
+                    float angle_rad = angle_pi * Mathf.Rad2Deg;
+
+                    if (transform.localScale.x > 0)
+                        angle_rad -= 180;
+                    skillRangeAreaBar.transform.rotation = Quaternion.AngleAxis(angle_rad, Vector3.forward);
+
+                    //with cosine function
+                    //float ratio = (float)(Mathf.Cos(2 * angle_pi) / 4 + 0.75);
+
+                    /*
+                     * 2?? ?????????? ??????
+                    angle_pi = Mathf.Abs(angle_pi) / Mathf.PI;
+                    float ratio = 2 * angle_pi * angle_pi - 2 * angle_pi + 1;
+
+                    */
+
+                    //??????????
+                    float a = 1f; // ?????? ????
+                    float b = 0.5f; //?????? ????
+                    float slope = (mousePos.y - target.y) / (mousePos.x - target.x);
+                    float t = Mathf.Atan((slope * a) / b);
+                    float x_intersect = target.x + a * Mathf.Cos(t);
+                    float y_intersect = target.y + b * Mathf.Sin(t);
+                    float ratio = Mathf.Sqrt((x_intersect - target.x) * (x_intersect - target.x) + (y_intersect - target.y) * (y_intersect - target.y));
+
+
+                    float scaled_x = oriSkillRangeAreaBar.x * ratio;
+
+                    skillRangeAreaBar.transform.localScale = new Vector2(scaled_x, oriSkillRangeAreaBar.y);
                 }
-
-            }
-        }
-        if (isActivingSkill)
-        {
-            Vector3 mousePos = Input.mousePosition;
-            mousePos = Camera.main.ScreenToWorldPoint(mousePos);
-            mousePos = new Vector3(mousePos.x, mousePos.y, -1);
-
-            (float x, float y) radius_xy = SkillManager.instance.skillData[current_casting_skill].radius;
-            Vector2 radius_area = new Vector2(radius_xy.x, radius_xy.y);
-            skillRadiusArea.transform.localScale = radius_area;
-            skillRadiusArea.SetActive(true);
-
-
-            if (SkillManager.instance.skillData[current_casting_skill].castType == 0)
-            {
-                skillRangeAreaCircle.transform.position = mousePos;
-            }
-            else if (SkillManager.instance.skillData[current_casting_skill].castType == 1)
-            {
-                //Vector2 target = skillRangeAreaBar.transform.position;
-                Vector2 target = transform.position;
-                float angle_pi = Mathf.Atan2(mousePos.y - target.y, mousePos.x - target.x);
-                float angle_rad = angle_pi * Mathf.Rad2Deg;
-
-                if (transform.localScale.x > 0)
-                    angle_rad -= 180;
-                skillRangeAreaBar.transform.rotation = Quaternion.AngleAxis(angle_rad, Vector3.forward);
-
-                //with cosine function
-                //float ratio = (float)(Mathf.Cos(2 * angle_pi) / 4 + 0.75);
-
-                /*
-                 * 2?? ?????????? ??????
-                angle_pi = Mathf.Abs(angle_pi) / Mathf.PI;
-                float ratio = 2 * angle_pi * angle_pi - 2 * angle_pi + 1;
-                
-                */
-
-                //??????????
-                float a = 1f; // ?????? ????
-                float b = 0.5f; //?????? ????
-                float slope = (mousePos.y - target.y) / (mousePos.x - target.x);
-                float t = Mathf.Atan((slope * a) / b);
-                float x_intersect = target.x + a * Mathf.Cos(t);
-                float y_intersect = target.y + b * Mathf.Sin(t);
-                float ratio = Mathf.Sqrt((x_intersect - target.x) * (x_intersect - target.x) + (y_intersect - target.y) * (y_intersect - target.y));
-
-                
-                float scaled_x = oriSkillRangeAreaBar.x * ratio;
-                
-                skillRangeAreaBar.transform.localScale = new Vector2(scaled_x, oriSkillRangeAreaBar.y);
             }
         }
     }
@@ -357,7 +354,6 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        
+
     }
 }
-
