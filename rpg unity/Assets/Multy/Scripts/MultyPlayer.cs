@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using static UnityEngine.GraphicsBuffer;
-using UnityEditor.Experimental.GraphView;
+//using static UnityEngine.GraphicsBuffer;
+//using UnityEditor.Experimental.GraphView;
 using Photon.Pun;
 using Photon.Realtime;
 
@@ -57,7 +57,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     // Update is called once per frame
     void Update()
     {
-        if (movable)
+        if (PV.IsMine && movable)
         {
             if (Input.GetMouseButtonDown(1))
             {
@@ -108,7 +108,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 }
             }
         }
-        if (attackable)
+        if (PV.IsMine && attackable)
         {
             if (Input.GetKeyDown(KeyCode.A))
             {
