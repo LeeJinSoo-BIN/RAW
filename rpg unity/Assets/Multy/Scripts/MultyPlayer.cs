@@ -34,7 +34,17 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     private string current_casting_skill;
     private Vector2 oriSkillRangeAreaBar;
     private IEnumerator castSkill;
-    
+
+    // Multy
+    public Rigidbody2D RB;
+    public PhotonView PV;
+    public Text NickNameText;
+
+    private void Awake()
+    {
+        NickNameText.text = PV.IsMine ? PhotonNetwork.NickName : PV.Owner.NickName;
+        NickNameText.color = PV.IsMine ? Color.green : Color.red;
+    }
 
     void Start()
     {
@@ -347,7 +357,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        throw new System.NotImplementedException();
+        
     }
 }
 

@@ -149,15 +149,15 @@ public class CharacterControl : MonoBehaviour
                 //float ratio = (float)(Mathf.Cos(2 * angle_pi) / 4 + 0.75);
 
                 /*
-                 * 2차 방정식으로 구하기
+                 * 2?? ?????????? ??????
                 angle_pi = Mathf.Abs(angle_pi) / Mathf.PI;
                 float ratio = 2 * angle_pi * angle_pi - 2 * angle_pi + 1;
                 
                 */
 
-                //연립방정식
-                float a = 1f; // 타원의 장축
-                float b = 0.5f; //타원의 단축
+                //??????????
+                float a = 1f; // ?????? ????
+                float b = 0.5f; //?????? ????
                 float slope = (mousePos.y - target.y) / (mousePos.x - target.x);
                 float t = Mathf.Atan((slope * a) / b);
                 float x_intersect = target.x + a * Mathf.Cos(t);
@@ -201,10 +201,10 @@ public class CharacterControl : MonoBehaviour
 
     void CastingSkill(Vector2 skillPos)
     {
-        //점과 케릭터 위치간의 거리 계산
+        //???? ?????? ???????? ???? ????
         float skill_casting_point_len = Vector2.Distance(skillPos, transform.position);
 
-        //스킬 사거리와 비교
+        //???? ???????? ????
         float skill_radius_len = Vector2.Distance(skillRadiusLengthPoint.transform.position, transform.position);
 
                 
@@ -214,10 +214,10 @@ public class CharacterControl : MonoBehaviour
 
         skill_radius_len *= ratio;
 
-        //사거리 범위 내면 스킬 발동
+        //?????? ???? ???? ???? ????
 
 
-        //사거리 범위 외면 범위까지 이동후 발동
+        //?????? ???? ???? ???????? ?????? ????
         castSkill = CastSkill(skillPos);
         StartCoroutine(castSkill);
         deactivateSkill();
@@ -235,8 +235,8 @@ public class CharacterControl : MonoBehaviour
         */
 
 
-        float a = 1f; // 타원의 장축
-        float b = 0.5f; //타원의 단축
+        float a = 1f; // ?????? ????
+        float b = 0.5f; //?????? ????
         Vector2 target = transform.position;
         float slope = (skillPos.y - target.y) / (skillPos.x - target.x);
         float t = Mathf.Atan((slope * a) / b);
@@ -246,7 +246,7 @@ public class CharacterControl : MonoBehaviour
 
         skill_radius_len *= ratio;
 
-        if (SkillManager.instance.skillData[current_casting_skill].castType == 0) // 장판형인경우 사거리까지 이동 후 캐스팅
+        if (SkillManager.instance.skillData[current_casting_skill].castType == 0) // ???????????? ?????????? ???? ?? ??????
         {
             goalPos = skillPos;
             characterAnimator.SetBool("IsRunning", true);
@@ -264,7 +264,7 @@ public class CharacterControl : MonoBehaviour
             }
         }
 
-        // 스킬 이팩트 날리기
+        // ???? ?????? ??????
 
     }
 
