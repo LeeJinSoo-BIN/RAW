@@ -16,7 +16,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public float pointSpeed = 1.0f;
     public float characterMoveSpeed = 1.0f;
     public Animator characterAnimator;
-    //public GameObject inventoryUi;
+    public GameObject inventoryUi;
     private GameObject itemBox;
     private GameObject gettingItem;
     private Dictionary<string, int> itemsInInventory = new Dictionary<string, int>();
@@ -40,9 +40,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
     private void Awake()
     {
-        //inventoryUi = GameObject.Find("Canvas").transform.GetChild(0).gameObject;
-        //itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;
-        //gettingItem = inventoryUi.transform.GetChild(1).gameObject;
+        itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;
+        gettingItem = inventoryUi.transform.GetChild(1).gameObject;
         deactivateSkill();
 
         NickNameText.text = PV.IsMine ? PhotonNetwork.NickName : PV.Owner.NickName;
@@ -73,10 +72,10 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 }
                 Move_Character();
             }
-            //if (Input.GetKeyDown(KeyCode.I))
-            //{
-            //    inventoryUi.SetActive(!inventoryUi.activeSelf);
-            //}
+            if (Input.GetKeyDown(KeyCode.I))
+            {
+                inventoryUi.SetActive(!inventoryUi.activeSelf);
+            }
             if (Input.GetKeyDown(KeyCode.S))
             {
                 goalPos = transform.position;
@@ -179,6 +178,10 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 }
             }
         }
+        else if ((transform.position - curPos).sqrMagnitude >= 100)
+            transform.position = curPos;
+        else
+            transform.position = Vector3.Lerp(transform.position, curPos, Time.deltaTime * 10);
     }
     void deactivateSkill()
     {
@@ -354,6 +357,13 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-
+        if (stream.IsWriting)
+        {
+            stream.SendNext(transform.position);
+        }
+        else
+        {
+            curPos = (Vector3)stream.ReceiveNext();
+        }
     }
 }
