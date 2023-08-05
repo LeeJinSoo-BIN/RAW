@@ -1830,6 +1830,7 @@ MonoBehaviour:
   skillRadiusLengthPoint: {fileID: 0}
   skillRangeAreaCircle: {fileID: 0}
   skillRangeAreaBar: {fileID: 0}
+  characterRoll: 1
 --- !u!1 &3626921524466427112
 GameObject:
   m_ObjectHideFlags: 0

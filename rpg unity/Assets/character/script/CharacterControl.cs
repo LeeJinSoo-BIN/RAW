@@ -29,16 +29,20 @@ public class CharacterControl : MonoBehaviour
     public GameObject skillRangeAreaCircle;
     public GameObject skillRangeAreaBar;    
     private bool isActivingSkill = false;
-    private string current_casting_skill;
+    private string current_casting_skill_name;
+    private string current_casting_skill_key;
     private Vector2 oriSkillRangeAreaBar;
     private IEnumerator castSkill;
-    
 
+    //0-arrow  1-sword  2-magic
+    public string characterRoll;
     void Start()
     {
         itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;
         gettingItem = inventoryUi.transform.GetChild(1).gameObject;
         deactivateSkill();
+        
+        characterRoll = "magic";
         
     }
 
@@ -108,7 +112,7 @@ public class CharacterControl : MonoBehaviour
             {
 
                 string now_input = Input.inputString.ToUpper();
-                if (now_input == current_casting_skill)
+                if (now_input == current_casting_skill_key)
                     deactivateSkill();
                 else
                 {
@@ -124,17 +128,17 @@ public class CharacterControl : MonoBehaviour
             mousePos = Camera.main.ScreenToWorldPoint(mousePos);
             mousePos = new Vector3(mousePos.x, mousePos.y, -1);
 
-            (float x, float y) radius_xy = SkillManager.instance.skillData[current_casting_skill].radius;
+            (float x, float y) radius_xy = SkillManager.instance.skillData[current_casting_skill_name].radius;
             Vector2 radius_area = new Vector2(radius_xy.x, radius_xy.y);
             skillRadiusArea.transform.localScale = radius_area;
             skillRadiusArea.SetActive(true);
 
 
-            if (SkillManager.instance.skillData[current_casting_skill].castType == 0)
+            if (SkillManager.instance.skillData[current_casting_skill_name].castType == 0)
             {
                 skillRangeAreaCircle.transform.position = mousePos;
             }
-            else if (SkillManager.instance.skillData[current_casting_skill].castType == 1)
+            else if (SkillManager.instance.skillData[current_casting_skill_name].castType == 1)
             {
                 //Vector2 target = skillRangeAreaBar.transform.position;
                 Vector2 target = transform.position;
@@ -145,19 +149,19 @@ public class CharacterControl : MonoBehaviour
                     angle_rad -= 180;
                 skillRangeAreaBar.transform.rotation = Quaternion.AngleAxis(angle_rad, Vector3.forward);
 
-                //with cosine function
+                //with cosine equation
                 //float ratio = (float)(Mathf.Cos(2 * angle_pi) / 4 + 0.75);
 
                 /*
-                 * 2?? ?????????? ??????
+                 * with two dim equation
                 angle_pi = Mathf.Abs(angle_pi) / Mathf.PI;
                 float ratio = 2 * angle_pi * angle_pi - 2 * angle_pi + 1;
                 
                 */
 
-                //??????????
-                float a = 1f; // ?????? ????
-                float b = 0.5f; //?????? ????
+                //with ellipse equation
+                float a = 1f; // long axis
+                float b = 0.5f; //short axis
                 float slope = (mousePos.y - target.y) / (mousePos.x - target.x);
                 float t = Mathf.Atan((slope * a) / b);
                 float x_intersect = target.x + a * Mathf.Cos(t);
@@ -176,21 +180,25 @@ public class CharacterControl : MonoBehaviour
         skillRadiusArea.SetActive(false);
         skillRangeAreaCircle.SetActive(false);
         skillRangeAreaBar.SetActive(false);
-        current_casting_skill = "";
+        current_casting_skill_key = "";
         isActivingSkill = false;
-        //StopCoroutine("CastSkill");
+        //StopCoroutine(castSkill);
     }
-    void activeSkill(string now_skill)
+    void activeSkill(string now_skill_key)
     {
-        current_casting_skill = now_skill;
-        (float x, float y) range_xy = SkillManager.instance.skillData[current_casting_skill].range;
+        
+        current_casting_skill_key = now_skill_key;
+        Debug.Log(characterRoll);        
+        current_casting_skill_name = SkillManager.instance.rollSkills[characterRoll][now_skill_key];
+        
+        (float x, float y) range_xy = SkillManager.instance.skillData[current_casting_skill_name].range;
         Vector2 range_area = new Vector2(range_xy.x, range_xy.y);
-        if (SkillManager.instance.skillData[current_casting_skill].castType == 0)
+        if (SkillManager.instance.skillData[current_casting_skill_name].castType == 0)
         {            
             skillRangeAreaCircle.transform.localScale = range_area;            
             skillRangeAreaCircle.SetActive(true);
         }
-        else if (SkillManager.instance.skillData[current_casting_skill].castType == 1)
+        else if (SkillManager.instance.skillData[current_casting_skill_name].castType == 1)
         {
             skillRangeAreaBar.transform.localScale = range_area;
             oriSkillRangeAreaBar = range_area;
@@ -201,7 +209,7 @@ public class CharacterControl : MonoBehaviour
 
     void CastingSkill(Vector2 skillPos)
     {
-        //???? ?????? ???????? ???? ????
+        /*//???? ?????? ???????? ???? ????
         float skill_casting_point_len = Vector2.Distance(skillPos, transform.position);
 
         //???? ???????? ????
@@ -217,7 +225,7 @@ public class CharacterControl : MonoBehaviour
         //?????? ???? ???? ???? ????
 
 
-        //?????? ???? ???? ???????? ?????? ????
+        //?????? ???? ???? ???????? ?????? ????*/
         castSkill = CastSkill(skillPos);
         StartCoroutine(castSkill);
         deactivateSkill();
@@ -246,7 +254,7 @@ public class CharacterControl : MonoBehaviour
 
         skill_radius_len *= ratio;
 
-        if (SkillManager.instance.skillData[current_casting_skill].castType == 0) // ???????????? ?????????? ???? ?? ??????
+        if (SkillManager.instance.skillData[current_casting_skill_name].castType == 0) // circle
         {
             goalPos = skillPos;
             characterAnimator.SetBool("IsRunning", true);
@@ -262,6 +270,18 @@ public class CharacterControl : MonoBehaviour
                 Debug.Log("moving for skill");
                 yield return null;
             }
+        }
+        else if(SkillManager.instance.skillData[current_casting_skill_name].castType == 1)
+        {
+
+        }
+        else if(SkillManager.instance.skillData[current_casting_skill_name].castType == 2)
+        {
+
+        }
+        else if(SkillManager.instance.skillData[current_casting_skill_name].castType == 3)
+        {
+
         }
 
         // ???? ?????? ??????
