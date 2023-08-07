@@ -1712,7 +1712,6 @@ GameObject:
   - component: {fileID: 4341569505682785010}
   - component: {fileID: 4387881808875628428}
   - component: {fileID: 3161211784356290341}
-  - component: {fileID: 4770782408427394947}
   m_Layer: 5
   m_Name: dummy
   m_TagString: Player
@@ -1803,34 +1802,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &4770782408427394947
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3550993373080581772}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6634f5e16184b1947bff0ecaae84be14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  movable: 1
-  movePointer: {fileID: 0}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  pointSpeed: 5
-  characterMoveSpeed: 1
-  characterAnimator: {fileID: 6308030836626245559}
-  inventoryUi: {fileID: 0}
-  maxInventoryCnt: 24
-  attackable: 1
-  skillRadiusArea: {fileID: 0}
-  skillRadiusLengthPoint: {fileID: 0}
-  skillRangeAreaCircle: {fileID: 0}
-  skillRangeAreaBar: {fileID: 0}
-  characterRoll: 1
 --- !u!1 &3626921524466427112
 GameObject:
   m_ObjectHideFlags: 0

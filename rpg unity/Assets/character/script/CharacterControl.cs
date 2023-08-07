@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using static UnityEngine.GraphicsBuffer;
+using Unity.VisualScripting;
 //using UnityEditor.Experimental.GraphView;
 
 public class CharacterControl : MonoBehaviour
@@ -27,14 +28,14 @@ public class CharacterControl : MonoBehaviour
     public GameObject skillRadiusArea;
     public GameObject skillRadiusLengthPoint;
     public GameObject skillRangeAreaCircle;
-    public GameObject skillRangeAreaBar;    
+    public GameObject skillRangeAreaBar;
     private bool isActivingSkill = false;
     private string current_casting_skill_name;
     private string current_casting_skill_key;
     private Vector2 oriSkillRangeAreaBar;
     private IEnumerator castSkill;
 
-    //0-arrow  1-sword  2-magic
+    //arrow  sword  magic
     public string characterRoll;
     void Start()
     {
@@ -111,13 +112,13 @@ public class CharacterControl : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.R))
             {
 
-                string now_input = Input.inputString.ToUpper();
-                if (now_input == current_casting_skill_key)
+                string now_input_key = Input.inputString.ToUpper();
+                if (now_input_key == current_casting_skill_key)
                     deactivateSkill();
                 else
                 {
                     deactivateSkill();
-                    activeSkill(now_input);
+                    activeSkill(now_input_key);
                 }
 
             }
@@ -126,17 +127,12 @@ public class CharacterControl : MonoBehaviour
         {
             Vector3 mousePos = Input.mousePosition;
             mousePos = Camera.main.ScreenToWorldPoint(mousePos);
-            mousePos = new Vector3(mousePos.x, mousePos.y, -1);
-
-            (float x, float y) radius_xy = SkillManager.instance.skillData[current_casting_skill_name].radius;
-            Vector2 radius_area = new Vector2(radius_xy.x, radius_xy.y);
-            skillRadiusArea.transform.localScale = radius_area;
-            skillRadiusArea.SetActive(true);
+            mousePos = new Vector3(mousePos.x, mousePos.y, -1);            
 
 
             if (SkillManager.instance.skillData[current_casting_skill_name].castType == 0)
             {
-                skillRangeAreaCircle.transform.position = mousePos;
+                skillRangeAreaCircle.transform.position = mousePos;                
             }
             else if (SkillManager.instance.skillData[current_casting_skill_name].castType == 1)
             {
@@ -193,6 +189,13 @@ public class CharacterControl : MonoBehaviour
         
         (float x, float y) range_xy = SkillManager.instance.skillData[current_casting_skill_name].range;
         Vector2 range_area = new Vector2(range_xy.x, range_xy.y);
+
+        (float x, float y) radius_xy = SkillManager.instance.skillData[current_casting_skill_name].radius;
+        Vector2 radius_area = new Vector2(radius_xy.x, radius_xy.y);
+        skillRadiusArea.transform.localScale = radius_area;
+        skillRadiusArea.SetActive(true);
+
+
         if (SkillManager.instance.skillData[current_casting_skill_name].castType == 0)
         {            
             skillRangeAreaCircle.transform.localScale = range_area;            
@@ -243,8 +246,8 @@ public class CharacterControl : MonoBehaviour
         */
 
 
-        float a = 1f; // ?????? ????
-        float b = 0.5f; //?????? ????
+        float a = 1f; // long axis
+        float b = 0.5f; //short axis
         Vector2 target = transform.position;
         float slope = (skillPos.y - target.y) / (skillPos.x - target.x);
         float t = Mathf.Atan((slope * a) / b);
@@ -264,12 +267,26 @@ public class CharacterControl : MonoBehaviour
                 float skill_casting_point_len = Vector2.Distance(skillPos, transform.position);
                 if (skill_radius_len >= skill_casting_point_len)
                 {
+                    characterAnimator.SetBool("IsRunning", false);
                     goalPos = transform.position;
                     break;
                 }
                 Debug.Log("moving for skill");
                 yield return null;
             }
+            object[] Params = new object[2];
+            Params[0] = skillPos;
+            Params[1] = SkillManager.instance.skillData[current_casting_skill_name].skillDuration;
+            SkillManager.instance.SendMessage(current_casting_skill_name, Params);
+            characterAnimator.SetTrigger(SkillManager.instance.skillData[current_casting_skill_name].animType);            
+            movable = false;
+            float delay = 0;
+            while(delay < SkillManager.instance.skillData[current_casting_skill_name].skillDelay)
+            {
+                delay += Time.deltaTime;
+                yield return null;
+            }
+            movable = true;
         }
         else if(SkillManager.instance.skillData[current_casting_skill_name].castType == 1)
         {

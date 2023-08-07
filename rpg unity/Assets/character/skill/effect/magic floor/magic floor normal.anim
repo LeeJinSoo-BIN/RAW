@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: magic floor anim
+  m_Name: magic floor normal
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -22,16 +22,16 @@ AnimationClip:
     curve:
     - time: 0
       value: {fileID: 21300000, guid: 7110579997ecc3d4a85e598847c8a8db, type: 3}
-    - time: 0.2
+    - time: 0.25
       value: {fileID: 21300000, guid: 18c7426a56926b04d8f571cb2fea4c56, type: 3}
-    - time: 0.36666667
+    - time: 0.46666667
       value: {fileID: 21300000, guid: e77e1ffeb5728b24faaa36f18c3ab29b, type: 3}
-    - time: 0.55
+    - time: 0.71666664
       value: {fileID: 21300000, guid: fdc8c9fd6582bd24d8136ada9f86357f, type: 3}
-    - time: 1.0166667
+    - time: 0.93333334
       value: {fileID: 21300000, guid: a191233df6b3ea2429a259f62a8aeda5, type: 3}
     attribute: m_Sprite
-    path: 
+    path: effect
     classID: 212
     script: {fileID: 0}
     flags: 2
@@ -43,7 +43,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 0
+      path: 3059782130
       attribute: 0
       script: {fileID: 0}
       typeID: 212
@@ -62,7 +62,7 @@ AnimationClip:
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 1.0333333
+    m_StopTime: 0.95
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0

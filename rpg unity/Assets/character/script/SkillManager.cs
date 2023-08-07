@@ -5,7 +5,9 @@ using UnityEngine;
 public class SkillManager : MonoBehaviour
 {
     // Start is called before the first frame update
-    public static SkillManager instance;    
+    public static SkillManager instance;
+
+    public GameObject skill_magic_floor;
 
     public struct skill_spec
     {
@@ -17,16 +19,18 @@ public class SkillManager : MonoBehaviour
         public (float x, float y) radius;
         public (float x, float y) range;
 
-        public int animType; //0 1 2, 3 4 5
+        public string animType; //0 1 2, 3 4 5
         public int effectType; //0 1 2
-        public skill_spec(int _castType, (float x, float y) _radius, (float x, float y) _range, int _animType, int _effectType)
+        public float skillDelay;
+        public float skillDuration;
+        /*public skill_spec(int _castType, (float x, float y) _radius, (float x, float y) _range, int _animType, int _effectType)
         {
             castType = _castType;
             radius = _radius;
             range = _range;
             animType = _animType;
             effectType = _effectType;
-        }
+        }*/
 
         
     };
@@ -41,8 +45,10 @@ public class SkillManager : MonoBehaviour
         tmp_skill.castType = 0;
         tmp_skill.radius = (1f, 1f);
         tmp_skill.range = (1f, 1f);
-        tmp_skill.animType = 1;
+        tmp_skill.animType = "attack3";
         tmp_skill.effectType = 2;
+        tmp_skill.skillDelay = 1f;
+        tmp_skill.skillDuration = 3f;
         skillData.Add("magic_floor", tmp_skill);
         //skillData.Add("magic_heal", new skill_spec(2, (1.2f, 1.2f), (1.2f, 1.2f), 2, 1));
         //skillData.Add("magic_totem", new skill_spec(0, (2f, 2f), (0.4f, 0.4f), 4, 0));
@@ -74,9 +80,21 @@ public class SkillManager : MonoBehaviour
 
 
     }
-    void Start()
+   void magic_floor(Vector2 pos, float duration)
     {
+        GameObject magicfloor = Instantiate(skill_magic_floor);
+        magicfloor.transform.position = pos;
+        StartCoroutine(Vanish(duration, magicfloor));
+    }
 
-
+    IEnumerator Vanish(float duration, GameObject who)
+    {
+        float time = 0;
+        while (time < duration)
+        {
+            time = Time.deltaTime;
+            yield return null;
+        }
+        who.GetComponent<Animator>().SetTrigger("vanish");
     }
 }
