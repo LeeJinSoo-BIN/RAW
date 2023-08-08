@@ -14,6 +14,8 @@ public class CharacterControl : MonoBehaviour
     public bool movable = true;
     public GameObject movePointer;
     public LayerMask groundLayer;
+    public LayerMask playerLayer;
+    public LayerMask monsterLayer;
 
     private Vector3 goalPos;
     public float pointSpeed = 1.0f;
@@ -29,6 +31,8 @@ public class CharacterControl : MonoBehaviour
     public GameObject skillRadiusLengthPoint;
     public GameObject skillRangeAreaCircle;
     public GameObject skillRangeAreaBar;
+    public GameObject skillRangeAreaTargeting;
+
     private bool isActivingSkill = false;
     private string current_casting_skill_name;
     private string current_casting_skill_key;
@@ -44,7 +48,8 @@ public class CharacterControl : MonoBehaviour
         deactivateSkill();
         
         characterRoll = "magic";
-        
+
+
     }
 
     // Update is called once per frame
@@ -82,7 +87,8 @@ public class CharacterControl : MonoBehaviour
         }
         if (Input.GetMouseButtonDown(0))
         {
-            RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+            Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            RaycastHit2D hit = Physics2D.Raycast(ray, Vector2.zero);
             if (hit.collider != null)
             {
                 if (hit.collider.CompareTag("Item"))
@@ -93,11 +99,20 @@ public class CharacterControl : MonoBehaviour
             }
             if (isActivingSkill)
             {
-                Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                RaycastHit2D hit_ground = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
-                if (hit_ground.collider != null)
+                if (SkillManager.instance.skillData[current_casting_skill_name].castType == 0 || SkillManager.instance.skillData[current_casting_skill_name].castType == 1)
+                { // when cast type is circle or bar
+                    RaycastHit2D hit_ground = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
+                    if (hit_ground.collider != null)
+                    {
+                        CastingSkill(hit_ground.point);
+                    }
+                }
+                else if(SkillManager.instance.skillData[current_casting_skill_name].castType == 2)
                 {
-                    CastingSkill(hit_ground.point);
+                    LayerMask player_or_monster = (playerLayer | monsterLayer);
+                    RaycastHit2D hit_target = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, player_or_monster);                    
+                    if (skillRangeAreaTargeting.transform.GetChild(1).gameObject.activeSelf)
+                        CastingSkill(hit_target.point);
                 }
             }
         }
@@ -127,14 +142,14 @@ public class CharacterControl : MonoBehaviour
         {
             Vector3 mousePos = Input.mousePosition;
             mousePos = Camera.main.ScreenToWorldPoint(mousePos);
-            mousePos = new Vector3(mousePos.x, mousePos.y, -1);            
+            mousePos = new Vector3(mousePos.x, mousePos.y, -1);
 
 
-            if (SkillManager.instance.skillData[current_casting_skill_name].castType == 0)
+            if (SkillManager.instance.skillData[current_casting_skill_name].castType == 0) // circle
             {
-                skillRangeAreaCircle.transform.position = mousePos;                
+                skillRangeAreaCircle.transform.position = mousePos;
             }
-            else if (SkillManager.instance.skillData[current_casting_skill_name].castType == 1)
+            else if (SkillManager.instance.skillData[current_casting_skill_name].castType == 1) // bar
             {
                 //Vector2 target = skillRangeAreaBar.transform.position;
                 Vector2 target = transform.position;
@@ -164,10 +179,21 @@ public class CharacterControl : MonoBehaviour
                 float y_intersect = target.y + b * Mathf.Sin(t);
                 float ratio = Mathf.Sqrt((x_intersect - target.x) * (x_intersect - target.x) + (y_intersect - target.y) * (y_intersect - target.y));
 
-                
+
                 float scaled_x = oriSkillRangeAreaBar.x * ratio;
-                
+
                 skillRangeAreaBar.transform.localScale = new Vector2(scaled_x, oriSkillRangeAreaBar.y);
+            }
+            else if (SkillManager.instance.skillData[current_casting_skill_name].castType == 2) //targeting
+            {
+                skillRangeAreaTargeting.transform.position = mousePos;
+                Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                LayerMask player_or_monster = (playerLayer | monsterLayer);                
+                RaycastHit2D hit_object = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, player_or_monster);
+                if (hit_object.collider != null)
+                    skillRangeAreaTargeting.transform.GetChild(1).gameObject.SetActive(true);
+                else
+                    skillRangeAreaTargeting.transform.GetChild(1).gameObject.SetActive(false);
             }
         }
     }
@@ -176,6 +202,7 @@ public class CharacterControl : MonoBehaviour
         skillRadiusArea.SetActive(false);
         skillRangeAreaCircle.SetActive(false);
         skillRangeAreaBar.SetActive(false);
+        skillRangeAreaTargeting.SetActive(false);
         current_casting_skill_key = "";
         isActivingSkill = false;
         //StopCoroutine(castSkill);
@@ -196,16 +223,20 @@ public class CharacterControl : MonoBehaviour
         skillRadiusArea.SetActive(true);
 
 
-        if (SkillManager.instance.skillData[current_casting_skill_name].castType == 0)
+        if (SkillManager.instance.skillData[current_casting_skill_name].castType == 0) // circle
         {            
             skillRangeAreaCircle.transform.localScale = range_area;            
             skillRangeAreaCircle.SetActive(true);
         }
-        else if (SkillManager.instance.skillData[current_casting_skill_name].castType == 1)
+        else if (SkillManager.instance.skillData[current_casting_skill_name].castType == 1) // bar
         {
             skillRangeAreaBar.transform.localScale = range_area;
             oriSkillRangeAreaBar = range_area;
             skillRangeAreaBar.SetActive(true);
+        }
+        else if (SkillManager.instance.skillData[current_casting_skill_name].castType == 2) // target
+        {            
+            skillRangeAreaTargeting.SetActive(true);
         }
         isActivingSkill = true;
     }

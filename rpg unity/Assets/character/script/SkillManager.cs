@@ -57,8 +57,14 @@ public class SkillManager : MonoBehaviour
         tmp_skill.skillDelay = 1f;
         tmp_skill.skillDuration = 10f;
         skillData.Add("magic_totem", tmp_skill);
-        //skillData.Add("magic_heal", new skill_spec(2, (1.2f, 1.2f), (1.2f, 1.2f), 2, 1));
-        //skillData.Add("magic_totem", new skill_spec(0, (2f, 2f), (0.4f, 0.4f), 4, 0));
+
+        tmp_skill.castType = 2;
+        tmp_skill.radius = (1.5f, 1.5f);
+        tmp_skill.range = (2f, 2f);
+        tmp_skill.animType = "attack3";
+        tmp_skill.skillDelay = 1f;
+        tmp_skill.skillDuration = 3f;
+        skillData.Add("magic_heal", tmp_skill);
         //skillData.Add("magic_global_heal", new skill_spec(3, (2.2f, 2.2f), (1.1f, 1.1f), 5, 1));
 
 
