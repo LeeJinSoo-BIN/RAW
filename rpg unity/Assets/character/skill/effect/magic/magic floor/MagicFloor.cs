@@ -15,4 +15,9 @@ public class MagicFloor : MonoBehaviour
     {
         
     }
+
+    public void selfDestroy()
+    {
+        Destroy(this);
+    }
 }

@@ -34,7 +34,7 @@ public class CharacterControl : MonoBehaviour
     private string current_casting_skill_key;
     private Vector2 oriSkillRangeAreaBar;
     private IEnumerator castSkill;
-
+    
     //arrow  sword  magic
     public string characterRoll;
     void Start()
@@ -211,24 +211,7 @@ public class CharacterControl : MonoBehaviour
     }
 
     void CastingSkill(Vector2 skillPos)
-    {
-        /*//???? ?????? ???????? ???? ????
-        float skill_casting_point_len = Vector2.Distance(skillPos, transform.position);
-
-        //???? ???????? ????
-        float skill_radius_len = Vector2.Distance(skillRadiusLengthPoint.transform.position, transform.position);
-
-                
-        float angle_pi = Mathf.Atan2(skillPos.y - transform.position.y, skillPos.x - transform.position.x);
-        angle_pi = Mathf.Abs(angle_pi) / Mathf.PI;
-        float ratio = 2 * angle_pi * angle_pi - 2 * angle_pi + 1;
-
-        skill_radius_len *= ratio;
-
-        //?????? ???? ???? ???? ????
-
-
-        //?????? ???? ???? ???????? ?????? ????*/
+    {        
         castSkill = CastSkill(skillPos);
         StartCoroutine(castSkill);
         deactivateSkill();
