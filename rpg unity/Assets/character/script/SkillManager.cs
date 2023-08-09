@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class SkillManager : MonoBehaviour
 {
@@ -109,6 +110,12 @@ public class SkillManager : MonoBehaviour
         GameObject magicTotem = Instantiate(skill_magic_totem);
         magicTotem.transform.position = pos;
         StartCoroutine(Vanish(duration, magicTotem));
+    }
+
+    void magic_heal(object[] _params)
+    {
+        Debug.Log("magic magic");
+        Debug.Log(((GameObject)_params[0]).name);
     }
     IEnumerator Vanish(float duration, GameObject who)
     {        

@@ -112,7 +112,7 @@ public class CharacterControl : MonoBehaviour
                     LayerMask player_or_monster = (playerLayer | monsterLayer);
                     RaycastHit2D hit_target = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, player_or_monster);                    
                     if (skillRangeAreaTargeting.transform.GetChild(1).gameObject.activeSelf)
-                        CastingSkill(hit_target.point);
+                        CastingSkill(hit_target.point, hit_target.transform.gameObject);
                 }
             }
         }
@@ -210,10 +210,8 @@ public class CharacterControl : MonoBehaviour
     void activeSkill(string now_skill_key)
     {
         
-        current_casting_skill_key = now_skill_key;
-        Debug.Log(characterRoll);        
-        current_casting_skill_name = SkillManager.instance.rollSkills[characterRoll][now_skill_key];
-        
+        current_casting_skill_key = now_skill_key;        
+        current_casting_skill_name = SkillManager.instance.rollSkills[characterRoll][now_skill_key];        
         (float x, float y) range_xy = SkillManager.instance.skillData[current_casting_skill_name].range;
         Vector2 range_area = new Vector2(range_xy.x, range_xy.y);
 
@@ -241,15 +239,14 @@ public class CharacterControl : MonoBehaviour
         isActivingSkill = true;
     }
 
-    void CastingSkill(Vector2 skillPos)
+    void CastingSkill(Vector2 skillPos, GameObject target = null)
     {        
-        castSkill = CastSkill(skillPos);
+        castSkill = CastSkill(skillPos, target);
         StartCoroutine(castSkill);
         deactivateSkill();
-
     }
 
-    IEnumerator CastSkill(Vector2 skillPos)
+    IEnumerator CastSkill(Vector2 skillPos, GameObject targetObject = null)
     {
         float skill_radius_len = Vector2.Distance(skillRadiusLengthPoint.transform.position, transform.position);
 
@@ -271,8 +268,9 @@ public class CharacterControl : MonoBehaviour
 
         skill_radius_len *= ratio;
 
-        if (SkillManager.instance.skillData[current_casting_skill_name].castType == 0) // circle
+        if (SkillManager.instance.skillData[current_casting_skill_name].castType == 0 || SkillManager.instance.skillData[current_casting_skill_name].castType == 2) // circle or target
         {
+            //first, if target position is outside the skill range, move to skill range 
             goalPos = skillPos;
             characterAnimator.SetBool("IsRunning", true);
             Move_Character();
@@ -288,34 +286,48 @@ public class CharacterControl : MonoBehaviour
                 Debug.Log("moving for skill");
                 yield return null;
             }
-            object[] Params = new object[2];
-            Params[0] = skillPos;
-            Params[1] = SkillManager.instance.skillData[current_casting_skill_name].skillDuration;
-            SkillManager.instance.SendMessage(current_casting_skill_name, Params);
-            characterAnimator.SetTrigger(SkillManager.instance.skillData[current_casting_skill_name].animType);            
+
+            characterAnimator.SetTrigger(SkillManager.instance.skillData[current_casting_skill_name].animType);
             movable = false;
-            float delay = 0;
-            while(delay < SkillManager.instance.skillData[current_casting_skill_name].skillDelay)
+            
+
+            if (SkillManager.instance.skillData[current_casting_skill_name].castType == 0) // circle
             {
-                delay += Time.deltaTime;
-                yield return null;
+                object[] Params = new object[2];
+                Params[0] = skillPos;
+                Params[1] = SkillManager.instance.skillData[current_casting_skill_name].skillDuration;
+                SkillManager.instance.SendMessage(current_casting_skill_name, Params);
             }
-            movable = true;
+
+            else if (SkillManager.instance.skillData[current_casting_skill_name].castType == 2) // target
+            {
+                object[] Params = new object[2];
+                Params[0] = targetObject;
+                Debug.Log(current_casting_skill_name);
+                SkillManager.instance.SendMessage(current_casting_skill_name, Params);
+            }
+            
         }
-        else if(SkillManager.instance.skillData[current_casting_skill_name].castType == 1)
+        else if(SkillManager.instance.skillData[current_casting_skill_name].castType == 1) // bar
         {
 
         }
-        else if(SkillManager.instance.skillData[current_casting_skill_name].castType == 2)
+        else if(SkillManager.instance.skillData[current_casting_skill_name].castType == 2) // target
         {
 
         }
-        else if(SkillManager.instance.skillData[current_casting_skill_name].castType == 3)
+        else if(SkillManager.instance.skillData[current_casting_skill_name].castType == 3) // buff
         {
 
         }
 
-        // ???? ?????? ??????
+        float delay = 0;
+        while (delay < SkillManager.instance.skillData[current_casting_skill_name].skillDelay)
+        {
+            delay += Time.deltaTime;
+            yield return null;
+        }
+        movable = true;        
 
     }
 

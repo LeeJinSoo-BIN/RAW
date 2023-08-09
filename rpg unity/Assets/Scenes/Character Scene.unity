@@ -1470,11 +1470,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e1aa060ccf034e94f998e397c3f50403, type: 3}
---- !u!1 &1092871559 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8676420628618781570, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
-  m_PrefabInstance: {fileID: 7701874204363294712}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1105873708
 GameObject:
   m_ObjectHideFlags: 0
@@ -2695,30 +2690,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2974661288370307992, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2974661288370307992, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3128456789867957299, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3128456789867957299, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4457220537494767454, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
       propertyPath: inventoryUi
       value: 
       objectReference: {fileID: 1757131767}
-    - target: {fileID: 4457220537494767454, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
-      propertyPath: skillRangeAreaTargeting
-      value: 
-      objectReference: {fileID: 1092871559}
     - target: {fileID: 7070087706988693285, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
       propertyPath: m_RootOrder
       value: 11
