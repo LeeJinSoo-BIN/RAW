@@ -2050,6 +2050,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skill_magic_floor: {fileID: 187846141684650059, guid: c42e720cf482f2c4d81cbbe23b82b3a4, type: 3}
   skill_magic_totem: {fileID: 1473892316488033191, guid: e98e8a676c0a73f41acb26f5b53654ca, type: 3}
+  skill_magic_heal: {fileID: 3682754243370458347, guid: 4946fc4b73154e749b2e54b7a4552f47, type: 3}
 --- !u!1001 &1683454718
 PrefabInstance:
   m_ObjectHideFlags: 0

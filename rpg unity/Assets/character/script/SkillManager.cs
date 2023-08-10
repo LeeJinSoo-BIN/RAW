@@ -10,7 +10,7 @@ public class SkillManager : MonoBehaviour
 
     public GameObject skill_magic_floor;
     public GameObject skill_magic_totem;
-    
+    public GameObject skill_magic_heal;
     public struct skill_spec
     {
         public int castType; 
@@ -115,7 +115,10 @@ public class SkillManager : MonoBehaviour
     void magic_heal(object[] _params)
     {
         Debug.Log("magic magic");
-        Debug.Log(((GameObject)_params[0]).name);
+        GameObject target = (GameObject)_params[0];
+        GameObject magicHeal = Instantiate(skill_magic_heal, target.transform);
+        magicHeal.transform.localPosition = Vector2.zero;
+        StartCoroutine(Vanish(0.3f, magicHeal));
     }
     IEnumerator Vanish(float duration, GameObject who)
     {        
