@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bcf0c340af174f51a37a822ddf234e3, type: 3}
+  m_Name: MagicHeal
+  m_EditorClassIdentifier: 
+  skillView: {fileID: 3682754243370458347, guid: 4946fc4b73154e749b2e54b7a4552f47, type: 3}
+  castType: target-player
+  radius: {x: 1.5, y: 1.5}
+  range: {x: 2, y: 2}
+  animType: attack3
+  skillDelay: 1
+  skillDuration: 3
