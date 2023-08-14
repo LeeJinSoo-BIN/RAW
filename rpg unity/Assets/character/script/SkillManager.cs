@@ -72,8 +72,8 @@ public class SkillManager : MonoBehaviour
 
 
         tmp_skill.castType = 6;
-        tmp_skill.radius = (1.5f, 1.5f);
-        tmp_skill.range = (2f, 2f);
+        tmp_skill.radius = (0f, 0f);
+        tmp_skill.range = (0f, 0f);
         tmp_skill.animType = "attack3";
         tmp_skill.skillDelay = 1f;
         tmp_skill.skillDuration = 3f;
@@ -124,12 +124,23 @@ public class SkillManager : MonoBehaviour
     }
 
     void magic_heal(object[] _params)
-    {
-        Debug.Log("magic magic");
+    {        
         GameObject target = (GameObject)_params[0];
         GameObject magicHeal = Instantiate(skill_magic_heal, target.transform);
         magicHeal.transform.localPosition = Vector2.zero;
         StartCoroutine(Vanish(0.3f, magicHeal));
+    }
+
+    void magic_global_heal(object[] _params)
+    {
+        Debug.Log("magic_global_heal");
+        GameObject target = (GameObject)_params[0];
+        for(int k = 0; k < target.transform.childCount; k++)
+        {
+            GameObject magicHeal = Instantiate(skill_magic_heal, target.transform.GetChild(k).transform);
+            magicHeal.transform.localPosition = Vector2.zero;
+            StartCoroutine(Vanish(0.3f, magicHeal));
+        }
     }
     IEnumerator Vanish(float duration, GameObject who)
     {        
