@@ -11,14 +11,11 @@ public class SkillManager : MonoBehaviour
     public GameObject skill_magic_floor;
     public GameObject skill_magic_totem;
     public GameObject skill_magic_heal;
-    public GameObject skill_mgaic_gobal_heal;
     public struct skill_spec
     {
         public int castType; 
-        // 0: circle   1: bar
-        // 2: targeting- only character 3: targeting- only monster 4: targeting- both character&monster
-        // 5: buff- only self 6: buff- all player 7: buff- all enemy
-        // 8: charging
+        // 0: circle   1: bar   2: targeting    3: buff
+        // 4: charging
 
 
         public (float x, float y) radius;
@@ -69,15 +66,7 @@ public class SkillManager : MonoBehaviour
         tmp_skill.skillDelay = 1f;
         tmp_skill.skillDuration = 3f;
         skillData.Add("magic_heal", tmp_skill);
-
-
-        tmp_skill.castType = 6;
-        tmp_skill.radius = (1.5f, 1.5f);
-        tmp_skill.range = (2f, 2f);
-        tmp_skill.animType = "attack3";
-        tmp_skill.skillDelay = 1f;
-        tmp_skill.skillDuration = 3f;
-        skillData.Add("magic_global_heal", tmp_skill);        
+        //skillData.Add("magic_global_heal", new skill_spec(3, (2.2f, 2.2f), (1.1f, 1.1f), 5, 1));
 
 
         //0 - arrow
