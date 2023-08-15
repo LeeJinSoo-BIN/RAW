@@ -13,7 +13,7 @@ public class SkillManager : MonoBehaviour
     public GameObject skill_magic_heal;
     public struct skill_spec
     {
-        public int castType; 
+        public int castType;
         // 0: circle   1: bar   2: targeting    3: buff
         // 4: charging
 
@@ -21,7 +21,7 @@ public class SkillManager : MonoBehaviour
         public (float x, float y) radius;
         public (float x, float y) range;
 
-        public string animType; //attack1,2,3, skill1,2,3        
+        public string animType; //attack1,2,3, skill1,2,3
         public float skillDelay;
         public float skillDuration;
         /*public skill_spec(int _castType, (float x, float y) _radius, (float x, float y) _range, int _animType, int _effectType)
@@ -33,9 +33,9 @@ public class SkillManager : MonoBehaviour
             effectType = _effectType;
         }*/
 
-        
+
     };
-    public Dictionary<string, skill_spec> skillData = new Dictionary<string, skill_spec>();    
+    public Dictionary<string, skill_spec> skillData = new Dictionary<string, skill_spec>();
     public Dictionary<string, Dictionary<string, string>> rollSkills = new Dictionary<string, Dictionary<string, string>>();
     private void Awake()
     {
@@ -46,7 +46,7 @@ public class SkillManager : MonoBehaviour
         tmp_skill.castType = 0;
         tmp_skill.radius = (1f, 1f);
         tmp_skill.range = (1f, 1f);
-        tmp_skill.animType = "attack3";        
+        tmp_skill.animType = "attack3";
         tmp_skill.skillDelay = 1f;
         tmp_skill.skillDuration = 3f;
         skillData.Add("magic_floor", tmp_skill);
@@ -66,7 +66,15 @@ public class SkillManager : MonoBehaviour
         tmp_skill.skillDelay = 1f;
         tmp_skill.skillDuration = 3f;
         skillData.Add("magic_heal", tmp_skill);
-        //skillData.Add("magic_global_heal", new skill_spec(3, (2.2f, 2.2f), (1.1f, 1.1f), 5, 1));
+
+
+        tmp_skill.castType = 6;
+        tmp_skill.radius = (0f, 0f);
+        tmp_skill.range = (0f, 0f);
+        tmp_skill.animType = "attack3";
+        tmp_skill.skillDelay = 1f;
+        tmp_skill.skillDuration = 3f;
+        skillData.Add("magic_global_heal", tmp_skill);
 
 
         //0 - arrow
@@ -76,7 +84,7 @@ public class SkillManager : MonoBehaviour
         rollSkill.Add("E", "arrow_gatling");
         rollSkill.Add("R", "arrow_charge");
         rollSkills.Add("arrow", rollSkill);
-        //1 - sword      
+        //1 - sword
         rollSkill = new Dictionary<string, string>();
         rollSkill.Add("Q", "sword_smash");
         rollSkill.Add("W", "sword_shield");
@@ -90,12 +98,12 @@ public class SkillManager : MonoBehaviour
         rollSkill.Add("W", "magic_heal");
         rollSkill.Add("E", "magic_totem");
         rollSkill.Add("R", "magic_global_heal");
-        rollSkills.Add("magic", rollSkill);        
+        rollSkills.Add("magic", rollSkill);
 
 
     }
     void magic_floor(object[] _params)
-    {   
+    {
         Vector2 pos = (Vector2)_params[0];
         float duration = (float)_params[1];
         GameObject magicfloor = Instantiate(skill_magic_floor);
@@ -114,29 +122,40 @@ public class SkillManager : MonoBehaviour
 
     void magic_heal(object[] _params)
     {
-        Debug.Log("magic magic");
         GameObject target = (GameObject)_params[0];
         GameObject magicHeal = Instantiate(skill_magic_heal, target.transform);
         magicHeal.transform.localPosition = Vector2.zero;
         StartCoroutine(Vanish(0.3f, magicHeal));
     }
+
+    void magic_global_heal(object[] _params)
+    {
+        Debug.Log("magic_global_heal");
+        GameObject target = (GameObject)_params[0];
+        for(int k = 0; k < target.transform.childCount; k++)
+        {
+            GameObject magicHeal = Instantiate(skill_magic_heal, target.transform.GetChild(k).transform);
+            magicHeal.transform.localPosition = Vector2.zero;
+            StartCoroutine(Vanish(0.3f, magicHeal));
+        }
+    }
     IEnumerator Vanish(float duration, GameObject who)
-    {        
+    {
         float time = 0;
         while (time < duration)
-        {            
+        {
             time += Time.deltaTime;
             yield return null;
-        }        
+        }
         who.GetComponent<Animator>().SetTrigger("vanish");
         time = 0;
         while (time < 0.45)
         {
             time += Time.deltaTime;
             yield return null;
-        }        
+        }
         Destroy(who);
     }
-    
- 
+
+
 }
