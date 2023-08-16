@@ -50,10 +50,6 @@ public class CharacterControl : MonoBehaviour
         itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;
         gettingItem = inventoryUi.transform.GetChild(1).gameObject;
         deactivateSkill();
-        
-        characterRoll = "magic";
-
-
     }
 
     // Update is called once per frame

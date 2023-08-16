@@ -11,7 +11,8 @@ public class SkillManager : MonoBehaviour
     public GameObject skill_magic_floor;
     public GameObject skill_magic_totem;
     public GameObject skill_magic_heal;
-    public GameObject skill_mgaic_gobal_heal;
+    //public GameObject skill_magic_gobal_heal;
+    public GameObject skill_arrow_rain;
     public struct skill_spec
     {
         public int castType; 
@@ -77,9 +78,17 @@ public class SkillManager : MonoBehaviour
         tmp_skill.animType = "attack3";
         tmp_skill.skillDelay = 1f;
         tmp_skill.skillDuration = 3f;
-        skillData.Add("magic_global_heal", tmp_skill);        
+        skillData.Add("magic_global_heal", tmp_skill);
 
 
+
+        tmp_skill.castType = 0;
+        tmp_skill.radius = (2f, 2f);
+        tmp_skill.range = (1f, 1f);
+        tmp_skill.animType = "attack2";
+        tmp_skill.skillDelay = 1f;
+        tmp_skill.skillDuration = 1.5f;
+        skillData.Add("arrow_rain", tmp_skill);
         //0 - arrow
         Dictionary<string, string> rollSkill = new Dictionary<string, string>();
         rollSkill.Add("Q", "arrow_rain");
@@ -123,6 +132,7 @@ public class SkillManager : MonoBehaviour
         StartCoroutine(Vanish(duration, magicTotem));
     }
 
+
     void magic_heal(object[] _params)
     {        
         GameObject target = (GameObject)_params[0];
@@ -142,6 +152,17 @@ public class SkillManager : MonoBehaviour
             StartCoroutine(Vanish(0.3f, magicHeal));
         }
     }
+
+    void arrow_rain(object[] _params)
+    {
+        Vector2 pos = (Vector2)_params[0];
+        float duration = (float)_params[1];
+        GameObject arrowRain = Instantiate(skill_arrow_rain);
+        arrowRain.transform.position = pos;
+        StartCoroutine(Vanish(duration, arrowRain));
+    }
+
+
     IEnumerator Vanish(float duration, GameObject who)
     {        
         float time = 0;
