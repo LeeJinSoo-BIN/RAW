@@ -2344,6 +2344,7 @@ MonoBehaviour:
   skill_magic_totem: {fileID: 1473892316488033191, guid: e98e8a676c0a73f41acb26f5b53654ca, type: 3}
   skill_magic_heal: {fileID: 3682754243370458347, guid: 4946fc4b73154e749b2e54b7a4552f47, type: 3}
   skill_arrow_rain: {fileID: 2712676664973458675, guid: 9df3728a73c582545a46393ff8b40414, type: 3}
+  skill_arrow_dash: {fileID: 5369498112199595179, guid: b0c6a83d69c7764499184a5380f8a5e2, type: 3}
 --- !u!1001 &1683454718
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3209,6 +3210,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1187738237}
     m_Modifications:
+    - target: {fileID: 291480036319424471, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
+      propertyPath: m_Name
+      value: skill range area bar
+      objectReference: {fileID: 0}
     - target: {fileID: 519866308063132670, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
       propertyPath: _weaponListString.Array.data[0]
       value: 
@@ -3296,6 +3301,10 @@ PrefabInstance:
     - target: {fileID: 7070087706988693285, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7903510655836016016, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.26
       objectReference: {fileID: 0}
     - target: {fileID: 7937305489027168920, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
       propertyPath: m_Sprite

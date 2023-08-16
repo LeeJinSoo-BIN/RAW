@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -13,6 +14,7 @@ public class SkillManager : MonoBehaviour
     public GameObject skill_magic_heal;
     //public GameObject skill_magic_gobal_heal;
     public GameObject skill_arrow_rain;
+    public GameObject skill_arrow_dash;
     public struct skill_spec
     {
         public int castType; 
@@ -89,6 +91,14 @@ public class SkillManager : MonoBehaviour
         tmp_skill.skillDelay = 1f;
         tmp_skill.skillDuration = 1.5f;
         skillData.Add("arrow_rain", tmp_skill);
+
+        tmp_skill.castType = 1;
+        tmp_skill.radius = (0.8f, 0.8f);
+        tmp_skill.range = (0.8f, 0.7f);
+        tmp_skill.animType = "dash";
+        tmp_skill.skillDelay = 0.5f;
+        tmp_skill.skillDuration = 0f;
+        skillData.Add("arrow_dash", tmp_skill);
         //0 - arrow
         Dictionary<string, string> rollSkill = new Dictionary<string, string>();
         rollSkill.Add("Q", "arrow_rain");
@@ -162,6 +172,33 @@ public class SkillManager : MonoBehaviour
         StartCoroutine(Vanish(duration, arrowRain));
     }
 
+    void arrow_dash(object[] _params)
+    {
+        Vector2 pos = (Vector2)_params[0];
+        GameObject character = (GameObject)_params[1];
+        StartCoroutine(Dash(pos, character, 5f));
+    }
+    IEnumerator Dash(Vector3 goalPos, GameObject who, float speed)
+    {        
+        while (true)
+        {            
+            Vector2 _dirVec = goalPos - who.transform.position;
+            Vector2 _disVec = (Vector2)goalPos - (Vector2)who.transform.position;
+            Vector3 _dirMVec = _dirVec.normalized;
+            if (_disVec.sqrMagnitude < 0.001f)
+            {
+                who.transform.position = goalPos;
+                break;
+            }
+            if (_dirMVec.x > 0) who.transform.localScale = new Vector3(-1, 1, 1);
+            else if (_dirMVec.x < 0) who.transform.localScale = new Vector3(1, 1, 1);
+           
+            who.transform.position += (_dirMVec * speed * Time.deltaTime);
+            yield return null;
+        }
+        
+        
+    }
 
     IEnumerator Vanish(float duration, GameObject who)
     {        
