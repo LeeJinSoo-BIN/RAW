@@ -32,6 +32,7 @@ public class CharacterControl : MonoBehaviour
     public GameObject skillRangeAreaCircle;
     public GameObject skillRangeAreaBar;
     public GameObject skillRangeAreaTargeting;
+    public Transform skillCastingPosition;
 
     public GameObject playerGroup;
     public GameObject enemyGroup;
@@ -345,10 +346,15 @@ public class CharacterControl : MonoBehaviour
             SkillManager.instance.SendMessage(current_casting_skill_name, Params);
         }
         else if(current_casting_skill_type == 1) // bar
-        {
-            object[] Params = new object[2];
+        {            
+            Vector2 _dirMVec = (skillPos - (Vector2)transform.position).normalized;
+            if (_dirMVec.x > 0) transform.localScale = new Vector3(-1, 1, 1);
+            else if (_dirMVec.x < 0) transform.localScale = new Vector3(1, 1, 1);
+            skillPos += new Vector2 (0f, 0.3f);
+            object[] Params = new object[3];
             Params[0] = skillPos;
-            Params[1] = gameObject;
+            Params[1] = skillCastingPosition.position;
+            Params[2] = gameObject;
             SkillManager.instance.SendMessage(current_casting_skill_name, Params);
             if(current_casting_skill_name == "arrow_dash")
                 goalPos = skillPos;
@@ -406,9 +412,8 @@ public class CharacterControl : MonoBehaviour
     }
     void Move_Character()
     {
-        Vector3 _dirVec = goalPos - transform.position;
-        Vector3 _disVec = (Vector2)goalPos - (Vector2)transform.position;
-        if (_disVec.sqrMagnitude < 0.001f)
+        Vector3 _dirVec = goalPos - transform.position;        
+        if (_dirVec.sqrMagnitude < 0.001f)
         {
             characterAnimator.SetBool("IsRunning", false);
             return;
