@@ -32,6 +32,7 @@ public class CharacterControl : MonoBehaviour
     public GameObject skillRangeAreaCircle;
     public GameObject skillRangeAreaBar;
     public GameObject skillRangeAreaTargeting;
+    public Transform skillCastingPosition;
 
     public GameObject playerGroup;
     public GameObject enemyGroup;
@@ -50,10 +51,6 @@ public class CharacterControl : MonoBehaviour
         itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;
         gettingItem = inventoryUi.transform.GetChild(1).gameObject;
         deactivateSkill();
-        
-        characterRoll = "magic";
-
-
     }
 
     // Update is called once per frame
@@ -103,18 +100,35 @@ public class CharacterControl : MonoBehaviour
             }
             if (isActivingSkill)
             {
-                if (SkillManager.instance.skillData[current_casting_skill_name].castType == 0 || SkillManager.instance.skillData[current_casting_skill_name].castType == 1)
+                if (current_casting_skill_type == 0 || current_casting_skill_type == 1)
                 { // when cast type is circle or bar
                     RaycastHit2D hit_ground = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
                     if (hit_ground.collider != null)
                     {
-                        CastingSkill(hit_ground.point);
+                        if (current_casting_skill_type == 0)
+                            CastingSkill(hit_ground.point);
+                        else if (current_casting_skill_type == 1)
+                            CastingSkill(skillRangeAreaBar.transform.GetChild(1).transform.position);
                     }
                 }
-                else if(SkillManager.instance.skillData[current_casting_skill_name].castType == 2) // targeting only character 
+                else if(current_casting_skill_type == 2) // targeting only character 
                 {
                     //LayerMask player_or_monster = (playerLayer | monsterLayer);
                     RaycastHit2D hit_target = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, playerLayer);
+                    if (skillRangeAreaTargeting.transform.GetChild(1).gameObject.activeSelf)
+                        CastingSkill(hit_target.point, hit_target.transform.gameObject);
+                }
+                else if (current_casting_skill_type == 3) // targeting only monster
+                {
+                    //LayerMask player_or_monster = (playerLayer | monsterLayer);
+                    RaycastHit2D hit_target = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, monsterLayer);
+                    if (skillRangeAreaTargeting.transform.GetChild(1).gameObject.activeSelf)
+                        CastingSkill(hit_target.point, hit_target.transform.gameObject);
+                }
+                else if (current_casting_skill_type == 4) // targeting both player and enemy
+                {
+                    LayerMask player_or_monster = (playerLayer | monsterLayer);
+                    RaycastHit2D hit_target = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, player_or_monster);
                     if (skillRangeAreaTargeting.transform.GetChild(1).gameObject.activeSelf)
                         CastingSkill(hit_target.point, hit_target.transform.gameObject);
                 }
@@ -318,22 +332,32 @@ public class CharacterControl : MonoBehaviour
         characterAnimator.SetBool("IsRunning", false);        
         characterAnimator.SetTrigger(SkillManager.instance.skillData[current_casting_skill_name].animType);
 
-        if (SkillManager.instance.skillData[current_casting_skill_name].castType == 0) // circle
+        if (current_casting_skill_type == 0) // circle
         {
             object[] Params = new object[2];
             Params[0] = skillPos;
             Params[1] = SkillManager.instance.skillData[current_casting_skill_name].skillDuration;
             SkillManager.instance.SendMessage(current_casting_skill_name, Params);
         }
-        else if (SkillManager.instance.skillData[current_casting_skill_name].castType == 2) // target
+        else if (current_casting_skill_type == 2) // target
         {
             object[] Params = new object[2];
             Params[0] = targetObject;
             SkillManager.instance.SendMessage(current_casting_skill_name, Params);
         }
         else if(current_casting_skill_type == 1) // bar
-        {
-
+        {            
+            Vector2 _dirMVec = (skillPos - (Vector2)transform.position).normalized;
+            if (_dirMVec.x > 0) transform.localScale = new Vector3(-1, 1, 1);
+            else if (_dirMVec.x < 0) transform.localScale = new Vector3(1, 1, 1);
+            skillPos += new Vector2 (0f, 0.3f);
+            object[] Params = new object[3];
+            Params[0] = skillPos;
+            Params[1] = skillCastingPosition.position;
+            Params[2] = gameObject;
+            SkillManager.instance.SendMessage(current_casting_skill_name, Params);
+            if(current_casting_skill_name == "arrow_dash")
+                goalPos = skillPos;
         }
         else if(current_casting_skill_type == 5 || current_casting_skill_type == 6 || current_casting_skill_type == 7) // buff
         {
@@ -388,9 +412,8 @@ public class CharacterControl : MonoBehaviour
     }
     void Move_Character()
     {
-        Vector3 _dirVec = goalPos - transform.position;
-        Vector3 _disVec = (Vector2)goalPos - (Vector2)transform.position;
-        if (_disVec.sqrMagnitude < 0.001f)
+        Vector3 _dirVec = goalPos - transform.position;        
+        if (_dirVec.sqrMagnitude < 0.001f)
         {
             characterAnimator.SetBool("IsRunning", false);
             return;

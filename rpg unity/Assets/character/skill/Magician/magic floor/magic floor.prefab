@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 3427194208453096625}
   - component: {fileID: 2892146156193015201}
   - component: {fileID: 805035361368718924}
-  - component: {fileID: 1601814903847977528}
   m_Layer: 0
   m_Name: magic floor
   m_TagString: Untagged
@@ -69,18 +68,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1601814903847977528
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 187846141684650059}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9b5f23921987e946a5940e06c0f51f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2453113536148771896
 GameObject:
   m_ObjectHideFlags: 0
