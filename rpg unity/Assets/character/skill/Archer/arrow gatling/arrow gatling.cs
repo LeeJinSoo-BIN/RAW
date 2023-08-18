@@ -8,6 +8,7 @@ public class arrowgatling : MonoBehaviour
     public Vector3 targetPos;
     public float speed = 1;
     public bool explosion = true;
+    private bool isRotated = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -31,19 +32,19 @@ public class arrowgatling : MonoBehaviour
                 Destroy(gameObject);
             }
 
-            
+
         }
-
         transform.position = Vector2.MoveTowards(transform.position, targetPos, speed);
-        //transform.position += dir * speed * Time.deltaTime;
 
-
-        float angle_pi = Mathf.Atan2(transform.position.y - targetPos.y, transform.position.x - targetPos.x);
-        float angle_rad = angle_pi * Mathf.Rad2Deg + 180;
-        /*if (transform.localScale.x > 0)
-            angle_rad -= 180;*/
-        transform.rotation = Quaternion.AngleAxis(angle_rad, Vector3.forward);       
-        
+        if (!isRotated)
+        {
+            float angle_pi = Mathf.Atan2(transform.position.y - targetPos.y, transform.position.x - targetPos.x);
+            float angle_rad = angle_pi * Mathf.Rad2Deg + 180;
+            /*if (transform.localScale.x > 0)
+                angle_rad -= 180;*/
+            transform.rotation = Quaternion.AngleAxis(angle_rad, Vector3.forward);
+            isRotated = true;
+        }
     }
 
     void destroy_self()

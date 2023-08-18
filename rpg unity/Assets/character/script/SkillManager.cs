@@ -20,6 +20,8 @@ public class SkillManager : MonoBehaviour
     //public GameObject skill_arrow_dash;
     public GameObject skill_arrow_gatling;
     public GameObject skill_arrow_charge;
+    public GameObject skill_sword_shield;
+
 
     public Transform skillCastPos;
     public struct skill_spec
@@ -94,7 +96,7 @@ public class SkillManager : MonoBehaviour
         tmp_skill.castType = 0;
         tmp_skill.radius = (2f, 2f);
         tmp_skill.range = (1f, 1f);
-        tmp_skill.animType = "skillBow";
+        tmp_skill.animType = "skillBow1";
         tmp_skill.skillDelay = 1f;
         tmp_skill.skillDuration = 1.5f;
         skillData.Add("arrow_rain", tmp_skill);
@@ -122,6 +124,15 @@ public class SkillManager : MonoBehaviour
         tmp_skill.skillDelay = 3f;
         tmp_skill.skillDuration = 0f;
         skillData.Add("arrow_charge", tmp_skill);
+
+
+        tmp_skill.castType = 5;
+        tmp_skill.radius = (0f, 0f);
+        tmp_skill.range = (0f, 0f);
+        tmp_skill.animType = "skillSword1";
+        tmp_skill.skillDelay = 0.5f;
+        tmp_skill.skillDuration = 0f;
+        skillData.Add("sword_shield", tmp_skill);
         //0 - arrow
         Dictionary<string, string> rollSkill = new Dictionary<string, string>();
         rollSkill.Add("Q", "arrow_rain");
@@ -220,6 +231,17 @@ public class SkillManager : MonoBehaviour
         new_arrow.transform.position = oriPos;
         new_arrow.GetComponent<arrowcharge>().targetPos = desPos;
     }
+
+
+    void sword_shield(object[] _params)
+    {
+        GameObject target = (GameObject)_params[0];
+        GameObject swordShield = Instantiate(skill_sword_shield, target.transform);
+        swordShield.transform.localPosition = Vector2.zero;
+        StartCoroutine(Vanish(0.7f, swordShield));
+    }
+
+
     IEnumerator Gatling(Vector2 oriPos, Vector2 desPos)
     {
 
