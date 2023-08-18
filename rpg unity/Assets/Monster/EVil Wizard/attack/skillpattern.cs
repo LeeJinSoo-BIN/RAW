@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class SkillInvoker : MonoBehaviour
+public class skillIpattern : MonoBehaviour
 {
     private MobControl mobControl;
     private skill_1 skill1;
