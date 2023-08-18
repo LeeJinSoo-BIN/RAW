@@ -18,7 +18,8 @@ public class SkillManager : MonoBehaviour
     //public GameObject skill_magic_gobal_heal;
     public GameObject skill_arrow_rain;
     //public GameObject skill_arrow_dash;
-    public GameObject skill_arrow_gatling_arrow;
+    public GameObject skill_arrow_gatling;
+    public GameObject skill_arrow_charge;
 
     public Transform skillCastPos;
     public struct skill_spec
@@ -109,10 +110,18 @@ public class SkillManager : MonoBehaviour
         tmp_skill.castType = 1;
         tmp_skill.radius = (2f, 2f);
         tmp_skill.range = (2f, 1f);
-        tmp_skill.animType = "skillBow";
+        tmp_skill.animType = "skillBow1";
         tmp_skill.skillDelay = 1f;
         tmp_skill.skillDuration = 0f;
         skillData.Add("arrow_gatling", tmp_skill);
+
+        tmp_skill.castType = 1;
+        tmp_skill.radius = (20f, 20f);
+        tmp_skill.range = (20f, 8f);
+        tmp_skill.animType = "skillBow2";
+        tmp_skill.skillDelay = 3f;
+        tmp_skill.skillDuration = 0f;
+        skillData.Add("arrow_charge", tmp_skill);
         //0 - arrow
         Dictionary<string, string> rollSkill = new Dictionary<string, string>();
         rollSkill.Add("Q", "arrow_rain");
@@ -202,7 +211,15 @@ public class SkillManager : MonoBehaviour
 
         StartCoroutine(Gatling(oriPos, desPos));
     }
-
+    void arrow_charge(object[] _params)
+    {
+        Vector2 desPos = (Vector2)_params[0];
+        Vector3 oriPos = (Vector3)_params[1];
+        GameObject new_arrow = Instantiate(skill_arrow_charge);
+        desPos *= 5;
+        new_arrow.transform.position = oriPos;
+        new_arrow.GetComponent<arrowcharge>().targetPos = desPos;
+    }
     IEnumerator Gatling(Vector2 oriPos, Vector2 desPos)
     {
 
@@ -220,7 +237,7 @@ public class SkillManager : MonoBehaviour
             }
             float rand_x = Random.Range(-0.1f, 0.1f);
             float rand_y = Random.Range(-0.1f, 0.1f);
-            GameObject new_arrow = Instantiate(skill_arrow_gatling_arrow);
+            GameObject new_arrow = Instantiate(skill_arrow_gatling);
             new_arrow.transform.position = oriPos + new Vector2(rand_x, rand_y);
             new_arrow.GetComponent<arrowgatling>().targetPos = desPos + new Vector2(rand_x, rand_y);
         }

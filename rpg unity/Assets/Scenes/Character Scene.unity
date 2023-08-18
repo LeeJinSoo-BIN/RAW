@@ -2344,7 +2344,8 @@ MonoBehaviour:
   skill_magic_totem: {fileID: 1473892316488033191, guid: e98e8a676c0a73f41acb26f5b53654ca, type: 3}
   skill_magic_heal: {fileID: 3682754243370458347, guid: 4946fc4b73154e749b2e54b7a4552f47, type: 3}
   skill_arrow_rain: {fileID: 2712676664973458675, guid: 9df3728a73c582545a46393ff8b40414, type: 3}
-  skill_arrow_gatling_arrow: {fileID: 7034314786353351551, guid: b500295e064a70b439c80695c266e5f4, type: 3}
+  skill_arrow_gatling: {fileID: 7034314786353351551, guid: b500295e064a70b439c80695c266e5f4, type: 3}
+  skill_arrow_charge: {fileID: 2603610892362195509, guid: 319b8502d6e153540af63199e5c6c9e7, type: 3}
   skillCastPos: {fileID: 0}
 --- !u!1001 &1683454718
 PrefabInstance:
@@ -3285,64 +3286,3 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
---- !u!1001 &8510132853631948253
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 5942522517200133601, guid: b500295e064a70b439c80695c266e5f4, type: 3}
-      propertyPath: m_RootOrder
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 5942522517200133601, guid: b500295e064a70b439c80695c266e5f4, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -4.798
-      objectReference: {fileID: 0}
-    - target: {fileID: 5942522517200133601, guid: b500295e064a70b439c80695c266e5f4, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.385
-      objectReference: {fileID: 0}
-    - target: {fileID: 5942522517200133601, guid: b500295e064a70b439c80695c266e5f4, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.018898435
-      objectReference: {fileID: 0}
-    - target: {fileID: 5942522517200133601, guid: b500295e064a70b439c80695c266e5f4, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5942522517200133601, guid: b500295e064a70b439c80695c266e5f4, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5942522517200133601, guid: b500295e064a70b439c80695c266e5f4, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5942522517200133601, guid: b500295e064a70b439c80695c266e5f4, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5942522517200133601, guid: b500295e064a70b439c80695c266e5f4, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5942522517200133601, guid: b500295e064a70b439c80695c266e5f4, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5942522517200133601, guid: b500295e064a70b439c80695c266e5f4, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7034314786353351551, guid: b500295e064a70b439c80695c266e5f4, type: 3}
-      propertyPath: m_Name
-      value: arrow gatling
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: b500295e064a70b439c80695c266e5f4, type: 3}
