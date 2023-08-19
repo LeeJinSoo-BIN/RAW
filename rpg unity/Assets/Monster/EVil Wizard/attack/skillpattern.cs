@@ -1,19 +1,19 @@
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class skillIpattern : MonoBehaviour
 {
     private MobControl mobControl;
-    private skill_1 skill1;
     private skill_2 skill2;
     private skill_3 skill3;
-
+    public GameObject fireprefab;
     private float elapsedTime = 0.0f;
     private bool skillInvoked = false;
 
     private void Start()
     {
         mobControl = GetComponent<MobControl>();
-        skill1 = GetComponent<skill_1>();
+        
         skill2 = GetComponent<skill_2>();
         skill3 = GetComponent<skill_3>();
     }
@@ -34,6 +34,15 @@ public class skillIpattern : MonoBehaviour
         StartCoroutine(InvokeRandomSkillsRoutine());
     }
 
+    private void makefire()
+    {
+        GameObject fire = Instantiate(fireprefab, transform.position, Quaternion.identity); ;
+       
+        fire.GetComponent<skill_1>().monster = gameObject;
+        fire.GetComponent<skill_1>().character = mobControl.character;
+        fire.GetComponent<skill_1>().ExecuteSkill();
+    }
+
     private System.Collections.IEnumerator InvokeRandomSkillsRoutine()
     {
         while (true)
@@ -42,7 +51,8 @@ public class skillIpattern : MonoBehaviour
             switch (randomSkill)
             {
                 case 1:
-                    skill1.ExecuteSkill();
+                    makefire();
+                    
                     break;
                 case 2:
                     skill2.ExecuteSkill();
@@ -55,4 +65,5 @@ public class skillIpattern : MonoBehaviour
             yield return new WaitForSeconds(3.0f); // 스킬 호출 간격 (초)
         }
     }
+    
 }
