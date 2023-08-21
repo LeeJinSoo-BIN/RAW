@@ -23,7 +23,7 @@ public class SkillManager : MonoBehaviour
     public GameObject skill_sword_shield;
     public GameObject skill_sword_smash;
     public GameObject skill_sword_slash;
-
+    public GameObject skill_sword_bind;
 
     public Transform skillCastPos;
     public struct skill_spec
@@ -152,6 +152,15 @@ public class SkillManager : MonoBehaviour
         tmp_skill.skillDuration = 0f;
         skillData.Add("sword_slash", tmp_skill);
 
+
+        tmp_skill.castType = 3;
+        tmp_skill.radius = (2f, 2f);
+        tmp_skill.range = (0f, 0f);
+        tmp_skill.animType = "skill1";
+        tmp_skill.skillDelay = 1.2f;
+        tmp_skill.skillDuration = 5f;
+        skillData.Add("sword_bind", tmp_skill);
+
         //0 - arrow
         Dictionary<string, string> rollSkill = new Dictionary<string, string>();
         rollSkill.Add("Q", "arrow_rain");
@@ -278,7 +287,14 @@ public class SkillManager : MonoBehaviour
         swordSlash.transform.localPosition = new Vector2(-0.3f,0.2f);
         StartCoroutine(Vanish(1.2f, swordSlash));
     }
-
+    void sword_bind(object[] _params)
+    {
+        //GameObject subject = (GameObject)_params[0];
+        GameObject target = (GameObject)_params[1];
+        GameObject swordBind = Instantiate(skill_sword_bind, target.transform);
+        swordBind.transform.localPosition = new Vector2(0, 0);
+        StartCoroutine(Vanish(5f, swordBind));
+    }
     IEnumerator Gatling(Vector2 oriPos, Vector2 desPos)
     {
 
