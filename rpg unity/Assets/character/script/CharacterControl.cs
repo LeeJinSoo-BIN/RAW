@@ -308,7 +308,7 @@ public class CharacterControl : MonoBehaviour
         float ratio = Mathf.Sqrt((x_intersect - target.x) * (x_intersect - target.x) + (y_intersect - target.y) * (y_intersect - target.y));
 
         skill_radius_len *= ratio;
-        if (current_casting_skill_type == 0 ||current_casting_skill_type == 2) // circle or target
+        if (current_casting_skill_type == 0 ||current_casting_skill_type == 2 || current_casting_skill_type == 3 || current_casting_skill_type == 4) // circle or target
         {
             //first, if target position is outside the skill range, move to skill range 
             goalPos = skillPos;
@@ -338,13 +338,7 @@ public class CharacterControl : MonoBehaviour
             Params[0] = skillPos;
             Params[1] = SkillManager.instance.skillData[current_casting_skill_name].skillDuration;
             SkillManager.instance.SendMessage(current_casting_skill_name, Params);
-        }
-        else if (current_casting_skill_type == 2) // target
-        {
-            object[] Params = new object[2];
-            Params[0] = targetObject;
-            SkillManager.instance.SendMessage(current_casting_skill_name, Params);
-        }
+        }        
         else if(current_casting_skill_type == 1) // bar
         {            
             Vector2 _dirMVec = (skillPos - (Vector2)transform.position).normalized;
@@ -358,6 +352,13 @@ public class CharacterControl : MonoBehaviour
             SkillManager.instance.SendMessage(current_casting_skill_name, Params);
             if(current_casting_skill_name == "arrow_dash")
                 goalPos = skillPos;
+        }
+        else if (current_casting_skill_type == 2 || current_casting_skill_type == 3 || current_casting_skill_type == 4) // 2:target only character,  3:only monster  4:both
+        {
+            object[] Params = new object[2];
+            Params[0] = gameObject;
+            Params[1] = targetObject;            
+            SkillManager.instance.SendMessage(current_casting_skill_name, Params);
         }
         else if(current_casting_skill_type == 5 || current_casting_skill_type == 6 || current_casting_skill_type == 7) // buff
         {
