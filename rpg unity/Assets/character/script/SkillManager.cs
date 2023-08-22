@@ -21,7 +21,9 @@ public class SkillManager : MonoBehaviour
     public GameObject skill_arrow_gatling;
     public GameObject skill_arrow_charge;
     public GameObject skill_sword_shield;
-
+    public GameObject skill_sword_smash;
+    public GameObject skill_sword_slash;
+    public GameObject skill_sword_bind;
 
     public Transform skillCastPos;
     public struct skill_spec
@@ -131,6 +133,32 @@ public class SkillManager : MonoBehaviour
         tmp_skill.skillDelay = 0.5f;
         tmp_skill.skillDuration = 0f;
         skillData.Add("sword_shield", tmp_skill);
+
+        tmp_skill.castType = 3;
+        tmp_skill.radius = (1f, 1f);
+        tmp_skill.range = (0f, 0f);
+        tmp_skill.animType = "skill3";
+        tmp_skill.skillDelay = 1f;
+        tmp_skill.skillDuration = 0f;
+        skillData.Add("sword_smash", tmp_skill);
+
+        tmp_skill.castType = 1;
+        tmp_skill.radius = (1.5f, 1.5f);
+        tmp_skill.range = (1.5f, 3f);
+        tmp_skill.animType = "skillSword2";
+        tmp_skill.skillDelay = 1.2f;
+        tmp_skill.skillDuration = 0f;
+        skillData.Add("sword_slash", tmp_skill);
+
+
+        tmp_skill.castType = 3;
+        tmp_skill.radius = (2f, 2f);
+        tmp_skill.range = (0f, 0f);
+        tmp_skill.animType = "skill1";
+        tmp_skill.skillDelay = 1.2f;
+        tmp_skill.skillDuration = 5f;
+        skillData.Add("sword_bind", tmp_skill);
+
         //0 - arrow
         Dictionary<string, string> rollSkill = new Dictionary<string, string>();
         rollSkill.Add("Q", "arrow_rain");
@@ -177,7 +205,8 @@ public class SkillManager : MonoBehaviour
 
     void magic_heal(object[] _params)
     {
-        GameObject target = (GameObject)_params[0];
+        GameObject subject = (GameObject)_params[0];
+        GameObject target = (GameObject)_params[1];
         GameObject magicHeal = Instantiate(skill_magic_heal, target.transform);
         magicHeal.transform.localPosition = Vector2.zero;
         StartCoroutine(Vanish(0.3f, magicHeal));
@@ -239,7 +268,31 @@ public class SkillManager : MonoBehaviour
         StartCoroutine(Vanish(0.7f, swordShield));
     }
 
+    void sword_smash(object[] _params)
+    {
+        GameObject subject = (GameObject)_params[0];
+        GameObject target = (GameObject)_params[1];
+        GameObject swordSmash = Instantiate(skill_sword_smash, subject.transform);
+        swordSmash.transform.localPosition = new Vector2(-0.3f, 0.5f);
+        StartCoroutine(Vanish(0.7f, swordSmash));
+    }
 
+    void sword_slash(object[] _params)
+    {
+        GameObject subject = (GameObject)_params[2];
+
+        GameObject swordSlash = Instantiate(skill_sword_slash, subject.transform);
+        swordSlash.transform.localPosition = new Vector2(-0.3f,0.2f);
+        StartCoroutine(Vanish(1.2f, swordSlash));
+    }
+    void sword_bind(object[] _params)
+    {
+        //GameObject subject = (GameObject)_params[0];
+        GameObject target = (GameObject)_params[1];
+        GameObject swordBind = Instantiate(skill_sword_bind, target.transform);
+        swordBind.transform.localPosition = new Vector2(0, 0);
+        StartCoroutine(Vanish(5f, swordBind));
+    }
     IEnumerator Gatling(Vector2 oriPos, Vector2 desPos)
     {
 
