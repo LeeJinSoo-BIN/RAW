@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: MagicHeal
   m_EditorClassIdentifier: 
   skillView: {fileID: 3682754243370458347, guid: 4946fc4b73154e749b2e54b7a4552f47, type: 3}
+  skillName: magic heal
   castType: target-player
   radius: {x: 1.5, y: 1.5}
   range: {x: 2, y: 2}

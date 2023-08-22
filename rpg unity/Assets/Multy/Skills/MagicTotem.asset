@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: MagicTotem
   m_EditorClassIdentifier: 
   skillView: {fileID: 1473892316488033191, guid: e98e8a676c0a73f41acb26f5b53654ca, type: 3}
+  skillName: magic totem
   castType: circle
   radius: {x: 1.5, y: 1.5}
   range: {x: 2, y: 2}

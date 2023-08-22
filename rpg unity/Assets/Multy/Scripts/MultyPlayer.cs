@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Rendering;
 using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
@@ -50,8 +51,12 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public PhotonView PV;
     public Text NickNameText;
     public Canvas canvas;
+    public SortingGroup sortingGroup;
 
     Vector3 curPos;
+
+    private float maxHealth = 1000;
+    public Slider health;
 
     private void Awake()
     {
@@ -64,6 +69,11 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
         NickNameText.text = PV.IsMine ? PhotonNetwork.NickName : PV.Owner.NickName;
         NickNameText.color = PV.IsMine ? Color.green : Color.red;
+
+        sortingGroup.sortingOrder = PV.IsMine ? 1 : 0;
+
+        health.maxValue = maxHealth;
+        health.value = maxHealth;
     }
 
     void Update()
@@ -197,9 +207,9 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                     skillRangeAreaTargeting.transform.position = mousePos;
                     Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     LayerMask mask;
-                    if (current_skill.castType == "buff-player")
+                    if (current_skill.castType == "target-player")
                         mask = playerLayer;
-                    else if (current_skill.castType == "buff-enemy")
+                    else if (current_skill.castType == "target-enemy")
                         mask = monsterLayer;
                     else
                         mask = playerLayer | monsterLayer;
@@ -302,7 +312,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
         skill_radius_len *= ratio;
 
-        if (current_skill.castType == "circle" || current_skill.castType == "target")
+        if (current_skill.castType == "circle" || current_skill.castType == "target-player")
         {
             goalPos = skillPos;
             characterAnimator.SetBool("IsRunning", true);
@@ -316,7 +326,6 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                     goalPos = transform.position;
                     break;
                 }
-                Debug.Log("moving for skill");
                 yield return null;
             }
             characterAnimator.SetTrigger(current_skill.animType);
@@ -344,12 +353,12 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
     }
 
-    public void Skill(Vector2 pos, GameObject target = null)
+    public void Skill(Vector2 pos, GameObject target)
     {
-        float duration = current_skill.skillDuration;
-        GameObject magic = Instantiate(current_skill.skillView.gameObject);
-        magic.transform.position = pos;
-        StartCoroutine(Vanish(duration, magic));
+        if (target)
+            pos = target.transform.position;
+        GameObject magic = PhotonNetwork.Instantiate(current_skill.skillName, pos, Quaternion.identity);
+        StartCoroutine(Vanish(current_skill.skillDuration, magic));
     }
 
     IEnumerator Vanish(float duration, GameObject who)
@@ -367,7 +376,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             time += Time.deltaTime;
             yield return null;
         }
-        Destroy(who);
+        PhotonNetwork.Destroy(who);
     }
 
     void getItem(GameObject got_item)
@@ -400,6 +409,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             }
         }
     }
+
     void Move_Character()
     {
         Vector3 _dirVec = goalPos - transform.position;
@@ -451,8 +461,6 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         Destroy(new_move_pointer);
     }
 
-  
-
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
@@ -463,5 +471,10 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         {
             curPos = (Vector3)stream.ReceiveNext();
         }
+    }
+
+    public void changeHealth(float dmg)
+    {
+        health.value += dmg;
     }
 }

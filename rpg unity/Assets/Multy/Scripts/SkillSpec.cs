@@ -6,6 +6,7 @@ using UnityEngine;
 public class SkillSpec : ScriptableObject
 {
     public GameObject skillView;
+    public string skillName;
     public string castType;
     // 0: circle   1: bar   2: targeting    3: buff
     // 4: charging

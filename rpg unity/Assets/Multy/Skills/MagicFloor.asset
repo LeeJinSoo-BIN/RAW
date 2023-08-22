@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: MagicFloor
   m_EditorClassIdentifier: 
   skillView: {fileID: 187846141684650059, guid: c42e720cf482f2c4d81cbbe23b82b3a4, type: 3}
+  skillName: magic floor
   castType: circle
   radius: {x: 1, y: 1}
   range: {x: 1, y: 1}
