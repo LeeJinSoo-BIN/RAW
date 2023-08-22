@@ -725,6 +725,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1187738237}
     m_Modifications:
+    - target: {fileID: 258397788223997311, guid: ae0ad811d1b4f304ba19c8c916f4d8b0, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 258397788223997311, guid: ae0ad811d1b4f304ba19c8c916f4d8b0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3550993373080581772, guid: ae0ad811d1b4f304ba19c8c916f4d8b0, type: 3}
       propertyPath: m_Name
       value: other
@@ -883,6 +891,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 462155023}
     m_Modifications:
+    - target: {fileID: 258397788223997311, guid: ae0ad811d1b4f304ba19c8c916f4d8b0, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 258397788223997311, guid: ae0ad811d1b4f304ba19c8c916f4d8b0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3550993373080581772, guid: ae0ad811d1b4f304ba19c8c916f4d8b0, type: 3}
       propertyPath: m_Name
       value: monster
@@ -1241,6 +1257,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1187738237}
     m_Modifications:
+    - target: {fileID: 258397788223997311, guid: ae0ad811d1b4f304ba19c8c916f4d8b0, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 258397788223997311, guid: ae0ad811d1b4f304ba19c8c916f4d8b0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3550993373080581772, guid: ae0ad811d1b4f304ba19c8c916f4d8b0, type: 3}
       propertyPath: m_Name
       value: other (2)
@@ -2642,6 +2666,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1187738237}
     m_Modifications:
+    - target: {fileID: 258397788223997311, guid: ae0ad811d1b4f304ba19c8c916f4d8b0, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 258397788223997311, guid: ae0ad811d1b4f304ba19c8c916f4d8b0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3550993373080581772, guid: ae0ad811d1b4f304ba19c8c916f4d8b0, type: 3}
       propertyPath: m_Name
       value: other (1)
@@ -2828,6 +2860,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1187738237}
     m_Modifications:
+    - target: {fileID: 258397788223997311, guid: ae0ad811d1b4f304ba19c8c916f4d8b0, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 258397788223997311, guid: ae0ad811d1b4f304ba19c8c916f4d8b0, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3550993373080581772, guid: ae0ad811d1b4f304ba19c8c916f4d8b0, type: 3}
       propertyPath: m_Name
       value: other (3)
@@ -3067,11 +3107,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2057299386}
   m_CullTransparentMesh: 1
---- !u!4 &2067761241 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5063620467602223921, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
-  m_PrefabInstance: {fileID: 7701874204363294712}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2123249235
 GameObject:
   m_ObjectHideFlags: 0
@@ -3221,18 +3256,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1187738237}
     m_Modifications:
-    - target: {fileID: 519866308063132670, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
-      propertyPath: _weaponListString.Array.data[2]
-      value: Assets/character/SPUM_Sprites/Items/6_Weapons/Sword_1.png
-      objectReference: {fileID: 0}
-    - target: {fileID: 1714272583622918760, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 1714272583622918760, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
-      propertyPath: m_WasSpriteAssigned
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4457220537494767454, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
       propertyPath: enemyGroup
       value: 
@@ -3247,12 +3270,16 @@ PrefabInstance:
       objectReference: {fileID: 1187738236}
     - target: {fileID: 4457220537494767454, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
       propertyPath: characterRoll
-      value: sword
+      value: magic
       objectReference: {fileID: 0}
-    - target: {fileID: 4457220537494767454, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
-      propertyPath: skillCastingPosition
-      value: 
-      objectReference: {fileID: 2067761241}
+    - target: {fileID: 6193769771013842518, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6193769771013842518, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7070087706988693285, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
       propertyPath: m_RootOrder
       value: -1
@@ -3296,22 +3323,6 @@ PrefabInstance:
     - target: {fileID: 7070087706988693285, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7937305489027168920, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
-      propertyPath: m_Size.x
-      value: 0.21875
-      objectReference: {fileID: 0}
-    - target: {fileID: 7937305489027168920, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
-      propertyPath: m_Size.y
-      value: 0.5625
-      objectReference: {fileID: 0}
-    - target: {fileID: 7937305489027168920, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 3af85a4e3dc43c4489a64dd5c94a4005, type: 3}
-    - target: {fileID: 7937305489027168920, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
-      propertyPath: m_WasSpriteAssigned
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9190837963854066500, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
       propertyPath: m_Name
