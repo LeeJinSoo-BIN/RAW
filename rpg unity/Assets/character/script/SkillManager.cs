@@ -39,6 +39,11 @@ public class SkillManager : MonoBehaviour
         public string animType; //attack1,2,3, skill1,2,3
         public float skillDelay;
         public float skillDuration;
+
+        public float skillDamage;
+        public float skillHeal;
+        public float damageIncreasePerSkillLevel;
+        public float healIncreasePerSkillLevel;
         /*public skill_spec(int _castType, (float x, float y) _radius, (float x, float y) _range, int _animType, int _effectType)
         {
             castType = _castType;
@@ -59,7 +64,7 @@ public class SkillManager : MonoBehaviour
 
         skill_spec tmp_skill;
         tmp_skill.castType = 0;
-        tmp_skill.radius = (1f, 1f);
+        tmp_skill.radius = (1.2f, 1.2f);
         tmp_skill.range = (1f, 1f);
         tmp_skill.animType = "attack3";
         tmp_skill.skillDelay = 1f;

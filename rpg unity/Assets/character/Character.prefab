@@ -567,7 +567,7 @@ MonoBehaviour:
   skillCastingPosition: {fileID: 5063620467602223921}
   playerGroup: {fileID: 0}
   enemyGroup: {fileID: 0}
-  characterRoll: sword
+  characterRoll: magic
 --- !u!1001 &3499768119188943948
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -837,6 +837,10 @@ PrefabInstance:
     - target: {fileID: 4341569505682785010, guid: ae0ad811d1b4f304ba19c8c916f4d8b0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8612877083982770566, guid: ae0ad811d1b4f304ba19c8c916f4d8b0, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.000000059604645
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
