@@ -69,7 +69,7 @@ public class SkillManager : MonoBehaviour
         tmp_skill.animType = "attack3";
         tmp_skill.skillDelay = 1f;
         tmp_skill.skillDuration = 3f;
-        skillData.Add("magic_floor", tmp_skill);
+        //skillData.Add("magic_floor", tmp_skill);
 
         tmp_skill.castType = 0;
         tmp_skill.radius = (1.5f, 1.5f);
@@ -77,7 +77,7 @@ public class SkillManager : MonoBehaviour
         tmp_skill.animType = "attack3";
         tmp_skill.skillDelay = 1f;
         tmp_skill.skillDuration = 10f;
-        skillData.Add("magic_totem", tmp_skill);
+        //skillData.Add("magic_totem", tmp_skill);
 
         tmp_skill.castType = 2;
         tmp_skill.radius = (1.5f, 1.5f);
