@@ -3359,7 +3359,7 @@ PrefabInstance:
       objectReference: {fileID: 1187738236}
     - target: {fileID: 4457220537494767454, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
       propertyPath: characterRoll
-      value: sword
+      value: arrow
       objectReference: {fileID: 0}
     - target: {fileID: 6193769771013842518, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
       propertyPath: m_AnchorMax.x

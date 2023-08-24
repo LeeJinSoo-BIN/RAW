@@ -10,13 +10,13 @@ public class MagicFloor : MonoBehaviour
     private bool active = false;
     
 
-    private int flatDeal = 1;
-    private int dealIncreasePerSkillLevel = 1;
-    private int dealIncreasePerPower = 1;
+    private float flatDeal = 1;
+    private float dealIncreasePerSkillLevel = 1;
+    private float dealIncreasePerPower = 1;
 
-    private int flatHeal = 1;    
-    private int healIncreasePerSkillLevel = 1;    
-    private int healIncreasePerPower = 1;    
+    private float flatHeal = 1;    
+    private float healIncreasePerSkillLevel = 1;    
+    private float healIncreasePerPower = 1;    
 
     
     // Update is called once per frame

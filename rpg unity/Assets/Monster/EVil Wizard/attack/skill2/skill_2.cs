@@ -3,16 +3,19 @@ using System.Collections;
 
 public class skill_2 : MonoBehaviour
 {
-    public GameObject character; // 캐릭터의 위치
-    private Animator animator; // 애니메이터 컴포넌트
+    //public GameObject character; // 캐릭터의 위치
+    //private Animator animator; // 애니메이터 컴포넌트
+    private void Start()
+    {
+        //animator = GetComponent<Animator>();
+    }
 
     public void ExecuteSkill()
     {
-        animator = gameObject.GetComponent<Animator>();
-        StartCoroutine(FireHand());
+        //StartCoroutine(FireHand());
     }
 
-    private IEnumerator FireHand()
+    /*private IEnumerator FireHand()
     {
         // 캐릭터의 위치로 불 생성
 
@@ -26,5 +29,5 @@ public class skill_2 : MonoBehaviour
         }
 
         yield return null;
-    }
+    }*/
 }

@@ -10,19 +10,17 @@ public class MobControl : MonoBehaviour
     public float stoppingDistance = 2f; // Stopping distance from the character
                                         // Probability of following the character (0 to 1)
 
-    private Rigidbody2D rb;
 
     // Start is called before the first frame update
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        character = GameObject.Find("Character");
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (character != null)
+        /*if (character != null)
         {
             float distanceToCharacter = Vector3.Distance(transform.position, character.transform.position);
 
@@ -36,5 +34,6 @@ public class MobControl : MonoBehaviour
 
             }
         }
+        */
     }
 }
