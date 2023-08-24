@@ -931,6 +931,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Monster
       objectReference: {fileID: 0}
+    - target: {fileID: 3828062574223814127, guid: ae0ad811d1b4f304ba19c8c916f4d8b0, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4341569505682785010, guid: ae0ad811d1b4f304ba19c8c916f4d8b0, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -2415,6 +2419,7 @@ MonoBehaviour:
   skill_magic_floor: {fileID: 187846141684650059, guid: c42e720cf482f2c4d81cbbe23b82b3a4, type: 3}
   skill_magic_totem: {fileID: 1473892316488033191, guid: e98e8a676c0a73f41acb26f5b53654ca, type: 3}
   skill_magic_heal: {fileID: 3682754243370458347, guid: 4946fc4b73154e749b2e54b7a4552f47, type: 3}
+  skill_magic_global_heal: {fileID: 4453134078672494454, guid: dd5498dfb5a6bce47af48471e948894b, type: 3}
   skill_arrow_rain: {fileID: 2712676664973458675, guid: 9df3728a73c582545a46393ff8b40414, type: 3}
   skill_arrow_gatling: {fileID: 7034314786353351551, guid: b500295e064a70b439c80695c266e5f4, type: 3}
   skill_arrow_charge: {fileID: 2603610892362195509, guid: 319b8502d6e153540af63199e5c6c9e7, type: 3}
@@ -3352,6 +3357,10 @@ PrefabInstance:
       propertyPath: playerGroup
       value: 
       objectReference: {fileID: 1187738236}
+    - target: {fileID: 4457220537494767454, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
+      propertyPath: characterRoll
+      value: sword
+      objectReference: {fileID: 0}
     - target: {fileID: 6193769771013842518, guid: 7a61efae63ebfd34798d33f4a4da7472, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0

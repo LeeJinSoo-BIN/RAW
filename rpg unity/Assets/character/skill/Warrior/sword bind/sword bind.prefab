@@ -95,6 +95,7 @@ GameObject:
   - component: {fileID: 4491867563479667422}
   - component: {fileID: 1837512930554565103}
   - component: {fileID: 6664562546274934749}
+  - component: {fileID: -4581571035769710362}
   m_Layer: 0
   m_Name: sword bind
   m_TagString: Untagged
@@ -153,6 +154,20 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-4581571035769710362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2393885603552241966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a537f31b65ed7947be5d7dfd283530f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  duration: 0
 --- !u!1 &3514899900819229963
 GameObject:
   m_ObjectHideFlags: 0

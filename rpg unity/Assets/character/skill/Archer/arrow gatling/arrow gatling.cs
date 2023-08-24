@@ -7,12 +7,16 @@ public class arrowgatling : MonoBehaviour
 {
     public Vector3 targetPos;
     public float speed = 1;
-    public bool explosion = true;
+    private bool explosion = false;
     private bool isRotated = false;
+
+    private int flatDeal = 1;
+    private int dealIncreasePerSkillLevel = 1;
+    private int dealIncreasePerPower = 1;
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -50,6 +54,18 @@ public class arrowgatling : MonoBehaviour
     void destroy_self()
     {
         Destroy(gameObject);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Monster"))
+        {
+            targetPos = transform.position;
+            explosion = true;
+            CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
+            state.ProcessSkill(0, "arrow_gatling", flatDeal, dealIncreasePerSkillLevel, dealIncreasePerPower);
+        }
+
     }
 }
 

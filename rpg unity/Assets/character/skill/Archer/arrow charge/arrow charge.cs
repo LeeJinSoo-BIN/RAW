@@ -9,10 +9,15 @@ public class arrowcharge : MonoBehaviour
     public float speed = 1;
     private float charge_time = 2.5f;
     private float current_time = 0f;
+
+    private int flatDeal = 1;
+    private int dealIncreasePerSkillLevel = 1;
+    private int dealIncreasePerPower = 1;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -50,6 +55,17 @@ public class arrowcharge : MonoBehaviour
     void destroy_self()
     {
         Destroy(gameObject);
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (current_time > charge_time)
+        {
+            if (collision.CompareTag("Monster"))
+            {
+                CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
+                state.ProcessSkill(0, "arrow_charge", flatDeal, dealIncreasePerSkillLevel, dealIncreasePerPower);
+            }
+        }
     }
 }
 

@@ -245,7 +245,6 @@ public class CharacterControl : MonoBehaviour
         skillRadiusArea.transform.localScale = radius_area;
         skillRadiusArea.SetActive(true);
         Debug.Log(current_casting_skill_name);
-        Debug.Log(current_casting_skill_type);
         isActivingSkill = true;
         if (current_casting_skill_type == 0) // circle
         {            
@@ -322,8 +321,7 @@ public class CharacterControl : MonoBehaviour
                     characterAnimator.SetBool("IsRunning", false);
                     goalPos = transform.position;
                     break;
-                }
-                Debug.Log("moving for skill");
+                }                
                 yield return null;
             }            
         }
@@ -355,15 +353,14 @@ public class CharacterControl : MonoBehaviour
         }
         else if (current_casting_skill_type == 2 || current_casting_skill_type == 3 || current_casting_skill_type == 4) // 2:target only character,  3:only monster  4:both
         {
-            object[] Params = new object[2];
+            object[] Params = new object[3];
             Params[0] = gameObject;
-            Params[1] = targetObject;            
+            Params[1] = targetObject;
+            Params[2] = SkillManager.instance.skillData[current_casting_skill_name].skillDuration;
             SkillManager.instance.SendMessage(current_casting_skill_name, Params);
         }
         else if(current_casting_skill_type == 5 || current_casting_skill_type == 6 || current_casting_skill_type == 7) // buff
-        {
-            
-            Debug.Log(current_casting_skill_name);
+        {            
             object[] Params = new object[1];
             Params[0] = targetObject;
             SkillManager.instance.SendMessage(current_casting_skill_name, Params);

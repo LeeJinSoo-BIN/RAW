@@ -15,7 +15,7 @@ public class SkillManager : MonoBehaviour
     public GameObject skill_magic_floor;
     public GameObject skill_magic_totem;
     public GameObject skill_magic_heal;
-    //public GameObject skill_magic_gobal_heal;
+    public GameObject skill_magic_global_heal;
     public GameObject skill_arrow_rain;
     //public GameObject skill_arrow_dash;
     public GameObject skill_arrow_gatling;
@@ -40,10 +40,6 @@ public class SkillManager : MonoBehaviour
         public float skillDelay;
         public float skillDuration;
 
-        public float skillDamage;
-        public float skillHeal;
-        public float damageIncreasePerSkillLevel;
-        public float healIncreasePerSkillLevel;
         /*public skill_spec(int _castType, (float x, float y) _radius, (float x, float y) _range, int _animType, int _effectType)
         {
             castType = _castType;
@@ -69,7 +65,7 @@ public class SkillManager : MonoBehaviour
         tmp_skill.animType = "attack3";
         tmp_skill.skillDelay = 1f;
         tmp_skill.skillDuration = 3f;
-        //skillData.Add("magic_floor", tmp_skill);
+        skillData.Add("magic_floor", tmp_skill);
 
         tmp_skill.castType = 0;
         tmp_skill.radius = (1.5f, 1.5f);
@@ -77,7 +73,7 @@ public class SkillManager : MonoBehaviour
         tmp_skill.animType = "attack3";
         tmp_skill.skillDelay = 1f;
         tmp_skill.skillDuration = 10f;
-        //skillData.Add("magic_totem", tmp_skill);
+        skillData.Add("magic_totem", tmp_skill);
 
         tmp_skill.castType = 2;
         tmp_skill.radius = (1.5f, 1.5f);
@@ -149,7 +145,7 @@ public class SkillManager : MonoBehaviour
 
         tmp_skill.castType = 1;
         tmp_skill.radius = (1.5f, 1.5f);
-        tmp_skill.range = (1.5f, 3f);
+        tmp_skill.range = (0f, 0f);
         tmp_skill.animType = "skillSword2";
         tmp_skill.skillDelay = 1.2f;
         tmp_skill.skillDuration = 0f;
@@ -223,9 +219,9 @@ public class SkillManager : MonoBehaviour
         GameObject target = (GameObject)_params[0];
         for(int k = 0; k < target.transform.childCount; k++)
         {
-            GameObject magicHeal = Instantiate(skill_magic_heal, target.transform.GetChild(k).transform);
+            GameObject magicHeal = Instantiate(skill_magic_global_heal, target.transform.GetChild(k).transform);
             magicHeal.transform.localPosition = Vector2.zero;
-            StartCoroutine(Vanish(0.3f, magicHeal));
+            StartCoroutine(Vanish(2f, magicHeal));
         }
     }
 
@@ -267,19 +263,23 @@ public class SkillManager : MonoBehaviour
 
     void sword_shield(object[] _params)
     {
-        GameObject target = (GameObject)_params[0];
-        GameObject swordShield = Instantiate(skill_sword_shield, target.transform);
-        swordShield.transform.localPosition = Vector2.zero;
-        StartCoroutine(Vanish(0.7f, swordShield));
+        GameObject subject = (GameObject)_params[0];
+        GameObject _swordShield = Instantiate(skill_sword_shield, subject.transform);
+        _swordShield.transform.localPosition = Vector2.zero;
+        _swordShield.GetComponent<SwordShield>().target = subject;
+        _swordShield.GetComponent<SwordShield>().Shield();
+        StartCoroutine(Vanish(0.7f, _swordShield));
     }
 
     void sword_smash(object[] _params)
     {
         GameObject subject = (GameObject)_params[0];
         GameObject target = (GameObject)_params[1];
-        GameObject swordSmash = Instantiate(skill_sword_smash, subject.transform);
-        swordSmash.transform.localPosition = new Vector2(-0.3f, 0.5f);
-        StartCoroutine(Vanish(0.7f, swordSmash));
+        GameObject _swordSmash = Instantiate(skill_sword_smash, subject.transform);
+        _swordSmash.transform.localPosition = new Vector2(-0.3f, 0.5f);
+        _swordSmash.GetComponent<SwordSmash>().target = target;
+        _swordSmash.GetComponent<SwordSmash>().Deal();
+        StartCoroutine(Vanish(0.7f, _swordSmash));
     }
 
     void sword_slash(object[] _params)
@@ -294,9 +294,13 @@ public class SkillManager : MonoBehaviour
     {
         //GameObject subject = (GameObject)_params[0];
         GameObject target = (GameObject)_params[1];
-        GameObject swordBind = Instantiate(skill_sword_bind, target.transform);
-        swordBind.transform.localPosition = new Vector2(0, 0);
-        StartCoroutine(Vanish(5f, swordBind));
+        GameObject _swordBind = Instantiate(skill_sword_bind, target.transform);
+        float _duration = (float)_params[2];
+        _swordBind.transform.localPosition = new Vector2(0, 0);
+        _swordBind.GetComponent<SwordBind>().target = target;
+        _swordBind.GetComponent<SwordBind>().duration = _duration;
+        _swordBind.GetComponent<SwordBind>().Bind();
+        StartCoroutine(Vanish(5f, _swordBind));
     }
     IEnumerator Gatling(Vector2 oriPos, Vector2 desPos)
     {
