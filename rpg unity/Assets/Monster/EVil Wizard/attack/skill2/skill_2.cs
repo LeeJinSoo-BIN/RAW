@@ -1,34 +1,30 @@
 using UnityEngine;
+using System.Collections;
 
 public class skill_2 : MonoBehaviour
 {
-    public GameObject monster;       // 몬스터 GameObject
-    public GameObject character;     // 캐릭터 GameObject
-    public float moveSpeed = 5.0f;   // 이동 속도
-
-    private Vector3 targetPosition;  // 이동할 목표 위치
-    private bool isMoving = false;   // 이동 중 여부
+    public GameObject character; // 캐릭터의 위치
+    private Animator animator; // 애니메이터 컴포넌트
 
     public void ExecuteSkill()
     {
-        // 몬스터의 현재 위치를 캐릭터 근처로 설정
-        targetPosition = character.transform.position;
-        isMoving = true;
+        animator = gameObject.GetComponent<Animator>();
+        StartCoroutine(FireHand());
     }
 
-    private void Update()
+    private IEnumerator FireHand()
     {
-        if (isMoving)
-        {
-            // 현재 위치에서 목표 위치로 이동
-            float step = moveSpeed * Time.deltaTime;
-            monster.transform.position = Vector3.MoveTowards(monster.transform.position, targetPosition, step);
+        // 캐릭터의 위치로 불 생성
 
-            // 목표 위치에 도달하면 이동 중지
-            if (monster.transform.position == targetPosition)
-            {
-                isMoving = false;
-            }
+        if (gameObject != null)
+        {
+            // 불 애니메이터를 활성화
+            animator.SetBool("Explode", true);
+
+            // 불 오브젝트 파괴 (애니메이션 이벤트로 파괴할 수도 있음)
+            Destroy(gameObject, 2.0f); // 예: 2초 뒤에 파괴
         }
+
+        yield return null;
     }
 }
