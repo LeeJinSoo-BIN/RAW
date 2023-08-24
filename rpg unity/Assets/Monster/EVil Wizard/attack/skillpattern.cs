@@ -76,13 +76,13 @@ public class skillIpattern : MonoBehaviour
         StartCoroutine(MoveMonsterToCharacter(characterPosition, monsterPosition, 2f));
     }
     
-    private IEnumerator MoveMonsterToCharacter(Vector3 startPosition, Vector3 targetPosition, float speed, bool run = false)
+    private IEnumerator MoveMonsterToCharacter(Vector3 startPosition, Vector3 targetPosition, float speed, bool run = false, float distance = 2.0f)
     {
         float journeyLength = Vector3.Distance(startPosition, targetPosition);
         float startTime = Time.time;
         if (run)
             animator.SetBool("run", true);
-        while ((transform.position - targetPosition).magnitude > 0.01)
+        while ((transform.position - targetPosition).magnitude > distance)
         {
             float distanceCovered = (Time.time - startTime) * speed;
             float fractionOfJourney = distanceCovered / journeyLength;
