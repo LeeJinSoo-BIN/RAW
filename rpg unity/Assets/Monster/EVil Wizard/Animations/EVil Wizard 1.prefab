@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 9208220079997791260}
   - component: {fileID: 4050929231179714644}
   - component: {fileID: 7208331476577968152}
+  - component: {fileID: 6222603541597178410}
   m_Layer: 0
   m_Name: EVil Wizard 1
   m_TagString: Untagged
@@ -35,7 +36,7 @@ Transform:
   m_Children:
   - {fileID: 694328500921815963}
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7847723247547421344
 SpriteRenderer:
@@ -165,6 +166,22 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &6222603541597178410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1872896211057117089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1220d35744b88014fa62105443ae7153, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fireprefab1: {fileID: 3094610699473324765, guid: c9a9784175ff3194e905c59fd0558e9a, type: 3}
+  fireprefab2: {fileID: 6986408986877286680, guid: 027573e78b3a03a4d9aef62a1662c54b, type: 3}
+  characterGroup: {fileID: 0}
+  animator: {fileID: 4392401120079573329}
 --- !u!1 &6509570116535762086
 GameObject:
   m_ObjectHideFlags: 0
