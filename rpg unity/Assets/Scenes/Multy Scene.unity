@@ -742,10 +742,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a17ee3b5cb44e0b4080f78820f737529, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myCharacterState: {fileID: 0}
   myCharacter: {fileID: 0}
-  uiHealth: {fileID: 0}
-  characterHealth: {fileID: 0}
+  uiHealth: {fileID: 1081733663}
   maxHealthText: {fileID: 570620215}
   currentHealthText: {fileID: 1613218164}
 --- !u!1 &231914710
@@ -4773,7 +4771,7 @@ GameObject:
   - component: {fileID: 1081733662}
   - component: {fileID: 1081733663}
   m_Layer: 0
-  m_Name: Fill Area
+  m_Name: UI Health Slider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -30,9 +30,9 @@
 ---
 
 스킬 <br>
-Q - Sword Slash <br>
+Q - Sword Smash <br>
 W - Sword Shield <br>
-E - Sword Smash <br>
+E - Sword Slash <br>
 R - Sword Bind <br>
 
 <br>
@@ -41,10 +41,10 @@ R - Sword Bind <br>
 ---
 
 스킬 <br>
-Q - Sword Slash <br>
-W - Sword Shield <br>
-E - Sword Smash <br>
-R - Sword Bind <br>
+Q - Arrow Rain <br>
+W - Arrow Dash <br>
+E - Arrow Gatling <br>
+R - Arrow Charge <br>
 
 <br>
 
@@ -52,10 +52,10 @@ R - Sword Bind <br>
 ---
 
 스킬 <br>
-Q - Sword Slash <br>
-W - Sword Shield <br>
-E - Sword Smash <br>
-R - Sword Bind <br>
+Q - Magic Floor <br>
+W - Magic Heal <br>
+E - Magic Totem <br>
+R - Magic Global Heal <br>
 
 <br>
 
