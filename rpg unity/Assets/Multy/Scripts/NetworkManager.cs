@@ -24,6 +24,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.SerializationRate = 30;
     }
 
+    private void Start()
+    {
+        InGameUI.SetActive(false);
+    }
+
     public void Connect()
     {
         PhotonNetwork.ConnectUsingSettings();
