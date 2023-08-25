@@ -45,14 +45,19 @@ public class skill_1 : MonoBehaviour
                 // 불이 캐릭터 위치에 도달하면 bomb 트리거 활성화
                 animator.SetTrigger("bomb");
                 startTime = Time.time;
-                collider.enabled = true;
+                bomb = true;
                 break;
             }
             yield return null;
         }
         while (true)
         {
-            if (Time.time - startTime >= 0.8f)
+            if (Time.time - startTime > 0.2f && bomb)
+            {
+                collider.enabled = true;
+                bomb = false;
+            }
+            if (Time.time - startTime >= 1.5f)
             {
                 Destroy(gameObject);
                 break;
@@ -66,7 +71,7 @@ public class skill_1 : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-            //state.ProcessSkill(1, "magic_floor", flatHeal, healIncreasePerSkillLevel, healIncreasePerPower);
+            state.ProcessSkill(0, 300);
         }
     }
 }

@@ -52,7 +52,7 @@ public class CharacterState : MonoBehaviour
             float _shield = shield.value;
             shield.value -= value;
             value -= _shield;
-            Debug.Log(value);            
+            Debug.Log(value);
             if (value > 0)
                 health.value -= value;
             if (health.value <= 0 && !isDeath)

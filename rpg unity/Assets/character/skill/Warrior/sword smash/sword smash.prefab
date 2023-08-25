@@ -81,6 +81,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
+  caseterPower: 1
+  casterSkillLevel: 1
+  casterCriticalPercent: 1
+  casterCriticalDamage: 1
+  Deal: 0
 --- !u!1 &2528600664935276532
 GameObject:
   m_ObjectHideFlags: 0

@@ -122,7 +122,7 @@ public class skillIpattern : MonoBehaviour
 
     void randomPattern()
     {
-        int randomSkill = Random.Range(1, 2);
+        int randomSkill = Random.Range(1, 3);
         switch (randomSkill)
         {
             case 1:
