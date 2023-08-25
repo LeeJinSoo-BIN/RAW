@@ -21,6 +21,8 @@ public class arrowcharge : MonoBehaviourPunCallbacks
     public float casterCriticalDamage = 1f;
     public float Deal;
 
+    public PhotonView PV;
+
     // Start is called before the first frame update
     void Start()
     {

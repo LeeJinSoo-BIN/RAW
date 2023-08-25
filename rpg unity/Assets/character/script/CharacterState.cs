@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class CharacterState : MonoBehaviour
+public class CharacterState : MonoBehaviourPunCallbacks
 {
     public int maxHealth = 1000;
     public int maxMana = 1000;
@@ -17,6 +19,7 @@ public class CharacterState : MonoBehaviour
     private bool isDeath = false;
 
     private Dictionary<string, int> skillLevel = new Dictionary<string, int>();
+
     void Start()
     {
         health = transform.GetChild(0).GetChild(1).GetComponent<Slider>();
@@ -38,9 +41,6 @@ public class CharacterState : MonoBehaviour
         skillLevel.Add("sword_shield", 1);
         skillLevel.Add("sword_slash", 1);
         skillLevel.Add("sword_bind", 1);
-
-
-
     }
 
     // Update is called once per frame
@@ -75,5 +75,18 @@ public class CharacterState : MonoBehaviour
             power += value;
         }
     }
-   
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(health.value);
+            stream.SendNext(shield.value);
+        }
+        else
+        {
+            health.value = (float)stream.ReceiveNext();
+            shield.value = (float)stream.ReceiveNext();
+        }
+    }
 }

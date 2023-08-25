@@ -19,7 +19,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public float pointSpeed = 1.0f;
     public float characterMoveSpeed = 1.0f;
     public Animator characterAnimator;
-    public GameObject inventoryUi;
+    //public GameObject inventoryUi;
     private GameObject itemBox;
     private GameObject gettingItem;
     private Dictionary<string, int> itemsInInventory = new Dictionary<string, int>();
@@ -56,13 +56,10 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
     Vector3 curPos;
 
-    private float maxHealth = 1000;
-    public Slider health;
-
     private void Awake()
     {
-        itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;
-        gettingItem = inventoryUi.transform.GetChild(1).gameObject;
+        //itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;
+        //gettingItem = inventoryUi.transform.GetChild(1).gameObject;
         deactivateSkill();
 
         for (int i = 0; i < skill_num; i++)
@@ -72,9 +69,6 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         NickNameText.color = PV.IsMine ? Color.green : Color.red;
 
         sortingGroup.sortingOrder = PV.IsMine ? 1 : 0;
-
-        health.maxValue = maxHealth;
-        health.value = maxHealth;
 
         playerGroup = GameObject.Find("Player Group");
         enemyGroup = GameObject.Find("Enemy Group");
@@ -108,7 +102,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             }
             if (Input.GetKeyDown(KeyCode.I))
             {
-                inventoryUi.SetActive(!inventoryUi.activeSelf);
+                //inventoryUi.SetActive(!inventoryUi.activeSelf);
             }
             if (Input.GetKeyDown(KeyCode.S))
             {
@@ -575,10 +569,5 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         {
             curPos = (Vector3)stream.ReceiveNext();
         }
-    }
-
-    public void changeHealth(float dmg)
-    {
-        health.value += dmg;
     }
 }

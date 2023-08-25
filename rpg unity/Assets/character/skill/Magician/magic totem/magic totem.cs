@@ -24,6 +24,7 @@ public class MagicTotem : MonoBehaviour
     public float casterCriticalDamage = 1f;
     public float Deal;
     public float Power;
+
     private void Awake()
     {
         StartCoroutine(Vanish(duration));
@@ -50,8 +51,6 @@ public class MagicTotem : MonoBehaviour
     {
         StartCoroutine(clock());
     }
-
-    // Update is called once per frame
     
     IEnumerator clock()
     {
@@ -79,6 +78,7 @@ public class MagicTotem : MonoBehaviour
         }
         Debug.Log(collision.name);
     }
+
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))

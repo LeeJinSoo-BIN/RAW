@@ -40,18 +40,18 @@ public class SwordSmash : MonoBehaviourPunCallbacks
         Destroy(gameObject, 0.45f);
     }
 
+    public void giveDeal()
+    {
+        CharacterState state = target.transform.GetComponentInChildren<CharacterState>();
+        state.ProcessSkill(0, Deal);
+    }
+
     [PunRPC]
     void SetTarget(string targetName)
     {
         target = GameObject.Find(targetName);
         transform.parent = target.transform;
         transform.position += new Vector3(1.5f, 0.3f);
-        //giveDeal();
-    }
-
-    public void giveDeal()
-    {
-        CharacterState state = target.transform.GetComponentInChildren<CharacterState>();
-        state.ProcessSkill(0, Deal);
+        giveDeal();
     }
 }

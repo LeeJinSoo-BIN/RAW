@@ -49,6 +49,5 @@ public class MagicHeal : MonoBehaviourPunCallbacks
     {
         target = GameObject.Find(targetName);
         transform.parent = target.transform;
-        //giveDeal();
     }
 }

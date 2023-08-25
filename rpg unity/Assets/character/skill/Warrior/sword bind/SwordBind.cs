@@ -53,5 +53,6 @@ public class SwordBind : MonoBehaviourPunCallbacks
         target = GameObject.Find(targetName);
         transform.parent = target.transform;
         transform.position += new Vector3(0f, 0.3f);
+        Bind();
     }
 }

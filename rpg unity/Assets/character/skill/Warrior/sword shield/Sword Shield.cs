@@ -49,6 +49,6 @@ public class SwordShield : MonoBehaviourPunCallbacks
     {
         target = GameObject.Find(targetName);
         transform.parent = target.transform;
-        //gainShield();
+        gainShield();
     }
 }
