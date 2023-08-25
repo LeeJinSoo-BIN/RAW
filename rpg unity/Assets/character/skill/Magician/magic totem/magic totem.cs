@@ -7,12 +7,12 @@ public class MagicTotem : MonoBehaviour
     float dropTime = 0.3f;
     float _time = 0f;
 
-    private int flatDeal = 1;
-    private int dealIncreasePerSkillLevel = 1;
-    private int dealIncreasePerPower = 1;
+    private float flatDeal = 1;
+    private float dealIncreasePerSkillLevel = 1;
+    private float dealIncreasePerPower = 1;
 
-    private int flatPower = 1;
-    private int powerIncreasePerSkillLevel = 1;
+    private float flatPower = 1;
+    private float powerIncreasePerSkillLevel = 1;
 
     public GameObject aura;
 

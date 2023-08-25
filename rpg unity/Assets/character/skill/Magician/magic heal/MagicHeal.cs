@@ -6,9 +6,9 @@ public class MagicHeal : MonoBehaviour
 {
     // Start is called before the first frame update
 
-    private int flatHeal = 1;
-    private int healIncreasePerSkillLevel = 1;
-    private int healIncreasePerPower = 1;
+    private float flatHeal = 1;
+    private float healIncreasePerSkillLevel = 1;
+    private float healIncreasePerPower = 1;
 
     private float duration = 3f;
 

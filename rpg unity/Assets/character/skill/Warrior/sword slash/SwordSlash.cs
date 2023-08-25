@@ -5,9 +5,9 @@ using UnityEngine;
 public class SwordSlash : MonoBehaviour
 {
     // Start is called before the first frame update
-    private int flatDeal = 1;
-    private int dealIncreasePerSkillLevel = 1;
-    private int dealIncreasePerPower = 1;
+    private float flatDeal = 1;
+    private float dealIncreasePerSkillLevel = 1;
+    private float dealIncreasePerPower = 1;
 
     private float duration = 1.2f;
 

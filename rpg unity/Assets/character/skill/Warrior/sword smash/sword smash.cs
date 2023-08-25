@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class SwordSmash : MonoBehaviour
 {
-    private int flatDeal = 1;
-    private int dealIncreasePerSkillLevel = 1;
-    private int dealIncreasePerPower = 1;
+    private float flatDeal = 1;
+    private float dealIncreasePerSkillLevel = 1;
+    private float dealIncreasePerPower = 1;
     public GameObject target;
 
     private float duration = 0.7f;

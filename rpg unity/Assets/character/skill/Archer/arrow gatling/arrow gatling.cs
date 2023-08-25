@@ -11,9 +11,9 @@ public class arrowgatling : MonoBehaviour
     private bool explosion = false;
     private bool isRotated = false;
 
-    private int flatDeal = 1;
-    private int dealIncreasePerSkillLevel = 1;
-    private int dealIncreasePerPower = 1;
+    private float flatDeal = 1;
+    private float dealIncreasePerSkillLevel = 1;
+    private float dealIncreasePerPower = 1;
 
     // Start is called before the first frame update
     void Start()

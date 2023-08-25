@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class SwordShield : MonoBehaviour
 {
-    private int flatShield = 1;
-    private int shieldIncreasePerSkillLevel = 1;
-    private int shieldIncreasePerPower = 1;
+    private float flatShield = 1;
+    private float shieldIncreasePerSkillLevel = 1;
+    private float shieldIncreasePerPower = 1;
     public GameObject target;
 
     private float duration = 0.7f;

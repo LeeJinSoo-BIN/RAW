@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class SwordBind : MonoBehaviour
 {
-    private int flatDeal = 1;
-    private int dealIncreasePerSkillLevel = 1;
-    private int dealIncreasePerPower = 1;
+    private float flatDeal = 1;
+    private float dealIncreasePerSkillLevel = 1;
+    private float dealIncreasePerPower = 1;
     public GameObject target;
     public float duration;
     public void Bind()
