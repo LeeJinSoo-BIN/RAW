@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class InGameUI : MonoBehaviour
 {
     // Start is called before the first frame update
-    public CharacterState myCharacterState;
+    private CharacterState myCharacterState;
     public GameObject myCharacter;
     public Slider uiHealth;
     private int maxHealth;
@@ -19,6 +19,7 @@ public class InGameUI : MonoBehaviour
     {
         myCharacterState = myCharacter.GetComponentInChildren<CharacterState>();
         Debug.Log(myCharacterState == null);
+        Debug.Log(myCharacterState.health);
         characterHealth = myCharacterState.health;
         uiHealth.maxValue = characterHealth.maxValue;
         StartCoroutine(update_health());
