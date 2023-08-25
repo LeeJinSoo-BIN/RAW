@@ -8,6 +8,26 @@ public class SwordSlash : MonoBehaviour
     private int flatDeal = 1;
     private int dealIncreasePerSkillLevel = 1;
     private int dealIncreasePerPower = 1;
+
+    private float duration = 1.2f;
+
+    private void Awake()
+    {
+        StartCoroutine(Vanish(duration));
+    }
+
+    IEnumerator Vanish(float duration)
+    {
+        float time = 0;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            yield return null;
+        }
+        GetComponent<Animator>().SetTrigger("vanish");
+        Destroy(gameObject, 0.45f);
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log(collision.name);

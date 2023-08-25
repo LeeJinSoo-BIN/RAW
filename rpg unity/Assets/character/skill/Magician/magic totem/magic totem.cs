@@ -15,6 +15,26 @@ public class MagicTotem : MonoBehaviour
     private int powerIncreasePerSkillLevel = 1;
 
     public GameObject aura;
+
+    private float duration = 10f;
+
+    private void Awake()
+    {
+        StartCoroutine(Vanish(duration));
+    }
+
+    IEnumerator Vanish(float duration)
+    {
+        float time = 0;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            yield return null;
+        }
+        GetComponent<Animator>().SetTrigger("vanish");
+        Destroy(gameObject, 0.45f);
+    }
+
     void Start()
     {
         StartCoroutine(clock());

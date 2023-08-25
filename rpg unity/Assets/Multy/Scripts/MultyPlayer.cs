@@ -30,9 +30,10 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public GameObject skillRangeAreaCircle;
     public GameObject skillRangeAreaBar;
     public GameObject skillRangeAreaTargeting;
+    public Transform skillCastingPosition;
 
-    public GameObject playerGroup;
-    public GameObject enemyGroup;
+    private GameObject playerGroup;
+    private GameObject enemyGroup;
 
     private bool isActivingSkill = false;
     private string current_casting_skill_key;
@@ -74,6 +75,9 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
         health.maxValue = maxHealth;
         health.value = maxHealth;
+
+        playerGroup = GameObject.Find("Player Group");
+        enemyGroup = GameObject.Find("Enemy Group");
     }
 
     void Update()
@@ -92,14 +96,18 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                         goalPos = hit.point;
                         StartCoroutine(pointingGoal(goalPos));
                         if (isActivingSkill)
+                        {
                             deactivateSkill();
+                        }
                     }
                     characterAnimator.SetBool("IsRunning", true);
                 }
                 Move_Character();
             }
             if (Input.GetKeyDown(KeyCode.I))
+            {
                 inventoryUi.SetActive(!inventoryUi.activeSelf);
+            }
             if (Input.GetKeyDown(KeyCode.S))
             {
                 goalPos = transform.position;
@@ -124,12 +132,31 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                     { // when cast type is circle or bar
                         RaycastHit2D hit_ground = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
                         if (hit_ground.collider != null)
-                            CastingSkill(hit_ground.point);
+                        {
+                            if (current_skill.castType == "circle")
+                                CastingSkill(hit_ground.point);
+                            else if (current_skill.castType == "bar")
+                                CastingSkill(skillRangeAreaBar.transform.GetChild(1).transform.position);
+                        }
                     }
-                    else if(current_skill.castType == "target-player") // targeting only character 
+                    else if (current_skill.castType == "target-player") // targeting only character 
                     {
                         //LayerMask player_or_monster = (playerLayer | monsterLayer);
                         RaycastHit2D hit_target = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, playerLayer);
+                        if (skillRangeAreaTargeting.transform.GetChild(1).gameObject.activeSelf)
+                            CastingSkill(hit_target.point, hit_target.transform.gameObject);
+                    }
+                    else if (current_skill.castType == "target-enemy") // targeting only monster
+                    {
+                        //LayerMask player_or_monster = (playerLayer | monsterLayer);
+                        RaycastHit2D hit_target = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, monsterLayer);
+                        if (skillRangeAreaTargeting.transform.GetChild(1).gameObject.activeSelf)
+                            CastingSkill(hit_target.point, hit_target.transform.gameObject);
+                    }
+                    else if (current_skill.castType == "target-both") // targeting both player and enemy
+                    {
+                        LayerMask player_or_monster = (playerLayer | monsterLayer);
+                        RaycastHit2D hit_target = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, player_or_monster);
                         if (skillRangeAreaTargeting.transform.GetChild(1).gameObject.activeSelf)
                             CastingSkill(hit_target.point, hit_target.transform.gameObject);
                     }
@@ -163,11 +190,11 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 mousePos = new Vector3(mousePos.x, mousePos.y, -1);
 
 
-                if (current_skill.castType == "circle")
+                if (current_skill.castType == "circle") // circle
                 {
                     skillRangeAreaCircle.transform.position = mousePos;
                 }
-                else if (current_skill.castType == "bar")
+                else if (current_skill.castType == "bar") // bar
                 {
                     //Vector2 target = skillRangeAreaBar.transform.position;
                     Vector2 target = transform.position;
@@ -202,7 +229,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
                     skillRangeAreaBar.transform.localScale = new Vector2(scaled_x, oriSkillRangeAreaBar.y);
                 }
-                else if (current_skill.castType == "target-player" || current_skill.castType == "target-enemy" || current_skill.castType == "target-all") //targeting only character
+                else if (current_skill.castType == "target-player" || current_skill.castType == "target-enemy" || current_skill.castType == "target-both") //targeting only character
                 {
                     skillRangeAreaTargeting.transform.position = mousePos;
                     Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -265,20 +292,16 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         {
             skillRangeAreaTargeting.SetActive(true);
         }
-        else if (current_skill.castType == "buff-self" || current_skill.castType == "buff-player" || current_skill.castType == "buff-all-enemy") // buff
+        else if (current_skill.castType == "buff-self" || current_skill.castType == "buff-player" || current_skill.castType == "buff-enemy") // buff
         {
             if (current_skill.castType == "buff-self") // self
-            {
-                CastSkill(transform.position, gameObject);
-            }
+                CastingSkill(transform.position, gameObject);
             else if (current_skill.castType == "buff-player") // player
             {
-                CastSkill(transform.position, playerGroup);
+                CastingSkill(transform.position, playerGroup);
             }
-            else if (current_skill.castType == "buff-enemy") // enemy
-            {
-                CastSkill(transform.position, enemyGroup);
-            }
+            else // enemy
+                CastingSkill(transform.position, enemyGroup);
         }
     }
 
@@ -287,7 +310,6 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         castSkill = CastSkill(skillPos, target);
         StartCoroutine(castSkill);
         deactivateSkill();
-
     }
 
     IEnumerator CastSkill(Vector2 skillPos, GameObject targetObject = null)
@@ -312,7 +334,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
         skill_radius_len *= ratio;
 
-        if (current_skill.castType == "circle" || current_skill.castType == "target-player")
+        if (current_skill.castType == "circle" || current_skill.castType == "target-player" || current_skill.castType == "target-enemy" || current_skill.castType == "target-both")
         {
             goalPos = skillPos;
             characterAnimator.SetBool("IsRunning", true);
@@ -328,17 +350,78 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 }
                 yield return null;
             }
-            characterAnimator.SetTrigger(current_skill.animType);
-            movable = false;
-            Skill(skillPos, targetObject);
+        }
+
+        goalPos = transform.position;
+        movable = false;
+        characterAnimator.SetBool("IsRunning", false);
+        characterAnimator.SetTrigger(current_skill.animType);
+
+        if (current_skill.castType == "circle")
+        {
+            //object[] Params = new object[2];
+            //Params[0] = skillPos;
+            //Params[1] = current_skill.skillDuration;
+            //MultySkill.instance.SendMessage("magic_floor", Params);
+            PhotonNetwork.Instantiate(current_skill.skillName, skillPos, Quaternion.identity);
         }
         else if (current_skill.castType == "bar")
         {
-
+            Vector2 _dirMVec = (skillPos - (Vector2)transform.position).normalized;
+            if (_dirMVec.x > 0) transform.localScale = new Vector3(-1, 1, 1);
+            else if (_dirMVec.x < 0) transform.localScale = new Vector3(1, 1, 1);
+            skillPos += new Vector2(0f, 0.3f);
+            //object[] Params = new object[3];
+            //Params[0] = skillPos;
+            //Params[1] = skillCastingPosition.position;
+            //Params[2] = gameObject;
+            if (current_skill.skillName == "arrow dash")
+            {
+                StartCoroutine(Dash(skillPos, 5f));
+                goalPos = skillPos;
+            }
+            else if (current_skill.skillName == "arrow gatling")
+            {
+                StartCoroutine(Gatling(skillCastingPosition.position, skillPos));
+            }
+            else if (current_skill.skillName == "arrow charge")
+            {
+                GameObject skill = PhotonNetwork.Instantiate(current_skill.skillName, skillCastingPosition.position, Quaternion.identity);
+                skill.GetComponent<arrowcharge>().targetPos = skillPos * 5;
+            }
+            else
+            {
+                PhotonNetwork.Instantiate(current_skill.skillName, skillPos, Quaternion.identity);
+            }
+            //SkillManager.instance.SendMessage(current_skill.skillName, Params);
         }
-        else if (current_skill.castType == "buff")
+        else if (current_skill.castType == "target-player" || current_skill.castType == "target-enemy" || current_skill.castType == "target-both") // target
         {
-
+            //object[] Params = new object[3];
+            //Params[0] = gameObject;
+            //Params[1] = targetObject;
+            //Params[2] = current_skill.skillDuration;
+            //SkillManager.instance.SendMessage(current_skill.skillName, Params);
+            GameObject skill = PhotonNetwork.Instantiate(current_skill.skillName, targetObject.transform.position, Quaternion.identity);
+            skill.transform.parent = targetObject.transform;
+            //target = transform.parent.gameObject;
+            //Deal();
+        }
+        else if (current_skill.castType == "buff-self")
+        {
+            GameObject skill = PhotonNetwork.Instantiate(current_skill.skillName, transform.position, Quaternion.identity);
+            skill.transform.parent = transform;
+        }
+        else if (current_skill.castType == "buff-player" || current_skill.castType == "buff-enemy") // buff
+        {
+            foreach (Transform tar in targetObject.GetComponentInChildren<Transform>())
+            {
+                GameObject skill = PhotonNetwork.Instantiate(current_skill.skillName, tar.position, Quaternion.identity);
+                skill.transform.parent = tar;
+            }
+            //object[] Params = new object[1];
+            //Params[0] = targetObject;
+            //SkillManager.instance.SendMessage(current_skill.skillName, Params);
         }
 
         float delay = 0;
@@ -348,35 +431,49 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             yield return null;
         }
         movable = true;
-
-        // ???? ?????? ??????
-
     }
 
-    public void Skill(Vector2 pos, GameObject target)
+    IEnumerator Dash(Vector3 goalPos, float speed)
     {
-        if (target)
-            pos = target.transform.position;
-        GameObject magic = PhotonNetwork.Instantiate(current_skill.skillName, pos, Quaternion.identity);
-        StartCoroutine(Vanish(current_skill.skillDuration, magic));
+        while (true)
+        {
+            Vector2 _dirVec = goalPos - transform.position;
+            Vector2 _disVec = (Vector2)goalPos - (Vector2)transform.position;
+            Vector3 _dirMVec = _dirVec.normalized;
+            if (_dirVec.sqrMagnitude < 0.001f)
+            {
+                transform.position = goalPos;
+                break;
+            }
+            if (_dirMVec.x > 0) transform.localScale = new Vector3(-1, 1, 1);
+            else if (_dirMVec.x < 0) transform.localScale = new Vector3(1, 1, 1);
+
+            transform.position += (_dirMVec * speed * Time.deltaTime);
+            yield return null;
+        }
     }
 
-    IEnumerator Vanish(float duration, GameObject who)
+    IEnumerator Gatling(Vector2 oriPos, Vector2 desPos)
     {
-        float time = 0;
-        while (time < duration)
+
+        for (int k = 0; k < 20; k++)
         {
-            time += Time.deltaTime;
-            yield return null;
+            float _time = 0;
+            while (true)
+            {
+                if (_time > 0.05f)
+                {
+                    break;
+                }
+                _time += Time.deltaTime;
+                yield return null;
+            }
+            float rand_x = Random.Range(-0.1f, 0.1f);
+            float rand_y = Random.Range(-0.1f, 0.1f);
+            GameObject new_arrow = PhotonNetwork.Instantiate("arrow gatling", oriPos + new Vector2(rand_x, rand_y), Quaternion.identity);
+            //new_arrow.transform.position = oriPos + new Vector2(rand_x, rand_y);
+            new_arrow.GetComponent<arrowgatling>().targetPos = desPos + new Vector2(rand_x, rand_y);
         }
-        who.GetComponent<Animator>().SetTrigger("vanish");
-        time = 0;
-        while (time < 0.45)
-        {
-            time += Time.deltaTime;
-            yield return null;
-        }
-        PhotonNetwork.Destroy(who);
     }
 
     void getItem(GameObject got_item)

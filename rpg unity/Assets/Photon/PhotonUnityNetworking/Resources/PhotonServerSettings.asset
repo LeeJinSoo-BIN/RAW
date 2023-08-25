@@ -40,6 +40,21 @@ MonoBehaviour:
   - Fire
   - RespawnSpaceship
   - FlipXRPC
+  - magic_floor
+  - arrow_charge
+  - arrow_dash
+  - arrow_gatling
+  - arrow_rain
+  - Dash
+  - Gatling
+  - magic_global_heal
+  - magic_heal
+  - magic_totem
+  - sword_bind
+  - sword_shield
+  - sword_slash
+  - sword_smash
+  - Vanish
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

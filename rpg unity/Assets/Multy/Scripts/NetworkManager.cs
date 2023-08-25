@@ -10,6 +10,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public InputField NickNameInput;
     public GameObject DisconnectPanel;
     public GameObject RespwanPanel;
+    public GameObject ConnectPanel;
 
     private void Awake()
     {
@@ -29,7 +30,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         DisconnectPanel.SetActive(false);
-        Spawn();
+        ConnectPanel.SetActive(true);
     }
 
     private void Update()
@@ -38,9 +39,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             PhotonNetwork.Disconnect();
     }
 
-    public void Spawn()
+    public void Spawn(string character)
     {
-        PhotonNetwork.Instantiate("Player", Vector3.zero, Quaternion.identity);
+        GameObject player = PhotonNetwork.Instantiate("Character/" + character, Vector3.zero, Quaternion.identity);
+        player.transform.parent = GameObject.Find("Player Group").transform;
+        ConnectPanel.SetActive(false);
         RespwanPanel.SetActive(false);
     }
 

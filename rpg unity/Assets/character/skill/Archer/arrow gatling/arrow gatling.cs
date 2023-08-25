@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
+using Random = UnityEngine.Random;
 
 public class arrowgatling : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class arrowgatling : MonoBehaviour
     private int flatDeal = 1;
     private int dealIncreasePerSkillLevel = 1;
     private int dealIncreasePerPower = 1;
+
     // Start is called before the first frame update
     void Start()
     {

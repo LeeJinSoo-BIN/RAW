@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class MagicFloor : MonoBehaviour
+public class MagicFloor : MonoBehaviourPunCallbacks
 {
     // Start is called before the first frame update
     private float cycle = 0.3f;
@@ -16,9 +18,27 @@ public class MagicFloor : MonoBehaviour
 
     private int flatHeal = 1;    
     private int healIncreasePerSkillLevel = 1;    
-    private int healIncreasePerPower = 1;    
+    private int healIncreasePerPower = 1;
 
-    
+    private float duration = 3f;
+
+    private void Awake()
+    {
+        StartCoroutine(Vanish(duration));
+    }
+
+    IEnumerator Vanish(float duration)
+    {
+        float time = 0;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            yield return null;
+        }
+        GetComponent<Animator>().SetTrigger("vanish");
+        Destroy(gameObject, 0.45f);
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -31,11 +51,6 @@ public class MagicFloor : MonoBehaviour
             active = false;
             time += Time.deltaTime;
         }
-    }
-
-    public void selfDestroy()
-    {
-        Destroy(this);
     }
 
     public void OnTriggerStay2D(Collider2D collision)
@@ -61,5 +76,4 @@ public class MagicFloor : MonoBehaviour
     {
         //Debug.Log("heal");
     }
-    
 }
