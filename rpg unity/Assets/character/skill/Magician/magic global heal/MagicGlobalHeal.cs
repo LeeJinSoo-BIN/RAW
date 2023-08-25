@@ -10,11 +10,16 @@ public class MagicGlobalHeal : MonoBehaviour
     private float healIncreasePerPower = 1;
 
     private float duration = 3f;
+    public float caseterPower = 1f;
+    public float casterSkillLevel = 1f;
 
+    private float Heal;
     void Start()
     {
         CharacterState state = transform.parent.GetComponentInChildren<CharacterState>();
-        state.ProcessSkill(1, "magic_global_heal", flatHeal, healIncreasePerSkillLevel, healIncreasePerPower);
+        Heal = SkillManager.instance.CaculateCharacterSkillDamage(casterSkillLevel, caseterPower,
+            flatHeal, healIncreasePerSkillLevel, healIncreasePerPower);
+        state.ProcessSkill(1, Heal);
     }
 
     private void Awake()

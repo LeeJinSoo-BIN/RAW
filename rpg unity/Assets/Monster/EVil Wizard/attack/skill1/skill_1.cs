@@ -7,10 +7,17 @@ public class skill_1 : MonoBehaviour
     public GameObject monster;
     public GameObject character;
     private Animator animator;     // 애니메이터 컴포넌트
-    private float speed = 10f;
+    private float speed = 3f;
+    private bool bomb = false;
+    private CircleCollider2D collider;
+
+    private float flatDeal = 50f;
+    private float level = 1;
     private void Start()
     {
-        animator = gameObject.GetComponent<Animator>();
+        animator = gameObject.GetComponentInChildren<Animator>();
+        collider = gameObject.GetComponent<CircleCollider2D>();
+        collider.enabled = false;
     }
 
    
@@ -23,7 +30,7 @@ public class skill_1 : MonoBehaviour
     private System.Collections.IEnumerator MoveFireRoutine()
     {        
         Vector3 startPosition = monster.transform.position;// 몬스터의 위치 (현재 위치)
-        Vector3 targetPosition = character.transform.position;/* 캐릭터의 위치 Transform */
+        Vector3 targetPosition = new Vector3(character.transform.position.x, character.transform.position.y + 0.7f); ;/* 캐릭터의 위치 Transform */
         float journeyLength = Vector3.Distance(startPosition, targetPosition);
         float startTime = Time.time;
 
@@ -37,18 +44,29 @@ public class skill_1 : MonoBehaviour
             {
                 // 불이 캐릭터 위치에 도달하면 bomb 트리거 활성화
                 animator.SetTrigger("bomb");
+                startTime = Time.time;
+                collider.enabled = true;
                 break;
             }
             yield return null;
         }
         while (true)
         {
-            if (Time.time - startTime >= 3.0f)
+            if (Time.time - startTime >= 0.8f)
             {
                 Destroy(gameObject);
                 break;
             }
             yield return null;
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
+            //state.ProcessSkill(1, "magic_floor", flatHeal, healIncreasePerSkillLevel, healIncreasePerPower);
         }
     }
 }

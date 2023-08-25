@@ -269,7 +269,7 @@ public class MultySkill : MonoBehaviourPunCallbacks
         GameObject _swordShield = Instantiate(skill_sword_shield, subject.transform);
         _swordShield.transform.localPosition = Vector2.zero;
         _swordShield.GetComponent<SwordShield>().target = subject;
-        _swordShield.GetComponent<SwordShield>().Shield();
+        //_swordShield.GetComponent<SwordShield>().Shield();
         StartCoroutine(Vanish(0.7f, _swordShield));
     }
 
@@ -280,7 +280,7 @@ public class MultySkill : MonoBehaviourPunCallbacks
         GameObject _swordSmash = Instantiate(skill_sword_smash, subject.transform);
         _swordSmash.transform.localPosition = new Vector2(-0.3f, 0.5f);
         _swordSmash.GetComponent<SwordSmash>().target = target;
-        _swordSmash.GetComponent<SwordSmash>().Deal();
+        //_swordSmash.GetComponent<SwordSmash>().Deal();
         StartCoroutine(Vanish(0.7f, _swordSmash));
     }
 

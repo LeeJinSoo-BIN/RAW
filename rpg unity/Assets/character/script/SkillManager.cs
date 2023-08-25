@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Pool;
+using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
 public class SkillManager : MonoBehaviour
@@ -267,7 +268,7 @@ public class SkillManager : MonoBehaviour
         GameObject _swordShield = Instantiate(skill_sword_shield, subject.transform);
         _swordShield.transform.localPosition = Vector2.zero;
         _swordShield.GetComponent<SwordShield>().target = subject;
-        _swordShield.GetComponent<SwordShield>().Shield();
+        //_swordShield.GetComponent<SwordShield>().Shield();
         StartCoroutine(Vanish(0.7f, _swordShield));
     }
 
@@ -278,7 +279,7 @@ public class SkillManager : MonoBehaviour
         GameObject _swordSmash = Instantiate(skill_sword_smash, subject.transform);
         _swordSmash.transform.localPosition = new Vector2(-0.3f, 0.5f);
         _swordSmash.GetComponent<SwordSmash>().target = target;
-        _swordSmash.GetComponent<SwordSmash>().Deal();
+        //_swordSmash.GetComponent<SwordSmash>().Deal();
         StartCoroutine(Vanish(0.7f, _swordSmash));
     }
 
@@ -365,5 +366,20 @@ public class SkillManager : MonoBehaviour
         Destroy(who);
     }
 
+    public float CaculateCharacterSkillDamage(float skillLevel, float casterPower, float flat, float perSkillLevel, float perPower, float criticalPercent = 0f, float criticalDamage = 1f, bool affectedByCritical = false)
+    {
+        float value = flat + perSkillLevel * skillLevel
+            + perPower * casterPower;
+        if (affectedByCritical) // damage
+        {
+            float crit = Random.Range(0f, 100f);
+
+            float critical_damage = criticalDamage;
+            if (crit < criticalPercent)
+                critical_damage = 1;
+            value *= critical_damage;
+        }
+        return value;
+    }
 
 }

@@ -13,6 +13,7 @@ public class skillIpattern : MonoBehaviour
     private bool skillInvoked = false;
     //private bool mobControlEnabled = true; // MobControl 활성화 여부를 저장하는 변수
     private GameObject target;
+    public float patternCycle = 5f;
     private void Start()
     {        
         //skill3 = GetComponent<skill_3>();
@@ -22,7 +23,7 @@ public class skillIpattern : MonoBehaviour
     {
         _time += Time.deltaTime;
 
-        if ( _time >= 10f) // 30초가 지난 후 스킬 사용
+        if ( _time >= patternCycle) // 30초가 지난 후 스킬 사용
         {
             //skillInvoked = true;
             //DisableMobControl(); // MobControl을 비활성화
@@ -69,7 +70,7 @@ public class skillIpattern : MonoBehaviour
         Vector2 characterPosition = target.transform.position;
         Vector2 monsterPosition = gameObject.transform.position;
         yield return StartCoroutine(MoveMonsterToCharacter(monsterPosition, characterPosition, 5f, true));
-        GameObject fire = Instantiate(fireprefab2, transform.position, Quaternion.identity);
+        GameObject fire = Instantiate(fireprefab2, target.transform.position, Quaternion.identity);
         skill_2 skill2 = fire.GetComponent<skill_2>();
         //skill2.character = target;
         skill2.ExecuteSkill();
@@ -101,7 +102,7 @@ public class skillIpattern : MonoBehaviour
     {
         while (true)
         {
-            int randomSkill = Random.Range(1, 4);
+            int randomSkill = Random.Range(1, 2);
             switch (randomSkill)
             {
                 case 1:
@@ -121,7 +122,7 @@ public class skillIpattern : MonoBehaviour
 
     void randomPattern()
     {
-        int randomSkill = Random.Range(1, 3);
+        int randomSkill = Random.Range(1, 2);
         switch (randomSkill)
         {
             case 1:

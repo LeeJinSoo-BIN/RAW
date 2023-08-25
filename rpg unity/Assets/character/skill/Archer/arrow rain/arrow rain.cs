@@ -10,10 +10,17 @@ public class arrowdrop : MonoBehaviour
     private float dealIncreasePerPower = 1;
 
     private float duration = 1.5f;
-
+    public float caseterPower = 1f;
+    public float casterSkillLevel = 1f;
+    public float casterCriticalPercent = 1f;
+    public float casterCriticalDamage = 1f;
+    public float Deal;
     private void Awake()
     {
         StartCoroutine(Vanish(duration));
+        Deal = SkillManager.instance.CaculateCharacterSkillDamage(casterSkillLevel, caseterPower,
+            flatDeal, dealIncreasePerSkillLevel, dealIncreasePerPower,
+            casterCriticalPercent, casterCriticalDamage, true);
     }
 
     IEnumerator Vanish(float duration)
@@ -33,7 +40,7 @@ public class arrowdrop : MonoBehaviour
         if (collision.CompareTag("Monster"))
         {
             CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-            state.ProcessSkill(0, "arrow_rain", flatDeal, dealIncreasePerSkillLevel, dealIncreasePerPower);
+            state.ProcessSkill(0, Deal);
         }
 
     }

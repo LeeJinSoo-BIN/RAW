@@ -18,9 +18,20 @@ public class MagicTotem : MonoBehaviour
 
     private float duration = 10f;
 
+    public float caseterPower = 1f;
+    public float casterSkillLevel = 1f;
+    public float casterCriticalPercent = 1f;
+    public float casterCriticalDamage = 1f;
+    public float Deal;
+    public float Power;
     private void Awake()
     {
         StartCoroutine(Vanish(duration));
+        Deal = SkillManager.instance.CaculateCharacterSkillDamage(casterSkillLevel, caseterPower,
+            flatDeal, dealIncreasePerSkillLevel, dealIncreasePerPower,
+            casterCriticalPercent, casterCriticalDamage, true);
+        Power = SkillManager.instance.CaculateCharacterSkillDamage(casterSkillLevel, caseterPower,
+            flatPower, powerIncreasePerSkillLevel, 0);
     }
 
     IEnumerator Vanish(float duration)
@@ -58,13 +69,13 @@ public class MagicTotem : MonoBehaviour
             if (_time <= dropTime)
             {
                 CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-                state.ProcessSkill(0, "magic_totem", flatDeal, dealIncreasePerSkillLevel, dealIncreasePerPower);
+                state.ProcessSkill(0, Deal);
             }
         }
         else if (collision.CompareTag("Player"))
         {
             CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-            state.ProcessSkill(3, "magic_totem", flatPower, powerIncreasePerSkillLevel);
+            state.ProcessSkill(3, Power);
         }
         Debug.Log(collision.name);
     }
@@ -73,7 +84,7 @@ public class MagicTotem : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-            state.ProcessSkill(3, "magic_totem", flatPower, powerIncreasePerSkillLevel, positive: false);
+            state.ProcessSkill(3, -Power);
         }
     }
     

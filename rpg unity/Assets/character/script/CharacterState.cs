@@ -45,20 +45,10 @@ public class CharacterState : MonoBehaviour
 
     // Update is called once per frame
     
-    public void ProcessSkill(int type, string skillName, float flat, float IncreasePerSkillLevel, float IncreasePerPower = 0, bool positive = true, float duration = 0f)
-    {
-        float value = flat + IncreasePerSkillLevel * skillLevel[skillName]
-            + IncreasePerPower * power;
-        Debug.Log(" Process Skill " + type + " " + skillName + " value=" + value);
+    public void ProcessSkill(int type, float value)
+    {        
         if (type == 0 || type == 4) // damage
-        {
-            float crit = Random.Range(0f, 100f);
-
-            float critical_damage = criticalDamage;
-            if (crit < criticalPercent)
-                critical_damage = 1;
-            value *= critical_damage;
-
+        {            
             float _shield = shield.value;
             shield.value -= value;
             value -= _shield;
@@ -82,16 +72,8 @@ public class CharacterState : MonoBehaviour
         }
         else if (type == 3) // power
         {
-            if(positive)
-                power += value;
-            else
-                power -= value;
+            power += value;
         }
-        if(type == 4) // bind
-        {
-
-        }
-
     }
    
 }

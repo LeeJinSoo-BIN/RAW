@@ -14,11 +14,17 @@ public class arrowgatling : MonoBehaviour
     private float flatDeal = 1;
     private float dealIncreasePerSkillLevel = 1;
     private float dealIncreasePerPower = 1;
-
+    public float caseterPower = 1f;
+    public float casterSkillLevel = 1f;
+    public float casterCriticalPercent = 1f;
+    public float casterCriticalDamage = 1f;
+    public float Deal;
     // Start is called before the first frame update
     void Start()
     {
-
+        Deal = SkillManager.instance.CaculateCharacterSkillDamage(casterSkillLevel, caseterPower,
+            flatDeal, dealIncreasePerSkillLevel, dealIncreasePerPower,
+            casterCriticalPercent, casterCriticalDamage, true);
     }
 
     // Update is called once per frame
@@ -65,7 +71,7 @@ public class arrowgatling : MonoBehaviour
             targetPos = transform.position;
             explosion = true;
             CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-            state.ProcessSkill(0, "arrow_gatling", flatDeal, dealIncreasePerSkillLevel, dealIncreasePerPower);
+            state.ProcessSkill(0, Deal);
         }
 
     }

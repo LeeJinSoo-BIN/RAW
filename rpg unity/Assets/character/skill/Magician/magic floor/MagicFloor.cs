@@ -22,9 +22,20 @@ public class MagicFloor : MonoBehaviourPunCallbacks
 
     private float duration = 3f;
 
+    public float caseterPower = 1f;
+    public float casterSkillLevel = 1f;
+    public float casterCriticalPercent = 1f;
+    public float casterCriticalDamage = 1f;
+    public float Deal;
+    public float Heal;
     private void Awake()
     {
         StartCoroutine(Vanish(duration));
+        Deal = SkillManager.instance.CaculateCharacterSkillDamage(casterSkillLevel, caseterPower,
+            flatDeal, dealIncreasePerSkillLevel, dealIncreasePerPower,
+            casterCriticalPercent, casterCriticalDamage, true);
+        Heal = SkillManager.instance.CaculateCharacterSkillDamage(casterSkillLevel, caseterPower,
+            flatHeal, healIncreasePerSkillLevel, healIncreasePerPower);
     }
 
     IEnumerator Vanish(float duration)
@@ -60,7 +71,7 @@ public class MagicFloor : MonoBehaviourPunCallbacks
             if (active)
             {
                 CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-                state.ProcessSkill(0, "magic_floor", flatDeal, dealIncreasePerSkillLevel, dealIncreasePerPower);
+                state.ProcessSkill(0, Deal);
             }
         }
         else if (collision.CompareTag("Player"))
@@ -68,7 +79,7 @@ public class MagicFloor : MonoBehaviourPunCallbacks
             if (active)
             {
                 CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-                state.ProcessSkill(1, "magic_floor", flatHeal, healIncreasePerSkillLevel, healIncreasePerPower);
+                state.ProcessSkill(1, Heal);
             }
         }
     }
