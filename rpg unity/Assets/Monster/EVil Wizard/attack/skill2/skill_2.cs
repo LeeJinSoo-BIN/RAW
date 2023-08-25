@@ -1,10 +1,17 @@
 using UnityEngine;
 using System.Collections;
+using Unity.VisualScripting;
 
 public class skill_2 : MonoBehaviour
 {
     //public GameObject character; // 캐릭터의 위치
     //private Animator animator; // 애니메이터 컴포넌트
+
+    private float flatHandDeal = 50f;
+    private float flatBombDeal = 50f;
+    private float level = 1;
+    private bool hand = false;
+    private bool bomb = false;
     private void Start()
     {
         //animator = GetComponent<Animator>();
@@ -30,4 +37,25 @@ public class skill_2 : MonoBehaviour
 
         yield return null;
     }*/
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        
+        if (collision.CompareTag("Player"))
+        {
+            if (hand)
+            {
+                CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
+                state.ProcessSkill(0, flatHandDeal * level);
+            }
+            if (bomb)
+            {
+                CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
+                state.ProcessSkill(0, flatBombDeal * level);
+            }
+        }
+
+
+    }
 }
+

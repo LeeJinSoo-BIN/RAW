@@ -71,7 +71,7 @@ public class skill_1 : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-            state.ProcessSkill(0, 300);
+            state.ProcessSkill(0, flatDeal * level);
         }
     }
 }
