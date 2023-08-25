@@ -41,8 +41,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public void Spawn(string character)
     {
-        GameObject player = PhotonNetwork.Instantiate("Character/" + character, Vector3.zero, Quaternion.identity);
-        player.transform.parent = GameObject.Find("Player Group").transform;
+        PhotonNetwork.Instantiate("Character/" + character, Vector3.zero, Quaternion.identity);
         ConnectPanel.SetActive(false);
         RespwanPanel.SetActive(false);
     }

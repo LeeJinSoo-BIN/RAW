@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 using Random = UnityEngine.Random;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class arrowgatling : MonoBehaviour
+public class arrowgatling : MonoBehaviourPunCallbacks
 {
     public Vector3 targetPos;
     public float speed = 1;
@@ -22,6 +24,7 @@ public class arrowgatling : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        speed = 10;
         Deal = SkillManager.instance.CaculateCharacterSkillDamage(casterSkillLevel, caseterPower,
             flatDeal, dealIncreasePerSkillLevel, dealIncreasePerPower,
             casterCriticalPercent, casterCriticalDamage, true);
@@ -46,7 +49,7 @@ public class arrowgatling : MonoBehaviour
 
 
         }
-        transform.position = Vector2.MoveTowards(transform.position, targetPos, speed);
+        transform.position = Vector2.MoveTowards(transform.position, targetPos, speed * Time.deltaTime);
 
         if (!isRotated)
         {
@@ -74,6 +77,12 @@ public class arrowgatling : MonoBehaviour
             state.ProcessSkill(0, Deal);
         }
 
+    }
+
+    [PunRPC]
+    void SetTargetPosition(Vector2 pos)
+    {
+        targetPos = pos;
     }
 }
 

@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class SwordSmash : MonoBehaviour
+public class SwordSmash : MonoBehaviourPunCallbacks
 {
     private float flatDeal = 1;
     private float dealIncreasePerSkillLevel = 1;
@@ -15,13 +17,15 @@ public class SwordSmash : MonoBehaviour
     public float casterCriticalPercent = 1f;
     public float casterCriticalDamage = 1f;
     public float Deal;
+
+    public PhotonView PV;
+
     private void Awake()
     {
         Deal = SkillManager.instance.CaculateCharacterSkillDamage(casterSkillLevel, caseterPower,
             flatDeal, dealIncreasePerSkillLevel, dealIncreasePerPower,
             casterCriticalPercent, casterCriticalDamage, true);
         StartCoroutine(Vanish(duration));
-        giveDeal();
     }
 
     IEnumerator Vanish(float duration)
@@ -34,6 +38,15 @@ public class SwordSmash : MonoBehaviour
         }
         GetComponent<Animator>().SetTrigger("vanish");
         Destroy(gameObject, 0.45f);
+    }
+
+    [PunRPC]
+    void SetTarget(string targetName)
+    {
+        target = GameObject.Find(targetName);
+        transform.parent = target.transform;
+        transform.position += new Vector3(1.5f, 0.3f);
+        //giveDeal();
     }
 
     public void giveDeal()

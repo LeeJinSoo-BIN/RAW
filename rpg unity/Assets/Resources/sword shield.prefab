@@ -251,6 +251,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
+  caseterPower: 1
+  casterSkillLevel: 1
+  casterCriticalPercent: 1
+  casterCriticalDamage: 1
+  Shield: 0
 --- !u!114 &2037016113200311014
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 885911390877230583}
   - component: {fileID: 5511112165159507121}
   - component: {fileID: 5353263669312714054}
-  - component: {fileID: -1561123144319619094}
   - component: {fileID: -3108215779586603259}
+  - component: {fileID: -1561123144319619094}
   m_Layer: 0
   m_Name: sword smash
   m_TagString: Untagged
@@ -69,19 +69,6 @@ SortingGroup:
   m_SortingLayer: 0
   m_SortingOrder: 6
   m_SortAtRoot: 0
---- !u!114 &-1561123144319619094
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 759811193607167977}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24abd0d9599c6af4b943edaca5ab37a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 0}
 --- !u!114 &-3108215779586603259
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -104,6 +91,25 @@ MonoBehaviour:
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &-1561123144319619094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 759811193607167977}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24abd0d9599c6af4b943edaca5ab37a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  caseterPower: 1
+  casterSkillLevel: 1
+  casterCriticalPercent: 1
+  casterCriticalDamage: 1
+  Deal: 0
+  PV: {fileID: -3108215779586603259}
 --- !u!1 &2528600664935276532
 GameObject:
   m_ObjectHideFlags: 0

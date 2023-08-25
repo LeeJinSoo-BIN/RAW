@@ -232,6 +232,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetPos: {x: 0, y: 0, z: 0}
   speed: 0.03
+  caseterPower: 1
+  casterSkillLevel: 1
+  casterCriticalPercent: 1
+  casterCriticalDamage: 1
+  Deal: 0
 --- !u!95 &7771466938686219665
 Animator:
   serializedVersion: 5

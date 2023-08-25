@@ -78,6 +78,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
         playerGroup = GameObject.Find("Player Group");
         enemyGroup = GameObject.Find("Enemy Group");
+
+        transform.parent = playerGroup.transform;
     }
 
     void Update()
@@ -386,8 +388,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             }
             else if (current_skill.skillName == "arrow charge")
             {
-                GameObject skill = PhotonNetwork.Instantiate(current_skill.skillName, skillCastingPosition.position, Quaternion.identity);
-                skill.GetComponent<arrowcharge>().targetPos = skillPos * 5;
+                PhotonNetwork.Instantiate(current_skill.skillName, skillCastingPosition.position, Quaternion.identity)
+                    .GetComponent<PhotonView>().RPC("SetTargetPosition", RpcTarget.All, skillPos * 5);
             }
             else
             {
@@ -402,22 +404,22 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             //Params[1] = targetObject;
             //Params[2] = current_skill.skillDuration;
             //SkillManager.instance.SendMessage(current_skill.skillName, Params);
-            GameObject skill = PhotonNetwork.Instantiate(current_skill.skillName, targetObject.transform.position, Quaternion.identity);
-            skill.transform.parent = targetObject.transform;
+            PhotonNetwork.Instantiate(current_skill.skillName, targetObject.transform.position, Quaternion.identity)
+                .GetComponent<PhotonView>().RPC("SetTarget", RpcTarget.All, targetObject.name);
             //target = transform.parent.gameObject;
             //Deal();
         }
         else if (current_skill.castType == "buff-self")
         {
-            GameObject skill = PhotonNetwork.Instantiate(current_skill.skillName, transform.position, Quaternion.identity);
-            skill.transform.parent = transform;
+            PhotonNetwork.Instantiate(current_skill.skillName, Vector3.zero, Quaternion.identity)
+                .GetComponent<PhotonView>().RPC("SetTarget", RpcTarget.All, gameObject.name);
         }
         else if (current_skill.castType == "buff-player" || current_skill.castType == "buff-enemy") // buff
         {
             foreach (Transform tar in targetObject.GetComponentInChildren<Transform>())
             {
-                GameObject skill = PhotonNetwork.Instantiate(current_skill.skillName, tar.position, Quaternion.identity);
-                skill.transform.parent = tar;
+                PhotonNetwork.Instantiate(current_skill.skillName, Vector3.zero, Quaternion.identity)
+                    .GetComponent<PhotonView>().RPC("SetTarget", RpcTarget.All, tar.name);
             }
             //object[] Params = new object[1];
             //Params[0] = targetObject;
@@ -470,9 +472,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             }
             float rand_x = Random.Range(-0.1f, 0.1f);
             float rand_y = Random.Range(-0.1f, 0.1f);
-            GameObject new_arrow = PhotonNetwork.Instantiate("arrow gatling", oriPos + new Vector2(rand_x, rand_y), Quaternion.identity);
-            //new_arrow.transform.position = oriPos + new Vector2(rand_x, rand_y);
-            new_arrow.GetComponent<arrowgatling>().targetPos = desPos + new Vector2(rand_x, rand_y);
+            PhotonNetwork.Instantiate("arrow gatling", oriPos + new Vector2(rand_x, rand_y), Quaternion.identity)
+                .GetComponent<PhotonView>().RPC("SetTargetPosition", RpcTarget.All, desPos + new Vector2(rand_x, rand_y));
         }
     }
 
@@ -517,6 +518,13 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             return;
         }
         Vector3 _dirMVec = _dirVec.normalized;
+        PV.RPC("direction", RpcTarget.AllBuffered, _dirMVec);
+        transform.position += (_dirMVec * characterMoveSpeed * Time.deltaTime);
+    }
+
+    [PunRPC]
+    void direction(Vector3 _dirMVec)
+    {
         if (_dirMVec.x > 0)
         {
             transform.localScale = new Vector3(-1, 1, 1);
@@ -527,7 +535,6 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             transform.localScale = new Vector3(1, 1, 1);
             canvas.transform.localScale = new Vector3(1, 1, 1);
         }
-        transform.position += (_dirMVec * characterMoveSpeed * Time.deltaTime);
     }
 
     IEnumerator pointingGoal(Vector2 goalPos)

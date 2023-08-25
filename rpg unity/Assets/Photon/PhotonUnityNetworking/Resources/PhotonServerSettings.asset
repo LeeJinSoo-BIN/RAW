@@ -55,6 +55,12 @@ MonoBehaviour:
   - sword_slash
   - sword_smash
   - Vanish
+  - Move_Character
+  - direction
+  - setTarget
+  - SetTarget
+  - setTargetPosition
+  - SetTargetPosition
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

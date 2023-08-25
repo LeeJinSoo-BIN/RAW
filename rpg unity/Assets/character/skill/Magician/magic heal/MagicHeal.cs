@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class MagicHeal : MonoBehaviour
+public class MagicHeal : MonoBehaviourPunCallbacks
 {
     // Start is called before the first frame update
 
@@ -14,6 +16,9 @@ public class MagicHeal : MonoBehaviour
     public float caseterPower = 1f;
     public float casterSkillLevel = 1f;
     float Heal;
+
+    private GameObject target;
+
     void Start()
     {
         CharacterState state = transform.parent.GetComponentInChildren<CharacterState>();
@@ -37,5 +42,13 @@ public class MagicHeal : MonoBehaviour
         }
         GetComponent<Animator>().SetTrigger("vanish");
         Destroy(gameObject, 0.45f);
+    }
+
+    [PunRPC]
+    void SetTarget(string targetName)
+    {
+        target = GameObject.Find(targetName);
+        transform.parent = target.transform;
+        //giveDeal();
     }
 }

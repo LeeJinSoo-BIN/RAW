@@ -2,8 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class arrowcharge : MonoBehaviour
+public class arrowcharge : MonoBehaviourPunCallbacks
 {
     public Vector3 targetPos;
     public float speed = 1;
@@ -22,6 +24,7 @@ public class arrowcharge : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        speed = 10;
         Deal = SkillManager.instance.CaculateCharacterSkillDamage(casterSkillLevel, caseterPower,
             flatDeal, dealIncreasePerSkillLevel, dealIncreasePerPower,
             casterCriticalPercent, casterCriticalDamage, true);
@@ -47,7 +50,7 @@ public class arrowcharge : MonoBehaviour
                 Destroy(gameObject);
             }
 
-            transform.position = Vector2.MoveTowards(transform.position, targetPos, speed);
+            transform.position = Vector2.MoveTowards(transform.position, targetPos, speed * Time.deltaTime);
             //transform.position += dir * speed * Time.deltaTime;
 
 
@@ -73,6 +76,12 @@ public class arrowcharge : MonoBehaviour
                 state.ProcessSkill(0, Deal);
             }
         }
+    }
+
+    [PunRPC]
+    void SetTargetPosition(Vector2 pos)
+    {
+        targetPos = pos;
     }
 }
 

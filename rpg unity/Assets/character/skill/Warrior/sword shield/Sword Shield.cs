@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class SwordShield : MonoBehaviour
+public class SwordShield : MonoBehaviourPunCallbacks
 {
     private float flatShield = 1;
     private float shieldIncreasePerSkillLevel = 1;
@@ -18,11 +20,9 @@ public class SwordShield : MonoBehaviour
     public float Shield;
     private void Awake()
     {
-        target = transform.parent.gameObject;
         Shield = SkillManager.instance.CaculateCharacterSkillDamage(casterSkillLevel, caseterPower,
             flatShield, shieldIncreasePerSkillLevel, shieldIncreasePerPower,
             casterCriticalPercent, casterCriticalDamage, true);
-        gainShield();
         StartCoroutine(Vanish(duration));
     }
 
@@ -42,5 +42,13 @@ public class SwordShield : MonoBehaviour
     {
         CharacterState state = target.transform.GetComponentInChildren<CharacterState>();
         state.ProcessSkill(2, Shield);
+    }
+
+    [PunRPC]
+    void SetTarget(string targetName)
+    {
+        target = GameObject.Find(targetName);
+        transform.parent = target.transform;
+        //gainShield();
     }
 }

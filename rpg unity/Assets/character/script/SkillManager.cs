@@ -299,7 +299,7 @@ public class SkillManager : MonoBehaviour
         float _duration = (float)_params[2];
         _swordBind.transform.localPosition = new Vector2(0, 0);
         _swordBind.GetComponent<SwordBind>().target = target;
-        _swordBind.GetComponent<SwordBind>().duration = _duration;
+        //_swordBind.GetComponent<SwordBind>().duration = _duration;
         _swordBind.GetComponent<SwordBind>().Bind();
         StartCoroutine(Vanish(5f, _swordBind));
     }
