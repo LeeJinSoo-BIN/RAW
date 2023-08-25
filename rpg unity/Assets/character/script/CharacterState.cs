@@ -10,8 +10,8 @@ public class CharacterState : MonoBehaviourPunCallbacks
     public int maxHealth = 1000;
     public int maxMana = 1000;
     public float power = 10f;
-    private Slider health;
-    private Slider shield;
+    public Slider health;
+    public Slider shield;
     public float criticalPercent = 50f;
     public float criticalDamage = 1.2f;
     public Animator characterAnimator;

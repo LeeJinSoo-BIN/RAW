@@ -191,6 +191,7 @@ public class SkillManager : MonoBehaviour
         Vector2 pos = (Vector2)_params[0];
         float duration = (float)_params[1];
         GameObject magicfloor = Instantiate(skill_magic_floor);
+        //magicfloor.GetComponent<MagicFloor>().casterSkillLevel = 1;
         magicfloor.transform.position = pos;
         StartCoroutine(Vanish(duration, magicfloor));
     }

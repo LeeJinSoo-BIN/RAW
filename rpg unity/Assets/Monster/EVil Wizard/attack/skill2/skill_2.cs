@@ -10,52 +10,59 @@ public class skill_2 : MonoBehaviour
     private float flatHandDeal = 50f;
     private float flatBombDeal = 50f;
     private float level = 1;
-    private bool hand = false;
-    private bool bomb = false;
-    private void Start()
-    {
-        //animator = GetComponent<Animator>();
-    }
+    public bool hand = false;
+    public bool bomb = false;
 
     public void ExecuteSkill()
     {
-        //StartCoroutine(FireHand());
+        StartCoroutine(Vanish());
     }
 
-    /*private IEnumerator FireHand()
+    private IEnumerator Vanish()
     {
         // 캐릭터의 위치로 불 생성
 
-        if (gameObject != null)
+        while (true)
         {
-            // 불 애니메이터를 활성화
-            animator.SetBool("Explode", true);
-
-            // 불 오브젝트 파괴 (애니메이션 이벤트로 파괴할 수도 있음)
-            Destroy(gameObject, 2.0f); // 예: 2초 뒤에 파괴
+            if(bomb)
+            {
+                float time = 0f;
+                while(true)
+                {
+                    time += Time.deltaTime;
+                    if(time > 0.5f)
+                    {
+                        Destroy(gameObject);
+                        break;
+                    }
+                    yield return null;
+                }
+            }
+            yield return null;
         }
 
-        yield return null;
-    }*/
+        
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        
+        Debug.Log(collision.name);
         if (collision.CompareTag("Player"))
         {
             if (hand)
             {
+                Debug.Log("hand");
                 CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
                 state.ProcessSkill(0, flatHandDeal * level);
             }
             if (bomb)
             {
+                Debug.Log("bomb");
                 CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
                 state.ProcessSkill(0, flatBombDeal * level);
             }
         }
-
-
     }
+
 }
 

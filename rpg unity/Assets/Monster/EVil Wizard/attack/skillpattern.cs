@@ -71,7 +71,7 @@ public class skillIpattern : MonoBehaviour
         Vector2 monsterPosition = gameObject.transform.position;
         yield return StartCoroutine(MoveMonsterToCharacter(monsterPosition, characterPosition, 5f, true));
         GameObject fire = Instantiate(fireprefab2, target.transform.position, Quaternion.identity);
-        skill_2 skill2 = fire.GetComponent<skill_2>();
+        skill_2 skill2 = fire.GetComponentInChildren<skill_2>();
         //skill2.character = target;
         skill2.ExecuteSkill();
         StartCoroutine(MoveMonsterToCharacter(characterPosition, monsterPosition, 2f));

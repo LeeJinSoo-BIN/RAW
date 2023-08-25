@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1110745256591618635}
   - component: {fileID: 443548050317992624}
   - component: {fileID: 526360589622758927}
+  - component: {fileID: 6425560560319980299}
   m_Layer: 0
   m_Name: skill2 effect
   m_TagString: Untagged
@@ -119,6 +120,20 @@ SortingGroup:
   m_SortingLayer: 0
   m_SortingOrder: 10
   m_SortAtRoot: 0
+--- !u!114 &6425560560319980299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4218661465956423185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f33fc0106104685448493e156df08e3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handBox: {fileID: 4932941494915505186}
+  bombBox: {fileID: 8767842731157211161}
 --- !u!1 &6363009964041572236
 GameObject:
   m_ObjectHideFlags: 0
@@ -205,7 +220,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3476655482318994744}
-  - component: {fileID: 9038216407063035163}
+  - component: {fileID: 3964482681322295656}
+  - component: {fileID: 6653557872426822706}
   m_Layer: 0
   m_Name: skill2
   m_TagString: Untagged
@@ -231,7 +247,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9038216407063035163
+--- !u!114 &3964482681322295656
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -243,6 +259,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffaa465426b156b4ca5a37e5b56246df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hand: 0
+  bomb: 0
+--- !u!50 &6653557872426822706
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6986408986877286680}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &7957277114738431086
 GameObject:
   m_ObjectHideFlags: 0

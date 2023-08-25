@@ -11,7 +11,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public GameObject DisconnectPanel;
     public GameObject RespwanPanel;
     public GameObject ConnectPanel;
-
+    public GameObject InGameUI;
     private void Awake()
     {
         Screen.SetResolution(960, 540, false);
@@ -41,10 +41,15 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public void Spawn(string character)
     {
-        PhotonNetwork.Instantiate("Character/" + character, Vector3.zero, Quaternion.identity);
+        GameObject player = PhotonNetwork.Instantiate("Character/" + character, Vector3.zero, Quaternion.identity);
         ConnectPanel.SetActive(false);
         RespwanPanel.SetActive(false);
+        InGameUI.SetActive(true);
+        InGameUI.GetComponent<InGameUI>().myCharacter = player;
+        InGameUI.GetComponent<InGameUI>().setUp();
+        
     }
+        
 
     public override void OnDisconnected(DisconnectCause cause)
     {
