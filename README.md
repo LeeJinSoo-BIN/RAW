@@ -32,7 +32,7 @@
 스킬 <br>
 Q - Sword Slash <br>
 W - Sword Shield <br>
-E - Sword Smash
+E - Sword Smash <br>
 R - Sword Bind <br>
 
 <br>
@@ -43,7 +43,7 @@ R - Sword Bind <br>
 스킬 <br>
 Q - Sword Slash <br>
 W - Sword Shield <br>
-E - Sword Smash
+E - Sword Smash <br>
 R - Sword Bind <br>
 
 <br>
@@ -54,7 +54,7 @@ R - Sword Bind <br>
 스킬 <br>
 Q - Sword Slash <br>
 W - Sword Shield <br>
-E - Sword Smash
+E - Sword Smash <br>
 R - Sword Bind <br>
 
 <br>

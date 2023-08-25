@@ -10,14 +10,14 @@ public class MagicFloor : MonoBehaviourPunCallbacks
     private float cycle = 0.3f;
     private float time = 0;
     private bool active = false;
-    
 
-    private int flatDeal = 1;
-    private int dealIncreasePerSkillLevel = 1;
-    private int dealIncreasePerPower = 1;
 
-    private int flatHeal = 1;    
-    private int healIncreasePerSkillLevel = 1;    
+    private float flatDeal = 1;
+    private float dealIncreasePerSkillLevel = 1;
+    private float dealIncreasePerPower = 1;
+
+    private int flatHeal = 1;
+    private int healIncreasePerSkillLevel = 1;
     private int healIncreasePerPower = 1;
 
     private float duration = 3f;
@@ -54,7 +54,7 @@ public class MagicFloor : MonoBehaviourPunCallbacks
     }
 
     public void OnTriggerStay2D(Collider2D collision)
-    {        
+    {
         if (collision.CompareTag("Monster"))
         {
             if (active)
@@ -68,7 +68,7 @@ public class MagicFloor : MonoBehaviourPunCallbacks
             if (active)
             {
                 CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-                state.ProcessSkill(1, "magic_floor", flatHeal, healIncreasePerSkillLevel, healIncreasePerPower);                
+                state.ProcessSkill(1, "magic_floor", flatHeal, healIncreasePerSkillLevel, healIncreasePerPower);
             }
         }
     }

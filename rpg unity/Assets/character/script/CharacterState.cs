@@ -34,7 +34,6 @@ public class CharacterState : MonoBehaviour
         skillLevel.Add("arrow_charge", 1);
         skillLevel.Add("arrow_rain", 1);
         skillLevel.Add("arrow_gatling", 1);
-
         skillLevel.Add("sword_smash", 1);
         skillLevel.Add("sword_shield", 1);
         skillLevel.Add("sword_slash", 1);
@@ -49,7 +48,7 @@ public class CharacterState : MonoBehaviour
     public void ProcessSkill(int type, string skillName, float flat, float IncreasePerSkillLevel, float IncreasePerPower = 0, bool positive = true, float duration = 0f)
     {
         float value = flat + IncreasePerSkillLevel * skillLevel[skillName]
-            + IncreasePerPower * (power);
+            + IncreasePerPower * power;
         Debug.Log(" Process Skill " + type + " " + skillName + " value=" + value);
         if (type == 0 || type == 4) // damage
         {
@@ -72,7 +71,6 @@ public class CharacterState : MonoBehaviour
                 characterAnimator.SetTrigger("Death");
                 characterAnimator.SetBool("IsDeath", true);
             }
-
         }
         else if(type == 1) //heal
         {

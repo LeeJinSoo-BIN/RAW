@@ -5,9 +5,9 @@ using UnityEngine;
 public class MagicGlobalHeal : MonoBehaviour
 {
     // Start is called before the first frame update
-    private int flatHeal = 5;
-    private int healIncreasePerSkillLevel = 1;
-    private int healIncreasePerPower = 1;
+    private float flatHeal = 5;
+    private float healIncreasePerSkillLevel = 1;
+    private float healIncreasePerPower = 1;
 
     private float duration = 3f;
 
