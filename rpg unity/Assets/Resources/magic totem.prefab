@@ -346,6 +346,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   aura: {fileID: 7798854695893706668, guid: 30c7c45cc905a2d4da29b863c957de36, type: 3}
+  caseterPower: 1
+  casterSkillLevel: 1
+  casterCriticalPercent: 1
+  casterCriticalDamage: 1
+  Deal: 0
+  Power: 0
 --- !u!1 &3396678629770901244
 GameObject:
   m_ObjectHideFlags: 0

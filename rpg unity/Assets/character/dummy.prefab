@@ -3645,6 +3645,8 @@ MonoBehaviour:
   maxHealth: 1000
   maxMana: 1000
   power: 10
+  health: {fileID: 0}
+  shield: {fileID: 0}
   criticalPercent: 50
   criticalDamage: 1.2
   characterAnimator: {fileID: 6308030836626245559}

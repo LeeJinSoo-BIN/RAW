@@ -4,6 +4,8 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.UI;
+using Unity.VisualScripting;
+using TMPro;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
@@ -12,6 +14,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public GameObject RespwanPanel;
     public GameObject ConnectPanel;
     public GameObject InGameUI;
+    private bool connecting = false;
+    public TMP_Text ConnectButtonText;
+    
     private void Awake()
     {
         Screen.SetResolution(960, 540, false);
@@ -19,8 +24,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.SerializationRate = 30;
     }
 
-    public void Connect() => PhotonNetwork.ConnectUsingSettings();
+    public void Connect()
+    {
+        PhotonNetwork.ConnectUsingSettings();
+        connecting = true;
+    }
 
+    
     public override void OnConnectedToMaster()
     {
         PhotonNetwork.LocalPlayer.NickName = NickNameInput.text;
@@ -31,12 +41,17 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         DisconnectPanel.SetActive(false);
         ConnectPanel.SetActive(true);
+        connecting = false;
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape) && PhotonNetwork.IsConnected)
             PhotonNetwork.Disconnect();
+        if (connecting)
+        {
+            ConnectButtonText.text = PhotonNetwork.NetworkClientState.ToString();
+        }
     }
 
     public void Spawn(string character)

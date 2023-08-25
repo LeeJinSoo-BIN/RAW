@@ -20,7 +20,7 @@ public class CharacterState : MonoBehaviourPunCallbacks
 
     private Dictionary<string, int> skillLevel = new Dictionary<string, int>();
 
-    void Start()
+    void Awake()
     {
         health = transform.GetChild(0).GetChild(1).GetComponent<Slider>();
         shield = transform.GetChild(0).GetChild(2).GetComponent<Slider>();

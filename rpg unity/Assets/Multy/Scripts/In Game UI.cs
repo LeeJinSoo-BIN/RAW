@@ -7,12 +7,12 @@ using UnityEngine.UI;
 public class InGameUI : MonoBehaviour
 {
     // Start is called before the first frame update
-    private CharacterState myCharacterState;
+    public CharacterState myCharacterState;
     public GameObject myCharacter;
     public Slider uiHealth;
     private int maxHealth;
     private int currentHealth;
-    private Slider characterHealth;
+    public Slider characterHealth;
     public TMP_Text maxHealthText;
     public TMP_Text currentHealthText;
     public void setUp()
