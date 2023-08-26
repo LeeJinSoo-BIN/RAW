@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class skill_1 : MonoBehaviour
 {
-    
-    public GameObject monster;
+
+    public Vector3 startPosition;
     public GameObject character;
     private Animator animator;     // 애니메이터 컴포넌트
     private float speed = 3f;
@@ -29,7 +29,6 @@ public class skill_1 : MonoBehaviour
 
     private System.Collections.IEnumerator MoveFireRoutine()
     {        
-        Vector3 startPosition = monster.transform.position;// 몬스터의 위치 (현재 위치)
         Vector3 targetPosition = new Vector3(character.transform.position.x, character.transform.position.y + 0.7f); ;/* 캐릭터의 위치 Transform */
         float journeyLength = Vector3.Distance(startPosition, targetPosition);
         float startTime = Time.time;
@@ -52,7 +51,7 @@ public class skill_1 : MonoBehaviour
         }
         while (true)
         {
-            if (Time.time - startTime > 0.2f && bomb)
+            if (Time.time - startTime > 0.3f && bomb)
             {
                 collider.enabled = true;
                 bomb = false;

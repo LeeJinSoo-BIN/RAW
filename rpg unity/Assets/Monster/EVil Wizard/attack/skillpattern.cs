@@ -14,6 +14,7 @@ public class skillIpattern : MonoBehaviour
     //private bool mobControlEnabled = true; // MobControl 활성화 여부를 저장하는 변수
     private GameObject target;
     public float patternCycle = 5f;
+    public Transform staff;
     private void Start()
     {        
         //skill3 = GetComponent<skill_3>();
@@ -23,7 +24,7 @@ public class skillIpattern : MonoBehaviour
     {
         _time += Time.deltaTime;
 
-        if ( _time >= patternCycle) // 30초가 지난 후 스킬 사용
+        if ( _time >= patternCycle && skillInvoked == false) // 30초가 지난 후 스킬 사용
         {
             //skillInvoked = true;
             //DisableMobControl(); // MobControl을 비활성화
@@ -52,20 +53,24 @@ public class skillIpattern : MonoBehaviour
     }
     private void skill1()
     {
-        GameObject fire = Instantiate(fireprefab1, transform.position, Quaternion.identity);
+        skillInvoked = true;
+        GameObject fire = Instantiate(fireprefab1, staff.position, Quaternion.identity);
         // 스킬1 클래스의 인스턴스를 만들고 실행
         findTarget();
         skill_1 skill1 = fire.GetComponent<skill_1>();
-        skill1.monster = gameObject;
+        skill1.startPosition = staff.position;
         skill1.character = target;
         skill1.ExecuteSkill();
+        skillInvoked = false;
     }
     private void skill2()
-    {        
-        StartCoroutine(excuteSKill2());
+    {   
+        skillInvoked=true;
+        StartCoroutine(excuteSkill2());
     }
-    IEnumerator excuteSKill2()
+    IEnumerator excuteSkill2()
     {
+        
         findTarget();
         Vector2 characterPosition = target.transform.position;
         Vector2 monsterPosition = gameObject.transform.position;
@@ -74,9 +79,40 @@ public class skillIpattern : MonoBehaviour
         skill_2 skill2 = fire.GetComponentInChildren<skill_2>();
         //skill2.character = target;
         skill2.ExecuteSkill();
-        StartCoroutine(MoveMonsterToCharacter(characterPosition, monsterPosition, 2f));
+        yield return StartCoroutine(MoveMonsterToCharacter(characterPosition, monsterPosition, 2f));
+        skillInvoked = false;
     }
     
+    void skill3()
+    {
+        skillInvoked = true;
+        StartCoroutine(excuteSkill3());
+    }
+    IEnumerator excuteSkill3 ()
+    {
+        findTarget();
+        Vector2 characterPosition = target.transform.position;
+        float where = 1f;
+        if(Random.Range(0,2) == 1)
+            where = -1f;
+        Vector2 targetPosition = new Vector2(characterPosition.x + where, characterPosition.y);
+        Vector2 monsterPosition = gameObject.transform.position;
+        yield return StartCoroutine(MoveMonsterToCharacter(monsterPosition, targetPosition, 5f, distance:0.001f, run: true));
+        if(characterPosition.x < transform.position.x && transform.position.x > 0)
+            transform.localScale = new Vector3(-1, 1, 1);
+        else if(characterPosition.x > transform.position.x && transform.position.x < 0)
+            transform.localScale = new Vector3(1, 1, 1);
+        animator.SetTrigger("attack");
+        skillInvoked = false;
+    }
+
+    void skill4()
+    {
+        skillInvoked = true;
+
+    }
+    
+
     private IEnumerator MoveMonsterToCharacter(Vector3 startPosition, Vector3 targetPosition, float speed, bool run = false, float distance = 2.0f)
     {
         float journeyLength = Vector3.Distance(startPosition, targetPosition);
@@ -85,6 +121,10 @@ public class skillIpattern : MonoBehaviour
             animator.SetBool("run", true);
         while ((transform.position - targetPosition).magnitude > distance)
         {
+            if (targetPosition.x < transform.position.x && transform.position.x > 0)
+                transform.localScale = new Vector3(-1, 1, 1);
+            else if (targetPosition.x > transform.position.x && transform.position.x < 0)
+                transform.localScale = new Vector3(1, 1, 1);
             float distanceCovered = (Time.time - startTime) * speed;
             float fractionOfJourney = distanceCovered / journeyLength;
             transform.position = Vector3.Lerp(startPosition, targetPosition, fractionOfJourney);
@@ -112,7 +152,7 @@ public class skillIpattern : MonoBehaviour
                     skill2();
                     break;
                 case 3:
-                    //skill3.ExecuteSkill();
+                    skill3();
                     break;
             }
 
@@ -122,7 +162,7 @@ public class skillIpattern : MonoBehaviour
 
     void randomPattern()
     {
-        int randomSkill = Random.Range(1, 3);
+        int randomSkill = Random.Range(1, 2);
         switch (randomSkill)
         {
             case 1:
@@ -133,8 +173,9 @@ public class skillIpattern : MonoBehaviour
                 Debug.Log("skill 2");
                 skill2();
                 break;
-            case 3:                
-                //skill3.ExecuteSkill();
+            case 3:
+                Debug.Log("skill 3");
+                skill3();
                 break;
         }
     }
