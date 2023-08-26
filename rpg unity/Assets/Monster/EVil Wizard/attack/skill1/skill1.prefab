@@ -165,7 +165,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d4fcc878500de5408b56ed542daf739, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monster: {fileID: 0}
+  startPosition: {x: 0, y: 0, z: 0}
   character: {fileID: 0}
 --- !u!58 &2261929621586724660
 CircleCollider2D:

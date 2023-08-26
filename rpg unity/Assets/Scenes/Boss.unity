@@ -3194,6 +3194,23 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!1 &2090327287 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8334965844109684035, guid: f6eed2305a19c334e813fc832a39358e, type: 3}
+  m_PrefabInstance: {fileID: 3063871329699016895}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2090327293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2090327287}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d346d1876958f241b6cf2069109a0d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3063871329699016895
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3218,6 +3235,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Evil Wizard
       objectReference: {fileID: 0}
+    - target: {fileID: 5082188004625094871, guid: f6eed2305a19c334e813fc832a39358e, type: 3}
+      propertyPath: fireObject3
+      value: 
+      objectReference: {fileID: 2090327287}
     - target: {fileID: 5082188004625094871, guid: f6eed2305a19c334e813fc832a39358e, type: 3}
       propertyPath: characterGroup
       value: 
@@ -3266,10 +3287,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8334965844109684035, guid: f6eed2305a19c334e813fc832a39358e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8334965844109684035, guid: f6eed2305a19c334e813fc832a39358e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2090327293}
   m_SourcePrefab: {fileID: 100100000, guid: f6eed2305a19c334e813fc832a39358e, type: 3}
 --- !u!4 &3063871329699016899 stripped
 Transform:

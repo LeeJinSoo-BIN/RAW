@@ -2,12 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class skill_3 : MonoBehaviour
 {
+    
+    private float Damage = 60f;
     // Start is called before the first frame update
+    
 
-    public void ExecuteSkill()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("스킬 3 실행");
+        if (collision.CompareTag("Player"))
+        {
+            CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
+            state.ProcessSkill(0, Damage);
+        }
     }
 }
