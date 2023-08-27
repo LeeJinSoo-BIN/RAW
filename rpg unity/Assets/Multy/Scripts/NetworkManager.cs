@@ -14,6 +14,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public GameObject RespwanPanel;
     public GameObject ConnectPanel;
     public GameObject InGameUI;
+    public GameObject ground;
     private bool connecting = false;
     public TMP_Text ConnectButtonText;
     
@@ -28,6 +29,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     private void Start()
     {
         InGameUI.SetActive(false);
+        ground.SetActive(false);
     }
 
     public void Connect()
@@ -51,6 +53,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         DisconnectPanel.SetActive(false);
         InGameUI.SetActive(false);
+        ground.SetActive(false);
         ConnectPanel.SetActive(true);
         connecting = false;
     }
@@ -71,6 +74,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         ConnectPanel.SetActive(false);
         RespwanPanel.SetActive(false);
         InGameUI.SetActive(true);
+        ground.SetActive(true);
         InGameUI.GetComponent<InGameUI>().myCharacter = player;
         InGameUI.GetComponent<InGameUI>().setUp();
         
@@ -82,5 +86,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         DisconnectPanel.SetActive(true);
         RespwanPanel.SetActive(false);
         InGameUI.SetActive(false);
+        ground.SetActive(false);
     }
 }
