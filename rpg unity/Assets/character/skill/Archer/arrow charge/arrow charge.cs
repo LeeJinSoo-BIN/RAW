@@ -72,7 +72,7 @@ public class arrowcharge : MonoBehaviourPunCallbacks
     {
         if (current_time > charge_time)
         {
-            if (collision.CompareTag("Monster"))
+            if (collision.CompareTag("Monster") && PV.IsMine)
             {
                 CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
                 state.ProcessSkill(0, Deal);

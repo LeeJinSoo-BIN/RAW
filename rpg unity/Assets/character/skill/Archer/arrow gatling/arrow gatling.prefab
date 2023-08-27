@@ -236,6 +236,7 @@ MonoBehaviour:
   casterCriticalPercent: 1
   casterCriticalDamage: 1
   Deal: 0
+  PV: {fileID: 0}
 --- !u!95 &7771466938686219665
 Animator:
   serializedVersion: 5

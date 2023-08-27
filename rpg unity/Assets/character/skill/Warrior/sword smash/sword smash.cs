@@ -42,8 +42,11 @@ public class SwordSmash : MonoBehaviourPunCallbacks
 
     public void giveDeal()
     {
-        CharacterState state = target.transform.GetComponentInChildren<CharacterState>();
-        state.ProcessSkill(0, Deal);
+        if (PV.IsMine)
+        {
+            CharacterState state = target.transform.GetComponentInChildren<CharacterState>();
+            state.ProcessSkill(0, Deal);
+        }
     }
 
     [PunRPC]

@@ -17,7 +17,7 @@ public class SwordBind : MonoBehaviourPunCallbacks
     public float Deal;
 
     private float duration = 5f;
-
+    public PhotonView PV;
     private void Awake()
     {
         StartCoroutine(Vanish(duration));
@@ -43,8 +43,11 @@ public class SwordBind : MonoBehaviourPunCallbacks
     }
     public void Bind()
     {
-        CharacterState state = target.transform.GetComponentInChildren<CharacterState>();
-        state.ProcessSkill(4, Deal);
+        if (PV.IsMine)
+        {
+            CharacterState state = target.transform.GetComponentInChildren<CharacterState>();
+            state.ProcessSkill(4, Deal);
+        }
     }
 
     [PunRPC]

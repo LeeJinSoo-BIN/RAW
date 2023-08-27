@@ -11,15 +11,15 @@ public class skill_1 : MonoBehaviourPunCallbacks
     private Animator animator;     // ?????????? ????????
     private float speed = 3f;
     private bool bomb = false;
-    private CircleCollider2D collider;
+    private CircleCollider2D skillCollider;
 
     private float flatDeal = 50f;
     private float level = 1;
     private void Start()
     {
         animator = gameObject.GetComponentInChildren<Animator>();
-        collider = gameObject.GetComponent<CircleCollider2D>();
-        collider.enabled = false;
+        skillCollider = gameObject.GetComponent<CircleCollider2D>();
+        skillCollider.enabled = false;
     }
 
    
@@ -55,7 +55,7 @@ public class skill_1 : MonoBehaviourPunCallbacks
         {
             if (Time.time - startTime > 0.3f && bomb)
             {
-                collider.enabled = true;
+                skillCollider.enabled = true;
                 bomb = false;
             }
             if (Time.time - startTime >= 1.5f)

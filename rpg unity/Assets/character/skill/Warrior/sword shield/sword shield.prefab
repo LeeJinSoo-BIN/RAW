@@ -255,3 +255,4 @@ MonoBehaviour:
   casterCriticalPercent: 1
   casterCriticalDamage: 1
   Shield: 0
+  PV: {fileID: 0}
