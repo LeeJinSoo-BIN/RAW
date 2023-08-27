@@ -185,6 +185,7 @@ MonoBehaviour:
   casterCriticalDamage: 1
   Deal: 0
   Heal: 0
+  PV: {fileID: 1968960963652572638}
 --- !u!1 &2453113536148771896
 GameObject:
   m_ObjectHideFlags: 0

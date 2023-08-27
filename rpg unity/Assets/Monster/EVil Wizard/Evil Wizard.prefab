@@ -616,7 +616,7 @@ GameObject:
   - component: {fileID: 3295170047296472322}
   - component: {fileID: 5082188004625094871}
   m_Layer: 9
-  m_Name: GameObject
+  m_Name: Evil Wizard
   m_TagString: Monster
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

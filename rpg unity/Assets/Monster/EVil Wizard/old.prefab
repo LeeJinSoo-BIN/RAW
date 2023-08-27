@@ -151,7 +151,7 @@ GameObject:
   - component: {fileID: 6222603541597178410}
   - component: {fileID: 4101644241514583729}
   m_Layer: 0
-  m_Name: EVil Wizard 1
+  m_Name: old
   m_TagString: Monster
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

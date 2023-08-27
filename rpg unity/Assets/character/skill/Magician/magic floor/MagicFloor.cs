@@ -28,6 +28,8 @@ public class MagicFloor : MonoBehaviourPunCallbacks
     public float casterCriticalDamage = 1f;
     public float Deal;
     public float Heal;
+
+    public PhotonView PV;
     private void Awake()
     {
         StartCoroutine(Vanish(duration));
@@ -35,7 +37,7 @@ public class MagicFloor : MonoBehaviourPunCallbacks
             flatDeal, dealIncreasePerSkillLevel, dealIncreasePerPower,
             casterCriticalPercent, casterCriticalDamage, true);
         Heal = SkillManager.instance.CaculateCharacterSkillDamage(casterSkillLevel, caseterPower,
-            flatHeal, healIncreasePerSkillLevel, healIncreasePerPower);
+            flatHeal, healIncreasePerSkillLevel, healIncreasePerPower);        
     }
 
     IEnumerator Vanish(float duration)
@@ -68,23 +70,20 @@ public class MagicFloor : MonoBehaviourPunCallbacks
     {
         if (collision.CompareTag("Monster"))
         {
-            if (active)
-            {
+            if (active && PV.IsMine)
+            {                
                 CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
                 state.ProcessSkill(0, Deal);
             }
         }
         else if (collision.CompareTag("Player"))
-        {
-            if (active)
-            {
+        {            
+            if (active && collision.transform.GetComponent<PhotonView>().IsMine)
+            {                
                 CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
                 state.ProcessSkill(1, Heal);
             }
         }
     }
-    public void OnTriggerEnter2D(Collider2D collision)
-    {
-        //Debug.Log("heal");
-    }
+   
 }
