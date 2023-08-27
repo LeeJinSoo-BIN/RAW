@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
+using JetBrains.Annotations;
 
 public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
 {
@@ -17,6 +18,8 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
     public Animator characterAnimator;
     public float healPercent = 1f;
     private bool isDeath = false;
+    private bool isPlayer = false;
+    public MultyPlayer playerControl;
 
     private Dictionary<string, int> skillLevel = new Dictionary<string, int>();
 
@@ -29,7 +32,8 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
         health.value = maxHealth;
         shield.maxValue = maxHealth;
         shield.value = 0;
-
+        if (transform.parent.CompareTag("Player"))
+            isPlayer = true;
         skillLevel.Add("magic_floor", 1);
         skillLevel.Add("magic_totem", 1);
         skillLevel.Add("magic_heal", 1);
@@ -41,6 +45,7 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
         skillLevel.Add("sword_shield", 1);
         skillLevel.Add("sword_slash", 1);
         skillLevel.Add("sword_bind", 1);
+        
     }
 
     // Update is called once per frame
@@ -58,11 +63,20 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
             if (health.value <= 0 && !isDeath)
             {
                 isDeath = true;
-                characterAnimator.SetTrigger("Death");
-                characterAnimator.SetBool("IsDeath", true);
+                characterAnimator.SetTrigger("Death");                
+                if (isPlayer)
+                {
+                    characterAnimator.SetBool("IsDeath", true);
+                    playerControl.movable = false;
+                    playerControl.attackable = false;
+                }
+                else
+                {
+
+                }
             }
         }
-        else if(type == 1) //heal
+        else if(type == 1 && !isDeath) //heal
         {
             health.value += value * healPercent;
         }

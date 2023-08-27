@@ -13,7 +13,7 @@ public class arrowgatling : MonoBehaviourPunCallbacks
     private bool explosion = false;
     private bool isRotated = false;
 
-    private float flatDeal = 0.2f;
+    private float flatDeal = 0.1f;
     private float dealIncreasePerSkillLevel = 1;
     private float dealIncreasePerPower = 1;
     public float caseterPower = 1f;

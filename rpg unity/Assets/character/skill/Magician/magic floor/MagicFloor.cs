@@ -12,7 +12,7 @@ public class MagicFloor : MonoBehaviourPunCallbacks
     private bool active = false;
 
 
-    private float flatDeal = 7;
+    private float flatDeal = 2;
     private float dealIncreasePerSkillLevel = 1;
     private float dealIncreasePerPower = 1;
 

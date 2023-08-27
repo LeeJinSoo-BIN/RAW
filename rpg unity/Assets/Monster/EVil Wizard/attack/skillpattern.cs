@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections;
 using Photon.Pun;
 using Photon.Realtime;
+using System.Linq.Expressions;
 
 public class skillIpattern : MonoBehaviourPunCallbacks
 {    
@@ -16,7 +17,7 @@ public class skillIpattern : MonoBehaviourPunCallbacks
     private bool skillInvoked = false;
     //private bool mobControlEnabled = true; // MobControl ?????? ?????? ???????? ????
     private GameObject target;
-    private float patternCycle = 13f;
+    private float patternCycle = 6f;
     public Transform staff;
 
     private Transform topLeft;
@@ -120,9 +121,9 @@ public class skillIpattern : MonoBehaviourPunCallbacks
         Vector2 monsterPosition = gameObject.transform.position;
         yield return StartCoroutine(MoveMonsterToCharacter(monsterPosition, targetPosition, 3.5f, distance:0.001f, run: true));
         if (characterPosition.x < transform.position.x && transform.localScale.x > 0)
-            PV.RPC("FlipXRPC", RpcTarget.AllBuffered, true);
+            PV.RPC("FlipXRPC", RpcTarget.AllBuffered, new Vector3(-3, 3));
         else if(characterPosition.x > transform.position.x && transform.localScale.x < 0)
-            PV.RPC("FlipXRPC", RpcTarget.AllBuffered, false);
+            PV.RPC("FlipXRPC", RpcTarget.AllBuffered, new Vector3(-3, 3));
         animator.SetTrigger("attack");
         float _time = 0f;
         while(_time < 0.05f)
@@ -132,7 +133,7 @@ public class skillIpattern : MonoBehaviourPunCallbacks
         }
         _time = 0f;
         fireObject3.SetActive(true);
-        while (_time < 0.3f)
+        while (_time < 0.5f)
         {
             _time += Time.deltaTime;
             yield return null;
@@ -157,10 +158,10 @@ public class skillIpattern : MonoBehaviourPunCallbacks
             animator.SetBool("run", true);
         while ((transform.position - targetPosition).magnitude > distance)
         {
-            if (targetPosition.x < transform.position.x && transform.position.x > 0)
-                PV.RPC("FlipXRPC", RpcTarget.AllBuffered, true);
-            else if (targetPosition.x > transform.position.x && transform.position.x < 0)
-                PV.RPC("FlipXRPC", RpcTarget.AllBuffered, false);
+            if (targetPosition.x < transform.position.x && transform.localScale.x > 0)
+                PV.RPC("FlipXRPC", RpcTarget.AllBuffered, new Vector3(-3, 3));
+            else if (targetPosition.x > transform.position.x && transform.localScale.x < 0)
+                PV.RPC("FlipXRPC", RpcTarget.AllBuffered, new Vector3(3, 3));
             float distanceCovered = (Time.time - startTime) * speed;
             float fractionOfJourney = distanceCovered / journeyLength;
             transform.position = Vector3.Lerp(startPosition, targetPosition, fractionOfJourney);
@@ -194,5 +195,5 @@ public class skillIpattern : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void FlipXRPC(bool flip) => SR.flipX = flip;
+    void FlipXRPC(Vector3 scale) => transform.localScale = scale;
 }
