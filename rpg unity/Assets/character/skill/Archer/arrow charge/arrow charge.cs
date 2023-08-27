@@ -12,7 +12,7 @@ public class arrowcharge : MonoBehaviourPunCallbacks
     private float charge_time = 2.5f;
     private float current_time = 0f;
 
-    private int flatDeal = 1;
+    private int flatDeal = 60;
     private int dealIncreasePerSkillLevel = 1;
     private int dealIncreasePerPower = 1;
     public float caseterPower = 1f;

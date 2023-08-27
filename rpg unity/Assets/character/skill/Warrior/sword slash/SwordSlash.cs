@@ -6,7 +6,7 @@ using UnityEngine;
 public class SwordSlash : MonoBehaviourPunCallbacks
 {
     // Start is called before the first frame update
-    private float flatDeal = 1;
+    private float flatDeal = 15;
     private float dealIncreasePerSkillLevel = 1;
     private float dealIncreasePerPower = 1;
 
