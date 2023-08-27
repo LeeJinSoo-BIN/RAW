@@ -24,7 +24,7 @@ public class InGameUI : MonoBehaviour
     public TMP_Text bossMaxHealthText;
     public TMP_Text bossCurrentHealthText;
     private bool bossConnected;
-    public CharacterState bossState;
+    public MonsterState bossState;
 
     public GameObject BossStateUI;
     public GameObject BossSpawnButton;
@@ -42,7 +42,7 @@ public class InGameUI : MonoBehaviour
     public void BossSetUp()
     {
         Boss = GameObject.Find("Enemy Group").transform.GetChild(0).gameObject;
-        bossState = Boss.GetComponentInChildren<CharacterState>();
+        bossState = Boss.GetComponentInChildren<MonsterState>();
         bossHealth = bossState.health;
         uiBossHealth.maxValue = bossHealth.maxValue;
         bossConnected = true;
