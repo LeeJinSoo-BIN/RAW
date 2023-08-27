@@ -19,7 +19,7 @@ public class MagicHeal : MonoBehaviourPunCallbacks
 
     private GameObject target;
 
-    void Start()
+    public void excuteSKill()
     {
         CharacterState state = transform.parent.GetComponentInChildren<CharacterState>();
         Heal = SkillManager.instance.CaculateCharacterSkillDamage(casterSkillLevel, caseterPower,
@@ -49,5 +49,7 @@ public class MagicHeal : MonoBehaviourPunCallbacks
     {
         target = GameObject.Find(targetName);
         transform.parent = target.transform;
+        //transform.localPosition = Vector3.zero;
+        excuteSKill();
     }
 }

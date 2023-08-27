@@ -352,6 +352,7 @@ MonoBehaviour:
   casterCriticalDamage: 1
   Deal: 0
   Power: 0
+  PV: {fileID: 6994623696160373909}
 --- !u!1 &3396678629770901244
 GameObject:
   m_ObjectHideFlags: 0
