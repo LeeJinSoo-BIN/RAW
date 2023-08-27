@@ -44,8 +44,10 @@ public class SwordSmash : MonoBehaviourPunCallbacks
     {
         if (PV.IsMine)
         {
-            CharacterState state = target.transform.GetComponentInChildren<CharacterState>();
-            state.ProcessSkill(0, Deal);
+            PhotonView PV = target.transform.GetComponent<PhotonView>();
+            PV.RPC("MonsterDamage", RpcTarget.All, 0, Deal);
+            //CharacterState state = target.transform.GetComponentInChildren<CharacterState>();
+            //state.ProcessSkill(0, Deal);
         }
     }
 

@@ -754,7 +754,7 @@ MonoBehaviour:
   bossCurrentHealthText: {fileID: 1099824013}
   bossState: {fileID: 0}
   BossStateUI: {fileID: 1839736644}
-  BossSpawnButton: {fileID: 1713045147}
+  BossSpawnButton: {fileID: 0}
 --- !u!1 &231914710
 GameObject:
   m_ObjectHideFlags: 0
@@ -8333,6 +8333,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4547648222527801625, guid: e1aa060ccf034e94f998e397c3f50403, type: 3}
       propertyPath: m_LayerOverridePriority
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6291835567362471766, guid: e1aa060ccf034e94f998e397c3f50403, type: 3}
+      propertyPath: m_SortingOrder
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

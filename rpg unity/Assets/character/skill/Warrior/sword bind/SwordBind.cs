@@ -45,8 +45,10 @@ public class SwordBind : MonoBehaviourPunCallbacks
     {
         if (PV.IsMine)
         {
-            CharacterState state = target.transform.GetComponentInChildren<CharacterState>();
-            state.ProcessSkill(4, Deal);
+            PhotonView PV = target.transform.GetComponent<PhotonView>();
+            PV.RPC("MonsterDamage", RpcTarget.All, 4, Deal);
+            //CharacterState state = target.transform.GetComponentInChildren<CharacterState>();
+            //state.ProcessSkill(4, Deal);
         }
     }
 

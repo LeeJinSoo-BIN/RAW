@@ -68,8 +68,10 @@ public class MagicTotem : MonoBehaviourPunCallbacks
         {
             if (_time <= dropTime)
             {
-                CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-                state.ProcessSkill(0, Deal);
+                PhotonView PV = collision.transform.GetComponent<PhotonView>();
+                PV.RPC("MonsterDamage", RpcTarget.All, 0, Deal);
+                //CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
+                //state.ProcessSkill(0, Deal);
             }
         }
         else if (collision.CompareTag("Player") && collision.transform.GetComponent<PhotonView>().IsMine)

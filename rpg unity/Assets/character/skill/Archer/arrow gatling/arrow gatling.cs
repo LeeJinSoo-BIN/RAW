@@ -77,8 +77,10 @@ public class arrowgatling : MonoBehaviourPunCallbacks
             explosion = true;
             if (PV.IsMine)
             {
-                CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-                state.ProcessSkill(0, Deal);
+                PhotonView PV = collision.transform.GetComponent<PhotonView>();
+                PV.RPC("MonsterDamage", RpcTarget.All, 0, Deal);
+                //CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
+                //state.ProcessSkill(0, Deal);
             }
         }
 
