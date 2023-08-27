@@ -1,8 +1,9 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class arrowdrop : MonoBehaviour
+public class arrowdrop : MonoBehaviourPunCallbacks
 {
     // Start is called before the first frame update
     private float flatDeal = 1;
@@ -15,6 +16,7 @@ public class arrowdrop : MonoBehaviour
     public float casterCriticalPercent = 1f;
     public float casterCriticalDamage = 1f;
     public float Deal;
+    public PhotonView PV;
     private void Awake()
     {
         StartCoroutine(Vanish(duration));
@@ -37,7 +39,7 @@ public class arrowdrop : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Monster"))
+        if (collision.CompareTag("Monster") && PV.IsMine)
         {
             CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
             state.ProcessSkill(0, Deal);

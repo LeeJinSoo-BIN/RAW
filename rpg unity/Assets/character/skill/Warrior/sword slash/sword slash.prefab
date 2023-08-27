@@ -205,3 +205,4 @@ MonoBehaviour:
   casterCriticalPercent: 1
   casterCriticalDamage: 1
   Deal: 0
+  PV: {fileID: 0}

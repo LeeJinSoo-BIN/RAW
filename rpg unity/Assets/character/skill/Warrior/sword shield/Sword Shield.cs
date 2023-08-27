@@ -18,6 +18,7 @@ public class SwordShield : MonoBehaviourPunCallbacks
     public float casterCriticalPercent = 1f;
     public float casterCriticalDamage = 1f;
     public float Shield;
+    public PhotonView PV;
     private void Awake()
     {
         Shield = SkillManager.instance.CaculateCharacterSkillDamage(casterSkillLevel, caseterPower,
@@ -40,8 +41,11 @@ public class SwordShield : MonoBehaviourPunCallbacks
 
     public void gainShield()
     {
-        CharacterState state = target.transform.GetComponentInChildren<CharacterState>();
-        state.ProcessSkill(2, Shield);
+        if (PV.IsMine)
+        {
+            CharacterState state = target.transform.GetComponentInChildren<CharacterState>();
+            state.ProcessSkill(2, Shield);
+        }
     }
 
     [PunRPC]

@@ -172,6 +172,7 @@ MonoBehaviour:
   casterCriticalPercent: 1
   casterCriticalDamage: 1
   Deal: 0
+  PV: {fileID: 0}
 --- !u!1 &3514899900819229963
 GameObject:
   m_ObjectHideFlags: 0

@@ -21,6 +21,8 @@ public class arrowgatling : MonoBehaviourPunCallbacks
     public float casterCriticalPercent = 1f;
     public float casterCriticalDamage = 1f;
     public float Deal;
+
+    public PhotonView PV;
     // Start is called before the first frame update
     void Start()
     {
@@ -73,8 +75,11 @@ public class arrowgatling : MonoBehaviourPunCallbacks
         {
             targetPos = transform.position;
             explosion = true;
-            CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-            state.ProcessSkill(0, Deal);
+            if (PV.IsMine)
+            {
+                CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
+                state.ProcessSkill(0, Deal);
+            }
         }
 
     }

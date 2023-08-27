@@ -206,6 +206,7 @@ MonoBehaviour:
   casterCriticalPercent: 1
   casterCriticalDamage: 1
   Deal: 0
+  PV: {fileID: -5611302346968666880}
 --- !u!114 &-5611302346968666880
 MonoBehaviour:
   m_ObjectHideFlags: 0
