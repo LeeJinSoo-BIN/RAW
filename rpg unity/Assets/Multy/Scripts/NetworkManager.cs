@@ -22,6 +22,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Screen.SetResolution(960, 540, false);
         PhotonNetwork.SendRate = 60;
         PhotonNetwork.SerializationRate = 30;
+        Application.targetFrameRate = 60;
     }
 
     private void Start()
