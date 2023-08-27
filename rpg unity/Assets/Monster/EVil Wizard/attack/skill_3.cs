@@ -1,9 +1,10 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 
-public class skill_3 : MonoBehaviour
+public class skill_3 : MonoBehaviourPunCallbacks
 {
     
     private float Damage = 60f;
@@ -13,9 +14,12 @@ public class skill_3 : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
-        {            
-            CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-            state.ProcessSkill(0, Damage);
+        {
+            if (collision.transform.GetComponent<PhotonView>().IsMine)
+            {
+                CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
+                state.ProcessSkill(0, Damage);
+            }
         }
     }
 }

@@ -123,7 +123,7 @@ public class skillIpattern : MonoBehaviourPunCallbacks
         if (characterPosition.x < transform.position.x && transform.localScale.x > 0)
             PV.RPC("FlipXRPC", RpcTarget.AllBuffered, new Vector3(-3, 3));
         else if(characterPosition.x > transform.position.x && transform.localScale.x < 0)
-            PV.RPC("FlipXRPC", RpcTarget.AllBuffered, new Vector3(-3, 3));
+            PV.RPC("FlipXRPC", RpcTarget.AllBuffered, new Vector3(3, 3));
         animator.SetTrigger("attack");
         float _time = 0f;
         while(_time < 0.05f)
