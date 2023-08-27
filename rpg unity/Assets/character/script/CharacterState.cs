@@ -26,7 +26,7 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
         shield = transform.GetChild(0).GetChild(2).GetComponent<Slider>();
         characterAnimator = transform.parent.GetComponent<Animator>();
         health.maxValue = maxHealth;
-        health.value = maxHealth / 2;
+        health.value = maxHealth;
         shield.maxValue = maxHealth;
         shield.value = 0;
 

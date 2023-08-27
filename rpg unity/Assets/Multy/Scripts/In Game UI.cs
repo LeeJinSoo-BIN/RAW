@@ -15,12 +15,36 @@ public class InGameUI : MonoBehaviour
     private Slider characterHealth;
     public TMP_Text maxHealthText;
     public TMP_Text currentHealthText;
+
+    public GameObject Boss;
+    public Slider uiBossHealth;
+    public Slider bossHealth;
+    private int bossMaxHealth;
+    private int bossCurrentHealth;
+    public TMP_Text bossMaxHealthText;
+    public TMP_Text bossCurrentHealthText;
+    private bool bossConnected;
+    public CharacterState bossState;
+
+    public GameObject BossStateUI;
     public void setUp()
     {
-        myCharacterState = myCharacter.GetComponentInChildren<CharacterState>();
+        myCharacterState = myCharacter.GetComponentInChildren<CharacterState>(); 
         characterHealth = myCharacterState.health;
         uiHealth.maxValue = characterHealth.maxValue;
+
+        
         StartCoroutine(update_health());
+    }
+
+    public void BossSetUp()
+    {
+        Boss = GameObject.Find("Enemy Group").transform.GetChild(0).gameObject;
+        bossState = Boss.GetComponentInChildren<CharacterState>();
+        bossHealth = bossState.health;
+        uiBossHealth.maxValue = bossHealth.maxValue;
+        bossConnected = true;
+        BossStateUI.SetActive(true);
     }
     
     IEnumerator update_health()
@@ -32,7 +56,19 @@ public class InGameUI : MonoBehaviour
             maxHealth = (int)characterHealth.maxValue;
             maxHealthText.text = maxHealth.ToString();
             currentHealthText.text = currentHealth.ToString();
+
+            if (bossConnected)
+            {
+                uiBossHealth.value = bossHealth.value;
+                bossCurrentHealth = (int)bossHealth.value;
+                bossMaxHealth = (int)bossHealth.maxValue;
+                bossMaxHealthText.text = bossMaxHealth.ToString();
+                bossCurrentHealthText.text = bossCurrentHealth.ToString();
+                
+            }
             yield return null;
+
+
         }
     }
 }

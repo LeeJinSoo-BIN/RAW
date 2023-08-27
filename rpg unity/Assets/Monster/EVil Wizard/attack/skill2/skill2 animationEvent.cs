@@ -16,14 +16,12 @@ public class skill2animationEvent : MonoBehaviour
     }
 
     public void Handing()
-    {
-        Debug.Log("hand!");
+    {        
         transform.parent.GetComponent<skill_2>().hand = true;        
         handBox.enabled = true;
     }
     public void explose()
-    {
-        Debug.Log("bomb!");
+    {        
         transform.parent.GetComponent<skill_2>().bomb = true;
         bombBox.enabled = true;
     }

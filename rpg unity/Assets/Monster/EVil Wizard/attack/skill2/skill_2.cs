@@ -13,12 +13,29 @@ public class skill_2 : MonoBehaviour
     public bool hand = false;
     public bool bomb = false;
 
+    public void Start()
+    {
+        StartCoroutine(Vanish(10f));
+
+    }
     public void ExecuteSkill()
     {
-        StartCoroutine(Vanish());
+        StartCoroutine(Fire());
     }
 
-    private IEnumerator Vanish()
+    IEnumerator Vanish(float duration)
+    {
+        float time = 0;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            yield return null;
+        }
+        //GetComponent<Animator>().SetTrigger("vanish");
+        Destroy(gameObject, 0.45f);
+    }
+
+    private IEnumerator Fire()
     {
         // 캐릭터의 위치로 불 생성
 
@@ -45,19 +62,16 @@ public class skill_2 : MonoBehaviour
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
-    {
-        Debug.Log(collision.name);
+    {        
         if (collision.CompareTag("Player"))
         {
             if (hand)
-            {
-                Debug.Log("hand");
+            {                
                 CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
                 state.ProcessSkill(0, flatHandDeal * level);
             }
             if (bomb)
-            {
-                Debug.Log("bomb");
+            {                
                 CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
                 state.ProcessSkill(0, flatBombDeal * level);
             }

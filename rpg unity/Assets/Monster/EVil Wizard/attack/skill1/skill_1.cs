@@ -2,6 +2,8 @@ using UnityEditor;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using System.Collections;
+
 
 public class skill_1 : MonoBehaviourPunCallbacks
 {
@@ -20,16 +22,28 @@ public class skill_1 : MonoBehaviourPunCallbacks
         animator = gameObject.GetComponentInChildren<Animator>();
         skillCollider = gameObject.GetComponent<CircleCollider2D>();
         skillCollider.enabled = false;
+        StartCoroutine(Vanish(15f));
     }
 
-   
+
+    IEnumerator Vanish(float duration)
+    {
+        float time = 0;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            yield return null;
+        }        
+        Destroy(gameObject, 0.45f);
+    }
+
     public void ExecuteSkill()
     {
         // ?? ?????????? ???? ?????? ????
         StartCoroutine(MoveFireRoutine());        
     }
 
-    private System.Collections.IEnumerator MoveFireRoutine()
+    private IEnumerator MoveFireRoutine()
     {        
         Vector3 targetPosition = new Vector3(character.transform.position.x, character.transform.position.y + 0.7f); ;/* ???????? ???? Transform */
         float journeyLength = Vector3.Distance(startPosition, targetPosition);
@@ -66,6 +80,8 @@ public class skill_1 : MonoBehaviourPunCallbacks
             yield return null;
         }
     }
+
+
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
