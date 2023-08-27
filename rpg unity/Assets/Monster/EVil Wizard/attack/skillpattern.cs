@@ -23,7 +23,6 @@ public class skillIpattern : MonoBehaviourPunCallbacks
     private Transform topLeft;
     private Transform bottomRight;
 
-    public SpriteRenderer SR;
     public PhotonView PV;
 
     private void Awake()
