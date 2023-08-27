@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
 
-public class CharacterState : MonoBehaviourPunCallbacks
+public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
 {
     public int maxHealth = 1000;
     public int maxMana = 1000;
@@ -24,7 +24,7 @@ public class CharacterState : MonoBehaviourPunCallbacks
     {
         health = transform.GetChild(0).GetChild(1).GetComponent<Slider>();
         shield = transform.GetChild(0).GetChild(2).GetComponent<Slider>();
-        characterAnimator = transform.parent.GetComponentInChildren<Animator>();
+        characterAnimator = transform.parent.GetComponent<Animator>();
         health.maxValue = maxHealth;
         health.value = maxHealth / 2;
         shield.maxValue = maxHealth;

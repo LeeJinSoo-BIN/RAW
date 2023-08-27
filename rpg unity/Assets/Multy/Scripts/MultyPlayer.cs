@@ -367,10 +367,6 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             if (_dirMVec.x > 0) transform.localScale = new Vector3(-1, 1, 1);
             else if (_dirMVec.x < 0) transform.localScale = new Vector3(1, 1, 1);
             skillPos += new Vector2(0f, 0.3f);
-            //object[] Params = new object[3];
-            //Params[0] = skillPos;
-            //Params[1] = skillCastingPosition.position;
-            //Params[2] = gameObject;
             if (current_skill.skillName == "arrow dash")
             {
                 StartCoroutine(Dash(skillPos, 5f));
@@ -389,19 +385,11 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             {
                 PhotonNetwork.Instantiate(current_skill.skillName, skillPos, Quaternion.identity);
             }
-            //SkillManager.instance.SendMessage(current_skill.skillName, Params);
         }
         else if (current_skill.castType == "target-player" || current_skill.castType == "target-enemy" || current_skill.castType == "target-both") // target
         {
-            //object[] Params = new object[3];
-            //Params[0] = gameObject;
-            //Params[1] = targetObject;
-            //Params[2] = current_skill.skillDuration;
-            //SkillManager.instance.SendMessage(current_skill.skillName, Params);
             PhotonNetwork.Instantiate(current_skill.skillName, targetObject.transform.position, Quaternion.identity)
                 .GetComponent<PhotonView>().RPC("SetTarget", RpcTarget.All, targetObject.name);
-            //target = transform.parent.gameObject;
-            //Deal();
         }
         else if (current_skill.castType == "buff-self")
         {
@@ -412,12 +400,9 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         {
             foreach (Transform tar in targetObject.GetComponentInChildren<Transform>())
             {
-                PhotonNetwork.Instantiate(current_skill.skillName, Vector3.zero, Quaternion.identity)
+                PhotonNetwork.Instantiate(current_skill.skillName, tar.transform.position, Quaternion.identity)
                     .GetComponent<PhotonView>().RPC("SetTarget", RpcTarget.All, tar.name);
             }
-            //object[] Params = new object[1];
-            //Params[0] = targetObject;
-            //SkillManager.instance.SendMessage(current_skill.skillName, Params);
         }
 
         float delay = 0;

@@ -594,12 +594,12 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 5190928105052631954}
   - {fileID: 7035150200717164680}
   - {fileID: 8399697205481919706}
   - {fileID: 2564397524356115255}
   - {fileID: 5838030064198521808}
   - {fileID: 3232039407426989710}
-  - {fileID: 5190928105052631954}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -720,6 +720,7 @@ MonoBehaviour:
   - {fileID: 2919887382818646889}
   - {fileID: 6093407450503403606}
   - {fileID: 1371480156353156216}
+  - {fileID: 0}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -2278,7 +2279,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5190928105052631954}
-  - component: {fileID: 6855023119523807885}
+  - component: {fileID: 9197635126964762791}
   m_Layer: 8
   m_Name: state
   m_TagString: Untagged
@@ -2307,7 +2308,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &6855023119523807885
+--- !u!114 &9197635126964762791
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

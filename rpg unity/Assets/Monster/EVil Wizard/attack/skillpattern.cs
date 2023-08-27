@@ -12,13 +12,19 @@ public class skillIpattern : MonoBehaviour
     public Animator animator;
     private float _time = 0.0f;
     private bool skillInvoked = false;
-    //private bool mobControlEnabled = true; // MobControl 활성화 여부를 저장하는 변수
+    //private bool mobControlEnabled = true; // MobControl ?????? ?????? ???????? ????
     private GameObject target;
     public float patternCycle = 5f;
     public Transform staff;
 
     private Transform topLeft;
     private Transform bottomRight;
+
+    private void Awake()
+    {
+        transform.parent = GameObject.Find("Enemy Group").transform;
+    }
+
     private void Start()
     {        
         //skill3 = GetComponent<skill_3>();
@@ -28,10 +34,10 @@ public class skillIpattern : MonoBehaviour
     {
         _time += Time.deltaTime;
 
-        if ( _time >= patternCycle && skillInvoked == false) // 30초가 지난 후 스킬 사용
+        if ( _time >= patternCycle && skillInvoked == false) // 30???? ???? ?? ???? ????
         {
             //skillInvoked = true;
-            //DisableMobControl(); // MobControl을 비활성화
+            //DisableMobControl(); // MobControl?? ????????
             //StartCoroutine(InvokeRandomSkillsRoutine());
             randomPattern();
             _time = 0;
@@ -43,7 +49,7 @@ public class skillIpattern : MonoBehaviour
     {
         if (mobControlEnabled)
         {
-            mobControl.enabled = false; // MobControl 비활성화
+            mobControl.enabled = false; // MobControl ????????
             mobControlEnabled = false;
         }
     }*/
@@ -59,7 +65,7 @@ public class skillIpattern : MonoBehaviour
     {
         skillInvoked = true;
         GameObject fire = Instantiate(fireprefab1, staff.position, Quaternion.identity);
-        // 스킬1 클래스의 인스턴스를 만들고 실행
+        // ????1 ???????? ?????????? ?????? ????
         findTarget();
         skill_1 skill1 = fire.GetComponent<skill_1>();
         skill1.startPosition = staff.position;
@@ -152,7 +158,7 @@ public class skillIpattern : MonoBehaviour
         }
         if (run)
             animator.SetBool("run", false);
-        // 이동 완료 후 콜백 실행 (콜백이 있을 경우)
+        // ???? ???? ?? ???? ???? (?????? ???? ????)
         //onComplete?.Invoke();
     }
 

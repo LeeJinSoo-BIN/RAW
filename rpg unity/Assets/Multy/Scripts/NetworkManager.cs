@@ -34,12 +34,16 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.ConnectUsingSettings();
         connecting = true;
     }
-
     
     public override void OnConnectedToMaster()
     {
         PhotonNetwork.LocalPlayer.NickName = NickNameInput.text;
         PhotonNetwork.JoinOrCreateRoom("Room", new RoomOptions { MaxPlayers = 6 }, null);
+    }
+
+    public override void OnCreatedRoom()
+    {
+        PhotonNetwork.Instantiate("Evil Wizard", Vector3.zero, Quaternion.identity);
     }
 
     public override void OnJoinedRoom()
