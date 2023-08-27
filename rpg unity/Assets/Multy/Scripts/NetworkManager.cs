@@ -50,6 +50,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         DisconnectPanel.SetActive(false);
+        InGameUI.SetActive(false);
         ConnectPanel.SetActive(true);
         connecting = false;
     }
@@ -80,5 +81,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         DisconnectPanel.SetActive(true);
         RespwanPanel.SetActive(false);
+        InGameUI.SetActive(false);
     }
 }

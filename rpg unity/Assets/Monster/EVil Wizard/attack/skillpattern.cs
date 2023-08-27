@@ -1,8 +1,10 @@
 using JetBrains.Annotations;
 using UnityEngine;
 using System.Collections;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class skillIpattern : MonoBehaviour
+public class skillIpattern : MonoBehaviourPunCallbacks
 {    
     //private skill_3 skill3;
     public GameObject fireprefab1;
@@ -20,9 +22,13 @@ public class skillIpattern : MonoBehaviour
     private Transform topLeft;
     private Transform bottomRight;
 
+    public SpriteRenderer SR;
+    public PhotonView PV;
+
     private void Awake()
     {
         transform.parent = GameObject.Find("Enemy Group").transform;
+        characterGroup = GameObject.Find("Player Group");
     }
 
     private void Start()
@@ -32,18 +38,22 @@ public class skillIpattern : MonoBehaviour
 
     private void Update()
     {
-        _time += Time.deltaTime;
-
-        if ( _time >= patternCycle && skillInvoked == false) // 30???? ???? ?? ???? ????
+        if (PhotonNetwork.IsMasterClient)
         {
-            //skillInvoked = true;
-            //DisableMobControl(); // MobControl?? ????????
+            _time += Time.deltaTime;
+
+            if (_time >= patternCycle && skillInvoked == false) // 30???? ???? ?? ???? ????
+            {
+                //skillInvoked = true;
+                //DisableMobControl(); // MobControl?? ????????
+                //StartCoroutine(InvokeRandomSkillsRoutine());
+                randomPattern();
+                _time = 0;
+            }
             //StartCoroutine(InvokeRandomSkillsRoutine());
-            randomPattern();
-            _time = 0;
         }
-        //StartCoroutine(InvokeRandomSkillsRoutine());
     }
+        
 
     /*private void DisableMobControl()
     {
@@ -64,13 +74,14 @@ public class skillIpattern : MonoBehaviour
     private void skill1()
     {
         skillInvoked = true;
-        GameObject fire = Instantiate(fireprefab1, staff.position, Quaternion.identity);
+        GameObject fire = PhotonNetwork.Instantiate("skill1", staff.position, Quaternion.identity);
         // ????1 ???????? ?????????? ?????? ????
         findTarget();
         skill_1 skill1 = fire.GetComponent<skill_1>();
-        skill1.startPosition = staff.position;
-        skill1.character = target;
-        skill1.ExecuteSkill();
+        fire.transform.GetComponent<PhotonView>().RPC("InitSkill", RpcTarget.All, staff.position, target.name);
+        //skill1.startPosition = staff.position;
+        //skill1.character = target;
+        //skill1.ExecuteSkill();
         skillInvoked = false;
     }
     private void skill2()
@@ -85,7 +96,7 @@ public class skillIpattern : MonoBehaviour
         Vector2 characterPosition = target.transform.position;
         Vector2 monsterPosition = gameObject.transform.position;
         yield return StartCoroutine(MoveMonsterToCharacter(monsterPosition, characterPosition, 5f, true));
-        GameObject fire = Instantiate(fireprefab2, target.transform.position, Quaternion.identity);
+        GameObject fire = PhotonNetwork.Instantiate("skill2", target.transform.position, Quaternion.identity);
         skill_2 skill2 = fire.GetComponentInChildren<skill_2>();
         //skill2.character = target;
         skill2.ExecuteSkill();
@@ -108,10 +119,10 @@ public class skillIpattern : MonoBehaviour
         Vector2 targetPosition = new Vector2(characterPosition.x + where, characterPosition.y);
         Vector2 monsterPosition = gameObject.transform.position;
         yield return StartCoroutine(MoveMonsterToCharacter(monsterPosition, targetPosition, 3.5f, distance:0.001f, run: true));
-        if(characterPosition.x < transform.position.x && transform.localScale.x > 0)
-            transform.localScale = new Vector3(-1, 1, 1);
+        if (characterPosition.x < transform.position.x && transform.localScale.x > 0)
+            PV.RPC("FlipXRPC", RpcTarget.AllBuffered, true);
         else if(characterPosition.x > transform.position.x && transform.localScale.x < 0)
-            transform.localScale = new Vector3(1, 1, 1);
+            PV.RPC("FlipXRPC", RpcTarget.AllBuffered, false);
         animator.SetTrigger("attack");
         float _time = 0f;
         while(_time < 0.05f)
@@ -147,9 +158,9 @@ public class skillIpattern : MonoBehaviour
         while ((transform.position - targetPosition).magnitude > distance)
         {
             if (targetPosition.x < transform.position.x && transform.position.x > 0)
-                transform.localScale = new Vector3(-1, 1, 1);
+                PV.RPC("FlipXRPC", RpcTarget.AllBuffered, true);
             else if (targetPosition.x > transform.position.x && transform.position.x < 0)
-                transform.localScale = new Vector3(1, 1, 1);
+                PV.RPC("FlipXRPC", RpcTarget.AllBuffered, false);
             float distanceCovered = (Time.time - startTime) * speed;
             float fractionOfJourney = distanceCovered / journeyLength;
             transform.position = Vector3.Lerp(startPosition, targetPosition, fractionOfJourney);
@@ -181,4 +192,7 @@ public class skillIpattern : MonoBehaviour
                 break;
         }
     }
+
+    [PunRPC]
+    void FlipXRPC(bool flip) => SR.flipX = flip;
 }
