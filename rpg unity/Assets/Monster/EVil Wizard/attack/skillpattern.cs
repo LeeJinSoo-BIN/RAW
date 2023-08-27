@@ -16,7 +16,7 @@ public class skillIpattern : MonoBehaviourPunCallbacks
     private bool skillInvoked = false;
     //private bool mobControlEnabled = true; // MobControl ?????? ?????? ???????? ????
     private GameObject target;
-    public float patternCycle = 5f;
+    private float patternCycle = 13f;
     public Transform staff;
 
     private Transform topLeft;

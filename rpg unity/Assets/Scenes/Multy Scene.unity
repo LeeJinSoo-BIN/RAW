@@ -754,6 +754,7 @@ MonoBehaviour:
   bossCurrentHealthText: {fileID: 1099824013}
   bossState: {fileID: 0}
   BossStateUI: {fileID: 1839736644}
+  BossSpawnButton: {fileID: 1713045147}
 --- !u!1 &231914710
 GameObject:
   m_ObjectHideFlags: 0

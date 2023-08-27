@@ -27,12 +27,14 @@ public class InGameUI : MonoBehaviour
     public CharacterState bossState;
 
     public GameObject BossStateUI;
+    public GameObject BossSpawnButton;
     public void setUp()
     {
         myCharacterState = myCharacter.GetComponentInChildren<CharacterState>(); 
         characterHealth = myCharacterState.health;
         uiHealth.maxValue = characterHealth.maxValue;
-
+        if(GameObject.Find("Enemy Group").transform.childCount > 0)
+            BossSpawnButton.SetActive(false);
         
         StartCoroutine(update_health());
     }

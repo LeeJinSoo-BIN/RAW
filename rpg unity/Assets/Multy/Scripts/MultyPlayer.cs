@@ -107,7 +107,11 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             if (Input.GetKeyDown(KeyCode.S))
             {
                 goalPos = transform.position;
-                StopCoroutine(castSkill);
+                try
+                {
+                    StopCoroutine(castSkill);
+                }
+                catch { }
                 deactivateSkill();
             }
             if (Input.GetMouseButtonDown(0))
