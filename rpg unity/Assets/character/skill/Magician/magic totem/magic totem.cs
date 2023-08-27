@@ -1,8 +1,9 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MagicTotem : MonoBehaviour
+public class MagicTotem : MonoBehaviourPunCallbacks
 {
     float dropTime = 0.3f;
     float _time = 0f;
@@ -24,7 +25,7 @@ public class MagicTotem : MonoBehaviour
     public float casterCriticalDamage = 1f;
     public float Deal;
     public float Power;
-
+    public PhotonView PV;
     private void Awake()
     {
         StartCoroutine(Vanish(duration));
@@ -63,7 +64,7 @@ public class MagicTotem : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Monster"))
+        if (collision.CompareTag("Monster") && PV.IsMine)
         {
             if (_time <= dropTime)
             {
@@ -71,17 +72,16 @@ public class MagicTotem : MonoBehaviour
                 state.ProcessSkill(0, Deal);
             }
         }
-        else if (collision.CompareTag("Player"))
+        else if (collision.CompareTag("Player") && collision.transform.GetComponent<PhotonView>().IsMine)
         {
             CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
             state.ProcessSkill(3, Power);
-        }
-        Debug.Log(collision.name);
+        }        
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
+        if (collision.CompareTag("Player") && collision.transform.GetComponent<PhotonView>().IsMine)
         {
             CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
             state.ProcessSkill(3, -Power);
