@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using Unity.VisualScripting;
+using Photon.Pun;
 
 public class skill_2 : MonoBehaviour
 {
@@ -65,15 +66,18 @@ public class skill_2 : MonoBehaviour
     {        
         if (collision.CompareTag("Player"))
         {
-            if (hand)
-            {                
-                CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-                state.ProcessSkill(0, flatHandDeal * level);
-            }
-            if (bomb)
-            {                
-                CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-                state.ProcessSkill(0, flatBombDeal * level);
+            if (collision.transform.GetComponent<PhotonView>().IsMine)
+            {
+                if (hand)
+                {
+                    CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
+                    state.ProcessSkill(0, flatHandDeal * level);
+                }
+                if (bomb)
+                {
+                    CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
+                    state.ProcessSkill(0, flatBombDeal * level);
+                }
             }
         }
     }

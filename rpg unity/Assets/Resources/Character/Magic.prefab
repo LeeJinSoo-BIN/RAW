@@ -4098,6 +4098,7 @@ MonoBehaviour:
   criticalDamage: 1.2
   characterAnimator: {fileID: 0}
   healPercent: 1
+  playerControl: {fileID: 6093407450503403606}
 --- !u!1 &8500139407171787526
 GameObject:
   m_ObjectHideFlags: 0

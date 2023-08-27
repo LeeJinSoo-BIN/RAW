@@ -87,8 +87,11 @@ public class skill_1 : MonoBehaviourPunCallbacks
     {
         if (collision.CompareTag("Player"))
         {
-            CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-            state.ProcessSkill(0, flatDeal * level);
+            if (collision.transform.GetComponent<PhotonView>().IsMine)
+            {
+                CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
+                state.ProcessSkill(0, flatDeal * level);
+            }
         }
     }
 
