@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4664242489678327247}
   - component: {fileID: 1877345053364549704}
   - component: {fileID: 3976792643205957098}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -391,7 +391,7 @@ GameObject:
   - component: {fileID: 1356067112494260895}
   - component: {fileID: 7033436629505930414}
   - component: {fileID: 1449012765256101608}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -925,7 +925,7 @@ GameObject:
   - component: {fileID: 3592052116634756846}
   - component: {fileID: 866966796327632834}
   - component: {fileID: 5389781817412208288}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1387,7 +1387,7 @@ GameObject:
   - component: {fileID: 3755055751684691459}
   - component: {fileID: 2597995277860928559}
   - component: {fileID: 1215190808830374284}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2308,7 +2308,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5190928105052631954}
   - component: {fileID: 9197635126964762791}
-  m_Layer: 8
+  m_Layer: 5
   m_Name: state
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2323,7 +2323,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4812154794525018292}
   m_LocalRotation: {x: -0, y: 0.008726558, z: -0, w: 0.999962}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2589,7 +2589,7 @@ GameObject:
   - component: {fileID: 6255920392063021990}
   - component: {fileID: 3978295543022784939}
   - component: {fileID: 3502472931270203876}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2966,7 +2966,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3834819248324835633}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3007,7 +3007,7 @@ GameObject:
   - component: {fileID: 8583234297100577743}
   - component: {fileID: 1415342030063441067}
   - component: {fileID: 4623108502470537257}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: NickNameText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3568,7 +3568,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5658772523655350445}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4365,7 +4365,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5165717235119389139}
   - component: {fileID: 6779331874258698343}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Health
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4455,7 +4455,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3881524220808372843}
   - component: {fileID: 3549845335685227674}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Shield
   m_TagString: Untagged
   m_Icon: {fileID: 0}

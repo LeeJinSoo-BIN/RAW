@@ -780,6 +780,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 94e747944616f4e9498ef9817c71b9eb, type: 2}
   - {fileID: 11400000, guid: 8530da1cbc2344789b5b95938d50177c, type: 2}
   - {fileID: 11400000, guid: 93d9c842df8f44cb19b2068d05bf134e, type: 2}
+  inGameUI: {fileID: 0}
   RB: {fileID: 2703929767633843399}
   PV: {fileID: 8582268070166807158}
   NickNameText: {fileID: 7002373578679634810}
@@ -2416,7 +2417,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5517359102654227557}
   m_LocalRotation: {x: -0, y: 0.008726558, z: -0, w: 0.999962}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
