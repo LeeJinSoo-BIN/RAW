@@ -20,4 +20,4 @@ MonoBehaviour:
   animType: attack3
   skillDelay: 1
   skillDuration: 10
-  coolDown: 5
+  coolDown: 6

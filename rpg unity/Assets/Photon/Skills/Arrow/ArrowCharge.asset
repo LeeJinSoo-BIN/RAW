@@ -20,4 +20,4 @@ MonoBehaviour:
   animType: skillBow2
   skillDelay: 3
   skillDuration: 0
-  coolDown: 5
+  coolDown: 15

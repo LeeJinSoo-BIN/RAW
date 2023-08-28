@@ -72,8 +72,12 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
                 }
                 else
                 {
-
+                    transform.GetComponent<skillIpattern>().Death();
                 }
+            }
+            if(type == 4 && !isPlayer)
+            {
+                transform.GetComponent<skillIpattern>().Bind();
             }
         }
         else if(type == 1 && !isDeath) //heal

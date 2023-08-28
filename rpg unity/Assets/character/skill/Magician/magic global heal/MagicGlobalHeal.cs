@@ -7,7 +7,7 @@ using static UnityEngine.GraphicsBuffer;
 public class MagicGlobalHeal : MonoBehaviour
 {
     // Start is called before the first frame update
-    private float flatHeal = 5;
+    private float flatHeal = 15;
     private float healIncreasePerSkillLevel = 1;
     private float healIncreasePerPower = 1;
 

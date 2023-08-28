@@ -325,11 +325,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         Debug.Log(current_casting_skill_key);
         if (!isCoolDown())
         {
-            castSkill = CastSkill(skillPos, target);
-            inGameUI.CoolDown(current_casting_skill_key, current_skill.coolDown);
-            skillActivatedTime[current_casting_skill_key] = Time.time;
+            castSkill = CastSkill(skillPos, target);            
             StartCoroutine(castSkill);
-
         }        
         deactivateSkill();
     }
@@ -430,7 +427,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                     .GetComponent<PhotonView>().RPC("SetTarget", RpcTarget.All, tar.name);
             }
         }
-
+        inGameUI.CoolDown(current_casting_skill_key, current_skill.coolDown);
+        skillActivatedTime[current_casting_skill_key] = Time.time;
         float delay = 0;
         while (delay < current_skill.skillDelay)
         {

@@ -8,7 +8,7 @@ public class MagicHeal : MonoBehaviourPunCallbacks
 {
     // Start is called before the first frame update
 
-    private float flatHeal = 1;
+    private float flatHeal = 3.5f;
     private float healIncreasePerSkillLevel = 1;
     private float healIncreasePerPower = 1;
 

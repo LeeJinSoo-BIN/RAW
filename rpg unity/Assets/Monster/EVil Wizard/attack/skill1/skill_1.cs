@@ -13,14 +13,14 @@ public class skill_1 : MonoBehaviourPunCallbacks
     private Animator animator;     // ?????????? ????????
     private float speed = 3f;
     private bool bomb = false;
-    private CircleCollider2D skillCollider;
+    private BoxCollider2D skillCollider;
 
     private float flatDeal = 50f;
     private float level = 1;
     private void Start()
     {
         animator = gameObject.GetComponentInChildren<Animator>();
-        skillCollider = gameObject.GetComponent<CircleCollider2D>();
+        skillCollider = gameObject.GetComponent<BoxCollider2D>();
         skillCollider.enabled = false;
         StartCoroutine(Vanish(15f));
     }

@@ -24,7 +24,7 @@ public class skillIpattern : MonoBehaviourPunCallbacks
     private Transform bottomRight;
 
     public PhotonView PV;
-
+    public bool attackable = false;
     private void Awake()
     {
         transform.parent = GameObject.Find("Enemy Group").transform;
@@ -38,7 +38,7 @@ public class skillIpattern : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-        if (PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsMasterClient && attackable)
         {
             _time += Time.deltaTime;
 
@@ -63,6 +63,28 @@ public class skillIpattern : MonoBehaviourPunCallbacks
             mobControlEnabled = false;
         }
     }*/
+    public void Death()
+    {
+        attackable = false;
+
+    }
+
+    public void Bind(float bindTime = 5f)
+    {
+        StartCoroutine(ExcuteBind(bindTime));
+    }
+
+    IEnumerator ExcuteBind(float bindTime)
+    {
+        attackable = false;
+        float _time = 0f;
+        while(_time < bindTime)
+        {
+            _time += Time.deltaTime;
+            yield return null;
+        }
+        attackable = true;
+    }
 
     private void findTarget()
     {

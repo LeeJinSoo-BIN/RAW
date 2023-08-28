@@ -14,8 +14,8 @@ public class arrowgatling : MonoBehaviourPunCallbacks
     private bool isRotated = false;
 
     private float flatDeal = 0.08f;
-    private float dealIncreasePerSkillLevel = 1;
-    private float dealIncreasePerPower = 1;
+    private float dealIncreasePerSkillLevel = 0.5f;
+    private float dealIncreasePerPower = 0.2f;
     public float caseterPower = 1f;
     public float casterSkillLevel = 1f;
     public float casterCriticalPercent = 1f;
