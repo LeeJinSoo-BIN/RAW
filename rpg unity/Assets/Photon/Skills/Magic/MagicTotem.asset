@@ -10,13 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4bcf0c340af174f51a37a822ddf234e3, type: 3}
-  m_Name: SwordBind
+  m_Name: MagicTotem
   m_EditorClassIdentifier: 
   skillView: {fileID: 1473892316488033191, guid: e98e8a676c0a73f41acb26f5b53654ca, type: 3}
-  skillName: sword bind
-  castType: target-enemy
-  radius: {x: 2, y: 2}
-  range: {x: 0, y: 0}
-  animType: skill1
-  skillDelay: 1.2
-  skillDuration: 5
+  skillName: magic totem
+  castType: circle
+  radius: {x: 1.5, y: 1.5}
+  range: {x: 2, y: 2}
+  animType: attack3
+  skillDelay: 1
+  skillDuration: 10
+  coolDown: 5

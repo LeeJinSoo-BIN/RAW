@@ -6,6 +6,7 @@ using Photon.Realtime;
 using UnityEngine.UI;
 using Unity.VisualScripting;
 using TMPro;
+using UnityEngine.EventSystems;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
@@ -20,6 +21,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public TMP_Text ConnectButtonText;
     public PhotonView PV;
     public GameObject spawnButton;
+
+    public GameObject roomInfo;
+    public GameObject RoomList;
+    public GameObject LobbyPanel;
+    public TMP_InputField RoomNameInputField;
     private void Awake()
     {
         Screen.SetResolution(960, 540, false);
@@ -35,6 +41,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         
         ConnectPanel.SetActive(false);
         DisconnectPanel.SetActive(true);        
+        LobbyPanel.SetActive(false);
     }
 
     public void Connect()
@@ -46,7 +53,14 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         PhotonNetwork.LocalPlayer.NickName = NickNameInput.text;
-        PhotonNetwork.JoinOrCreateRoom("Room", new RoomOptions { MaxPlayers = 6 }, null);
+        //PhotonNetwork.JoinOrCreateRoom("Room", new RoomOptions { MaxPlayers = 6 }, null);
+        PhotonNetwork.JoinLobby();
+    }
+
+    public override void OnJoinedLobby()
+    {
+        LobbyPanel.SetActive(true);
+        DisconnectPanel.SetActive(false);
     }
 
     public override void OnCreatedRoom()
@@ -54,14 +68,64 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         
     }
 
+
+        
+
+    public override void OnRoomListUpdate(List<RoomInfo> roomList)
+    {
+        //print("room list updated");
+        UpdateRoomList(roomList);
+    }
+    void UpdateRoomList(List<RoomInfo> roomList)
+    {
+        for (int k = 0; k < RoomList.transform.childCount; k++)
+        {
+            Destroy(RoomList.transform.GetChild(k).gameObject);
+        }
+        //print(roomList.Count);
+        for (int k = 0; k < roomList.Count; k++)
+        {
+            if (roomList[k].RemovedFromList) continue;
+            GameObject Room = Instantiate(roomInfo);
+
+            Room.transform.SetParent(RoomList.transform);
+            Room.transform.localScale = new Vector3(1, 1, 1);
+            Room.SetActive(true);
+            Room.transform.GetChild(0).GetComponent<TMP_Text>().text = roomList[k].Name;
+            string count = roomList[k].PlayerCount + " / " + roomList[k].MaxPlayers;
+            Room.transform.GetChild(1).GetComponent<TMP_Text>().text = count;
+            if (roomList[k].PlayerCount == roomList[k].MaxPlayers || !roomList[k].IsOpen)
+                Room.GetComponent<Button>().interactable = false;
+        }
+    }
+
+    public void JoinRoomButtonClickInJoinPanel()
+    {
+        string room_name = EventSystem.current.currentSelectedGameObject.transform.GetChild(0).GetComponent<TMP_Text>().text;
+        PhotonNetwork.JoinRoom(room_name);
+    }
+
     public override void OnJoinedRoom()
     {
+        LobbyPanel.SetActive(false);
         DisconnectPanel.SetActive(false);
         InGameUI.SetActive(false);
         ground.SetActive(false);
         ConnectPanel.SetActive(true);
         connecting = false;
     }
+
+
+    public void CreateRoomButtonClickInPanel()
+    {
+        
+            PhotonNetwork.CreateRoom(RoomNameInputField.text, new RoomOptions { MaxPlayers = 3 });
+            LobbyPanel.SetActive(false);
+        
+        //PhotonNetwork.JoinRoom(RoomNameToCreat.text);
+    }
+
+
 
     private void Update()
     {
@@ -92,8 +156,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.LocalPlayer.IsMasterClient)
         {
             PhotonNetwork.Instantiate("Evil Wizard", Vector3.zero, Quaternion.identity);
+            PhotonNetwork.CurrentRoom.IsOpen = false;
             PV.RPC("SpawnBoss", RpcTarget.All);
         }
+        
     }
 
     [PunRPC]

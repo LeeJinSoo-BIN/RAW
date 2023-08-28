@@ -18,6 +18,7 @@ public class SkillSpec : ScriptableObject
     public string animType; //attack1,2,3, skill1,2,3        
     public float skillDelay;
     public float skillDuration;
+    public float coolDown;
     /*public skill_spec(int _castType, (float x, float y) _radius, (float x, float y) _range, int _animType, int _effectType)
         {
             castType = _castType;

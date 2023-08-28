@@ -20,3 +20,4 @@ MonoBehaviour:
   animType: skillSword2
   skillDelay: 1.2
   skillDuration: 0
+  coolDown: 5

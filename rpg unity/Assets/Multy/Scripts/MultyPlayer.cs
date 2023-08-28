@@ -46,7 +46,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     private Dictionary<string, SkillSpec> skills = new Dictionary<string, SkillSpec>();
     private SkillSpec current_skill;
 
-
+    private Dictionary<string, float> skillActivatedTime = new Dictionary<string, float>();
+    public InGameUI inGameUI;
     // Multy
     public Rigidbody2D RB;
     public PhotonView PV;
@@ -68,12 +69,19 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         NickNameText.text = PV.IsMine ? PhotonNetwork.NickName : PV.Owner.NickName;
         NickNameText.color = PV.IsMine ? Color.green : Color.red;
 
-        sortingGroup.sortingOrder = PV.IsMine ? 1 : 0;
+        //sortingGroup.sortingOrder = PV.IsMine ? 1 : 0;
 
         playerGroup = GameObject.Find("Player Group");
         enemyGroup = GameObject.Find("Enemy Group");
+        inGameUI = GameObject.Find("InGameUI").transform.GetChild(0).GetComponent<InGameUI>();
+        Debug.Log(inGameUI);
 
         transform.parent = playerGroup.transform;
+        skillActivatedTime.Add("Q", 0);
+        skillActivatedTime.Add("W", 0);
+        skillActivatedTime.Add("E", 0);
+        skillActivatedTime.Add("R", 0);
+        
     }
 
     void Update()
@@ -304,11 +312,25 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 CastingSkill(transform.position, enemyGroup);
         }
     }
-
+    bool isCoolDown()
+    {
+        if (skillActivatedTime[current_casting_skill_key] == 0)
+            return false;
+        if (Time.time - skillActivatedTime[current_casting_skill_key] < current_skill.coolDown)
+            return true;
+        return false;
+    }
     void CastingSkill(Vector2 skillPos, GameObject target = null)
     {
-        castSkill = CastSkill(skillPos, target);
-        StartCoroutine(castSkill);
+        Debug.Log(current_casting_skill_key);
+        if (!isCoolDown())
+        {
+            castSkill = CastSkill(skillPos, target);
+            inGameUI.CoolDown(current_casting_skill_key, current_skill.coolDown);
+            skillActivatedTime[current_casting_skill_key] = Time.time;
+            StartCoroutine(castSkill);
+
+        }        
         deactivateSkill();
     }
 

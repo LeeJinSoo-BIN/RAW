@@ -888,6 +888,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: eb3513dee167d4b0ab8053bf20b70fa8, type: 2}
   - {fileID: 11400000, guid: c6cc5dae398f04dd9aad9e92a1b53314, type: 2}
   - {fileID: 11400000, guid: 317b5649f99af4a08b01a3d35ac4d227, type: 2}
+  inGameUI: {fileID: 0}
   RB: {fileID: 2703929767633843399}
   PV: {fileID: 8582268070166807158}
   NickNameText: {fileID: 2874501089350563553}

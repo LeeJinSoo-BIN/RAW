@@ -28,6 +28,9 @@ public class InGameUI : MonoBehaviour
 
     public GameObject BossStateUI;
     public GameObject BossSpawnButton;
+
+    public Dictionary<string, float> coolDown;
+    public GameObject skillKeyUI;
     public void setUp()
     {
         myCharacterState = myCharacter.GetComponentInChildren<CharacterState>(); 
@@ -72,6 +75,23 @@ public class InGameUI : MonoBehaviour
 
 
         }
+    }
+    public void CoolDown(string key, float coolingTime)
+    {
+        StartCoroutine(CoolDownCoroutine(key, coolingTime));
+    }
+    IEnumerator CoolDownCoroutine(string key, float coolingTime)
+    {
+        skillKeyUI.transform.Find(key.ToLower()).GetChild(2).GetComponent<Image>().fillAmount = 100;
+        float _time = coolingTime;
+        while (_time >= 0)
+        {
+            _time -= Time.deltaTime;
+            skillKeyUI.transform.Find(key.ToLower()).GetChild(2).GetComponent<Image>().fillAmount = _time / coolingTime;
+            
+            yield return null;
+        }
+        
     }
 }
 

@@ -10,13 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4bcf0c340af174f51a37a822ddf234e3, type: 3}
-  m_Name: ArrowRain
+  m_Name: ArrowGatling
   m_EditorClassIdentifier: 
   skillView: {fileID: 1473892316488033191, guid: e98e8a676c0a73f41acb26f5b53654ca, type: 3}
-  skillName: arrow rain
-  castType: circle
+  skillName: arrow gatling
+  castType: bar
   radius: {x: 2, y: 2}
-  range: {x: 1, y: 1}
+  range: {x: 2, y: 1}
   animType: skillBow1
   skillDelay: 1
-  skillDuration: 1.5
+  skillDuration: 0
+  coolDown: 5
