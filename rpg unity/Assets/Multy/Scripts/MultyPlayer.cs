@@ -57,6 +57,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
     Vector3 curPos;
 
+    public CharacterState characterState;
+
     private void Awake()
     {
         //itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;
@@ -378,11 +380,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
         if (current_skill.castType == "circle")
         {
-            //object[] Params = new object[2];
-            //Params[0] = skillPos;
-            //Params[1] = current_skill.skillDuration;
-            //MultySkill.instance.SendMessage("magic_floor", Params);
-            PhotonNetwork.Instantiate(current_skill.skillName, skillPos, Quaternion.identity);
+            GameObject skill = PhotonNetwork.Instantiate(current_skill.skillName, skillPos, Quaternion.identity);
+            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, characterState.power, characterState.skillLevel[current_skill.skillName], characterState.criticalPercent, characterState.criticalDamage);
         }
         else if (current_skill.castType == "bar")
         {
@@ -401,30 +400,35 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             }
             else if (current_skill.skillName == "arrow charge")
             {
-                PhotonNetwork.Instantiate(current_skill.skillName, skillCastingPosition.position, Quaternion.identity)
-                    .GetComponent<PhotonView>().RPC("SetTargetPosition", RpcTarget.All, skillPos * 5);
+                GameObject skill = PhotonNetwork.Instantiate(current_skill.skillName, skillCastingPosition.position, Quaternion.identity);
+                skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, characterState.power, characterState.skillLevel[current_skill.skillName], characterState.criticalPercent, characterState.criticalDamage);
+                skill.GetComponent<PhotonView>().RPC("SetTargetPosition", RpcTarget.All, skillPos * 5);
             }
             else
             {
-                PhotonNetwork.Instantiate(current_skill.skillName, skillPos, Quaternion.identity);
+                GameObject skill = PhotonNetwork.Instantiate(current_skill.skillName, skillPos, Quaternion.identity);
+                skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, characterState.power, characterState.skillLevel[current_skill.skillName], characterState.criticalPercent, characterState.criticalDamage);
             }
         }
         else if (current_skill.castType == "target-player" || current_skill.castType == "target-enemy" || current_skill.castType == "target-both") // target
         {
-            PhotonNetwork.Instantiate(current_skill.skillName, targetObject.transform.position, Quaternion.identity)
-                .GetComponent<PhotonView>().RPC("SetTarget", RpcTarget.All, targetObject.name);
+            GameObject skill = PhotonNetwork.Instantiate(current_skill.skillName, targetObject.transform.position, Quaternion.identity);
+            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, characterState.power, characterState.skillLevel[current_skill.skillName], characterState.criticalPercent, characterState.criticalDamage);
+            skill.GetComponent<PhotonView>().RPC("SetTarget", RpcTarget.All, targetObject.name);
         }
         else if (current_skill.castType == "buff-self")
         {
-            PhotonNetwork.Instantiate(current_skill.skillName, Vector3.zero, Quaternion.identity)
-                .GetComponent<PhotonView>().RPC("SetTarget", RpcTarget.All, gameObject.name);
+            GameObject skill = PhotonNetwork.Instantiate(current_skill.skillName, Vector3.zero, Quaternion.identity);
+            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, characterState.power, characterState.skillLevel[current_skill.skillName], characterState.criticalPercent, characterState.criticalDamage);
+            skill.GetComponent<PhotonView>().RPC("SetTarget", RpcTarget.All, gameObject.name);
         }
         else if (current_skill.castType == "buff-player" || current_skill.castType == "buff-enemy") // buff
         {
             foreach (Transform tar in targetObject.GetComponentInChildren<Transform>())
             {
-                PhotonNetwork.Instantiate(current_skill.skillName, tar.transform.position, Quaternion.identity)
-                    .GetComponent<PhotonView>().RPC("SetTarget", RpcTarget.All, tar.name);
+                GameObject skill = PhotonNetwork.Instantiate(current_skill.skillName, tar.transform.position, Quaternion.identity);
+                skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, characterState.power, characterState.skillLevel[current_skill.skillName], characterState.criticalPercent, characterState.criticalDamage);
+                skill.GetComponent<PhotonView>().RPC("SetTarget", RpcTarget.All, tar.name);
             }
         }
         inGameUI.CoolDown(current_casting_skill_key, current_skill.coolDown);
@@ -475,8 +479,9 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             }
             float rand_x = Random.Range(-0.1f, 0.1f);
             float rand_y = Random.Range(-0.1f, 0.1f);
-            PhotonNetwork.Instantiate("arrow gatling", oriPos + new Vector2(rand_x, rand_y), Quaternion.identity)
-                .GetComponent<PhotonView>().RPC("SetTargetPosition", RpcTarget.All, desPos + new Vector2(rand_x, rand_y));
+            GameObject skill = PhotonNetwork.Instantiate("arrow gatling", oriPos + new Vector2(rand_x, rand_y), Quaternion.identity);
+            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, characterState.power, characterState.skillLevel[current_skill.skillName], characterState.criticalPercent, characterState.criticalDamage);
+            skill.GetComponent<PhotonView>().RPC("SetTargetPosition", RpcTarget.All, desPos + new Vector2(rand_x, rand_y));
         }
     }
 

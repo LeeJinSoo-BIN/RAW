@@ -14,7 +14,7 @@ public class SwordShield : MonoBehaviourPunCallbacks
     private float duration = 0.7f;
 
     public float caseterPower = 1f;
-    public float casterSkillLevel = 1f;
+    public int casterSkillLevel = 1;
     public float casterCriticalPercent = 1f;
     public float casterCriticalDamage = 1f;
     public float Shield;
@@ -54,5 +54,14 @@ public class SwordShield : MonoBehaviourPunCallbacks
         target = GameObject.Find(targetName);
         transform.parent = target.transform;
         gainShield();
+    }
+
+    [PunRPC]
+    void initSkill(float power, int skillLevel, float criticalPercent, float criticalDamage)
+    {
+        caseterPower = power;
+        casterSkillLevel = skillLevel;
+        casterCriticalPercent = criticalPercent;
+        casterCriticalDamage = criticalDamage;
     }
 }

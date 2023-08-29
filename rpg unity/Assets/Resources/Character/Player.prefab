@@ -812,6 +812,7 @@ MonoBehaviour:
   NickNameText: {fileID: 8485177800325415461}
   canvas: {fileID: 8845137058866877253}
   sortingGroup: {fileID: 119079104696226518}
+  characterState: {fileID: 1707916302504198325}
 --- !u!114 &1371480156353156216
 MonoBehaviour:
   m_ObjectHideFlags: 0

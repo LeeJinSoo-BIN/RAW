@@ -23,7 +23,7 @@ public class MagicFloor : MonoBehaviourPunCallbacks
     private float duration = 3f;
 
     public float caseterPower = 1f;
-    public float casterSkillLevel = 1f;
+    public int casterSkillLevel = 1;
     public float casterCriticalPercent = 1f;
     public float casterCriticalDamage = 1f;
     public float Deal;
@@ -87,5 +87,13 @@ public class MagicFloor : MonoBehaviourPunCallbacks
             }
         }
     }
-   
+
+    [PunRPC]
+    void initSkill(float power, int skillLevel, float criticalPercent, float criticalDamage)
+    {
+        caseterPower = power;
+        casterSkillLevel = skillLevel;
+        casterCriticalPercent = criticalPercent;
+        casterCriticalDamage = criticalDamage;
+    }
 }

@@ -4348,10 +4348,10 @@ MonoBehaviour:
   ConnectButtonText: {fileID: 395490465}
   PV: {fileID: 1719753864}
   spawnButton: {fileID: 808758299348277558}
-  roomInfo: {fileID: 1366170751}
-  RoomList: {fileID: 79179846}
-  LobbyPanel: {fileID: 607373724}
-  RoomNameInputField: {fileID: 888977414}
+  roomInfo: {fileID: 0}
+  RoomList: {fileID: 0}
+  LobbyPanel: {fileID: 0}
+  RoomNameInputField: {fileID: 0}
 --- !u!4 &1719753863
 Transform:
   m_ObjectHideFlags: 0

@@ -21,7 +21,7 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
     private bool isPlayer = false;
     public MultyPlayer playerControl;
 
-    private Dictionary<string, int> skillLevel = new Dictionary<string, int>();
+    public Dictionary<string, int> skillLevel = new Dictionary<string, int>();
 
     void Awake()
     {
@@ -34,17 +34,17 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
         shield.value = 0;
         if (transform.parent.CompareTag("Player"))
             isPlayer = true;
-        skillLevel.Add("magic_floor", 1);
-        skillLevel.Add("magic_totem", 1);
-        skillLevel.Add("magic_heal", 1);
-        skillLevel.Add("magic_global_heal", 1);
-        skillLevel.Add("arrow_charge", 1);
-        skillLevel.Add("arrow_rain", 1);
-        skillLevel.Add("arrow_gatling", 1);
-        skillLevel.Add("sword_smash", 1);
-        skillLevel.Add("sword_shield", 1);
-        skillLevel.Add("sword_slash", 1);
-        skillLevel.Add("sword_bind", 1);
+        skillLevel.Add("magic floor", 1);
+        skillLevel.Add("magic totem", 1);
+        skillLevel.Add("magic heal", 1);
+        skillLevel.Add("magic global heal", 1);
+        skillLevel.Add("arrow charge", 1);
+        skillLevel.Add("arrow rain", 1);
+        skillLevel.Add("arrow gatling", 1);
+        skillLevel.Add("sword smash", 1);
+        skillLevel.Add("sword shield", 1);
+        skillLevel.Add("sword slash", 1);
+        skillLevel.Add("sword bind", 1);
         
     }
 

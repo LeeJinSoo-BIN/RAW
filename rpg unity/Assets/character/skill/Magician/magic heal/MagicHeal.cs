@@ -14,7 +14,7 @@ public class MagicHeal : MonoBehaviourPunCallbacks
 
     private float duration = 3f;
     public float caseterPower = 1f;
-    public float casterSkillLevel = 1f;
+    public int casterSkillLevel = 1;
     float Heal;
 
     private GameObject target;
@@ -51,5 +51,12 @@ public class MagicHeal : MonoBehaviourPunCallbacks
         transform.parent = target.transform;
         //transform.localPosition = Vector3.zero;
         excuteSKill();
+    }
+
+    [PunRPC]
+    void initSkill(float power, int skillLevel, float criticalPercent, float criticalDamage)
+    {
+        caseterPower = power;
+        casterSkillLevel = skillLevel;
     }
 }

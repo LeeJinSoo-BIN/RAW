@@ -11,7 +11,7 @@ public class SwordBind : MonoBehaviourPunCallbacks
     private float dealIncreasePerPower = 1;
     public GameObject target;
     public float caseterPower = 1f;
-    public float casterSkillLevel = 1f;
+    public int casterSkillLevel = 1;
     public float casterCriticalPercent = 1f;
     public float casterCriticalDamage = 1f;
     public float Deal;
@@ -59,5 +59,14 @@ public class SwordBind : MonoBehaviourPunCallbacks
         transform.parent = target.transform;
         transform.position += new Vector3(0f, 0.3f);
         Bind();
+    }
+
+    [PunRPC]
+    void initSkill(float power, int skillLevel, float criticalPercent, float criticalDamage)
+    {
+        caseterPower = power;
+        casterSkillLevel = skillLevel;
+        casterCriticalPercent = criticalPercent;
+        casterCriticalDamage = criticalDamage;
     }
 }

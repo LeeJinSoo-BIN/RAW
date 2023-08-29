@@ -13,7 +13,7 @@ public class SwordSmash : MonoBehaviourPunCallbacks
 
     private float duration = 0.7f;
     public float caseterPower = 1f;
-    public float casterSkillLevel = 1f;
+    public int casterSkillLevel = 1;
     public float casterCriticalPercent = 1f;
     public float casterCriticalDamage = 1f;
     public float Deal;
@@ -46,9 +46,16 @@ public class SwordSmash : MonoBehaviourPunCallbacks
         {
             PhotonView PV = target.transform.GetComponent<PhotonView>();
             PV.RPC("MonsterDamage", RpcTarget.All, 0, Deal);
-            //CharacterState state = target.transform.GetComponentInChildren<CharacterState>();
-            //state.ProcessSkill(0, Deal);
         }
+    }
+
+    [PunRPC]
+    void initSkill(float power, int skillLevel, float criticalPercent, float criticalDamage)
+    {
+        caseterPower = power;
+        casterSkillLevel = skillLevel;
+        casterCriticalPercent = criticalPercent;
+        casterCriticalDamage = criticalDamage;
     }
 
     [PunRPC]
