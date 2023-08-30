@@ -18,6 +18,18 @@ MonoBehaviour:
   radius: {x: 2, y: 2}
   range: {x: 2, y: 1}
   animType: skillBow1
-  skillDelay: 1
-  skillDuration: 0
+  delay: 1.7
+  duration: 0
   coolDown: 8
+  flatDeal: 0.7
+  dealIncreasePerSkillLevel: 0.1
+  dealIncreasePerPower: 0.2
+  flatHeal: 0
+  healIncreasePerSkillLevel: 0
+  healIncreasePerPower: 0
+  flatShield: 0
+  shieldIncreasePerSkillLevel: 0
+  shieldIncreasePerPower: 0
+  flatPower: 0
+  powerIncreasePerSkillLevel: 0
+  powerIncreasePerPower: 0

@@ -10,7 +10,7 @@ public class MagicTotem : MonoBehaviourPunCallbacks
     //private float Shield;
     private float Power;    
     //public GameObject target;
-    //public Vector3 targetPos;
+    //public Vector2 targetPos;
     public PhotonView PV;
 
     float dropTime = 0.3f;
@@ -65,7 +65,7 @@ public class MagicTotem : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void initSkill(float deal, float heal, float sheild, float power, float duration, string target_name, Vector3 target_pos)
+    void initSkill(float deal, float heal, float sheild, float power, float duration, string target_name, Vector2 target_pos)
     {
         Deal = deal;
         //Heal = heal;
@@ -76,7 +76,7 @@ public class MagicTotem : MonoBehaviourPunCallbacks
             //target = GameObject.Find(target_name);
             //transform.parent = target.transform;
         }
-        if (target_pos != default(Vector3))
+        if (target_pos != default(Vector2))
         {
             //targetPos = target_pos;
         }

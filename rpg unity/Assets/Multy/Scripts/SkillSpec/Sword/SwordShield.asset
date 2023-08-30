@@ -20,7 +20,7 @@ MonoBehaviour:
   animType: skillSword1
   delay: 1
   duration: 1
-  coolDown: 5
+  coolDown: 10
   flatDeal: 0
   dealIncreasePerSkillLevel: 0
   dealIncreasePerPower: 0
@@ -28,8 +28,8 @@ MonoBehaviour:
   healIncreasePerSkillLevel: 0
   healIncreasePerPower: 0
   flatShield: 50
-  shieldIncreasePerSkillLevel: 0
-  shieldIncreasePerPower: 0
+  shieldIncreasePerSkillLevel: 1
+  shieldIncreasePerPower: 1
   flatPower: 0
   powerIncreasePerSkillLevel: 0
   powerIncreasePerPower: 0

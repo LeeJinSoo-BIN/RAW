@@ -24,9 +24,9 @@ MonoBehaviour:
   flatDeal: 0
   dealIncreasePerSkillLevel: 0
   dealIncreasePerPower: 0
-  flatHeal: 0
-  healIncreasePerSkillLevel: 0
-  healIncreasePerPower: 0
+  flatHeal: 1
+  healIncreasePerSkillLevel: 1
+  healIncreasePerPower: 1
   flatShield: 0
   shieldIncreasePerSkillLevel: 0
   shieldIncreasePerPower: 0

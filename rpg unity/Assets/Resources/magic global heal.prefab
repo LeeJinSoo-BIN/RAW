@@ -250,8 +250,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fba33ffec3f15341aa585d1c3573932, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  caseterPower: 1
-  casterSkillLevel: 1
+  target: {fileID: 0}
+  PV: {fileID: 0}
 --- !u!114 &6119900541734985356
 MonoBehaviour:
   m_ObjectHideFlags: 0

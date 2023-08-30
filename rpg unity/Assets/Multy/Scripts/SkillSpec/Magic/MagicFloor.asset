@@ -22,7 +22,7 @@ MonoBehaviour:
   duration: 3
   coolDown: 7
   flatDeal: 1
-  dealIncreasePerSkillLevel: 1
+  dealIncreasePerSkillLevel: 0.5
   dealIncreasePerPower: 1
   flatHeal: 1
   healIncreasePerSkillLevel: 0.5

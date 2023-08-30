@@ -130,7 +130,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape) && PhotonNetwork.IsConnected)
-            //PhotonNetwork.Disconnect();
+            PhotonNetwork.Disconnect();
         if (connecting)
         {
             ConnectButtonText.text = PhotonNetwork.NetworkClientState.ToString();

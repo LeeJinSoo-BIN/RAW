@@ -18,10 +18,10 @@ MonoBehaviour:
   radius: {x: 1.5, y: 1.5}
   range: {x: 0, y: 0}
   animType: skillSword2
-  delay: 3
-  duration: 2
-  coolDown: 5
-  flatDeal: 5
+  delay: 1
+  duration: 1
+  coolDown: 7
+  flatDeal: 7
   dealIncreasePerSkillLevel: 1
   dealIncreasePerPower: 1
   flatHeal: 0

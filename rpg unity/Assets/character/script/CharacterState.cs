@@ -13,6 +13,7 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
     public CharacterSpec characterSpec;
     public Slider health;
     public Slider shield;
+    public float power;
     public Animator characterAnimator;
     
     private bool isDeath = false;
@@ -39,6 +40,7 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
         skillLevel.Add("sword slash", 1);
         skillLevel.Add("sword bind", 1);
         characterSpec.skillLevel = skillLevel;
+        power = characterSpec.power;
     }
 
     // Update is called once per frame
@@ -76,7 +78,7 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
         }
         else if (type == 3) // power
         {
-            characterSpec.power += value;
+            power += value;
         }
     }
 
