@@ -201,11 +201,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4a48e1224cdaf94782a9f7aa92be96f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  caseterPower: 1
-  casterSkillLevel: 1
-  casterCriticalPercent: 1
-  casterCriticalDamage: 1
-  Deal: 0
   PV: {fileID: -5611302346968666880}
 --- !u!114 &-5611302346968666880
 MonoBehaviour:

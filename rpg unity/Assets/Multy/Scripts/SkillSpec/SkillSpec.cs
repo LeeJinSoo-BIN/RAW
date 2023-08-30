@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,9 +17,26 @@ public class SkillSpec : ScriptableObject
     public Vector2 range;
 
     public string animType; //attack1,2,3, skill1,2,3        
-    public float skillDelay;
-    public float skillDuration;
+    public float delay;
+    public float duration;
     public float coolDown;
+
+    public float flatDeal;
+    public float dealIncreasePerSkillLevel;
+    public float dealIncreasePerPower;
+
+    public float flatHeal;
+    public float healIncreasePerSkillLevel;
+    public float healIncreasePerPower;
+
+    public float flatShield;
+    public float shieldIncreasePerSkillLevel;
+    public float shieldIncreasePerPower;
+
+    public float flatPower;
+    public float powerIncreasePerSkillLevel;
+    public float powerIncreasePerPower;
+
     /*public skill_spec(int _castType, (float x, float y) _radius, (float x, float y) _range, int _animType, int _effectType)
         {
             castType = _castType;

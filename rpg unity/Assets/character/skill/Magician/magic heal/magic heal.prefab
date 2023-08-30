@@ -67,8 +67,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 913f2d20958773c4eb5787346f176402, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  caseterPower: 1
-  casterSkillLevel: 1
+  target: {fileID: 0}
+  PV: {fileID: 0}
 --- !u!1 &8402023319295941552
 GameObject:
   m_ObjectHideFlags: 0

@@ -862,6 +862,7 @@ MonoBehaviour:
   animator: {fileID: 7196801161601376449}
   staff: {fileID: 6679292558783096967}
   PV: {fileID: 4241070347977510028}
+  attackable: 1
   isDeath: 0
 --- !u!114 &11439640600108841
 MonoBehaviour:
@@ -898,7 +899,6 @@ MonoBehaviour:
   shield: {fileID: 0}
   criticalPercent: 50
   criticalDamage: 1.2
-  characterAnimator: {fileID: 7196801161601376449}
   healPercent: 1
 --- !u!114 &9140936220363964851
 MonoBehaviour:

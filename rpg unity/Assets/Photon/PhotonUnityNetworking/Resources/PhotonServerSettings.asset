@@ -66,7 +66,10 @@ MonoBehaviour:
   - SetTargetandPosition
   - SpawnBoss
   - MonsterDamage
+  - SetSkillSpec
+  - getInfo
   - initSkill
+  - .ctor
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

@@ -151,15 +151,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
     
     public void BossSpawnButtonClick()
-    {
-        Debug.Log("clicekd");
+    {        
         if (PhotonNetwork.LocalPlayer.IsMasterClient)
         {
             PhotonNetwork.Instantiate("Evil Wizard", Vector3.zero, Quaternion.identity);
             PhotonNetwork.CurrentRoom.IsOpen = false;
             PV.RPC("SpawnBoss", RpcTarget.All);
-        }
-        
+        }        
     }
 
     [PunRPC]

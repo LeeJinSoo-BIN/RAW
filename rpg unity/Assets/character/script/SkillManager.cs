@@ -259,7 +259,7 @@ public class SkillManager : MonoBehaviour
         GameObject new_arrow = Instantiate(skill_arrow_charge);
         desPos *= 5;
         new_arrow.transform.position = oriPos;
-        new_arrow.GetComponent<arrowcharge>().targetPos = desPos;
+        new_arrow.GetComponent<ArrowCharge>().targetPos = desPos;
     }
 
 
@@ -301,7 +301,7 @@ public class SkillManager : MonoBehaviour
         _swordBind.transform.localPosition = new Vector2(0, 0);
         _swordBind.GetComponent<SwordBind>().target = target;
         //_swordBind.GetComponent<SwordBind>().duration = _duration;
-        _swordBind.GetComponent<SwordBind>().Bind();
+        _swordBind.GetComponent<SwordBind>().Bind(_duration);
         StartCoroutine(Vanish(5f, _swordBind));
     }
     IEnumerator Gatling(Vector2 oriPos, Vector2 desPos)
@@ -323,7 +323,7 @@ public class SkillManager : MonoBehaviour
             float rand_y = Random.Range(-0.1f, 0.1f);
             GameObject new_arrow = Instantiate(skill_arrow_gatling);
             new_arrow.transform.position = oriPos + new Vector2(rand_x, rand_y);
-            new_arrow.GetComponent<arrowgatling>().targetPos = desPos + new Vector2(rand_x, rand_y);
+            new_arrow.GetComponent<ArrowGatling>().targetPos = desPos + new Vector2(rand_x, rand_y);
         }
     }
 

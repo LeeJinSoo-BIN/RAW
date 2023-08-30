@@ -129,8 +129,8 @@ SortingGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2393885603552241966}
   m_Enabled: 1
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 77970987
+  m_SortingLayer: 1
   m_SortingOrder: 6
   m_SortAtRoot: 0
 --- !u!95 &6664562546274934749
@@ -167,11 +167,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  caseterPower: 1
-  casterSkillLevel: 1
-  casterCriticalPercent: 1
-  casterCriticalDamage: 1
-  Deal: 0
   PV: {fileID: 0}
 --- !u!1 &3514899900819229963
 GameObject:

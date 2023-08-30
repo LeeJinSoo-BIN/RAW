@@ -5,47 +5,40 @@ using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
 using JetBrains.Annotations;
+using UnityEditor;
 
 public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
 {
-    public int maxHealth = 1000;
-    public int maxMana = 1000;
-    public float power = 10f;
+    
+    public CharacterSpec characterSpec;
     public Slider health;
     public Slider shield;
-    public float criticalPercent = 50f;
-    public float criticalDamage = 1.2f;
     public Animator characterAnimator;
-    public float healPercent = 1f;
+    
     private bool isDeath = false;
-    private bool isPlayer = false;
     public MultyPlayer playerControl;
-
-    public Dictionary<string, int> skillLevel = new Dictionary<string, int>();
+    private Dictionary<string, int> skillLevel = new Dictionary<string, int>();
 
     void Awake()
     {
-        health = transform.GetChild(0).GetChild(1).GetComponent<Slider>();
-        shield = transform.GetChild(0).GetChild(2).GetComponent<Slider>();
-        characterAnimator = transform.parent.GetComponent<Animator>();
-        health.maxValue = maxHealth;
-        health.value = maxHealth;
-        shield.maxValue = maxHealth;
+        shield.maxValue = characterSpec.maxHealth;
         shield.value = 0;
-        if (transform.parent.CompareTag("Player"))
-            isPlayer = true;
+        health.maxValue = characterSpec.maxHealth;
+        health.value = characterSpec.maxHealth;
+        
         skillLevel.Add("magic floor", 1);
         skillLevel.Add("magic totem", 1);
         skillLevel.Add("magic heal", 1);
         skillLevel.Add("magic global heal", 1);
         skillLevel.Add("arrow charge", 1);
         skillLevel.Add("arrow rain", 1);
+        skillLevel.Add("arrow dash", 1);
         skillLevel.Add("arrow gatling", 1);
         skillLevel.Add("sword smash", 1);
         skillLevel.Add("sword shield", 1);
         skillLevel.Add("sword slash", 1);
         skillLevel.Add("sword bind", 1);
-        
+        characterSpec.skillLevel = skillLevel;
     }
 
     // Update is called once per frame
@@ -63,26 +56,19 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
             if (health.value <= 0 && !isDeath)
             {
                 isDeath = true;
-                characterAnimator.SetTrigger("Death");                
-                if (isPlayer)
-                {
-                    characterAnimator.SetBool("IsDeath", true);
-                    playerControl.movable = false;
-                    playerControl.attackable = false;
-                }
-                else
-                {
-                    transform.GetComponent<skillIpattern>().Death();
-                }
+                characterAnimator.SetTrigger("Death");
+                characterAnimator.SetBool("IsDeath", true);
+                playerControl.movable = false;
+                playerControl.attackable = false;
             }
-            if(type == 4 && !isPlayer)
+            if(type == 4)
             {
                 transform.GetComponent<skillIpattern>().Bind();
             }
         }
         else if(type == 1 && !isDeath) //heal
         {
-            health.value += value * healPercent;
+            health.value += value * characterSpec.healPercent;
         }
         else if (type == 2)//shield
         {
@@ -90,7 +76,7 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
         }
         else if (type == 3) // power
         {
-            power += value;
+            characterSpec.power += value;
         }
     }
 

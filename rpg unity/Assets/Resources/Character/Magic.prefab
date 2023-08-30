@@ -682,6 +682,7 @@ GameObject:
   - component: {fileID: 2703929767633843399}
   - component: {fileID: 8582268070166807158}
   - component: {fileID: 2919887382818646889}
+  - component: {fileID: -8483344006019456685}
   - component: {fileID: 6093407450503403606}
   - component: {fileID: 1371480156353156216}
   m_Layer: 8
@@ -827,6 +828,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 2919887382818646889}
+  - {fileID: -8483344006019456685}
   - {fileID: 6093407450503403606}
   - {fileID: 1371480156353156216}
   - {fileID: 4251900024503881234}
@@ -840,7 +842,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2067154607245451622}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0e7cb724808c322458aa4d15f5035fa9, type: 3}
   m_Name: 
@@ -849,6 +851,22 @@ MonoBehaviour:
   m_SynchronizeAngularVelocity: 0
   m_TeleportEnabled: 0
   m_TeleportIfDistanceGreaterThan: 3
+--- !u!114 &-8483344006019456685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2067154607245451622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 1
+  m_UseLocal: 1
 --- !u!114 &6093407450503403606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -888,13 +906,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: eb3513dee167d4b0ab8053bf20b70fa8, type: 2}
   - {fileID: 11400000, guid: c6cc5dae398f04dd9aad9e92a1b53314, type: 2}
   - {fileID: 11400000, guid: 317b5649f99af4a08b01a3d35ac4d227, type: 2}
+  characterState: {fileID: 4251900024503881234}
   inGameUI: {fileID: 0}
   RB: {fileID: 2703929767633843399}
   PV: {fileID: 8582268070166807158}
   NickNameText: {fileID: 2874501089350563553}
   canvas: {fileID: 2096887384750691921}
   sortingGroup: {fileID: 119079104696226518}
-  characterState: {fileID: 4251900024503881234}
 --- !u!114 &1371480156353156216
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2447,6 +2465,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b7955a7f2abfdb4990d08fb935e506e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PV: {fileID: 8582268070166807158}
 --- !u!1 &5629297249437936915
 GameObject:
   m_ObjectHideFlags: 0
@@ -4091,15 +4110,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35f12f740ef9b664bab4f6060b2c63cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 1000
-  maxMana: 1000
-  power: 10
-  health: {fileID: 0}
-  shield: {fileID: 0}
-  criticalPercent: 50
-  criticalDamage: 1.2
-  characterAnimator: {fileID: 0}
-  healPercent: 1
+  characterSpec: {fileID: 11400000, guid: d59c5f6d0be9f8b4585a069725ac6fba, type: 2}
+  health: {fileID: 2181009724074795520}
+  shield: {fileID: 896891074062794947}
+  characterAnimator: {fileID: 5222682414527307526}
   playerControl: {fileID: 6093407450503403606}
 --- !u!1 &8500139407171787526
 GameObject:
@@ -4561,7 +4575,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9216756501794589123}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.15, y: 0.2, z: 0}
   m_LocalScale: {x: 0.024999999, y: 0.024999999, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

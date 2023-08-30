@@ -45,6 +45,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public List<SkillSpec> skill_list = new List<SkillSpec>();
     private Dictionary<string, SkillSpec> skills = new Dictionary<string, SkillSpec>();
     private SkillSpec current_skill;
+    public CharacterState characterState;
 
     private Dictionary<string, float> skillActivatedTime = new Dictionary<string, float>();
     public InGameUI inGameUI;
@@ -56,8 +57,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public SortingGroup sortingGroup;
 
     Vector3 curPos;
-
-    public CharacterState characterState;
+    
 
     private void Awake()
     {
@@ -75,8 +75,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
         playerGroup = GameObject.Find("Player Group");
         enemyGroup = GameObject.Find("Enemy Group");
-        inGameUI = GameObject.Find("InGameUI").transform.GetChild(0).GetComponent<InGameUI>();
-        Debug.Log(inGameUI);
+        inGameUI = GameObject.Find("InGameUI").transform.GetChild(0).GetComponent<InGameUI>();        
 
         transform.parent = playerGroup.transform;
         skillActivatedTime.Add("Q", 0);
@@ -323,8 +322,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         return false;
     }
     void CastingSkill(Vector2 skillPos, GameObject target = null)
-    {
-        Debug.Log(current_casting_skill_key);
+    {        
         if (!isCoolDown())
         {
             castSkill = CastSkill(skillPos, target);            
@@ -377,17 +375,35 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         movable = false;
         characterAnimator.SetBool("IsRunning", false);
         characterAnimator.SetTrigger(current_skill.animType);
-
+        GameObject skill = null;        
+        float current_skill_deal = SkillManager.instance.CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
+            current_skill.flatDeal, current_skill.dealIncreasePerSkillLevel, current_skill.dealIncreasePerPower,
+            characterState.characterSpec.criticalPercent, characterState.characterSpec.criticalDamage, true);
+        float current_skill_heal = SkillManager.instance.CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
+            current_skill.flatHeal, current_skill.dealIncreasePerSkillLevel, current_skill.dealIncreasePerPower);
+        float current_skill_shield = SkillManager.instance.CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
+            current_skill.flatShield, current_skill.dealIncreasePerSkillLevel, current_skill.dealIncreasePerPower);
+        float current_skill_power = SkillManager.instance.CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
+            current_skill.flatPower, current_skill.powerIncreasePerSkillLevel, current_skill.powerIncreasePerPower);
+        Vector2 current_skill_target_pos = default(Vector2);
+        string current_skill_target_name = "";
         if (current_skill.castType == "circle")
         {
-            GameObject skill = PhotonNetwork.Instantiate(current_skill.skillName, skillPos, Quaternion.identity);
-            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, characterState.power, characterState.skillLevel[current_skill.skillName], characterState.criticalPercent, characterState.criticalDamage);
+            skill = PhotonNetwork.Instantiate(current_skill.skillName, skillPos, Quaternion.identity);            
         }
         else if (current_skill.castType == "bar")
         {
             Vector2 _dirMVec = (skillPos - (Vector2)transform.position).normalized;
-            if (_dirMVec.x > 0) transform.localScale = new Vector3(-1, 1, 1);
-            else if (_dirMVec.x < 0) transform.localScale = new Vector3(1, 1, 1);
+            if (_dirMVec.x > 0)
+            {
+                transform.localScale = new Vector3(-1, 1, 1);
+                canvas.transform.localScale = new Vector3(-1, 1, 1);
+            }
+            else if (_dirMVec.x < 0)
+            {
+                transform.localScale = new Vector3(1, 1, 1);
+                canvas.transform.localScale = new Vector3(1, 1, 1);
+            }
             skillPos += new Vector2(0f, 0.3f);
             if (current_skill.skillName == "arrow dash")
             {
@@ -396,45 +412,48 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             }
             else if (current_skill.skillName == "arrow gatling")
             {
-                StartCoroutine(Gatling(skillCastingPosition.position, skillPos));
+                StartCoroutine(Gatling(skillCastingPosition.position, skillPos, current_skill_deal));
             }
             else if (current_skill.skillName == "arrow charge")
             {
-                GameObject skill = PhotonNetwork.Instantiate(current_skill.skillName, skillCastingPosition.position, Quaternion.identity);
-                skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, characterState.power, characterState.skillLevel[current_skill.skillName], characterState.criticalPercent, characterState.criticalDamage);
-                skill.GetComponent<PhotonView>().RPC("SetTargetPosition", RpcTarget.All, skillPos * 5);
+                skill = PhotonNetwork.Instantiate(current_skill.skillName, skillCastingPosition.position, Quaternion.identity);
+                current_skill_target_pos = skillPos * 5;                
             }
             else
             {
-                GameObject skill = PhotonNetwork.Instantiate(current_skill.skillName, skillPos, Quaternion.identity);
-                skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, characterState.power, characterState.skillLevel[current_skill.skillName], characterState.criticalPercent, characterState.criticalDamage);
+                skill = PhotonNetwork.Instantiate(current_skill.skillName, skillPos, Quaternion.identity);
             }
         }
         else if (current_skill.castType == "target-player" || current_skill.castType == "target-enemy" || current_skill.castType == "target-both") // target
         {
-            GameObject skill = PhotonNetwork.Instantiate(current_skill.skillName, targetObject.transform.position, Quaternion.identity);
-            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, characterState.power, characterState.skillLevel[current_skill.skillName], characterState.criticalPercent, characterState.criticalDamage);
-            skill.GetComponent<PhotonView>().RPC("SetTarget", RpcTarget.All, targetObject.name);
+            skill = PhotonNetwork.Instantiate(current_skill.skillName, targetObject.transform.position, Quaternion.identity);
+            current_skill_target_name = targetObject.name;
         }
         else if (current_skill.castType == "buff-self")
         {
-            GameObject skill = PhotonNetwork.Instantiate(current_skill.skillName, Vector3.zero, Quaternion.identity);
-            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, characterState.power, characterState.skillLevel[current_skill.skillName], characterState.criticalPercent, characterState.criticalDamage);
-            skill.GetComponent<PhotonView>().RPC("SetTarget", RpcTarget.All, gameObject.name);
+            skill = PhotonNetwork.Instantiate(current_skill.skillName, Vector3.zero, Quaternion.identity);
+            current_skill_target_name = gameObject.name;
         }
         else if (current_skill.castType == "buff-player" || current_skill.castType == "buff-enemy") // buff
         {
             foreach (Transform tar in targetObject.GetComponentInChildren<Transform>())
             {
-                GameObject skill = PhotonNetwork.Instantiate(current_skill.skillName, tar.transform.position, Quaternion.identity);
-                skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, characterState.power, characterState.skillLevel[current_skill.skillName], characterState.criticalPercent, characterState.criticalDamage);
-                skill.GetComponent<PhotonView>().RPC("SetTarget", RpcTarget.All, tar.name);
+                skill = PhotonNetwork.Instantiate(current_skill.skillName, tar.transform.position, Quaternion.identity);
+                current_skill_target_name = tar.name;
+                skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, current_skill.duration, current_skill_target_name, current_skill_target_pos);
             }
         }
+        if(skill != null)
+        {
+            //SkillInfo skillInfo = new SkillInfo(current_skill, characterState.characterSpec);            
+            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, current_skill.duration, current_skill_target_name, current_skill_target_pos);
+        }
+
         inGameUI.CoolDown(current_casting_skill_key, current_skill.coolDown);
         skillActivatedTime[current_casting_skill_key] = Time.time;
+
         float delay = 0;
-        while (delay < current_skill.skillDelay)
+        while (delay < current_skill.delay)
         {
             delay += Time.deltaTime;
             yield return null;
@@ -462,7 +481,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
-    IEnumerator Gatling(Vector2 oriPos, Vector2 desPos)
+    IEnumerator Gatling(Vector2 oriPos, Vector2 desPos, float current_skill_deal)
     {
 
         for (int k = 0; k < 20; k++)
@@ -480,8 +499,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             float rand_x = Random.Range(-0.1f, 0.1f);
             float rand_y = Random.Range(-0.1f, 0.1f);
             GameObject skill = PhotonNetwork.Instantiate("arrow gatling", oriPos + new Vector2(rand_x, rand_y), Quaternion.identity);
-            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, characterState.power, characterState.skillLevel[current_skill.skillName], characterState.criticalPercent, characterState.criticalDamage);
-            skill.GetComponent<PhotonView>().RPC("SetTargetPosition", RpcTarget.All, desPos + new Vector2(rand_x, rand_y));
+            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, 0f, 0f, 0f, 0f, "", desPos + new Vector2(rand_x, rand_y));
         }
     }
 
@@ -526,7 +544,17 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             return;
         }
         Vector3 _dirMVec = _dirVec.normalized;
-        PV.RPC("direction", RpcTarget.AllBuffered, _dirMVec);
+        if (_dirMVec.x > 0)
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
+            canvas.transform.localScale = new Vector3(-1, 1, 1);
+        }
+        else if (_dirMVec.x < 0)
+        {
+            transform.localScale = new Vector3(1, 1, 1);
+            canvas.transform.localScale = new Vector3(1, 1, 1);
+        }
+        //PV.RPC("direction", RpcTarget.AllBuffered, _dirMVec);
         transform.position += (_dirMVec * characterMoveSpeed * Time.deltaTime);
     }
 
