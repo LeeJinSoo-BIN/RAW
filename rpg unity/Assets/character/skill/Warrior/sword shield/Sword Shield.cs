@@ -6,26 +6,13 @@ using Photon.Realtime;
 
 public class SwordShield : MonoBehaviourPunCallbacks
 {
-    private float flatShield = 1;
-    private float shieldIncreasePerSkillLevel = 1;
-    private float shieldIncreasePerPower = 1;
+    //private float Deal;
+    //private float Heal;
+    private float Shield;
+    //private float Power;
     public GameObject target;
-
-    private float duration = 0.7f;
-
-    public float caseterPower = 1f;
-    public int casterSkillLevel = 1;
-    public float casterCriticalPercent = 1f;
-    public float casterCriticalDamage = 1f;
-    public float Shield;
+    //public Vector2 targetPos;
     public PhotonView PV;
-    private void Awake()
-    {
-        Shield = SkillManager.instance.CaculateCharacterSkillDamage(casterSkillLevel, caseterPower,
-            flatShield, shieldIncreasePerSkillLevel, shieldIncreasePerPower,
-            casterCriticalPercent, casterCriticalDamage, true);
-        StartCoroutine(Vanish(duration));
-    }
 
     IEnumerator Vanish(float duration)
     {
@@ -52,16 +39,28 @@ public class SwordShield : MonoBehaviourPunCallbacks
     void SetTarget(string targetName)
     {
         target = GameObject.Find(targetName);
-        transform.parent = target.transform;
-        gainShield();
+        transform.parent = target.transform;        
     }
 
     [PunRPC]
-    void initSkill(float power, int skillLevel, float criticalPercent, float criticalDamage)
+    void initSkill(float deal, float heal, float sheild, float power, float duration, string target_name, Vector2 target_pos)
     {
-        caseterPower = power;
-        casterSkillLevel = skillLevel;
-        casterCriticalPercent = criticalPercent;
-        casterCriticalDamage = criticalDamage;
+        //Deal = deal;
+        //Heal = heal;
+        Shield = sheild;
+        //Power = power;
+        if (target_name != "")
+        {
+            target = GameObject.Find(target_name);
+            transform.parent = target.transform;
+        }
+        if (target_pos != default(Vector2))
+        {
+            //targetPos = target_pos;
+        }
+        StartCoroutine(Vanish(duration));
+
+        gainShield();
     }
+
 }

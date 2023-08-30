@@ -1,29 +1,18 @@
-using Photon.Pun;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
+using Photon.Pun;
+using static UnityEngine.GraphicsBuffer;
 
-public class arrowdrop : MonoBehaviourPunCallbacks
+public class ArrowRain : MonoBehaviourPunCallbacks
 {
-    // Start is called before the first frame update
-    private float flatDeal = 15;
-    private float dealIncreasePerSkillLevel = 1;
-    private float dealIncreasePerPower = 1;
-
-    private float duration = 1.5f;
-    public float caseterPower = 1f;
-    public int casterSkillLevel = 1;
-    public float casterCriticalPercent = 1f;
-    public float casterCriticalDamage = 1f;
-    public float Deal;
+    private float Deal;
+    //private float Heal;
+    //private float Shield;
+    //private float Power;    
+    //public GameObject target;
+    public Vector2 targetPos;
     public PhotonView PV;
-    private void Awake()
-    {
-        StartCoroutine(Vanish(duration));
-        Deal = SkillManager.instance.CaculateCharacterSkillDamage(casterSkillLevel, caseterPower,
-            flatDeal, dealIncreasePerSkillLevel, dealIncreasePerPower,
-            casterCriticalPercent, casterCriticalDamage, true);
-    }
+
 
     IEnumerator Vanish(float duration)
     {
@@ -33,7 +22,11 @@ public class arrowdrop : MonoBehaviourPunCallbacks
             time += Time.deltaTime;
             yield return null;
         }
-        GetComponent<Animator>().SetTrigger("vanish");
+        try
+        {
+            GetComponent<Animator>().SetTrigger("vanish");
+        }
+        catch { }
         Destroy(gameObject, 0.45f);
     }
 
@@ -41,20 +34,27 @@ public class arrowdrop : MonoBehaviourPunCallbacks
     {
         if (collision.CompareTag("Monster") && PV.IsMine)
         {
-            PhotonView PV = collision.transform.GetComponent<PhotonView>();
-            PV.RPC("MonsterDamage", RpcTarget.All, 0, Deal);
-            //CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-            //state.ProcessSkill(0, Deal);
+            PhotonView MonsterPV = collision.transform.GetComponent<PhotonView>();
+            MonsterPV.RPC("MonsterDamage", RpcTarget.All, 0, Deal, 0f);
         }
 
     }
-
     [PunRPC]
-    void initSkill(float power, int skillLevel, float criticalPercent, float criticalDamage)
+    void initSkill(float deal, float heal, float sheild, float power, float duration, string target_name, Vector2 target_pos)
     {
-        caseterPower = power;
-        casterSkillLevel = skillLevel;
-        casterCriticalPercent = criticalPercent;
-        casterCriticalDamage = criticalDamage;
+        Deal = deal;
+        //Heal = heal;
+        //Shield = sheild;
+        //Power = power;
+        if (target_name != "")
+        {
+            //target = GameObject.Find(target_name);
+            //transform.parent = target.transform;
+        }
+        if (target_pos != default(Vector2))
+        {
+            targetPos = target_pos;
+        }
+        StartCoroutine(Vanish(duration));
     }
 }

@@ -1,33 +1,21 @@
-using Photon.Pun;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
+using System.Collections;
+using Photon.Pun;
 
-public class MagicGlobalHeal : MonoBehaviour
+public class MagicGlobalHeal : MonoBehaviourPunCallbacks
 {
-    // Start is called before the first frame update
-    private float flatHeal = 15;
-    private float healIncreasePerSkillLevel = 1;
-    private float healIncreasePerPower = 1;
-
-    private float duration = 3f;
-    public float caseterPower = 1f;
-    public int casterSkillLevel = 1;
-
+    //private float Deal;
     private float Heal;
-    private GameObject target;
-    void excuteSkill()
+    //private float Shield;
+    //private float Power;
+    public GameObject target;
+    //public Vector2 targetPos;
+    public PhotonView PV;
+        
+    void Excute()
     {
-        CharacterState state = transform.parent.GetComponentInChildren<CharacterState>();
-        Heal = SkillManager.instance.CaculateCharacterSkillDamage(casterSkillLevel, caseterPower,
-            flatHeal, healIncreasePerSkillLevel, healIncreasePerPower);
+        CharacterState state = transform.parent.GetComponentInChildren<CharacterState>();       
         state.ProcessSkill(1, Heal);
-    }
-
-    private void Awake()
-    {
-        StartCoroutine(Vanish(duration));
     }
 
     IEnumerator Vanish(float duration)
@@ -42,19 +30,25 @@ public class MagicGlobalHeal : MonoBehaviour
         Destroy(gameObject, 0.45f);
     }
 
-    [PunRPC]
-    void SetTarget(string targetName)
-    {
-        target = GameObject.Find(targetName);
-        transform.parent = target.transform;
-        //transform.localPosition = Vector3.zero;
-        excuteSkill();
-    }
 
     [PunRPC]
-    void initSkill(float power, int skillLevel, float criticalPercent, float criticalDamage)
+    void initSkill(float deal, float heal, float sheild, float power, float duration, string target_name, Vector2 target_pos)
     {
-        caseterPower = power;
-        casterSkillLevel = skillLevel;
+        //Deal = deal;
+        Heal = heal;
+        //Shield = sheild;
+        //Power = power;
+        if (target_name != "")
+        {
+            target = GameObject.Find(target_name);
+            transform.parent = target.transform;
+        }
+        if (target_pos != default(Vector2))
+        {
+            //targetPos = target_pos;
+        }
+        StartCoroutine(Vanish(duration));
+
+        Excute();
     }
 }

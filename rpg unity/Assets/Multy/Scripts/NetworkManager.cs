@@ -17,7 +17,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public GameObject DisconnectPanel;
     public GameObject RespwanPanel;
     public GameObject ConnectPanel;
-    
+
     public GameObject InGameUI;
     public GameObject ground;
     private bool connecting = false;
@@ -43,9 +43,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Connect();
         InGameUI.SetActive(false);
         ground.SetActive(false);
-        
+
         ConnectPanel.SetActive(false);
-        DisconnectPanel.SetActive(true);        
+        DisconnectPanel.SetActive(true);
         LobbyPanel.SetActive(false);
     }
 
@@ -59,7 +59,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.JoinLobby();
     }
-    
+
     public override void OnConnectedToMaster()
     {
         //PhotonNetwork.LocalPlayer.NickName = NickNameInput.text;
@@ -74,8 +74,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
 
     public override void OnCreatedRoom()
-    {        
-        
+    {
+
     }
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
@@ -143,19 +143,18 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public void Spawn(string character)
     {
         GameObject player = PhotonNetwork.Instantiate("Character/" + character, Vector3.zero, Quaternion.identity);
-        
+
         ConnectPanel.SetActive(false);
         RespwanPanel.SetActive(false);
         InGameUI.SetActive(true);
         ground.SetActive(true);
         InGameUI.GetComponent<InGameUI>().myCharacter = player;
         InGameUI.GetComponent<InGameUI>().setUp();
-        
+
     }
-    
+
     public void BossSpawnButtonClick()
     {
-        Debug.Log("clicekd");
         if (PhotonNetwork.LocalPlayer.IsMasterClient)
         {
             PhotonNetwork.Instantiate("Evil Wizard", Vector3.zero, Quaternion.identity);

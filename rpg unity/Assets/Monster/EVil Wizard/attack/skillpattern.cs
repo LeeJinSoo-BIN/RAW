@@ -4,6 +4,7 @@ using System.Collections;
 using Photon.Pun;
 using Photon.Realtime;
 using System.Linq.Expressions;
+using Unity.VisualScripting;
 
 public class skillIpattern : MonoBehaviourPunCallbacks
 {    
@@ -24,7 +25,8 @@ public class skillIpattern : MonoBehaviourPunCallbacks
     private Transform bottomRight;
 
     public PhotonView PV;
-    public bool attackable = false;
+    public bool attackable = true;
+    public bool isDeath = false;
     private void Awake()
     {
         transform.parent = GameObject.Find("Enemy Group").transform;
@@ -38,7 +40,7 @@ public class skillIpattern : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-        if (PhotonNetwork.IsMasterClient && attackable)
+        if (PhotonNetwork.IsMasterClient && attackable && !isDeath)
         {
             _time += Time.deltaTime;
 
@@ -66,23 +68,33 @@ public class skillIpattern : MonoBehaviourPunCallbacks
     public void Death()
     {
         attackable = false;
-
+        isDeath = true;
+        animator.SetTrigger("Death");
     }
 
     public void Bind(float bindTime = 5f)
     {
-        StartCoroutine(ExcuteBind(bindTime));
+        if(!isDeath)
+            StartCoroutine(ExcuteBind(bindTime));
+    }
+    public void Hit()
+    {
+        if(!isDeath)
+            animator.SetTrigger("hit");
     }
 
     IEnumerator ExcuteBind(float bindTime)
     {
         attackable = false;
+        animator.SetBool("isBound", true);
+        animator.SetTrigger("hit");
         float _time = 0f;
         while(_time < bindTime)
         {
             _time += Time.deltaTime;
             yield return null;
         }
+        animator.SetBool("isBound", false);
         attackable = true;
     }
 

@@ -372,8 +372,7 @@ public class CharacterControl : MonoBehaviour
             delay += Time.deltaTime;
             yield return null;
         }
-        movable = true;        
-
+        movable = true;
     }
 
 

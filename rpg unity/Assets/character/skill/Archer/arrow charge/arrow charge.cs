@@ -1,66 +1,50 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 using Photon.Pun;
-using Photon.Realtime;
+using static UnityEngine.GraphicsBuffer;
 
-public class arrowcharge : MonoBehaviourPunCallbacks
+public class ArrowCharge : MonoBehaviourPunCallbacks
 {
-    public Vector3 targetPos;
-    public float speed = 1;
+    private float Deal;
+    //private float Heal;
+    //private float Shield;
+    //private float Power;    
+    //public GameObject target;
+    public Vector2 targetPos;
+    public PhotonView PV;
+
+    private float speed = 7f;
     private float charge_time = 2.5f;
     private float current_time = 0f;
 
-    private int flatDeal = 60;
-    private int dealIncreasePerSkillLevel = 1;
-    private int dealIncreasePerPower = 1;
-    public float caseterPower = 1f;
-    public int casterSkillLevel = 1;
-    public float casterCriticalPercent = 1f;
-    public float casterCriticalDamage = 1f;
-    public float Deal;
-
-    public PhotonView PV;
-
-    // Start is called before the first frame update
-    void Start()
+    
+    IEnumerator Excute()
     {
-        speed = 10;
-        Deal = SkillManager.instance.CaculateCharacterSkillDamage(casterSkillLevel, caseterPower,
-            flatDeal, dealIncreasePerSkillLevel, dealIncreasePerPower,
-            casterCriticalPercent, casterCriticalDamage, true);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (charge_time > current_time)
+        while (true)
         {
-            current_time += Time.deltaTime;
-            float angle_pi = Mathf.Atan2(transform.position.y - targetPos.y, transform.position.x - targetPos.x);
-            float angle_rad = angle_pi * Mathf.Rad2Deg + 180;
-            /*if (transform.localScale.x > 0)
-                angle_rad -= 180;*/
-            transform.rotation = Quaternion.AngleAxis(angle_rad, Vector3.forward);
-        }
-        else
-        {
-            Vector3 dir = targetPos - transform.position;
-            if (dir.magnitude < 0.01f)
+            if (charge_time > current_time)
             {
-                Destroy(gameObject);
+                current_time += Time.deltaTime;
+                float angle_pi = Mathf.Atan2(transform.position.y - targetPos.y, transform.position.x - targetPos.x);
+                float angle_rad = angle_pi * Mathf.Rad2Deg + 180;
+                transform.rotation = Quaternion.AngleAxis(angle_rad, Vector3.forward);
             }
+            else
+            {
+                Vector2 dir = targetPos - (Vector2)transform.position;
+                if (dir.magnitude < 0.01f)
+                {
+                    Destroy(gameObject);
+                    break;
+                }
 
-            transform.position = Vector2.MoveTowards(transform.position, targetPos, speed * Time.deltaTime);
-            //transform.position += dir * speed * Time.deltaTime;
+                transform.position = Vector2.MoveTowards(transform.position, targetPos, speed * Time.deltaTime);
 
-
-            float angle_pi = Mathf.Atan2(transform.position.y - targetPos.y, transform.position.x - targetPos.x);
-            float angle_rad = angle_pi * Mathf.Rad2Deg + 180;
-            /*if (transform.localScale.x > 0)
-                angle_rad -= 180;*/
-            transform.rotation = Quaternion.AngleAxis(angle_rad, Vector3.forward);
+                float angle_pi = Mathf.Atan2(transform.position.y - targetPos.y, transform.position.x - targetPos.x);
+                float angle_rad = angle_pi * Mathf.Rad2Deg + 180;
+                transform.rotation = Quaternion.AngleAxis(angle_rad, Vector3.forward);
+            }
+            yield return null;
         }
     }
 
@@ -74,27 +58,31 @@ public class arrowcharge : MonoBehaviourPunCallbacks
         {
             if (collision.CompareTag("Monster") && PV.IsMine)
             {
-                PhotonView PV = collision.transform.GetComponent<PhotonView>();
-                PV.RPC("MonsterDamage", RpcTarget.All, 0, Deal);
-                //CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-                //state.ProcessSkill(0, Deal);
+                PhotonView MonsterPV = collision.transform.GetComponent<PhotonView>();
+                MonsterPV.RPC("MonsterDamage", RpcTarget.All, 0, Deal, 0f);                
             }
         }
     }
 
     [PunRPC]
-    void initSkill(float power, int skillLevel, float criticalPercent, float criticalDamage)
+    void initSkill(float deal, float heal, float sheild, float power, float duration, string target_name, Vector2 target_pos)
     {
-        caseterPower = power;
-        casterSkillLevel = skillLevel;
-        casterCriticalPercent = criticalPercent;
-        casterCriticalDamage = criticalDamage;
-    }
+        Deal = deal;
+        //Heal = heal;
+        //Shield = sheild;
+        //Power = power;
+        if (target_name != "")
+        {
+            //target = GameObject.Find(target_name);
+            //transform.parent = target.transform;
+        }
+        if (target_pos != default(Vector2))
+        {
+            targetPos = target_pos;
+        }
+        //StartCoroutine(Vanish(duration));
 
-    [PunRPC]
-    void SetTargetPosition(Vector2 pos)
-    {
-        targetPos = pos;
+        StartCoroutine(Excute());
     }
 }
 

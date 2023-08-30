@@ -10,14 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4bcf0c340af174f51a37a822ddf234e3, type: 3}
-  m_Name: MagicGlobalHeal
+  m_Name: ArrowRain
   m_EditorClassIdentifier: 
   skillView: {fileID: 1473892316488033191, guid: e98e8a676c0a73f41acb26f5b53654ca, type: 3}
-  skillName: magic global heal
-  castType: buff-player
-  radius: {x: 0, y: 0}
-  range: {x: 0, y: 0}
-  animType: attack3
-  skillDelay: 1
-  skillDuration: 3
-  coolDown: 15
+  skillName: arrow rain
+  castType: circle
+  radius: {x: 2, y: 2}
+  range: {x: 1, y: 1}
+  animType: skillBow1
+  delay: 1.2
+  duration: 2
+  coolDown: 5
+  flatDeal: 8
+  dealIncreasePerSkillLevel: 1
+  dealIncreasePerPower: 1
+  flatHeal: 0
+  healIncreasePerSkillLevel: 0
+  healIncreasePerPower: 0
+  flatShield: 0
+  shieldIncreasePerSkillLevel: 0
+  shieldIncreasePerPower: 0
+  flatPower: 0
+  powerIncreasePerSkillLevel: 0
+  powerIncreasePerPower: 0

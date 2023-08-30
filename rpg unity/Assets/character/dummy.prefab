@@ -3642,15 +3642,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35f12f740ef9b664bab4f6060b2c63cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 1000
-  maxMana: 1000
-  power: 10
+  characterSpec: {fileID: 0}
   health: {fileID: 0}
   shield: {fileID: 0}
-  criticalPercent: 50
-  criticalDamage: 1.2
   characterAnimator: {fileID: 6308030836626245559}
-  healPercent: 1
   playerControl: {fileID: 0}
 --- !u!1 &8245904191574495730
 GameObject:

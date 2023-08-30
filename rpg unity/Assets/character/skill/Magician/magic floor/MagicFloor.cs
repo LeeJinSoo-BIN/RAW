@@ -1,49 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 using Photon.Pun;
-using Photon.Realtime;
+using static UnityEngine.GraphicsBuffer;
 
 public class MagicFloor : MonoBehaviourPunCallbacks
 {
-    // Start is called before the first frame update
-    private float cycle = 0.3f;
-    private float time = 0;
-    private bool active = false;
-
-
-    private float flatDeal = 2.5f;
-    private float dealIncreasePerSkillLevel = 1;
-    private float dealIncreasePerPower = 1;
-
-    private float flatHeal = 1f;
-    private float healIncreasePerSkillLevel = 1;
-    private float healIncreasePerPower = 1;
-
-    private float duration = 3f;
-
-    public float caseterPower = 1f;
-    public int casterSkillLevel = 1;
-    public float casterCriticalPercent = 1f;
-    public float casterCriticalDamage = 1f;
-    public float Deal;
-    public float Heal;
-
+    private float Deal;
+    private float Heal;
+    //private float Shield;
+    //private float Power;
+    //public GameObject target;
+    //public Vector2 targetPos;
     public PhotonView PV;
-    private void Awake()
-    {
-        StartCoroutine(Vanish(duration));
-        Deal = SkillManager.instance.CaculateCharacterSkillDamage(casterSkillLevel, caseterPower,
-            flatDeal, dealIncreasePerSkillLevel, dealIncreasePerPower,
-            casterCriticalPercent, casterCriticalDamage, true);
-        Heal = SkillManager.instance.CaculateCharacterSkillDamage(casterSkillLevel, caseterPower,
-            flatHeal, healIncreasePerSkillLevel, healIncreasePerPower);        
-    }
 
-    IEnumerator Vanish(float duration)
+    private float time = 0f;
+    private float cycle = 1f;
+    private bool active = true;    
+
+    IEnumerator Vanish(float Duration)
     {
         float time = 0;
-        while (time < duration)
+        while (time < Duration)
         {
             time += Time.deltaTime;
             yield return null;
@@ -51,11 +28,11 @@ public class MagicFloor : MonoBehaviourPunCallbacks
         GetComponent<Animator>().SetTrigger("vanish");
         Destroy(gameObject, 0.45f);
     }
-
-    // Update is called once per frame
+    
     void Update()
     {
-        if (time > cycle) {
+        if (time > cycle)
+        {
             active = true;
             time = 0;
         }
@@ -72,16 +49,14 @@ public class MagicFloor : MonoBehaviourPunCallbacks
         {
             if (active && PV.IsMine)
             {
-                PhotonView PV = collision.transform.GetComponent<PhotonView>();
-                PV.RPC("MonsterDamage", RpcTarget.All, 0, Deal);
-                //CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-                //state.ProcessSkill(0, Deal);
+                PhotonView MonsterPV = collision.transform.GetComponent<PhotonView>();
+                MonsterPV.RPC("MonsterDamage", RpcTarget.All, 0, Deal, 0f);
             }
         }
         else if (collision.CompareTag("Player"))
-        {            
+        {
             if (active && collision.transform.GetComponent<PhotonView>().IsMine)
-            {                
+            {
                 CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
                 state.ProcessSkill(1, Heal);
             }
@@ -89,11 +64,21 @@ public class MagicFloor : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void initSkill(float power, int skillLevel, float criticalPercent, float criticalDamage)
+    void initSkill(float deal, float heal, float sheild, float power, float duration, string target_name, Vector2 target_pos)
     {
-        caseterPower = power;
-        casterSkillLevel = skillLevel;
-        casterCriticalPercent = criticalPercent;
-        casterCriticalDamage = criticalDamage;
+        Deal = deal;
+        Heal = heal;
+        //Shield = sheild;
+        //Power = power;
+        if (target_name != "")
+        {
+            //target = GameObject.Find(target_name);
+            //transform.parent = target.transform;
+        }
+        if (target_pos != default(Vector2))
+        {
+            //targetPos = target_pos;
+        }
+        StartCoroutine(Vanish(duration));
     }
 }

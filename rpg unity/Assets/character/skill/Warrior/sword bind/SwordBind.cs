@@ -6,22 +6,13 @@ using Photon.Realtime;
 
 public class SwordBind : MonoBehaviourPunCallbacks
 {
-    private float flatDeal = 1;
-    private float dealIncreasePerSkillLevel = 1;
-    private float dealIncreasePerPower = 1;
+    private float Deal;
+    //private float Heal;
+    //private float Shield;
+    //private float Power;
     public GameObject target;
-    public float caseterPower = 1f;
-    public int casterSkillLevel = 1;
-    public float casterCriticalPercent = 1f;
-    public float casterCriticalDamage = 1f;
-    public float Deal;
-
-    private float duration = 5f;
+    //public Vector2 targetPos;
     public PhotonView PV;
-    private void Awake()
-    {
-        StartCoroutine(Vanish(duration));
-    }
 
     IEnumerator Vanish(float duration)
     {
@@ -35,20 +26,12 @@ public class SwordBind : MonoBehaviourPunCallbacks
         Destroy(gameObject, 0.45f);
     }
 
-    private void Start()
-    {
-        Deal = SkillManager.instance.CaculateCharacterSkillDamage(casterSkillLevel, caseterPower,
-            flatDeal, dealIncreasePerSkillLevel, dealIncreasePerPower,
-            casterCriticalPercent, casterCriticalDamage, true);
-    }
-    public void Bind()
+    public void Bind(float duration)
     {
         if (PV.IsMine)
         {
-            PhotonView PV = target.transform.GetComponent<PhotonView>();
-            PV.RPC("MonsterDamage", RpcTarget.All, 4, Deal);
-            //CharacterState state = target.transform.GetComponentInChildren<CharacterState>();
-            //state.ProcessSkill(4, Deal);
+            PhotonView MonsterPV = target.transform.GetComponent<PhotonView>();
+            MonsterPV.RPC("MonsterDamage", RpcTarget.All, 4, Deal, duration);
         }
     }
 
@@ -57,16 +40,28 @@ public class SwordBind : MonoBehaviourPunCallbacks
     {
         target = GameObject.Find(targetName);
         transform.parent = target.transform;
-        transform.position += new Vector3(0f, 0.3f);
-        Bind();
+        transform.position += new Vector3(0f, 1f);        
     }
 
     [PunRPC]
-    void initSkill(float power, int skillLevel, float criticalPercent, float criticalDamage)
+    void initSkill(float deal, float heal, float sheild, float power, float duration, string target_name, Vector2 target_pos)
     {
-        caseterPower = power;
-        casterSkillLevel = skillLevel;
-        casterCriticalPercent = criticalPercent;
-        casterCriticalDamage = criticalDamage;
+        Deal = deal;
+        //Heal = heal;
+        //Shield = sheild;
+        //Power = power;
+        if (target_name != "")
+        {
+            target = GameObject.Find(target_name);
+            transform.parent = target.transform;
+            transform.localPosition = new Vector3(-0.02f, 0.2f);
+        }
+        if (target_pos != default(Vector2))
+        {
+            //targetPos = target_pos;
+        }
+        StartCoroutine(Vanish(duration));
+
+        Bind(duration);
     }
 }

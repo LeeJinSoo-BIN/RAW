@@ -14,7 +14,6 @@ public class MonsterState : MonoBehaviourPunCallbacks
     public Slider shield;
     public float criticalPercent = 50f;
     public float criticalDamage = 1.2f;
-    public Animator characterAnimator;
     public float healPercent = 1f;
     private bool isDeath = false;
 
@@ -24,7 +23,6 @@ public class MonsterState : MonoBehaviourPunCallbacks
     {
         health = transform.GetChild(0).GetChild(0).GetChild(1).GetComponent<Slider>();
         shield = transform.GetChild(0).GetChild(0).GetChild(2).GetComponent<Slider>();
-        characterAnimator = transform.GetComponent<Animator>();
         health.maxValue = maxHealth;
         health.value = maxHealth;
         shield.maxValue = maxHealth;
@@ -32,7 +30,7 @@ public class MonsterState : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void MonsterDamage(int type, float value)
+    void MonsterDamage(int type, float value, float duration)
     {
         float _shield = shield.value;
         shield.value -= value;
@@ -43,8 +41,12 @@ public class MonsterState : MonoBehaviourPunCallbacks
         if (health.value <= 0 && !isDeath)
         {
             isDeath = true;
-            characterAnimator.SetTrigger("Death");
-            characterAnimator.SetBool("IsDeath", true);
+            transform.GetComponent<skillIpattern>().Death();
         }
+        if(type == 4)
+        {
+            transform.GetComponent<skillIpattern>().Bind(duration);            
+        }
+        transform.GetComponent<skillIpattern>().Hit();
     }
 }

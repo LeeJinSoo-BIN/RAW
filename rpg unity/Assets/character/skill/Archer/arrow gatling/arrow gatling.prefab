@@ -229,13 +229,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68fd38c61dc366f46963511f41ca55f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetPos: {x: 0, y: 0, z: 0}
-  speed: 0.03
-  caseterPower: 1
-  casterSkillLevel: 1
-  casterCriticalPercent: 1
-  casterCriticalDamage: 1
-  Deal: 0
+  targetPos: {x: 0, y: 0}
   PV: {fileID: 0}
 --- !u!95 &7771466938686219665
 Animator:
