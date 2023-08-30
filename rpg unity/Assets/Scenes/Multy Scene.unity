@@ -3541,7 +3541,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1719753862}
         m_TargetAssemblyTypeName: NetworkManager, Assembly-CSharp
-        m_MethodName: Connect
+        m_MethodName: JoinLobby
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4339,6 +4339,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afd66c9b259494d7f919b9a0544d3f5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxPlayersPerRoom: 3
   NickNameInput: {fileID: 2046878659}
   DisconnectPanel: {fileID: 1606350245}
   RespwanPanel: {fileID: 676569982}
@@ -4348,10 +4349,10 @@ MonoBehaviour:
   ConnectButtonText: {fileID: 395490465}
   PV: {fileID: 1719753864}
   spawnButton: {fileID: 808758299348277558}
-  roomInfo: {fileID: 0}
-  RoomList: {fileID: 0}
-  LobbyPanel: {fileID: 0}
-  RoomNameInputField: {fileID: 0}
+  roomInfo: {fileID: 1366170751}
+  RoomList: {fileID: 79179846}
+  LobbyPanel: {fileID: 607373724}
+  RoomNameInputField: {fileID: 888977414}
 --- !u!4 &1719753863
 Transform:
   m_ObjectHideFlags: 0
@@ -4914,6 +4915,7 @@ GameObject:
   - component: {fileID: 2046878661}
   - component: {fileID: 2046878660}
   - component: {fileID: 2046878659}
+  - component: {fileID: 2046878662}
   m_Layer: 5
   m_Name: NicknameInput
   m_TagString: Untagged
@@ -5002,7 +5004,19 @@ MonoBehaviour:
       m_Calls: []
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2046878662}
+        m_TargetAssemblyTypeName: PlayerNameInputField, Assembly-CSharp
+        m_MethodName: SetPlayerName
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
@@ -5049,6 +5063,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2046878657}
   m_CullTransparentMesh: 1
+--- !u!114 &2046878662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2046878657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 762c331c55dfa4477a979b3f431728f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2089397768
 GameObject:
   m_ObjectHideFlags: 0

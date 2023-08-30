@@ -10,6 +10,9 @@ using UnityEngine.EventSystems;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
+    [SerializeField]
+    private byte maxPlayersPerRoom = 3;
+
     public InputField NickNameInput;
     public GameObject DisconnectPanel;
     public GameObject RespwanPanel;
@@ -26,6 +29,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public GameObject RoomList;
     public GameObject LobbyPanel;
     public TMP_InputField RoomNameInputField;
+
     private void Awake()
     {
         Screen.SetResolution(960, 540, false);
@@ -36,6 +40,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
+        Connect();
         InGameUI.SetActive(false);
         ground.SetActive(false);
         
@@ -47,14 +52,19 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public void Connect()
     {
         PhotonNetwork.ConnectUsingSettings();
-        connecting = true;
+        //connecting = true;
+    }
+
+    public void JoinLobby()
+    {
+        PhotonNetwork.JoinLobby();
     }
     
     public override void OnConnectedToMaster()
     {
-        PhotonNetwork.LocalPlayer.NickName = NickNameInput.text;
+        //PhotonNetwork.LocalPlayer.NickName = NickNameInput.text;
         //PhotonNetwork.JoinOrCreateRoom("Room", new RoomOptions { MaxPlayers = 6 }, null);
-        PhotonNetwork.JoinLobby();
+        //PhotonNetwork.JoinLobby();
     }
 
     public override void OnJoinedLobby()
@@ -68,14 +78,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         
     }
 
-
-        
-
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
         //print("room list updated");
         UpdateRoomList(roomList);
     }
+
     void UpdateRoomList(List<RoomInfo> roomList)
     {
         for (int k = 0; k < RoomList.transform.childCount; k++)
@@ -112,29 +120,24 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         InGameUI.SetActive(false);
         ground.SetActive(false);
         ConnectPanel.SetActive(true);
-        connecting = false;
+        //connecting = false;
     }
-
 
     public void CreateRoomButtonClickInPanel()
     {
-        
-            PhotonNetwork.CreateRoom(RoomNameInputField.text, new RoomOptions { MaxPlayers = 3 });
-            LobbyPanel.SetActive(false);
-        
+        PhotonNetwork.CreateRoom(RoomNameInputField.text, new RoomOptions { MaxPlayers = maxPlayersPerRoom });
+        LobbyPanel.SetActive(false);
         //PhotonNetwork.JoinRoom(RoomNameToCreat.text);
     }
-
-
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape) && PhotonNetwork.IsConnected)
-            //PhotonNetwork.Disconnect();
-        if (connecting)
-        {
-            ConnectButtonText.text = PhotonNetwork.NetworkClientState.ToString();
-        }
+            PhotonNetwork.Disconnect();
+        //if (connecting)
+        //{
+        //    ConnectButtonText.text = PhotonNetwork.NetworkClientState.ToString();
+        //}
     }
 
     public void Spawn(string character)
@@ -159,14 +162,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             PhotonNetwork.CurrentRoom.IsOpen = false;
             PV.RPC("SpawnBoss", RpcTarget.All);
         }
-        
-    }
-
-    [PunRPC]
-    void SpawnBoss()
-    {   
-        spawnButton.SetActive(false);
-        InGameUI.GetComponent<InGameUI>().BossSetUp();
     }
 
     public override void OnDisconnected(DisconnectCause cause)
@@ -175,5 +170,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         RespwanPanel.SetActive(false);
         InGameUI.SetActive(false);
         ground.SetActive(false);
+    }
+
+    [PunRPC]
+    void SpawnBoss()
+    {
+        spawnButton.SetActive(false);
+        InGameUI.GetComponent<InGameUI>().BossSetUp();
     }
 }

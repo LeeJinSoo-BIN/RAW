@@ -8,9 +8,6 @@ public class SkillSpec : ScriptableObject
     public GameObject skillView;
     public string skillName;
     public string castType;
-    // 0: circle   1: bar   2: targeting    3: buff
-    // 4: charging
-
 
     public Vector2 radius;
     public Vector2 range;
@@ -19,12 +16,6 @@ public class SkillSpec : ScriptableObject
     public float skillDelay;
     public float skillDuration;
     public float coolDown;
-    /*public skill_spec(int _castType, (float x, float y) _radius, (float x, float y) _range, int _animType, int _effectType)
-        {
-            castType = _castType;
-            radius = _radius;
-            range = _range;
-            animType = _animType;
-            effectType = _effectType;
-    }*/
+
+    public int skillLevel;
 }

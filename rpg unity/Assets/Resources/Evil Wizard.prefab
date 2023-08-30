@@ -862,7 +862,7 @@ MonoBehaviour:
   animator: {fileID: 7196801161601376449}
   staff: {fileID: 6679292558783096967}
   PV: {fileID: 4241070347977510028}
-  isDeath: 0
+  attackable: 0
 --- !u!114 &11439640600108841
 MonoBehaviour:
   m_ObjectHideFlags: 0
