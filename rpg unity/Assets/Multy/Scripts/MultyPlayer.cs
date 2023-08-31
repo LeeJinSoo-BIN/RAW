@@ -95,7 +95,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 {
                     Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     RaycastHit2D hit = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
-
+                    if (hit.transform.CompareTag("Not Ground"))
+                        return;
                     if (hit.collider != null)
                     {
                         goalPos = hit.point;
@@ -127,6 +128,9 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             {
                 Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 RaycastHit2D hit = Physics2D.Raycast(ray, Vector2.zero);
+                if (hit.transform.CompareTag("Not Ground") || hit.collider == null)
+                    return;
+                Debug.Log(hit.collider.name);
                 if (hit.collider != null)
                 {
                     if (hit.collider.CompareTag("Item"))
@@ -140,6 +144,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                     if (current_skill.castType == "circle" || current_skill.castType == "bar")
                     { // when cast type is circle or bar
                         RaycastHit2D hit_ground = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
+                        if (hit_ground.transform.CompareTag("Not Ground"))
+                            return;
                         if (hit_ground.collider != null)
                         {
                             if (current_skill.castType == "circle")
@@ -370,6 +376,20 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 yield return null;
             }
         }
+        else if (current_skill.castType == "bar")
+        {
+            Vector2 _dirMVec = (skillPos - (Vector2)transform.position).normalized;
+            if (_dirMVec.x > 0)
+            {
+                transform.localScale = new Vector3(-1, 1, 1);
+                canvas.transform.localScale = new Vector3(-1, 1, 1);
+            }
+            else if (_dirMVec.x < 0)
+            {
+                transform.localScale = new Vector3(1, 1, 1);
+                canvas.transform.localScale = new Vector3(1, 1, 1);
+            }
+        }
 
         goalPos = transform.position;
         movable = false;
@@ -392,21 +412,11 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             skill = PhotonNetwork.Instantiate(current_skill.skillName, skillPos, Quaternion.identity);            
         }
         else if (current_skill.castType == "bar")
-        {
-            Vector2 _dirMVec = (skillPos - (Vector2)transform.position).normalized;
-            if (_dirMVec.x > 0)
-            {
-                transform.localScale = new Vector3(-1, 1, 1);
-                canvas.transform.localScale = new Vector3(-1, 1, 1);
-            }
-            else if (_dirMVec.x < 0)
-            {
-                transform.localScale = new Vector3(1, 1, 1);
-                canvas.transform.localScale = new Vector3(1, 1, 1);
-            }
+        {            
             skillPos += new Vector2(0f, 0.3f);
             if (current_skill.skillName == "arrow dash")
             {
+                skillPos -= new Vector2(0f, 0.3f);
                 StartCoroutine(Dash(skillPos, 5f));
                 goalPos = skillPos;
             }

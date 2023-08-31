@@ -15,5 +15,5 @@ MonoBehaviour:
   maxHealth: 1000
   power: 1
   criticalDamage: 1.2
-  criticalPercent: 0
+  criticalPercent: 50
   healPercent: 1

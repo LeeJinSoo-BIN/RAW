@@ -32,4 +32,4 @@ MonoBehaviour:
   shieldIncreasePerPower: 0
   flatPower: 1
   powerIncreasePerSkillLevel: 1
-  powerIncreasePerPower: 0
+  powerIncreasePerPower: 0.5
