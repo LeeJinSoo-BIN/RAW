@@ -193,9 +193,9 @@ public class skillIpattern : MonoBehaviourPunCallbacks
         while ((transform.position - targetPosition).magnitude > distance)
         {
             if (targetPosition.x < transform.position.x && transform.localScale.x > 0)
-                PV.RPC("FlipXRPC", RpcTarget.AllBuffered, new Vector3(-3, 3));
+                transform.localScale = new Vector3(-3, 3);
             else if (targetPosition.x > transform.position.x && transform.localScale.x < 0)
-                PV.RPC("FlipXRPC", RpcTarget.AllBuffered, new Vector3(3, 3));
+                transform.localScale = new Vector3(3, 3);                
             float distanceCovered = (Time.time - startTime) * speed;
             float fractionOfJourney = distanceCovered / journeyLength;
             transform.position = Vector3.Lerp(startPosition, targetPosition, fractionOfJourney);
