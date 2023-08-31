@@ -20,7 +20,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public GameObject InGameUI;
     public GameObject ground;
-    private bool connecting = false;
+    private bool connecting = true;
     public TMP_Text ConnectButtonText;
     public PhotonView PV;
     public GameObject spawnButton;
@@ -57,18 +57,19 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public void JoinLobby()
     {
+        connecting = true;
         PhotonNetwork.JoinLobby();
     }
 
     public override void OnConnectedToMaster()
     {
-        //PhotonNetwork.LocalPlayer.NickName = NickNameInput.text;
-        //PhotonNetwork.JoinOrCreateRoom("Room", new RoomOptions { MaxPlayers = 6 }, null);
-        //PhotonNetwork.JoinLobby();
+        connecting = false;
+        ConnectButtonText.text = "접속";
     }
 
     public override void OnJoinedLobby()
     {
+        connecting = false;
         LobbyPanel.SetActive(true);
         DisconnectPanel.SetActive(false);
     }
@@ -134,10 +135,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         if (Input.GetKeyDown(KeyCode.Escape) && PhotonNetwork.IsConnected)
             PhotonNetwork.Disconnect();
-        //if (connecting)
-        //{
-        //    ConnectButtonText.text = PhotonNetwork.NetworkClientState.ToString();
-        //}
+        if (connecting)
+        {
+            ConnectButtonText.text = PhotonNetwork.NetworkClientState.ToString();
+        }
     }
 
     public void Spawn(string character)
@@ -148,9 +149,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         RespwanPanel.SetActive(false);
         InGameUI.SetActive(true);
         ground.SetActive(true);
+        if (PhotonNetwork.IsMasterClient)
+            spawnButton.SetActive(true);
+
         InGameUI.GetComponent<InGameUI>().myCharacter = player;
         InGameUI.GetComponent<InGameUI>().setUp();
-
     }
 
     public void BossSpawnButtonClick()
@@ -160,6 +163,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             PhotonNetwork.Instantiate("Evil Wizard", Vector3.zero, Quaternion.identity);
             PhotonNetwork.CurrentRoom.IsOpen = false;
             PV.RPC("SpawnBoss", RpcTarget.All);
+            StageManager.active = true;
         }
     }
 

@@ -33,13 +33,4 @@ public class SkillSpec : ScriptableObject
     public float flatPower;
     public float powerIncreasePerSkillLevel;
     public float powerIncreasePerPower;
-
-    /*public skill_spec(int _castType, (float x, float y) _radius, (float x, float y) _range, int _animType, int _effectType)
-        {
-            castType = _castType;
-            radius = _radius;
-            range = _range;
-            animType = _animType;
-            effectType = _effectType;
-    }*/
 }

@@ -648,7 +648,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &324977952
 GameObject:
@@ -1226,7 +1226,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &555267522
 GameObject:
@@ -1694,7 +1694,7 @@ Transform:
   - {fileID: 1304577660}
   - {fileID: 2124289644}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &676569982
 GameObject:
@@ -2405,7 +2405,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &951779538
 GameObject:
@@ -2445,6 +2445,54 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &999366309
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 999366311}
+  - component: {fileID: 999366310}
+  m_Layer: 0
+  m_Name: StageManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &999366310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 999366309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfcbc269de44047a8b34c5a34e35d2ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stage: 1
+  stageTime: 0
+  stageText: {fileID: 1893673532978793790}
+  timeText: {fileID: 8030209171413592067}
+--- !u!4 &999366311
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 999366309}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &999923524
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3455,7 +3503,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1519626777
 GameObject:
@@ -4163,7 +4211,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1664424584}
   - component: {fileID: 1664424585}
-  - component: {fileID: 1664424586}
   m_Layer: 0
   m_Name: SkillManager
   m_TagString: Untagged
@@ -4209,30 +4256,6 @@ MonoBehaviour:
   skill_sword_smash: {fileID: 759811193607167977, guid: cdd3f55df8a125d42bb6db718f90154d, type: 3}
   skill_sword_slash: {fileID: 2549017242025831803, guid: fb779f75101ee9343926a43c3586913a, type: 3}
   skill_sword_bind: {fileID: 2393885603552241966, guid: cedd3b4e013ce4044a5fedaf3d500ba4, type: 3}
-  skillCastPos: {fileID: 0}
---- !u!114 &1664424586
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1664424583}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7dde136097ae345f39637ecff5ed6cdc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  skill_magic_floor: {fileID: 187846141684650059, guid: c42e720cf482f2c4d81cbbe23b82b3a4, type: 3}
-  skill_magic_totem: {fileID: 0}
-  skill_magic_heal: {fileID: 0}
-  skill_magic_global_heal: {fileID: 0}
-  skill_arrow_rain: {fileID: 0}
-  skill_arrow_gatling: {fileID: 0}
-  skill_arrow_charge: {fileID: 0}
-  skill_sword_shield: {fileID: 0}
-  skill_sword_smash: {fileID: 0}
-  skill_sword_slash: {fileID: 0}
-  skill_sword_bind: {fileID: 0}
   skillCastPos: {fileID: 0}
 --- !u!1001 &1683454718
 PrefabInstance:
@@ -4492,7 +4515,7 @@ RectTransform:
   - {fileID: 607373725}
   - {fileID: 1804412624}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -4764,7 +4787,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1887974006
 GameObject:
@@ -6419,7 +6442,7 @@ GameObject:
   - component: {fileID: 9034662706272379764}
   - component: {fileID: 1893673532978793790}
   m_Layer: 5
-  m_Name: Stage Text (TMP)
+  m_Name: 'Stage Text '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6999,7 +7022,7 @@ GameObject:
   - component: {fileID: 1598541768863801390}
   - component: {fileID: 9081466210276810028}
   m_Layer: 5
-  m_Name: Stage Image (1)
+  m_Name: Time Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8889,7 +8912,7 @@ GameObject:
   - component: {fileID: 2029420601213006689}
   - component: {fileID: 8030209171413592067}
   m_Layer: 5
-  m_Name: Stage Text (TMP) (1)
+  m_Name: Time Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9082,7 +9105,7 @@ Transform:
   m_Children:
   - {fileID: 7148444889057757702}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!222 &5803089681292421144
 CanvasRenderer:
