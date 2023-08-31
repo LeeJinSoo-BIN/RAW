@@ -4113,6 +4113,7 @@ MonoBehaviour:
   characterSpec: {fileID: 11400000, guid: d59c5f6d0be9f8b4585a069725ac6fba, type: 2}
   health: {fileID: 2181009724074795520}
   shield: {fileID: 896891074062794947}
+  power: 0
   characterAnimator: {fileID: 5222682414527307526}
   playerControl: {fileID: 6093407450503403606}
 --- !u!1 &8500139407171787526

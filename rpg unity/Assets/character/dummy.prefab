@@ -3645,6 +3645,7 @@ MonoBehaviour:
   characterSpec: {fileID: 0}
   health: {fileID: 0}
   shield: {fileID: 0}
+  power: 0
   characterAnimator: {fileID: 6308030836626245559}
   playerControl: {fileID: 0}
 --- !u!1 &8245904191574495730
