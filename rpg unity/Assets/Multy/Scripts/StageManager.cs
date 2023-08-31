@@ -22,10 +22,8 @@ public class StageManager : MonoBehaviourPunCallbacks, IPunObservable
     void Update()
     {
         if (PhotonNetwork.IsMasterClient && active)
-        {
             stageTime += Time.deltaTime;
-            timeText.text = string.Format("{0:00}:{1:00}:{2:00}", (int)stageTime / 3600, (int)stageTime / 60 % 60, (int)stageTime % 60);
-        }
+        timeText.text = string.Format("{0:00}:{1:00}:{2:00}", (int)stageTime / 3600, (int)stageTime / 60 % 60, (int)stageTime % 60);
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
