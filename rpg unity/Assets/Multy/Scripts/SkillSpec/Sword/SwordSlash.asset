@@ -16,7 +16,7 @@ MonoBehaviour:
   skillName: sword slash
   castType: bar
   radius: {x: 1.5, y: 1.5}
-  range: {x: 0, y: 0}
+  range: {x: 0.1, y: 0}
   animType: skillSword2
   delay: 1
   duration: 1

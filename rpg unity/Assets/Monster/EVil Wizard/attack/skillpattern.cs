@@ -5,6 +5,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using System.Linq.Expressions;
 using Unity.VisualScripting;
+using UnityEngine.UIElements;
 
 public class skillIpattern : MonoBehaviourPunCallbacks
 {    
@@ -154,9 +155,9 @@ public class skillIpattern : MonoBehaviourPunCallbacks
         Vector2 monsterPosition = gameObject.transform.position;
         yield return StartCoroutine(MoveMonsterToCharacter(monsterPosition, targetPosition, 3.5f, distance:0.001f, run: true));
         if (characterPosition.x < transform.position.x && transform.localScale.x > 0)
-            PV.RPC("FlipXRPC", RpcTarget.AllBuffered, new Vector3(-3, 3));
-        else if(characterPosition.x > transform.position.x && transform.localScale.x < 0)
-            PV.RPC("FlipXRPC", RpcTarget.AllBuffered, new Vector3(3, 3));
+            transform.localScale = new Vector3(-3, 3);
+        else if (characterPosition.x > transform.position.x && transform.localScale.x < 0)
+            transform.localScale = new Vector3(3, 3);
         animator.SetTrigger("attack");
         float _time = 0f;
         while(_time < 0.05f)
@@ -227,6 +228,4 @@ public class skillIpattern : MonoBehaviourPunCallbacks
         }
     }
 
-    [PunRPC]
-    void FlipXRPC(Vector3 scale) => transform.localScale = scale;
 }

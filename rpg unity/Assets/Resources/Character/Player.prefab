@@ -489,6 +489,7 @@ MonoBehaviour:
   characterSpec: {fileID: 0}
   health: {fileID: 0}
   shield: {fileID: 0}
+  power: 0
   characterAnimator: {fileID: 0}
   playerControl: {fileID: 6093407450503403606}
 --- !u!1 &2039510095086326788
@@ -2657,7 +2658,7 @@ GameObject:
   - component: {fileID: 2564397524356115255}
   - component: {fileID: 6241676777702517825}
   - component: {fileID: 3863601143309973824}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: item magnet
   m_TagString: Untagged
   m_Icon: {fileID: 0}

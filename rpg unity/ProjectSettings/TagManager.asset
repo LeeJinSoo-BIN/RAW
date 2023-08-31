@@ -7,6 +7,7 @@ TagManager:
   - Ground
   - Item
   - Monster
+  - Not Ground
   layers:
   - Default
   - TransparentFX
@@ -47,9 +48,15 @@ TagManager:
   - name: floor
     uniqueID: 1143508909
     locked: 0
+  - name: item
+    uniqueID: 295067571
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
   - name: effect
     uniqueID: 77970987
+    locked: 0
+  - name: ui
+    uniqueID: 3639010853
     locked: 0
