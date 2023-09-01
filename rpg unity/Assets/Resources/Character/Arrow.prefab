@@ -792,6 +792,7 @@ MonoBehaviour:
   pointSpeed: 5
   characterMoveSpeed: 1
   characterAnimator: {fileID: 5222682414527307526}
+  inventoryUi: {fileID: 0}
   maxInventoryCnt: 24
   attackable: 1
   skillRadiusArea: {fileID: 3979841789867000375}

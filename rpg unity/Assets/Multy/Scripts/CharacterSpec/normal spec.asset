@@ -17,3 +17,4 @@ MonoBehaviour:
   criticalDamage: 1.2
   criticalPercent: 50
   healPercent: 1
+  maxInventoryNum: 24

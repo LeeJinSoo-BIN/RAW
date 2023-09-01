@@ -56,8 +56,8 @@ public class SkillManager : MonoBehaviour
     public Dictionary<string, Dictionary<string, string>> rollSkills = new Dictionary<string, Dictionary<string, string>>();
     private void Awake()
     {
-        if (SkillManager.instance == null)
-            SkillManager.instance = this;
+        //if (SkillManager.instance == null)
+        //    SkillManager.instance = this;
 
         skill_spec tmp_skill;
         tmp_skill.castType = 0;

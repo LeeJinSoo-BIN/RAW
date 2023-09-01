@@ -19,7 +19,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public float pointSpeed = 1.0f;
     public float characterMoveSpeed = 1.0f;
     public Animator characterAnimator;
-    //public GameObject inventoryUi;
+    public GameObject inventoryUi;
     private GameObject itemBox;
     private GameObject gettingItem;
     private Dictionary<string, int> itemsInInventory = new Dictionary<string, int>();
@@ -75,7 +75,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
         playerGroup = GameObject.Find("Player Group");
         enemyGroup = GameObject.Find("Enemy Group");
-        inGameUI = GameObject.Find("InGameUI").transform.GetChild(0).GetComponent<InGameUI>();        
+        inGameUI = GameObject.Find("InGameUI").transform.GetChild(0).GetComponent<InGameUI>();
 
         transform.parent = playerGroup.transform;
         skillActivatedTime.Add("Q", 0);
@@ -396,14 +396,14 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         characterAnimator.SetBool("IsRunning", false);
         characterAnimator.SetTrigger(current_skill.animType);
         GameObject skill = null;        
-        float current_skill_deal = SkillManager.instance.CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
+        float current_skill_deal = CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
             current_skill.flatDeal, current_skill.dealIncreasePerSkillLevel, current_skill.dealIncreasePerPower,
             characterState.characterSpec.criticalPercent, characterState.characterSpec.criticalDamage, true);
-        float current_skill_heal = SkillManager.instance.CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
+        float current_skill_heal = CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
             current_skill.flatHeal, current_skill.dealIncreasePerSkillLevel, current_skill.dealIncreasePerPower);
-        float current_skill_shield = SkillManager.instance.CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
+        float current_skill_shield = CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
             current_skill.flatShield, current_skill.dealIncreasePerSkillLevel, current_skill.dealIncreasePerPower);
-        float current_skill_power = SkillManager.instance.CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
+        float current_skill_power = CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
             current_skill.flatPower, current_skill.powerIncreasePerSkillLevel, current_skill.powerIncreasePerPower);
         Vector2 current_skill_target_pos = default(Vector2);
         string current_skill_target_name = "";
@@ -610,6 +610,23 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         }
         Destroy(new_move_pointer);
     }
+
+    float CaculateCharacterSkillDamage(float skillLevel, float casterPower, float flat, float perSkillLevel, float perPower, float criticalPercent = 0f, float criticalDamage = 1f, bool affectedByCritical = false)
+    {
+        float value = flat + perSkillLevel * skillLevel
+            + perPower * casterPower;
+        if (affectedByCritical) // damage
+        {
+            float crit = Random.Range(0f, 100f);
+
+            float critical_damage = criticalDamage;
+            if (crit < criticalPercent)
+                critical_damage = 1;
+            value *= critical_damage;
+        }
+        return value;
+    }
+
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
