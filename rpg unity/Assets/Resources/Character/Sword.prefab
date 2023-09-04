@@ -680,6 +680,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movable: 1
+  attackable: 1
+  isDeath: 0
   movePointer: {fileID: 2372906060314280465}
   groundLayer:
     serializedVersion: 2
@@ -695,7 +697,6 @@ MonoBehaviour:
   characterAnimator: {fileID: 5222682414527307526}
   inventoryUi: {fileID: 0}
   maxInventoryCnt: 24
-  attackable: 1
   skillRadiusArea: {fileID: 3979841789867000375}
   skillRadiusLengthPoint: {fileID: 8235665384502179872}
   skillRangeAreaCircle: {fileID: 2712003408169178684}

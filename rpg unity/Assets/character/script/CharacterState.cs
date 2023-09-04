@@ -59,6 +59,7 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
                 characterAnimator.SetBool("IsDeath", true);
                 playerControl.movable = false;
                 playerControl.attackable = false;
+                playerControl.isDeath = true;
             }
             if(type == 4)
             {
@@ -85,11 +86,13 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
         {
             stream.SendNext(health.value);
             stream.SendNext(shield.value);
+            stream.SendNext(mana.value);
         }
         else
         {
             health.value = (float)stream.ReceiveNext();
             shield.value = (float)stream.ReceiveNext();
+            mana.value = (float)stream.ReceiveNext();
         }
     }
 }

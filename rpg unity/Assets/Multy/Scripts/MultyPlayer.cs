@@ -10,6 +10,10 @@ using Photon.Realtime;
 public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 {
     public bool movable = true;
+    public bool attackable = true;
+    public bool isDeath = false;
+
+
     public GameObject movePointer;
     public LayerMask groundLayer;
     public LayerMask playerLayer;
@@ -24,7 +28,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     private GameObject gettingItem;
     private Dictionary<string, int> itemsInInventory = new Dictionary<string, int>();
     public int maxInventoryCnt = 24;
-    public bool attackable = true;
+    
     public GameObject skillRadiusArea;
     public GameObject skillRadiusLengthPoint;
     public GameObject skillRangeAreaCircle;
@@ -48,6 +52,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public CharacterState characterState;    
     private Dictionary<string, float> skillActivatedTime = new Dictionary<string, float>();
     public InGameUI inGameUI;
+    private GameObject itemDropField;
     // Multy
     public Rigidbody2D RB;
     public PhotonView PV;
@@ -79,7 +84,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         inventoryUi = GameObject.Find("InGameUI").transform.GetChild(0).GetChild(3).gameObject;
         itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;
         gettingItem = inventoryUi.transform.GetChild(1).gameObject;
-
+        itemDropField = GameObject.Find("ground").transform.Find("Items").gameObject;
 
         transform.parent = playerGroup.transform;
         skillActivatedTime.Add("Q", 0);
@@ -91,7 +96,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
   
     void Update()
     {
-        if (PV.IsMine)
+        if (PV.IsMine && !isDeath)
         {
             if (movable)
             {
@@ -526,7 +531,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             int inventory_item_cnt = int.Parse(itemBox.transform.GetChild(item_index).GetChild(1).GetComponent<TMP_Text>().text);
             inventory_item_cnt += got_item_cnt;
             itemBox.transform.GetChild(item_index).GetChild(1).GetComponent<TMP_Text>().text = inventory_item_cnt.ToString();
-            Destroy(got_item);
+            PV.RPC("itemDestroySync", RpcTarget.All, got_item.name);
         }
         else
         {
@@ -539,10 +544,16 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 new_item.transform.GetChild(1).GetComponent<TMP_Text>().text = got_item_cnt.ToString();
                 new_item.transform.SetParent(itemBox.transform);
                 new_item.SetActive(true);
-                Destroy(got_item);
+                PV.RPC("itemDestroySync", RpcTarget.All, got_item.name);
             }
         }
     }
+    [PunRPC]
+    void itemDestroySync(string itemName)
+    {
+        Destroy(itemDropField.transform.Find(itemName).gameObject);
+    }
+
 
     void Move_Character()
     {
@@ -567,7 +578,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         //PV.RPC("direction", RpcTarget.AllBuffered, _dirMVec);
         transform.position += (_dirMVec * characterMoveSpeed * Time.deltaTime);
     }
-
+    /*
     [PunRPC]
     void direction(Vector3 _dirMVec)
     {
@@ -582,7 +593,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             canvas.transform.localScale = new Vector3(1, 1, 1);
         }
     }
-
+    */
     IEnumerator pointingGoal(Vector2 goalPos)
     {
         GameObject new_move_pointer = Instantiate(movePointer);

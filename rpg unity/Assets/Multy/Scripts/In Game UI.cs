@@ -36,8 +36,7 @@ public class InGameUI : MonoBehaviour
 
     public GameObject BossStateUI;
     public GameObject BossSpawnButton;
-
-    public Dictionary<string, float> coolDown;
+    
     public GameObject skillKeyUI;
     public void setUp()
     {

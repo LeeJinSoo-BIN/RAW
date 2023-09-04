@@ -143,12 +143,14 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public void Spawn(string character)
     {
-        GameObject player = PhotonNetwork.Instantiate("Character/" + character, Vector3.zero, Quaternion.identity);
-
+        InGameUI.SetActive(true);
         ConnectPanel.SetActive(false);
         RespwanPanel.SetActive(false);
-        InGameUI.SetActive(true);
         ground.SetActive(true);
+
+        GameObject player = PhotonNetwork.Instantiate("Character/" + character, Vector3.zero, Quaternion.identity);
+
+        
         if (PhotonNetwork.IsMasterClient)
             spawnButton.SetActive(true);
 
