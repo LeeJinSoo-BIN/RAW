@@ -18,6 +18,7 @@ MonoBehaviour:
   radius: {x: 0, y: 0}
   range: {x: 0, y: 0}
   animType: attack3
+  consumeMana: 120
   delay: 0
   duration: 3
   coolDown: 15

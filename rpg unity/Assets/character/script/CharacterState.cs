@@ -12,24 +12,35 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
     
     public CharacterSpec characterSpec;
     public Slider health;
+    public Slider mana;
     public Slider shield;
     public float power;
     public Animator characterAnimator;
     
     private bool isDeath = false;
     public MultyPlayer playerControl;
-    private Dictionary<string, int> skillLevel = new Dictionary<string, int>();
-
+    private float _timer = 0f;
     void Awake()
     {
         shield.maxValue = characterSpec.maxHealth;
         shield.value = 0;
         health.maxValue = characterSpec.maxHealth;
-        health.value = characterSpec.maxHealth;        
+        health.value = characterSpec.maxHealth;
+        mana.maxValue = characterSpec.maxMana;
+        mana.value = characterSpec.maxMana;
         power = characterSpec.power;
     }
 
     // Update is called once per frame
+    void Update()
+    {
+        _timer += Time.deltaTime;
+        if (_timer >= 3f)
+        {
+            _timer = 0f;
+            mana.value += characterSpec.recoverManaPerThreeSec;
+        }
+    }
     
     public void ProcessSkill(int type, float value)
     {        

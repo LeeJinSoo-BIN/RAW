@@ -18,6 +18,7 @@ MonoBehaviour:
   radius: {x: 2, y: 2}
   range: {x: 2, y: 1}
   animType: skillBow1
+  consumeMana: 100
   delay: 1.7
   duration: 0
   coolDown: 8

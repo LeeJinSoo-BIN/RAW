@@ -99,17 +99,12 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 {
                     Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     RaycastHit2D hit = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
-                    if (hit.transform.CompareTag("Not Ground"))
+                    if (hit.transform.CompareTag("Not Ground") || hit.collider == null)
                         return;
-                    if (hit.collider != null)
-                    {
-                        goalPos = hit.point;
-                        StartCoroutine(pointingGoal(goalPos));
-                        if (isActivingSkill)
-                        {
-                            deactivateSkill();
-                        }
-                    }
+                    goalPos = hit.point;
+                    StartCoroutine(pointingGoal(goalPos));
+                    if (isActivingSkill)
+                        deactivateSkill();
                     characterAnimator.SetBool("IsRunning", true);
                 }
                 Move_Character();
@@ -132,9 +127,9 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             {
                 Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 RaycastHit2D hit = Physics2D.Raycast(ray, Vector2.zero);
+                Debug.Log(hit.transform.name);
                 if (hit.transform.CompareTag("Not Ground") || hit.collider == null)
                     return;
-
                 if (hit.collider.CompareTag("Item"))
                 {
                     if (hit.transform.GetChild(1).gameObject.activeSelf)
@@ -142,10 +137,11 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 }
                 else if (isActivingSkill)
                 {
+                    Debug.Log(hit.transform.name);
                     if (current_skill.castType == "circle" || current_skill.castType == "bar")
                     { // when cast type is circle or bar
                         RaycastHit2D hit_ground = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
-                        if (hit_ground.transform.CompareTag("Not Ground") || hit_ground.collider != null)
+                        if (hit_ground.transform.CompareTag("Not Ground") || hit_ground.collider == null)
                             return;
                         if (current_skill.castType == "circle")
                             CastingSkill(hit_ground.point);
@@ -189,7 +185,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                     else
                     {
                         deactivateSkill();
-                        activeSkill(now_input_key);
+                        activateSkill(now_input_key);
                     }
 
                 }
@@ -274,7 +270,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         isActivingSkill = false;
         //StopCoroutine(castSkill);
     }
-    void activeSkill(string now_skill_key)
+    void activateSkill(string now_skill_key)
     {
         current_casting_skill_key = now_skill_key;
         current_skill = skills[now_skill_key];
@@ -324,12 +320,21 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         return false;
     }
     void CastingSkill(Vector2 skillPos, GameObject target = null)
-    {        
-        if (!isCoolDown())
+    {
+        Debug.Log("casting skill");
+        if (isCoolDown())
         {
-            castSkill = CastSkill(skillPos, target);            
-            StartCoroutine(castSkill);
+            Debug.Log("쿨타임");
+            return;
+        }
+        if (characterState.mana.value < current_skill.consumeMana)
+        {
+            Debug.Log("마나 부족");
+            return;
         }        
+        castSkill = CastSkill(skillPos, target);
+        StartCoroutine(castSkill);
+
         deactivateSkill();
     }
 
@@ -456,6 +461,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         }
 
         inGameUI.CoolDown(current_casting_skill_key, current_skill.coolDown);
+        characterState.mana.value -= current_skill.consumeMana;
         skillActivatedTime[current_casting_skill_key] = Time.time;
 
         float delay = 0;

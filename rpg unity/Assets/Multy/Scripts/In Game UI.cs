@@ -9,12 +9,20 @@ public class InGameUI : MonoBehaviour
     // Start is called before the first frame update
     public GameObject myCharacter;
     private CharacterState myCharacterState;
+
     public Slider uiHealth;
     private int maxHealth;
     private int currentHealth;
     private Slider characterHealth;
     public TMP_Text maxHealthText;
     public TMP_Text currentHealthText;
+
+    public Slider uiMana;
+    private int maxMana;
+    private int currentMana;
+    private Slider characterMana;
+    public TMP_Text maxManaText;
+    public TMP_Text currentManaText;
 
     public GameObject Boss;
     public Slider uiBossHealth;
@@ -33,9 +41,13 @@ public class InGameUI : MonoBehaviour
     public GameObject skillKeyUI;
     public void setUp()
     {
-        myCharacterState = myCharacter.GetComponentInChildren<CharacterState>(); 
+        myCharacterState = myCharacter.GetComponentInChildren<CharacterState>();
+
         characterHealth = myCharacterState.health;
         uiHealth.maxValue = characterHealth.maxValue;
+        characterMana = myCharacterState.mana;
+        uiMana.maxValue = characterMana.maxValue;
+
         if(GameObject.Find("Enemy Group").transform.childCount > 0)
             BossSpawnButton.SetActive(false);
         
@@ -57,10 +69,15 @@ public class InGameUI : MonoBehaviour
         while (true)
         {
             uiHealth.value = characterHealth.value;
+            uiMana.value = characterMana.value;
             currentHealth = (int)characterHealth.value;
+            currentMana = (int)characterMana.value;
             maxHealth = (int)characterHealth.maxValue;
+            maxMana = (int)characterMana.maxValue;
             maxHealthText.text = maxHealth.ToString();
+            maxManaText.text = maxMana.ToString();
             currentHealthText.text = currentHealth.ToString();
+            currentManaText.text = currentMana.ToString();
 
             if (bossConnected)
             {

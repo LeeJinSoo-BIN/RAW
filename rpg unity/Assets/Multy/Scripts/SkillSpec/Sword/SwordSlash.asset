@@ -18,6 +18,7 @@ MonoBehaviour:
   radius: {x: 1.5, y: 1.5}
   range: {x: 0.1, y: 0}
   animType: skillSword2
+  consumeMana: 50
   delay: 1
   duration: 1
   coolDown: 7
