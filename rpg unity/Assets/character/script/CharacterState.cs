@@ -25,21 +25,7 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
         shield.maxValue = characterSpec.maxHealth;
         shield.value = 0;
         health.maxValue = characterSpec.maxHealth;
-        health.value = characterSpec.maxHealth;
-        
-        skillLevel.Add("magic floor", 1);
-        skillLevel.Add("magic totem", 1);
-        skillLevel.Add("magic heal", 1);
-        skillLevel.Add("magic global heal", 1);
-        skillLevel.Add("arrow charge", 1);
-        skillLevel.Add("arrow rain", 1);
-        skillLevel.Add("arrow dash", 1);
-        skillLevel.Add("arrow gatling", 1);
-        skillLevel.Add("sword smash", 1);
-        skillLevel.Add("sword shield", 1);
-        skillLevel.Add("sword slash", 1);
-        skillLevel.Add("sword bind", 1);
-        characterSpec.skillLevel = skillLevel;
+        health.value = characterSpec.maxHealth;        
         power = characterSpec.power;
     }
 

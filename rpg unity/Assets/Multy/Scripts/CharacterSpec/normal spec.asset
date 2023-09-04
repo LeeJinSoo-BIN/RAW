@@ -18,3 +18,5 @@ MonoBehaviour:
   criticalPercent: 50
   healPercent: 1
   maxInventoryNum: 24
+  characterLevel: 1
+  skillLevelList: 00000000000000000000000000000000

@@ -45,8 +45,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public List<SkillSpec> skill_list = new List<SkillSpec>();
     private Dictionary<string, SkillSpec> skills = new Dictionary<string, SkillSpec>();
     private SkillSpec current_skill;
-    public CharacterState characterState;
-
+    public CharacterState characterState;    
     private Dictionary<string, float> skillActivatedTime = new Dictionary<string, float>();
     public InGameUI inGameUI;
     // Multy
@@ -60,13 +59,14 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     
 
     private void Awake()
-    {
-        //itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;
-        //gettingItem = inventoryUi.transform.GetChild(1).gameObject;
+    {        
         deactivateSkill();
 
         for (int i = 0; i < skill_num; i++)
+        {
+            characterState.characterSpec.skillLevel.Add(skill_list[i].skillName, characterState.characterSpec.skillLevelList[i]);
             skills.Add(skill_key[i], skill_list[i]);
+        }
 
         NickNameText.text = PV.IsMine ? PhotonNetwork.NickName : PV.Owner.NickName;
         NickNameText.color = PV.IsMine ? Color.green : Color.red;
@@ -76,6 +76,10 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         playerGroup = GameObject.Find("Player Group");
         enemyGroup = GameObject.Find("Enemy Group");
         inGameUI = GameObject.Find("InGameUI").transform.GetChild(0).GetComponent<InGameUI>();
+        inventoryUi = GameObject.Find("InGameUI").transform.GetChild(0).GetChild(3).gameObject;
+        itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;
+        gettingItem = inventoryUi.transform.GetChild(1).gameObject;
+
 
         transform.parent = playerGroup.transform;
         skillActivatedTime.Add("Q", 0);
@@ -84,7 +88,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         skillActivatedTime.Add("R", 0);
         
     }
-
+  
     void Update()
     {
         if (PV.IsMine)
@@ -112,7 +116,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             }
             if (Input.GetKeyDown(KeyCode.I))
             {
-                //inventoryUi.SetActive(!inventoryUi.activeSelf);
+                inventoryUi.SetActive(!inventoryUi.activeSelf);
             }
             if (Input.GetKeyDown(KeyCode.S))
             {
@@ -130,40 +134,32 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 RaycastHit2D hit = Physics2D.Raycast(ray, Vector2.zero);
                 if (hit.transform.CompareTag("Not Ground") || hit.collider == null)
                     return;
-                Debug.Log(hit.collider.name);
-                if (hit.collider != null)
+
+                if (hit.collider.CompareTag("Item"))
                 {
-                    if (hit.collider.CompareTag("Item"))
-                    {
-                        if (hit.transform.GetChild(1).gameObject.activeSelf)
-                            getItem(hit.transform.gameObject);
-                    }
+                    if (hit.transform.GetChild(1).gameObject.activeSelf)
+                        getItem(hit.transform.gameObject);
                 }
-                if (isActivingSkill)
+                else if (isActivingSkill)
                 {
                     if (current_skill.castType == "circle" || current_skill.castType == "bar")
                     { // when cast type is circle or bar
                         RaycastHit2D hit_ground = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
-                        if (hit_ground.transform.CompareTag("Not Ground"))
+                        if (hit_ground.transform.CompareTag("Not Ground") || hit_ground.collider != null)
                             return;
-                        if (hit_ground.collider != null)
-                        {
-                            if (current_skill.castType == "circle")
-                                CastingSkill(hit_ground.point);
-                            else if (current_skill.castType == "bar")
-                                CastingSkill(skillRangeAreaBar.transform.GetChild(1).transform.position);
-                        }
+                        if (current_skill.castType == "circle")
+                            CastingSkill(hit_ground.point);
+                        else if (current_skill.castType == "bar")
+                            CastingSkill(skillRangeAreaBar.transform.GetChild(1).transform.position);
                     }
                     else if (current_skill.castType == "target-player") // targeting only character 
                     {
-                        //LayerMask player_or_monster = (playerLayer | monsterLayer);
                         RaycastHit2D hit_target = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, playerLayer);
                         if (skillRangeAreaTargeting.transform.GetChild(1).gameObject.activeSelf)
                             CastingSkill(hit_target.point, hit_target.transform.gameObject);
                     }
                     else if (current_skill.castType == "target-enemy") // targeting only monster
                     {
-                        //LayerMask player_or_monster = (playerLayer | monsterLayer);
                         RaycastHit2D hit_target = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, monsterLayer);
                         if (skillRangeAreaTargeting.transform.GetChild(1).gameObject.activeSelf)
                             CastingSkill(hit_target.point, hit_target.transform.gameObject);
@@ -517,9 +513,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     {
         string got_item_name = got_item.transform.GetChild(0).name.Split(" ")[0];
         int got_item_cnt = int.Parse(got_item.transform.GetChild(0).name.Split(" ")[1]);
-        Sprite got_item_sprite = got_item.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
-        Debug.Log(got_item_name);
-        Debug.Log(itemsInInventory);
+        Sprite got_item_sprite = got_item.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;        
         if (itemsInInventory.ContainsKey(got_item_name))
         {
             int item_index = itemsInInventory[got_item_name];
