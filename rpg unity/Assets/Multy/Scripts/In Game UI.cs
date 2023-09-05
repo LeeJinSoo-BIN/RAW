@@ -10,16 +10,12 @@ public class InGameUI : MonoBehaviour
     public GameObject myCharacter;
     private CharacterState myCharacterState;
 
-    public Slider uiHealth;
-    private int maxHealth;
-    private int currentHealth;
+    public Slider uiHealth;    
     private Slider characterHealth;
     public TMP_Text maxHealthText;
     public TMP_Text currentHealthText;
 
     public Slider uiMana;
-    private int maxMana;
-    private int currentMana;
     private Slider characterMana;
     public TMP_Text maxManaText;
     public TMP_Text currentManaText;
@@ -27,8 +23,6 @@ public class InGameUI : MonoBehaviour
     public GameObject Boss;
     public Slider uiBossHealth;
     public Slider bossHealth;
-    private int bossMaxHealth;
-    private int bossCurrentHealth;
     public TMP_Text bossMaxHealthText;
     public TMP_Text bossCurrentHealthText;
     private bool bossConnected;
@@ -43,9 +37,7 @@ public class InGameUI : MonoBehaviour
         myCharacterState = myCharacter.GetComponentInChildren<CharacterState>();
 
         characterHealth = myCharacterState.health;
-        uiHealth.maxValue = characterHealth.maxValue;
         characterMana = myCharacterState.mana;
-        uiMana.maxValue = characterMana.maxValue;
 
         if(GameObject.Find("Enemy Group").transform.childCount > 0)
             BossSpawnButton.SetActive(false);
@@ -68,28 +60,23 @@ public class InGameUI : MonoBehaviour
         while (true)
         {
             uiHealth.value = characterHealth.value;
+            uiHealth.maxValue = characterHealth.maxValue;
+            currentHealthText.text = uiHealth.value.ToString();
+            maxHealthText.text = uiHealth.maxValue.ToString();
+
             uiMana.value = characterMana.value;
-            currentHealth = (int)characterHealth.value;
-            currentMana = (int)characterMana.value;
-            maxHealth = (int)characterHealth.maxValue;
-            maxMana = (int)characterMana.maxValue;
-            maxHealthText.text = maxHealth.ToString();
-            maxManaText.text = maxMana.ToString();
-            currentHealthText.text = currentHealth.ToString();
-            currentManaText.text = currentMana.ToString();
+            uiMana.maxValue = characterMana.maxValue;
+            currentManaText.text = uiMana.value.ToString();
+            maxManaText.text = uiMana.maxValue.ToString();
 
             if (bossConnected)
             {
                 uiBossHealth.value = bossHealth.value;
-                bossCurrentHealth = (int)bossHealth.value;
-                bossMaxHealth = (int)bossHealth.maxValue;
-                bossMaxHealthText.text = bossMaxHealth.ToString();
-                bossCurrentHealthText.text = bossCurrentHealth.ToString();
-                
+                uiBossHealth.maxValue = bossHealth.maxValue;                
+                bossMaxHealthText.text = uiBossHealth.maxValue.ToString();
+                bossCurrentHealthText.text = uiBossHealth.value.ToString();                
             }
             yield return null;
-
-
         }
     }
     public void CoolDown(string key, float coolingTime)

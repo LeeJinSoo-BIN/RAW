@@ -140,7 +140,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                     if (hit.transform.GetChild(1).gameObject.activeSelf)
                         getItem(hit.transform.gameObject);
                 }
-                else if (isActivingSkill)
+                else if (isActivingSkill && attackable)
                 {
                     Debug.Log(hit.transform.name);
                     if (current_skill.castType == "circle" || current_skill.castType == "bar")
@@ -384,21 +384,13 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         }
         else if (current_skill.castType == "bar")
         {
-            Vector2 _dirMVec = (skillPos - (Vector2)transform.position).normalized;
-            if (_dirMVec.x > 0)
-            {
-                transform.localScale = new Vector3(-1, 1, 1);
-                canvas.transform.localScale = new Vector3(-1, 1, 1);
-            }
-            else if (_dirMVec.x < 0)
-            {
-                transform.localScale = new Vector3(1, 1, 1);
-                canvas.transform.localScale = new Vector3(1, 1, 1);
-            }
+            Vector3 _dirMVec = ((Vector3)skillPos - transform.position).normalized;            
+            PV.RPC("direction", RpcTarget.AllBuffered, _dirMVec);
         }
 
         goalPos = transform.position;
         movable = false;
+        attackable = false;
         characterAnimator.SetBool("IsRunning", false);
         characterAnimator.SetTrigger(current_skill.animType);
         GameObject skill = null;        
@@ -476,6 +468,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             yield return null;
         }
         movable = true;
+        attackable = true;
     }
 
     IEnumerator Dash(Vector3 goalPos, float speed)
@@ -489,10 +482,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             {
                 transform.position = goalPos;
                 break;
-            }
-            if (_dirMVec.x > 0) transform.localScale = new Vector3(-1, 1, 1);
-            else if (_dirMVec.x < 0) transform.localScale = new Vector3(1, 1, 1);
-
+            }            
             transform.position += (_dirMVec * speed * Time.deltaTime);
             yield return null;
         }
