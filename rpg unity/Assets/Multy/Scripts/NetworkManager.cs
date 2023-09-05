@@ -118,16 +118,15 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         LobbyPanel.SetActive(false);
         DisconnectPanel.SetActive(false);
-        InGameUI.SetActive(false);
-        ground.SetActive(false);
+        InGameUI.SetActive(true);
+        ground.SetActive(true);
         ConnectPanel.SetActive(true);
         //connecting = false;
     }
 
     public void CreateRoomButtonClickInPanel()
     {
-        PhotonNetwork.CreateRoom(RoomNameInputField.text, new RoomOptions { MaxPlayers = maxPlayersPerRoom });
-        LobbyPanel.SetActive(false);
+        PhotonNetwork.CreateRoom(RoomNameInputField.text, new RoomOptions { MaxPlayers = maxPlayersPerRoom });        
         //PhotonNetwork.JoinRoom(RoomNameToCreat.text);
     }
 
@@ -143,10 +142,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public void Spawn(string character)
     {
-        InGameUI.SetActive(true);
         ConnectPanel.SetActive(false);
         RespwanPanel.SetActive(false);
-        ground.SetActive(true);
 
         GameObject player = PhotonNetwork.Instantiate("Character/" + character, Vector3.zero, Quaternion.identity);
 

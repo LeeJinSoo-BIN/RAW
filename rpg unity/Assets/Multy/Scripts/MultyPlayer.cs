@@ -565,7 +565,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             return;
         }
         Vector3 _dirMVec = _dirVec.normalized;
-        if (_dirMVec.x > 0)
+        /*if (_dirMVec.x > 0)
         {
             transform.localScale = new Vector3(-1, 1, 1);
             canvas.transform.localScale = new Vector3(-1, 1, 1);
@@ -574,11 +574,11 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         {
             transform.localScale = new Vector3(1, 1, 1);
             canvas.transform.localScale = new Vector3(1, 1, 1);
-        }
-        //PV.RPC("direction", RpcTarget.AllBuffered, _dirMVec);
+        }*/
+        PV.RPC("direction", RpcTarget.AllBuffered, _dirMVec);
         transform.position += (_dirMVec * characterMoveSpeed * Time.deltaTime);
     }
-    /*
+    
     [PunRPC]
     void direction(Vector3 _dirMVec)
     {
@@ -593,7 +593,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             canvas.transform.localScale = new Vector3(1, 1, 1);
         }
     }
-    */
+    
     IEnumerator pointingGoal(Vector2 goalPos)
     {
         GameObject new_move_pointer = Instantiate(movePointer);

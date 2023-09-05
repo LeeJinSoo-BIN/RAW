@@ -598,6 +598,7 @@ GameObject:
   - component: {fileID: 8582268070166807158}
   - component: {fileID: 2919887382818646889}
   - component: {fileID: 6093407450503403606}
+  - component: {fileID: -5947123106846991440}
   - component: {fileID: 1371480156353156216}
   m_Layer: 8
   m_Name: Player
@@ -743,6 +744,7 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 2919887382818646889}
   - {fileID: 6093407450503403606}
+  - {fileID: -5947123106846991440}
   - {fileID: 1371480156353156216}
   - {fileID: 1707916302504198325}
   sceneViewId: 0
@@ -777,6 +779,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   movable: 1
+  attackable: 1
+  isDeath: 0
   movePointer: {fileID: 2372906060314280465}
   groundLayer:
     serializedVersion: 2
@@ -792,7 +796,6 @@ MonoBehaviour:
   characterAnimator: {fileID: 5222682414527307526}
   inventoryUi: {fileID: 0}
   maxInventoryCnt: 24
-  attackable: 1
   skillRadiusArea: {fileID: 3979841789867000375}
   skillRadiusLengthPoint: {fileID: 8235665384502179872}
   skillRangeAreaCircle: {fileID: 2712003408169178684}
@@ -811,6 +814,22 @@ MonoBehaviour:
   NickNameText: {fileID: 8485177800325415461}
   canvas: {fileID: 8845137058866877253}
   sortingGroup: {fileID: 119079104696226518}
+--- !u!114 &-5947123106846991440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2067154607245451622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!114 &1371480156353156216
 MonoBehaviour:
   m_ObjectHideFlags: 0
