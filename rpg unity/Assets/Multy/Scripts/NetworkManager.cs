@@ -20,6 +20,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public GameObject InGameUI;
     public GameObject ground;
+    public GameObject itemField;
     private bool connecting = true;
     public TMP_Text ConnectButtonText;
     public PhotonView PV;
@@ -43,7 +44,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Connect();
         InGameUI.SetActive(false);
         ground.SetActive(false);
-
+        itemField.SetActive(false);
         ConnectPanel.SetActive(false);
         DisconnectPanel.SetActive(true);
         LobbyPanel.SetActive(false);
@@ -120,6 +121,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         DisconnectPanel.SetActive(false);
         InGameUI.SetActive(true);
         ground.SetActive(true);
+        itemField.SetActive(true);
         ConnectPanel.SetActive(true);
         //connecting = false;
     }

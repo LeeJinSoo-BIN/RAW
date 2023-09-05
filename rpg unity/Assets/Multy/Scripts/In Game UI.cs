@@ -32,6 +32,7 @@ public class InGameUI : MonoBehaviour
     public GameObject BossSpawnButton;
     
     public GameObject skillKeyUI;
+    public Dictionary<string, string> skillNameToKey = new Dictionary<string, string>();
     public void setUp()
     {
         myCharacterState = myCharacter.GetComponentInChildren<CharacterState>();
@@ -61,20 +62,20 @@ public class InGameUI : MonoBehaviour
         {
             uiHealth.value = characterHealth.value;
             uiHealth.maxValue = characterHealth.maxValue;
-            currentHealthText.text = uiHealth.value.ToString();
-            maxHealthText.text = uiHealth.maxValue.ToString();
+            currentHealthText.text = ((int)uiHealth.value).ToString();
+            maxHealthText.text = ((int)uiHealth.maxValue).ToString();
 
             uiMana.value = characterMana.value;
             uiMana.maxValue = characterMana.maxValue;
-            currentManaText.text = uiMana.value.ToString();
-            maxManaText.text = uiMana.maxValue.ToString();
+            currentManaText.text = ((int)uiMana.value).ToString();
+            maxManaText.text = ((int)uiMana.maxValue).ToString();
 
             if (bossConnected)
             {
                 uiBossHealth.value = bossHealth.value;
                 uiBossHealth.maxValue = bossHealth.maxValue;                
-                bossMaxHealthText.text = uiBossHealth.maxValue.ToString();
-                bossCurrentHealthText.text = uiBossHealth.value.ToString();                
+                bossMaxHealthText.text = ((int)uiBossHealth.maxValue).ToString();
+                bossCurrentHealthText.text = ((int)uiBossHealth.value).ToString();                
             }
             yield return null;
         }
@@ -83,8 +84,9 @@ public class InGameUI : MonoBehaviour
     {
         StartCoroutine(CoolDownCoroutine(key, coolingTime));
     }
-    IEnumerator CoolDownCoroutine(string key, float coolingTime)
+    IEnumerator CoolDownCoroutine(string skill_name, float coolingTime)
     {
+        string key = skillNameToKey[skill_name];
         skillKeyUI.transform.Find(key.ToLower()).GetChild(2).GetComponent<Image>().fillAmount = 100;
         float _time = coolingTime;
         while (_time >= 0)

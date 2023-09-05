@@ -51,6 +51,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     private SkillSpec current_skill;
     public CharacterState characterState;    
     private Dictionary<string, float> skillActivatedTime = new Dictionary<string, float>();
+    private Dictionary<string, string> skillNameToKey = new Dictionary<string, string>();
     public InGameUI inGameUI;
     private GameObject itemDropField;
     // Multy
@@ -71,6 +72,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         {
             characterState.characterSpec.skillLevel.Add(skill_list[i].skillName, characterState.characterSpec.skillLevelList[i]);
             skills.Add(skill_key[i], skill_list[i]);
+            skillActivatedTime.Add(skill_list[i].skillName, 0f);
+            skillNameToKey.Add(skill_list[i].skillName, skill_key[i]);
         }
 
         NickNameText.text = PV.IsMine ? PhotonNetwork.NickName : PV.Owner.NickName;
@@ -81,16 +84,13 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         playerGroup = GameObject.Find("Player Group");
         enemyGroup = GameObject.Find("Enemy Group");
         inGameUI = GameObject.Find("InGameUI").transform.GetChild(0).GetComponent<InGameUI>();
+        inGameUI.skillNameToKey = skillNameToKey;
         inventoryUi = GameObject.Find("InGameUI").transform.GetChild(0).GetChild(3).gameObject;
         itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;
         gettingItem = inventoryUi.transform.GetChild(1).gameObject;
-        itemDropField = GameObject.Find("ground").transform.Find("Items").gameObject;
+        itemDropField = GameObject.Find("Item Field").gameObject;
 
         transform.parent = playerGroup.transform;
-        skillActivatedTime.Add("Q", 0);
-        skillActivatedTime.Add("W", 0);
-        skillActivatedTime.Add("E", 0);
-        skillActivatedTime.Add("R", 0);
         
     }
   
@@ -318,9 +318,9 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     }
     bool isCoolDown()
     {
-        if (skillActivatedTime[current_casting_skill_key] == 0)
+        if (skillActivatedTime[current_skill.skillName] == 0)
             return false;
-        if (Time.time - skillActivatedTime[current_casting_skill_key] < current_skill.coolDown)
+        if (Time.time - skillActivatedTime[current_skill.skillName] < current_skill.coolDown)
             return true;
         return false;
     }
@@ -339,7 +339,6 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         }        
         castSkill = CastSkill(skillPos, target);
         StartCoroutine(castSkill);
-
         deactivateSkill();
     }
 
@@ -456,10 +455,9 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             //SkillInfo skillInfo = new SkillInfo(current_skill, characterState.characterSpec);            
             skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, current_skill.duration, current_skill_target_name, current_skill_target_pos);
         }
-
-        inGameUI.CoolDown(current_casting_skill_key, current_skill.coolDown);
-        characterState.mana.value -= current_skill.consumeMana;
-        skillActivatedTime[current_casting_skill_key] = Time.time;
+        skillActivatedTime[current_skill.skillName] = Time.time;
+        inGameUI.CoolDown(current_skill.skillName, current_skill.coolDown);
+        characterState.mana.value -= current_skill.consumeMana;        
 
         float delay = 0;
         while (delay < current_skill.delay)
@@ -468,7 +466,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             yield return null;
         }
         movable = true;
-        attackable = true;
+        attackable = true;        
     }
 
     IEnumerator Dash(Vector3 goalPos, float speed)
@@ -531,8 +529,9 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 itemsInInventory.Add(got_item_name, inventory_cnt);
                 GameObject new_item = Instantiate(gettingItem);
                 new_item.transform.GetChild(0).GetComponent<Image>().sprite = got_item_sprite;
-                new_item.transform.GetChild(1).GetComponent<TMP_Text>().text = got_item_cnt.ToString();
+                new_item.transform.GetChild(1).GetComponent<TMP_Text>().text = got_item_cnt.ToString();                
                 new_item.transform.SetParent(itemBox.transform);
+                new_item.transform.localScale = Vector3.one;
                 new_item.SetActive(true);
                 PV.RPC("itemDestroySync", RpcTarget.All, got_item.name);
             }
