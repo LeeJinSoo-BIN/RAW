@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,13 +31,15 @@ public class InGameUI : MonoBehaviour
 
     public GameObject BossStateUI;
     public GameObject BossSpawnButton;
+
+    public GameObject CharacterProfile;
     
     public GameObject skillKeyUI;
     public Dictionary<string, string> skillNameToKey = new Dictionary<string, string>();
     public void setUp()
     {
         myCharacterState = myCharacter.GetComponentInChildren<CharacterState>();
-
+        makeProfile();
         characterHealth = myCharacterState.health;
         characterMana = myCharacterState.mana;
 
@@ -97,6 +100,31 @@ public class InGameUI : MonoBehaviour
             yield return null;
         }
         
+    }
+    void makeNew(GameObject head)
+    {
+        SpriteRenderer spriteRenderer = head.GetComponent<SpriteRenderer>();
+        if(spriteRenderer != null)
+        {            
+            head.transform.AddComponent<Image>();
+            Image imageComponent = head.GetComponent<Image>();
+            imageComponent.color = spriteRenderer.color;
+            imageComponent.sprite = spriteRenderer.sprite;
+            if(imageComponent.sprite == null)
+                imageComponent.gameObject.SetActive(false);
+            Destroy(spriteRenderer);
+        }
+        for (int k = 0; k < head.transform.childCount; k++)
+        {
+            makeNew(head.transform.GetChild(k).gameObject);
+        }
+    }
+    public void makeProfile()
+    {
+        GameObject myCharacterHead = Instantiate(myCharacter.transform.Find("Root").GetChild(0).GetChild(0).GetChild(2).GetChild(0).gameObject);
+        makeNew(myCharacterHead);
+        myCharacterHead.transform.parent = CharacterProfile.transform;
+        myCharacterHead.transform.localPosition = Vector3.zero;
     }
 }
 
