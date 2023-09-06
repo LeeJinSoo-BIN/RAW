@@ -70,8 +70,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 77970987
-  m_SortingLayer: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: ff5cb8c1552c8c147b74766536921d05, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -94,6 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3873026369122554106}
   - component: {fileID: 6559079018519567126}
+  - component: {fileID: 2968752914205539499}
   m_Layer: 0
   m_Name: explosion
   m_TagString: Untagged
@@ -154,9 +155,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 77970987
-  m_SortingLayer: 1
-  m_SortingOrder: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 8bd1929f66518954ab678b440c0f49a6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -168,6 +169,18 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!210 &2968752914205539499
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5057133245744456090}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 10
+  m_SortAtRoot: 0
 --- !u!1 &7034314786353351551
 GameObject:
   m_ObjectHideFlags: 0
@@ -177,12 +190,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5942522517200133601}
-  - component: {fileID: 8806169190849888794}
   - component: {fileID: 7771466938686219665}
   - component: {fileID: 7440930653448134734}
-  - component: {fileID: -672451124153550428}
+  - component: {fileID: -1801671836088146956}
   m_Layer: 0
-  m_Name: arrow gatling
+  m_Name: arrow normal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -205,20 +217,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8806169190849888794
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7034314786353351551}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 68fd38c61dc366f46963511f41ca55f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetPos: {x: 0, y: 0}
-  PV: {fileID: -672451124153550428}
 --- !u!95 &7771466938686219665
 Animator:
   serializedVersion: 5
@@ -275,7 +273,7 @@ CircleCollider2D:
   m_Offset: {x: 0.037, y: 0}
   serializedVersion: 2
   m_Radius: 0.036917686
---- !u!114 &-672451124153550428
+--- !u!114 &-1801671836088146956
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -284,16 +282,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 7034314786353351551}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Script: {fileID: 11500000, guid: 7795996651fcd3e4cb5ac7269d519a09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
+  target: {fileID: 0}
+  targetPos: {x: 0, y: 0}
+  PV: {fileID: 0}

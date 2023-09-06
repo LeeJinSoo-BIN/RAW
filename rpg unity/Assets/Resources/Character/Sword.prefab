@@ -761,6 +761,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9b1833944efb84ad99551e9a1c3cc98f, type: 2}
   - {fileID: 11400000, guid: 8530da1cbc2344789b5b95938d50177c, type: 2}
   - {fileID: 11400000, guid: 93d9c842df8f44cb19b2068d05bf134e, type: 2}
+  - {fileID: 11400000, guid: eed92bd1b6671a446bc059a48b1393ae, type: 2}
   characterState: {fileID: 8741713623407138682}
   inGameUI: {fileID: 0}
   RB: {fileID: 2703929767633843399}

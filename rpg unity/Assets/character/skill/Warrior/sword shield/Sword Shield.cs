@@ -36,13 +36,6 @@ public class SwordShield : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void SetTarget(string targetName)
-    {
-        target = GameObject.Find(targetName);
-        transform.parent = target.transform;        
-    }
-
-    [PunRPC]
     void initSkill(float deal, float heal, float sheild, float power, float duration, string target_name, Vector2 target_pos)
     {
         //Deal = deal;

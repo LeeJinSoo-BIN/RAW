@@ -1,40 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 using Photon.Pun;
-using Photon.Realtime;
 
-public class SwordBind : MonoBehaviourPunCallbacks
+public class SwordNormal : MonoBehaviourPunCallbacks
 {
     private float Deal;
     //private float Heal;
     //private float Shield;
-    //private float Power;
+    //private float Power;    
     public GameObject target;
-    //public Vector2 targetPos;
+    //public Vector3 targetPos;
     public PhotonView PV;
 
-    IEnumerator Vanish(float duration)
-    {
-        float time = 0;
-        while (time < duration)
-        {
-            time += Time.deltaTime;
-            yield return null;
-        }
-        GetComponent<Animator>().SetTrigger("vanish");
-        Destroy(gameObject, 0.45f);
-    }
-
-    public void Bind(float duration)
+    public void giveDeal()
     {
         if (PV.IsMine)
         {
             PhotonView MonsterPV = target.transform.GetComponent<PhotonView>();
-            MonsterPV.RPC("MonsterDamage", RpcTarget.All, 4, Deal, duration);
+            MonsterPV.RPC("MonsterDamage", RpcTarget.All, 0, Deal, 0f);
         }
+        Destroy(gameObject, 0.3f);
     }
-
 
     [PunRPC]
     void initSkill(float deal, float heal, float sheild, float power, float duration, string target_name, Vector2 target_pos)
@@ -42,19 +28,16 @@ public class SwordBind : MonoBehaviourPunCallbacks
         Deal = deal;
         //Heal = heal;
         //Shield = sheild;
-        //Power = power;
+        //Power = power
         if (target_name != "")
         {
             target = GameObject.Find(target_name);
             transform.parent = target.transform;
-            transform.localPosition = new Vector3(-0.02f, 0.2f);
         }
         if (target_pos != default(Vector2))
         {
             //targetPos = target_pos;
-        }
-        StartCoroutine(Vanish(duration));
-
-        Bind(duration);
+        }        
+        giveDeal();
     }
 }

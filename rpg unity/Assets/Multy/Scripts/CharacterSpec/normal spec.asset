@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: normal spec
   m_EditorClassIdentifier: 
   maxHealth: 1000
+  maxMana: 1000
+  recoverManaPerThreeSec: 5
   power: 1
   criticalDamage: 1.2
   criticalPercent: 50
   healPercent: 1
   maxInventoryNum: 24
   characterLevel: 1
-  skillLevelList: 00000000000000000000000000000000
+  skillLevelList: 0100000001000000010000000100000001000000

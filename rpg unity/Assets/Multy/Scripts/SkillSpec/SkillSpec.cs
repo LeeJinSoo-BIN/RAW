@@ -6,9 +6,10 @@ using UnityEngine;
 [CreateAssetMenu]
 public class SkillSpec : ScriptableObject
 {
-    public GameObject skillView;
+    //public GameObject skillView;
     public string skillName;
     public string castType;
+    public string dealType;
 
     public Vector2 radius;
     public Vector2 range;

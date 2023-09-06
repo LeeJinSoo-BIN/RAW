@@ -10,24 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4bcf0c340af174f51a37a822ddf234e3, type: 3}
-  m_Name: MagicHeal
+  m_Name: SwordNormal
   m_EditorClassIdentifier: 
-  skillName: magic heal
-  castType: target-player
-  dealType: floor
-  radius: {x: 1.5, y: 1.5}
-  range: {x: 2, y: 2}
-  animType: attack3
-  consumeMana: 30
-  delay: 0
-  duration: 1
-  coolDown: 3
-  flatDeal: 0
-  dealIncreasePerSkillLevel: 0
-  dealIncreasePerPower: 0
-  flatHeal: 1
-  healIncreasePerSkillLevel: 1
-  healIncreasePerPower: 1
+  skillName: sword normal
+  castType: target-enemy
+  dealType: instant
+  radius: {x: 0.5, y: 0.5}
+  range: {x: 0, y: 0}
+  animType: normal
+  consumeMana: 0
+  delay: 0.5
+  duration: 0
+  coolDown: 0
+  flatDeal: 1
+  dealIncreasePerSkillLevel: 1
+  dealIncreasePerPower: 1
+  flatHeal: 0
+  healIncreasePerSkillLevel: 0
+  healIncreasePerPower: 0
   flatShield: 0
   shieldIncreasePerSkillLevel: 0
   shieldIncreasePerPower: 0
