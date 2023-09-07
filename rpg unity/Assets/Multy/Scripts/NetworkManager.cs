@@ -161,7 +161,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.LocalPlayer.IsMasterClient)
         {
-            PhotonNetwork.Instantiate("Evil Wizard", Vector3.zero, Quaternion.identity);
+            PhotonNetwork.Instantiate("Monster/Evil Wizard", Vector3.zero, Quaternion.identity);
             PhotonNetwork.CurrentRoom.IsOpen = false;
             PV.RPC("SpawnBoss", RpcTarget.All);
             StageManager.active = true;

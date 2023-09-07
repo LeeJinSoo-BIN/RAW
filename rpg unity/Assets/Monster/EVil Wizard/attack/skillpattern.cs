@@ -19,6 +19,7 @@ public class skillIpattern : MonoBehaviourPunCallbacks
     private bool skillInvoked = false;
     //private bool mobControlEnabled = true; // MobControl ?????? ?????? ???????? ????
     private GameObject target;
+    private Vector3 targetPos;
     private float patternCycle = 6f;
     public Transform staff;
 
@@ -30,8 +31,12 @@ public class skillIpattern : MonoBehaviourPunCallbacks
     public bool isDeath = false;
     private void Awake()
     {
-        transform.parent = GameObject.Find("Enemy Group").transform;
+        topLeft = GameObject.Find("ground").transform.Find("top left");
+        bottomRight = GameObject.Find("ground").transform.Find("bottom right");
         characterGroup = GameObject.Find("Player Group");
+        transform.parent = GameObject.Find("Enemy Group").transform;
+        
+        
     }
 
     private void Start()
@@ -106,32 +111,33 @@ public class skillIpattern : MonoBehaviourPunCallbacks
         target = characterGroup.transform.GetChild(who).gameObject;
 
     }
+    private void findRandomPosition()
+    {
+        float x = Random.Range(topLeft.position.x,bottomRight.position.x);
+        float y = Random.Range(bottomRight.position.y, topLeft.position.y);
+        targetPos = new Vector3(x, y, 0);
+    }
     private void skill1()
     {
         skillInvoked = true;
-        GameObject fire = PhotonNetwork.Instantiate("skill1", staff.position, Quaternion.identity);
+        GameObject fire = PhotonNetwork.Instantiate("Monster/skill1", staff.position, Quaternion.identity);
         // ????1 ???????? ?????????? ?????? ????
-        findTarget();
-        skill_1 skill1 = fire.GetComponent<skill_1>();
+        findTarget();        
         fire.transform.GetComponent<PhotonView>().RPC("InitSkill", RpcTarget.All, staff.position, target.name);
-        //skill1.startPosition = staff.position;
-        //skill1.character = target;
-        //skill1.ExecuteSkill();
         skillInvoked = false;
     }
     private void skill2()
-    {   
-        skillInvoked=true;
+    {           
         StartCoroutine(excuteSkill2());
     }
     IEnumerator excuteSkill2()
     {
-        
+        skillInvoked = true;
         findTarget();
         Vector2 characterPosition = target.transform.position;
         Vector2 monsterPosition = gameObject.transform.position;
         yield return StartCoroutine(MoveMonsterToCharacter(monsterPosition, characterPosition, 5f, true));
-        GameObject fire = PhotonNetwork.Instantiate("skill2", target.transform.position, Quaternion.identity);
+        GameObject fire = PhotonNetwork.Instantiate("Monster/skill2", target.transform.position, Quaternion.identity);
         skill_2 skill2 = fire.GetComponentInChildren<skill_2>();
         //skill2.character = target;
         skill2.ExecuteSkill();
@@ -140,12 +146,12 @@ public class skillIpattern : MonoBehaviourPunCallbacks
     }
     
     void skill3()
-    {
-        skillInvoked = true;
+    {        
         StartCoroutine(excuteSkill3());
     }
     IEnumerator excuteSkill3 ()
     {
+        skillInvoked = true;
         findTarget();
         Vector2 characterPosition = target.transform.position;
         float where = 1f;
@@ -178,9 +184,16 @@ public class skillIpattern : MonoBehaviourPunCallbacks
     }
 
     void skill4()
+    {        
+        StartCoroutine(excuteSkill4());
+    }
+
+    IEnumerator excuteSkill4()
     {
         skillInvoked = true;
-
+        findRandomPosition();
+        yield return MoveMonsterToCharacter(transform.position, targetPos, 3f);
+        skillInvoked = false;
     }
     
 
@@ -210,20 +223,20 @@ public class skillIpattern : MonoBehaviourPunCallbacks
 
     void randomPattern()
     {
-        int randomSkill = Random.Range(1, 4);
+        int randomSkill = Random.Range(1, 5);
         switch (randomSkill)
         {
-            case 1:
-                Debug.Log("skill 1");
+            case 1:                
                 skill1();
                 break;
-            case 2:
-                Debug.Log("skill 2");
+            case 2:                
                 skill2();
                 break;
-            case 3:
-                Debug.Log("skill 3");
+            case 3:                
                 skill3();
+                break;
+            case 4:                
+                skill4();
                 break;
         }
     }

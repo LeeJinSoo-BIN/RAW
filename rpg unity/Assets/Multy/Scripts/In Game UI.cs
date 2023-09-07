@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 
 public class InGameUI : MonoBehaviour
 {
@@ -36,14 +38,16 @@ public class InGameUI : MonoBehaviour
     
     public GameObject skillKeyUI;
     public Dictionary<string, string> skillNameToKey = new Dictionary<string, string>();
+    private string skillThumbnailPath = "Character/skills/thumbnails";
     public void setUp()
     {
         myCharacterState = myCharacter.GetComponentInChildren<CharacterState>();
         makeProfile();
         characterHealth = myCharacterState.health;
         characterMana = myCharacterState.mana;
+        setKeyMap();
 
-        if(GameObject.Find("Enemy Group").transform.childCount > 0)
+        if (GameObject.Find("Enemy Group").transform.childCount > 0)
             BossSpawnButton.SetActive(false);
         
         StartCoroutine(update_health());
@@ -125,6 +129,17 @@ public class InGameUI : MonoBehaviour
         makeNew(myCharacterHead);
         myCharacterHead.transform.parent = CharacterProfile.transform;
         myCharacterHead.transform.localPosition = Vector3.zero;
+    }
+
+    public void setKeyMap()
+    {
+        List<string> keys = skillNameToKey.Values.ToList();
+        List<string> skillNames = skillNameToKey.Keys.ToList();
+        for(int k = 0; k < skillNameToKey.Count; k++)
+        {
+            if (keys[k].ToLower() == "q" || keys[k].ToLower() == "w" || keys[k].ToLower() == "e" || keys[k].ToLower() == "r") 
+            skillKeyUI.transform.Find(keys[k].ToLower()).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(skillThumbnailPath, skillNames[k]));
+        }
     }
 }
 

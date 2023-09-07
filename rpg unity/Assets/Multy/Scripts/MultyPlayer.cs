@@ -6,6 +6,7 @@ using UnityEngine.Rendering;
 using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
+using System.IO;
 
 public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 {
@@ -60,7 +61,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public Text NickNameText;
     public Canvas canvas;
     public SortingGroup sortingGroup;
-
+    private string skillResourceDir = "Character\\skills";
     Vector3 curPos;
     
 
@@ -412,7 +413,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         string current_skill_target_name = "";
         if (current_skill.castType == "circle")
         {
-            skill = PhotonNetwork.Instantiate(current_skill.skillName, skillPos, Quaternion.identity);            
+            skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, current_skill.skillName), skillPos, Quaternion.identity);
         }
         else if (current_skill.castType == "bar")
         {            
@@ -429,33 +430,33 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             }
             else if (current_skill.skillName == "arrow charge")
             {
-                skill = PhotonNetwork.Instantiate(current_skill.skillName, skillCastingPosition.position, Quaternion.identity);
+                skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, current_skill.skillName), skillCastingPosition.position, Quaternion.identity);
                 current_skill_target_pos = skillPos * 5;                
             }
             else
             {
-                skill = PhotonNetwork.Instantiate(current_skill.skillName, skillPos, Quaternion.identity);
+                skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, current_skill.skillName), skillPos, Quaternion.identity);
             }
         }
         else if (current_skill.castType == "target-player" || current_skill.castType == "target-enemy" || current_skill.castType == "target-both") // target
         {
             if (current_skill.dealType == "throw")
-                skill = PhotonNetwork.Instantiate(current_skill.skillName, skillCastingPosition.position, Quaternion.identity);
+                skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, current_skill.skillName), skillCastingPosition.position, Quaternion.identity);
             else
-                skill = PhotonNetwork.Instantiate(current_skill.skillName, targetObject.transform.position, Quaternion.identity);
+                skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, current_skill.skillName), targetObject.transform.position, Quaternion.identity);
 
             current_skill_target_name = targetObject.name;
         }
         else if (current_skill.castType == "buff-self")
         {
-            skill = PhotonNetwork.Instantiate(current_skill.skillName, Vector3.zero, Quaternion.identity);
+            skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, current_skill.skillName), Vector3.zero, Quaternion.identity);
             current_skill_target_name = gameObject.name;
         }
         else if (current_skill.castType == "buff-player" || current_skill.castType == "buff-enemy") // buff
         {
             foreach (Transform tar in targetObject.GetComponentInChildren<Transform>())
             {
-                skill = PhotonNetwork.Instantiate(current_skill.skillName, tar.transform.position, Quaternion.identity);
+                skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, current_skill.skillName), tar.transform.position, Quaternion.identity);
                 current_skill_target_name = tar.name;
                 skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, current_skill.duration, current_skill_target_name, current_skill_target_pos);
             }
@@ -524,7 +525,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             }
             float rand_x = Random.Range(-0.1f, 0.1f);
             float rand_y = Random.Range(-0.1f, 0.1f);
-            GameObject skill = PhotonNetwork.Instantiate("arrow gatling", oriPos + new Vector2(rand_x, rand_y), Quaternion.identity);
+            GameObject skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, current_skill.skillName), oriPos + new Vector2(rand_x, rand_y), Quaternion.identity);
             skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, 0f, 0f, 0f, 0f, "", desPos + new Vector2(rand_x, rand_y));
         }
     }
