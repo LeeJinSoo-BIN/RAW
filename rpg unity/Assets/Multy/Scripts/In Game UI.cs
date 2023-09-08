@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
+using UnityEngine.Rendering;
 
 public class InGameUI : MonoBehaviour
 {
@@ -39,6 +40,8 @@ public class InGameUI : MonoBehaviour
     public GameObject skillKeyUI;
     public Dictionary<string, string> skillNameToKey = new Dictionary<string, string>();
     private string skillThumbnailPath = "Character/skills/thumbnails";
+
+    
     public void setUp()
     {
         myCharacterState = myCharacter.GetComponentInChildren<CharacterState>();
@@ -140,6 +143,33 @@ public class InGameUI : MonoBehaviour
             if (keys[k].ToLower() == "q" || keys[k].ToLower() == "w" || keys[k].ToLower() == "e" || keys[k].ToLower() == "r") 
             skillKeyUI.transform.Find(keys[k].ToLower()).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(skillThumbnailPath, skillNames[k]));
         }
+    }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+
+        }
+    }
+    void useQuickSlot(string key)
+    {
+
+    }
+    void updateQuickSlot()
+    {
+
     }
 }
 
