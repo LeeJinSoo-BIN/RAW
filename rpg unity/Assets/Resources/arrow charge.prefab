@@ -121,13 +121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f17e0b9f9052b4a4b9fd4de7e451f250, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetPos: {x: 0, y: 0, z: 0}
-  speed: 0.01
-  caseterPower: 1
-  casterSkillLevel: 1
-  casterCriticalPercent: 1
-  casterCriticalDamage: 1
-  Deal: 0
+  targetPos: {x: 0, y: 0}
   PV: {fileID: -5915170192950887883}
 --- !u!70 &4563697739159693724
 CapsuleCollider2D:
