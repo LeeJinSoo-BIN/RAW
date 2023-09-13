@@ -27,7 +27,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public GameObject inventoryUi;
     private GameObject itemBox;
     private GameObject gettingItem;
-    private Dictionary<string, int> itemsInInventory = new Dictionary<string, int>();
+    //private Dictionary<string, int> itemsInInventory = new Dictionary<string, int>();
+    private Dictionary<string, int> carringItems = new Dictionary<string, int>();
     public int maxInventoryCnt = 24;
     
     public GameObject skillRadiusArea;
@@ -89,6 +90,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         inventoryUi = GameObject.Find("InGameUI").transform.GetChild(0).GetChild(3).gameObject;
         itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;
         gettingItem = inventoryUi.transform.GetChild(1).gameObject;
+        inGameUI.carringItems = carringItems;
         itemDropField = GameObject.Find("Item Field").gameObject;
 
         transform.parent = playerGroup.transform;
@@ -132,8 +134,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             if (Input.GetMouseButtonDown(0))
             {
                 Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                RaycastHit2D hit = Physics2D.Raycast(ray, Vector2.zero);
-                Debug.Log(hit.transform.name);
+                RaycastHit2D hit = Physics2D.Raycast(ray, Vector2.zero);                
                 if (hit.collider == null || hit.transform.CompareTag("Not Ground"))
                     return;
                 if (hit.collider.CompareTag("Item"))
@@ -142,8 +143,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                         getItem(hit.transform.gameObject);
                 }
                 else if (isActivingSkill && attackable)
-                {
-                    Debug.Log(hit.transform.name);
+                {                    
                     if (current_skill.castType == "circle" || current_skill.castType == "bar")
                     { // when cast type is circle or bar
                         RaycastHit2D hit_ground = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
@@ -261,9 +261,9 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 }
             }
         }
-        else if ((transform.position - curPos).sqrMagnitude >= 100)
+        else if ((transform.position - curPos).sqrMagnitude >= 100 && !isDeath)
             transform.position = curPos;
-        else
+        else if(!isDeath)
             transform.position = Vector3.Lerp(transform.position, curPos, Time.deltaTime * 10);
     }
     void deactivateSkill()
@@ -532,31 +532,53 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
     void getItem(GameObject got_item)
     {
-        string got_item_name = got_item.transform.GetChild(0).name.Split(" ")[0];
-        int got_item_cnt = int.Parse(got_item.transform.GetChild(0).name.Split(" ")[1]);
-        Sprite got_item_sprite = got_item.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;        
-        if (itemsInInventory.ContainsKey(got_item_name))
+        string got_item_name = got_item.GetComponent<Item>().itemName;
+        int got_item_cnt = got_item.GetComponent<Item>().itemCount;        
+        if (carringItems.ContainsKey(got_item_name))
         {
-            int item_index = itemsInInventory[got_item_name];
-            int inventory_item_cnt = int.Parse(itemBox.transform.GetChild(item_index).GetChild(1).GetComponent<TMP_Text>().text);
-            inventory_item_cnt += got_item_cnt;
-            itemBox.transform.GetChild(item_index).GetChild(1).GetComponent<TMP_Text>().text = inventory_item_cnt.ToString();
-            PV.RPC("itemDestroySync", RpcTarget.All, got_item.name);
+            carringItems[got_item_name] += got_item_cnt;            
         }
         else
         {
-            int inventory_cnt = itemBox.transform.childCount;
-            if (inventory_cnt < maxInventoryCnt)
+            carringItems.Add(got_item_name, got_item_cnt);
+        }
+        updateInventory();
+        PV.RPC("itemDestroySync", RpcTarget.All, got_item.name);
+        inGameUI.updateAllQuickSlot();
+    }
+
+    public void updateInventory()
+    {
+        List<string> destroyList = new List<string>();
+        foreach (string item in carringItems.Keys)
+        {
+            Debug.Log(item);
+            Transform box = itemBox.transform.Find(item);
+            if (box != null)
+                box.GetChild(1).GetComponent<TMP_Text>().text = carringItems[item].ToString();
+            else
             {
-                itemsInInventory.Add(got_item_name, inventory_cnt);
                 GameObject new_item = Instantiate(gettingItem);
-                new_item.transform.GetChild(0).GetComponent<Image>().sprite = got_item_sprite;
-                new_item.transform.GetChild(1).GetComponent<TMP_Text>().text = got_item_cnt.ToString();                
+                new_item.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(GameManager.Instance.itemInfoDict[item].spriteDirectory);
+                new_item.transform.GetChild(1).GetComponent<TMP_Text>().text = carringItems[item].ToString();
                 new_item.transform.SetParent(itemBox.transform);
                 new_item.transform.localScale = Vector3.one;
+                new_item.name = item;
                 new_item.SetActive(true);
-                PV.RPC("itemDestroySync", RpcTarget.All, got_item.name);
             }
+
+            if (carringItems[item] == 0)
+            {
+                if (box != null)
+                {
+                    Destroy(box.gameObject);
+                }
+                destroyList.Add(item);                
+            }
+        }
+        foreach(string name in destroyList)
+        {
+            carringItems.Remove(name);
         }
     }
     [PunRPC]

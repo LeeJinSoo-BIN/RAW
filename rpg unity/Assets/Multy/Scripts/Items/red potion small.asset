@@ -15,7 +15,16 @@ MonoBehaviour:
   itemName: red potion small
   itemDescription: "\uC791\uC740 \uBE68\uAC04\uD3EC\uC158\\n\uCCB4\uB825\uC744 80
     \uD68C\uBCF5\uC2DC\uD0A8\uB2E4."
+  itemType: potion
+  spriteDirectory: items/sprite/red potion small
+  sellPrice: 0
+  buyPrice: 0
   maxCarryAmount: 999
-  recoveryHealthAmount: 80
-  recoveryManaAmount: 0
+  recoveryHealth: 100
+  recoveryMana: 0
   coolDown: 5
+  increasePower: 0
+  increaseMaxHealth: 0
+  increaseMaxMana: 0
+  increaseCriticalPercent: 0
+  incraserCriticalDamage: 0

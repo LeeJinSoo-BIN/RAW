@@ -76,6 +76,23 @@ public class skillIpattern : MonoBehaviourPunCallbacks
         attackable = false;
         isDeath = true;
         animator.SetTrigger("Death");
+        for(int k = 0; k < 10; k++)
+        {
+            spawnItem();
+        }
+    }
+
+    void spawnItem()
+    {
+        float x = Random.Range(-1f, 1f);
+        float y = Random.Range(-0.3f, 0.3f);
+        Vector3 spawn_pos = new Vector3(x + transform.position.x, y + transform.position.y, 0);
+        GameObject new_item = PhotonNetwork.Instantiate("items/item_prefab", spawn_pos, Quaternion.identity);
+        int rnd = Random.Range(0, 2);
+        if (rnd == 0)
+            new_item.GetComponent<PhotonView>().RPC("initItem", RpcTarget.All, "red potion small", 1);
+        else
+            new_item.GetComponent<PhotonView>().RPC("initItem", RpcTarget.All, "blue potion small", 1);
     }
 
     public void Bind(float bindTime = 5f)

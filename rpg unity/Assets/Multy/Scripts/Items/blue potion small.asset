@@ -15,7 +15,16 @@ MonoBehaviour:
   itemName: blue potion small
   itemDescription: "\uC791\uC740 \uD30C\uB780\uD3EC\uC158\\n\uB9C8\uB098\uB97C 100
     \uD68C\uBCF5\uC2DC\uD0A8\uB2E4."
+  itemType: potion
+  spriteDirectory: items/sprite/blue potion small
+  sellPrice: 0
+  buyPrice: 0
   maxCarryAmount: 999
-  recoveryHealthAmount: 0
-  recoveryManaAmount: 100
+  recoveryHealth: 0
+  recoveryMana: 100
   coolDown: 5
+  increasePower: 0
+  increaseMaxHealth: 0
+  increaseMaxMana: 0
+  increaseCriticalPercent: 0
+  incraserCriticalDamage: 0

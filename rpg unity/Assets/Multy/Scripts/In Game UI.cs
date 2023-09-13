@@ -40,14 +40,21 @@ public class InGameUI : MonoBehaviour
     public GameObject skillKeyUI;
     public Dictionary<string, string> skillNameToKey = new Dictionary<string, string>();
     private string skillThumbnailPath = "Character/skills/thumbnails";
+    private List<string> quickSlotKeys = new List<string> { "1", "2", "3", "4" };
+    public Dictionary<string, string> quickSlotItems = new Dictionary<string, string>();
 
-    
+    public Dictionary<string, int> carringItems;
     public void setUp()
     {
         myCharacterState = myCharacter.GetComponentInChildren<CharacterState>();
         makeProfile();
         characterHealth = myCharacterState.health;
         characterMana = myCharacterState.mana;
+        for(int k = 0; k < quickSlotKeys.Count; k++)
+        {
+            quickSlotItems.Add(quickSlotKeys[k], "");
+        }
+
         setKeyMap();
 
         if (GameObject.Find("Enemy Group").transform.childCount > 0)
@@ -97,18 +104,18 @@ public class InGameUI : MonoBehaviour
     IEnumerator CoolDownCoroutine(string skill_name, float coolingTime)
     {
         string key = skillNameToKey[skill_name];
-        skillKeyUI.transform.Find(key.ToLower()).GetChild(2).GetComponent<Image>().fillAmount = 100;
+        skillKeyUI.transform.Find(key.ToLower()).GetChild(1).GetComponent<Image>().fillAmount = 100;
         float _time = coolingTime;
         while (_time >= 0)
         {
             _time -= Time.deltaTime;
-            skillKeyUI.transform.Find(key.ToLower()).GetChild(2).GetComponent<Image>().fillAmount = _time / coolingTime;
+            skillKeyUI.transform.Find(key.ToLower()).GetChild(1).GetComponent<Image>().fillAmount = _time / coolingTime;
             
             yield return null;
         }
         
     }
-    void makeNew(GameObject head)
+    void makeNewHead(GameObject head)
     {
         SpriteRenderer spriteRenderer = head.GetComponent<SpriteRenderer>();
         if(spriteRenderer != null)
@@ -123,13 +130,13 @@ public class InGameUI : MonoBehaviour
         }
         for (int k = 0; k < head.transform.childCount; k++)
         {
-            makeNew(head.transform.GetChild(k).gameObject);
+            makeNewHead(head.transform.GetChild(k).gameObject);
         }
     }
     public void makeProfile()
     {
         GameObject myCharacterHead = Instantiate(myCharacter.transform.Find("Root").GetChild(0).GetChild(0).GetChild(2).GetChild(0).gameObject);
-        makeNew(myCharacterHead);
+        makeNewHead(myCharacterHead);
         myCharacterHead.transform.parent = CharacterProfile.transform;
         myCharacterHead.transform.localPosition = Vector3.zero;
     }
@@ -140,36 +147,102 @@ public class InGameUI : MonoBehaviour
         List<string> skillNames = skillNameToKey.Keys.ToList();
         for(int k = 0; k < skillNameToKey.Count; k++)
         {
-            if (keys[k].ToLower() == "q" || keys[k].ToLower() == "w" || keys[k].ToLower() == "e" || keys[k].ToLower() == "r") 
-            skillKeyUI.transform.Find(keys[k].ToLower()).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(skillThumbnailPath, skillNames[k]));
+            if (keys[k].ToLower() == "q" || keys[k].ToLower() == "w" || keys[k].ToLower() == "e" || keys[k].ToLower() == "r")
+            {
+                Transform currentSlot = skillKeyUI.transform.Find(keys[k].ToLower());
+                currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(skillThumbnailPath, skillNames[k]));
+                currentSlot.GetChild(3).GetComponent<TMP_Text>().text = GameManager.Instance.skillInfoDict[skillNames[k]].coolDown.ToString();
+            }
         }
+        setQuickSlot("1", "red potion small");
+        setQuickSlot("2", "blue potion small");
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4))
         {
-            
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-
+            string now_input_key = Input.inputString;
+            useQuickSlot(now_input_key);
         }
     }
     void useQuickSlot(string key)
     {
-
+        if (carringItems.ContainsKey(quickSlotItems[key]))
+        {
+            if (carringItems[quickSlotItems[key]] > 0)
+            {
+                carringItems[quickSlotItems[key]]--;
+            }
+            consumePotion(quickSlotItems[key]);
+            myCharacter.GetComponent<MultyPlayer>().updateInventory();
+            updateThisQuickSlot(key);
+        }
     }
-    void updateQuickSlot()
+    public void updateAllQuickSlot()
     {
+        for(int k = 0; k < quickSlotKeys.Count; k++)
+        {
+            Transform currentSlot = skillKeyUI.transform.Find(quickSlotKeys[k].ToLower());
+            if (quickSlotItems[quickSlotKeys[k]] != "")
+            {
+                currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(GameManager.Instance.itemInfoDict[quickSlotItems[quickSlotKeys[k]]].spriteDirectory);
+                if (carringItems.ContainsKey(quickSlotItems[quickSlotKeys[k]]))
+                {                    
+                    currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;
+                    currentSlot.GetChild(2).GetComponent<TMP_Text>().text = carringItems[quickSlotItems[quickSlotKeys[k]]].ToString();
+                }
+                else
+                {                    
+                    currentSlot.GetChild(0).GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f);
+                    currentSlot.GetChild(2).GetComponent<TMP_Text>().text = "0";
+                }
+            }
+            else
+            {
+                currentSlot.GetChild(0).GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f);
+                currentSlot.GetChild(2).GetComponent<TMP_Text>().text = "";
+            }
+        }
+    }
+    void updateThisQuickSlot(string key)
+    {
+        Transform currentSlot = skillKeyUI.transform.Find(key);
+        if (quickSlotItems[key] != "")
+        {
+            currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(GameManager.Instance.itemInfoDict[quickSlotItems[key]].spriteDirectory);
+            if (carringItems.ContainsKey(quickSlotItems[key]))
+            {                
+                currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;
+                currentSlot.GetChild(2).GetComponent<TMP_Text>().text = carringItems[quickSlotItems[key]].ToString();
+            }
+            else
+            {                
+                currentSlot.GetChild(0).GetComponent<Image>().color = Color.gray;
+                currentSlot.GetChild(2).GetComponent<TMP_Text>().text = "0";
+            }
+        }
+        else
+        {            
+            currentSlot.GetChild(0).GetComponent<Image>().color = Color.gray;
+            currentSlot.GetChild(2).GetComponent<TMP_Text>().text = "";
+        }
+    }
+
+    void setQuickSlot(string key, string itemName)
+    {
+        quickSlotItems[key] = itemName;
+        updateThisQuickSlot(key);
+    }
+
+
+    void consumePotion(string itemName)
+    {
+        myCharacterState.ProcessSkill(1, GameManager.Instance.itemInfoDict[itemName].recoveryHealth);
+        myCharacterState.ProcessSkill(5, GameManager.Instance.itemInfoDict[itemName].recoveryMana);
 
     }
+
+
 }
+
 

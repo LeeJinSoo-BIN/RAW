@@ -43,40 +43,47 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
     }
     
     public void ProcessSkill(int type, float value)
-    {        
-        if (type == 0 || type == 4) // damage
-        {            
-            float _shield = shield.value;
-            shield.value -= value;
-            value -= _shield;
-            Debug.Log(value);
-            if (value > 0)
-                health.value -= value;
-            if (health.value <= 0 && !isDeath)
+    {
+        if (!isDeath)
+        {
+            if (type == 0 || type == 4) // damage
             {
-                isDeath = true;
-                characterAnimator.SetTrigger("Death");
-                characterAnimator.SetBool("IsDeath", true);
-                playerControl.movable = false;
-                playerControl.attackable = false;
-                playerControl.isDeath = true;
+                float _shield = shield.value;
+                shield.value -= value;
+                value -= _shield;
+                Debug.Log(value);
+                if (value > 0)
+                    health.value -= value;
+                if (health.value <= 0 && !isDeath)
+                {
+                    isDeath = true;
+                    characterAnimator.SetTrigger("Death");
+                    characterAnimator.SetBool("IsDeath", true);
+                    playerControl.movable = false;
+                    playerControl.attackable = false;
+                    playerControl.isDeath = true;
+                }
+                if (type == 4)
+                {
+                    transform.GetComponent<skillIpattern>().Bind();
+                }
             }
-            if(type == 4)
+            else if (type == 1) //heal
             {
-                transform.GetComponent<skillIpattern>().Bind();
+                health.value += value * characterSpec.healPercent;
             }
-        }
-        else if(type == 1 && !isDeath) //heal
-        {
-            health.value += value * characterSpec.healPercent;
-        }
-        else if (type == 2)//shield
-        {
-            shield.value += value;
-        }
-        else if (type == 3) // power
-        {
-            power += value;
+            else if (type == 2)//shield
+            {
+                shield.value += value;
+            }
+            else if (type == 3) // power
+            {
+                power += value;
+            }
+            else if (type == 5) // mana
+            {
+                mana.value += value;
+            }
         }
     }
 
