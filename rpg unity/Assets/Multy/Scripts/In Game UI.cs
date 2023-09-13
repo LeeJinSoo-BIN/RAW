@@ -1,26 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
+using UnityEngine.Rendering;
 
 public class InGameUI : MonoBehaviour
 {
     // Start is called before the first frame update
     public GameObject myCharacter;
     private CharacterState myCharacterState;
-    public Slider uiHealth;
-    private int maxHealth;
-    private int currentHealth;
+
+    public Slider uiHealth;    
     private Slider characterHealth;
     public TMP_Text maxHealthText;
     public TMP_Text currentHealthText;
 
+    public Slider uiMana;
+    private Slider characterMana;
+    public TMP_Text maxManaText;
+    public TMP_Text currentManaText;
+
     public GameObject Boss;
     public Slider uiBossHealth;
     public Slider bossHealth;
-    private int bossMaxHealth;
-    private int bossCurrentHealth;
     public TMP_Text bossMaxHealthText;
     public TMP_Text bossCurrentHealthText;
     private bool bossConnected;
@@ -29,14 +35,29 @@ public class InGameUI : MonoBehaviour
     public GameObject BossStateUI;
     public GameObject BossSpawnButton;
 
-    public Dictionary<string, float> coolDown;
+    public GameObject CharacterProfile;
+    
     public GameObject skillKeyUI;
+    public Dictionary<string, string> skillNameToKey = new Dictionary<string, string>();
+    private string skillThumbnailPath = "Character/skills/thumbnails";
+    private List<string> quickSlotKeys = new List<string> { "1", "2", "3", "4" };
+    public Dictionary<string, string> quickSlotItems = new Dictionary<string, string>();
+
+    public Dictionary<string, int> carringItems;
     public void setUp()
     {
-        myCharacterState = myCharacter.GetComponentInChildren<CharacterState>(); 
+        myCharacterState = myCharacter.GetComponentInChildren<CharacterState>();
+        makeProfile();
         characterHealth = myCharacterState.health;
-        uiHealth.maxValue = characterHealth.maxValue;
-        if(GameObject.Find("Enemy Group").transform.childCount > 0)
+        characterMana = myCharacterState.mana;
+        for(int k = 0; k < quickSlotKeys.Count; k++)
+        {
+            quickSlotItems.Add(quickSlotKeys[k], "");
+        }
+
+        setKeyMap();
+
+        if (GameObject.Find("Enemy Group").transform.childCount > 0)
             BossSpawnButton.SetActive(false);
         
         StartCoroutine(update_health());
@@ -57,41 +78,171 @@ public class InGameUI : MonoBehaviour
         while (true)
         {
             uiHealth.value = characterHealth.value;
-            currentHealth = (int)characterHealth.value;
-            maxHealth = (int)characterHealth.maxValue;
-            maxHealthText.text = maxHealth.ToString();
-            currentHealthText.text = currentHealth.ToString();
+            uiHealth.maxValue = characterHealth.maxValue;
+            currentHealthText.text = ((int)uiHealth.value).ToString();
+            maxHealthText.text = ((int)uiHealth.maxValue).ToString();
+
+            uiMana.value = characterMana.value;
+            uiMana.maxValue = characterMana.maxValue;
+            currentManaText.text = ((int)uiMana.value).ToString();
+            maxManaText.text = ((int)uiMana.maxValue).ToString();
 
             if (bossConnected)
             {
                 uiBossHealth.value = bossHealth.value;
-                bossCurrentHealth = (int)bossHealth.value;
-                bossMaxHealth = (int)bossHealth.maxValue;
-                bossMaxHealthText.text = bossMaxHealth.ToString();
-                bossCurrentHealthText.text = bossCurrentHealth.ToString();
-                
+                uiBossHealth.maxValue = bossHealth.maxValue;                
+                bossMaxHealthText.text = ((int)uiBossHealth.maxValue).ToString();
+                bossCurrentHealthText.text = ((int)uiBossHealth.value).ToString();                
             }
             yield return null;
-
-
         }
     }
     public void CoolDown(string key, float coolingTime)
     {
         StartCoroutine(CoolDownCoroutine(key, coolingTime));
     }
-    IEnumerator CoolDownCoroutine(string key, float coolingTime)
+    IEnumerator CoolDownCoroutine(string skill_name, float coolingTime)
     {
-        skillKeyUI.transform.Find(key.ToLower()).GetChild(2).GetComponent<Image>().fillAmount = 100;
+        string key = skillNameToKey[skill_name];
+        skillKeyUI.transform.Find(key.ToLower()).GetChild(1).GetComponent<Image>().fillAmount = 100;
         float _time = coolingTime;
         while (_time >= 0)
         {
             _time -= Time.deltaTime;
-            skillKeyUI.transform.Find(key.ToLower()).GetChild(2).GetComponent<Image>().fillAmount = _time / coolingTime;
+            skillKeyUI.transform.Find(key.ToLower()).GetChild(1).GetComponent<Image>().fillAmount = _time / coolingTime;
             
             yield return null;
         }
         
     }
+    void makeNewHead(GameObject head)
+    {
+        SpriteRenderer spriteRenderer = head.GetComponent<SpriteRenderer>();
+        if(spriteRenderer != null)
+        {            
+            head.transform.AddComponent<Image>();
+            Image imageComponent = head.GetComponent<Image>();
+            imageComponent.color = spriteRenderer.color;
+            imageComponent.sprite = spriteRenderer.sprite;
+            if(imageComponent.sprite == null)
+                imageComponent.gameObject.SetActive(false);
+            Destroy(spriteRenderer);
+        }
+        for (int k = 0; k < head.transform.childCount; k++)
+        {
+            makeNewHead(head.transform.GetChild(k).gameObject);
+        }
+    }
+    public void makeProfile()
+    {
+        GameObject myCharacterHead = Instantiate(myCharacter.transform.Find("Root").GetChild(0).GetChild(0).GetChild(2).GetChild(0).gameObject);
+        makeNewHead(myCharacterHead);
+        myCharacterHead.transform.parent = CharacterProfile.transform;
+        myCharacterHead.transform.localPosition = Vector3.zero;
+    }
+
+    public void setKeyMap()
+    {
+        List<string> keys = skillNameToKey.Values.ToList();
+        List<string> skillNames = skillNameToKey.Keys.ToList();
+        for(int k = 0; k < skillNameToKey.Count; k++)
+        {
+            if (keys[k].ToLower() == "q" || keys[k].ToLower() == "w" || keys[k].ToLower() == "e" || keys[k].ToLower() == "r")
+            {
+                Transform currentSlot = skillKeyUI.transform.Find(keys[k].ToLower());
+                currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(skillThumbnailPath, skillNames[k]));
+                currentSlot.GetChild(3).GetComponent<TMP_Text>().text = GameManager.Instance.skillInfoDict[skillNames[k]].coolDown.ToString();
+            }
+        }
+        setQuickSlot("1", "red potion small");
+        setQuickSlot("2", "blue potion small");
+    }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            string now_input_key = Input.inputString;
+            useQuickSlot(now_input_key);
+        }
+    }
+    void useQuickSlot(string key)
+    {
+        if (carringItems.ContainsKey(quickSlotItems[key]))
+        {
+            if (carringItems[quickSlotItems[key]] > 0)
+            {
+                carringItems[quickSlotItems[key]]--;
+            }
+            consumePotion(quickSlotItems[key]);
+            myCharacter.GetComponent<MultyPlayer>().updateInventory();
+            updateThisQuickSlot(key);
+        }
+    }
+    public void updateAllQuickSlot()
+    {
+        for(int k = 0; k < quickSlotKeys.Count; k++)
+        {
+            Transform currentSlot = skillKeyUI.transform.Find(quickSlotKeys[k].ToLower());
+            if (quickSlotItems[quickSlotKeys[k]] != "")
+            {
+                currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(GameManager.Instance.itemInfoDict[quickSlotItems[quickSlotKeys[k]]].spriteDirectory);
+                if (carringItems.ContainsKey(quickSlotItems[quickSlotKeys[k]]))
+                {                    
+                    currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;
+                    currentSlot.GetChild(2).GetComponent<TMP_Text>().text = carringItems[quickSlotItems[quickSlotKeys[k]]].ToString();
+                }
+                else
+                {                    
+                    currentSlot.GetChild(0).GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f);
+                    currentSlot.GetChild(2).GetComponent<TMP_Text>().text = "0";
+                }
+            }
+            else
+            {
+                currentSlot.GetChild(0).GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f);
+                currentSlot.GetChild(2).GetComponent<TMP_Text>().text = "";
+            }
+        }
+    }
+    void updateThisQuickSlot(string key)
+    {
+        Transform currentSlot = skillKeyUI.transform.Find(key);
+        if (quickSlotItems[key] != "")
+        {
+            currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(GameManager.Instance.itemInfoDict[quickSlotItems[key]].spriteDirectory);
+            if (carringItems.ContainsKey(quickSlotItems[key]))
+            {                
+                currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;
+                currentSlot.GetChild(2).GetComponent<TMP_Text>().text = carringItems[quickSlotItems[key]].ToString();
+            }
+            else
+            {                
+                currentSlot.GetChild(0).GetComponent<Image>().color = Color.gray;
+                currentSlot.GetChild(2).GetComponent<TMP_Text>().text = "0";
+            }
+        }
+        else
+        {            
+            currentSlot.GetChild(0).GetComponent<Image>().color = Color.gray;
+            currentSlot.GetChild(2).GetComponent<TMP_Text>().text = "";
+        }
+    }
+
+    void setQuickSlot(string key, string itemName)
+    {
+        quickSlotItems[key] = itemName;
+        updateThisQuickSlot(key);
+    }
+
+
+    void consumePotion(string itemName)
+    {
+        myCharacterState.ProcessSkill(1, GameManager.Instance.itemInfoDict[itemName].recoveryHealth);
+        myCharacterState.ProcessSkill(5, GameManager.Instance.itemInfoDict[itemName].recoveryMana);
+
+    }
+
+
 }
+
 

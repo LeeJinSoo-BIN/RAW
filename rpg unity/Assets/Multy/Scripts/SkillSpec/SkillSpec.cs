@@ -6,14 +6,16 @@ using UnityEngine;
 [CreateAssetMenu]
 public class SkillSpec : ScriptableObject
 {
-    public GameObject skillView;
+    //public GameObject skillView;
     public string skillName;
     public string castType;
+    public string dealType;
 
     public Vector2 radius;
     public Vector2 range;
 
     public string animType; //attack1,2,3, skill1,2,3
+    public float consumeMana;
     public float delay;
     public float duration;
     public float coolDown;

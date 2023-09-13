@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bcf0c340af174f51a37a822ddf234e3, type: 3}
   m_Name: SwordSmash
   m_EditorClassIdentifier: 
-  skillView: {fileID: 1473892316488033191, guid: e98e8a676c0a73f41acb26f5b53654ca, type: 3}
   skillName: sword smash
   castType: target-enemy
+  dealType: instant
   radius: {x: 1, y: 1}
   range: {x: 0, y: 0}
   animType: skill3
+  consumeMana: 30
   delay: 1
   duration: 1
   coolDown: 5

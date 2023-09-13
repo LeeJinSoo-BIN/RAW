@@ -50,6 +50,11 @@ public class MagicTotem : MonoBehaviourPunCallbacks
         }
         else if (collision.CompareTag("Player") && collision.transform.GetComponent<PhotonView>().IsMine)
         {
+            GameObject new_aura = Instantiate(aura);
+            new_aura.transform.parent = collision.transform;
+            new_aura.transform.localPosition = Vector3.zero;
+            new_aura.transform.localScale = Vector3.one;
+            new_aura.name = "aura";
             CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
             state.ProcessSkill(3, Power);
         }        
@@ -59,6 +64,12 @@ public class MagicTotem : MonoBehaviourPunCallbacks
     {
         if (collision.CompareTag("Player") && collision.transform.GetComponent<PhotonView>().IsMine)
         {
+            Transform having_aura = collision.transform.Find("aura");
+            if (having_aura != null)
+            {
+                having_aura.GetChild(0).GetComponent<Animator>().SetTrigger("vanish");
+                Destroy(having_aura.gameObject, 0.45f);
+            }                
             CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
             state.ProcessSkill(3, -Power);
         }

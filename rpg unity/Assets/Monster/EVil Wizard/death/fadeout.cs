@@ -23,18 +23,14 @@ public class fadeout : StateMachineBehaviour
             float timePassed = stateInfo.normalizedTime * stateInfo.length;
             if (timePassed >= fadeoutDuration)
             {
-                isFadeOutComplete = true;
-              
+                isFadeOutComplete = true;              
                 animator.gameObject.transform.GetChild(0).gameObject.SetActive(true);
-
-                
             }
             else
             {
                 Color objectColor = animator.gameObject.GetComponent<SpriteRenderer>().color;
                 float alpha = 1f - (timePassed / fadeoutDuration); // 페이드 아웃 효과를 위한 alpha 계산
-                animator.gameObject.GetComponent<SpriteRenderer>().color = new Color(objectColor.r, objectColor.g, objectColor.b, alpha);
-                
+                animator.gameObject.GetComponent<SpriteRenderer>().color = new Color(objectColor.r, objectColor.g, objectColor.b, alpha);                
             }
         }
     }

@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bcf0c340af174f51a37a822ddf234e3, type: 3}
   m_Name: MagicFloor
   m_EditorClassIdentifier: 
-  skillView: {fileID: 187846141684650059, guid: c42e720cf482f2c4d81cbbe23b82b3a4, type: 3}
   skillName: magic floor
   castType: circle
+  dealType: floor
   radius: {x: 1, y: 1}
   range: {x: 1, y: 1}
   animType: attack3
+  consumeMana: 80
   delay: 0
   duration: 3
   coolDown: 7

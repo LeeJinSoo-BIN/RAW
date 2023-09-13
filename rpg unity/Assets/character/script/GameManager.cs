@@ -4,12 +4,25 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Awake()
+    public static GameManager Instance;
+    [System.Serializable]
+    public class SerializeDictItem : CustomDict.SerializableDictionary<string, ItemSpec>
     {
-        Screen.SetResolution(960, 540, false);
+
+    }
+    [System.Serializable]
+    public class SerializeDictSkill : CustomDict.SerializableDictionary<string, SkillSpec>
+    {
+
     }
 
-    // Update is called once per frame
+    //Entitys 코드 분류에 따라, 엔티티 프리팹을 딕셔너리에 저장 
+    public SerializeDictItem itemInfoDict;
+    public SerializeDictSkill skillInfoDict;
     
+    void Awake()
+    {
+        Instance = this;
+        Screen.SetResolution(960, 540, false);
+    }
 }

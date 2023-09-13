@@ -50,7 +50,7 @@ public class SkillInfo : MonoBehaviourPunCallbacks
         skillLevel = castingCharacterSpec.skillLevel[currentSkillSpec.skillName];
     }    
     
-    public float dealWithoutCri()
+    /*public float dealWithoutCri()
     {        
         return SkillManager.instance.CaculateCharacterSkillDamage(skillLevel, power,
            flatDeal, dealIncreasePerSkillLevel, dealIncreasePerPower);
@@ -71,6 +71,6 @@ public class SkillInfo : MonoBehaviourPunCallbacks
     {
         return SkillManager.instance.CaculateCharacterSkillDamage(skillLevel, power,
             flatShield, shieldIncreasePerSkillLevel, shieldIncreasePerPower);
-    }
+    }*/
 
 }

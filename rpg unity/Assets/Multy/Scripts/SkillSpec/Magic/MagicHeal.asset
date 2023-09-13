@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bcf0c340af174f51a37a822ddf234e3, type: 3}
   m_Name: MagicHeal
   m_EditorClassIdentifier: 
-  skillView: {fileID: 3682754243370458347, guid: 4946fc4b73154e749b2e54b7a4552f47, type: 3}
   skillName: magic heal
   castType: target-player
+  dealType: floor
   radius: {x: 1.5, y: 1.5}
   range: {x: 2, y: 2}
   animType: attack3
+  consumeMana: 30
   delay: 0
   duration: 1
   coolDown: 3

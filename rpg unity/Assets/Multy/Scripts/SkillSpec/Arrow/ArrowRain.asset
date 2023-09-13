@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bcf0c340af174f51a37a822ddf234e3, type: 3}
   m_Name: ArrowRain
   m_EditorClassIdentifier: 
-  skillView: {fileID: 1473892316488033191, guid: e98e8a676c0a73f41acb26f5b53654ca, type: 3}
   skillName: arrow rain
   castType: circle
+  dealType: floor
   radius: {x: 2, y: 2}
   range: {x: 1, y: 1}
   animType: skillBow1
+  consumeMana: 50
   delay: 1.2
   duration: 2
   coolDown: 5

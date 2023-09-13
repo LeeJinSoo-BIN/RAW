@@ -12,12 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bcf0c340af174f51a37a822ddf234e3, type: 3}
   m_Name: ArrowDash
   m_EditorClassIdentifier: 
-  skillView: {fileID: 1473892316488033191, guid: e98e8a676c0a73f41acb26f5b53654ca, type: 3}
   skillName: arrow dash
   castType: bar
+  dealType: buff
   radius: {x: 0.8, y: 0.8}
   range: {x: 0.8, y: 0.7}
   animType: dash
-  skillDelay: 0.5
-  skillDuration: 0
+  consumeMana: 45
+  delay: 0
+  duration: 0
   coolDown: 5
+  flatDeal: 0
+  dealIncreasePerSkillLevel: 0
+  dealIncreasePerPower: 0
+  flatHeal: 0
+  healIncreasePerSkillLevel: 0
+  healIncreasePerPower: 0
+  flatShield: 0
+  shieldIncreasePerSkillLevel: 0
+  shieldIncreasePerPower: 0
+  flatPower: 0
+  powerIncreasePerSkillLevel: 0
+  powerIncreasePerPower: 0

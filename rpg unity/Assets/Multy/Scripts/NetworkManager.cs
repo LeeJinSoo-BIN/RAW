@@ -20,6 +20,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public GameObject InGameUI;
     public GameObject ground;
+    public GameObject itemField;
     private bool connecting = true;
     public TMP_Text ConnectButtonText;
     public PhotonView PV;
@@ -43,7 +44,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Connect();
         InGameUI.SetActive(false);
         ground.SetActive(false);
-
+        itemField.SetActive(false);
         ConnectPanel.SetActive(false);
         DisconnectPanel.SetActive(true);
         LobbyPanel.SetActive(false);
@@ -118,16 +119,16 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         LobbyPanel.SetActive(false);
         DisconnectPanel.SetActive(false);
-        InGameUI.SetActive(false);
-        ground.SetActive(false);
+        InGameUI.SetActive(true);
+        ground.SetActive(true);
+        itemField.SetActive(true);
         ConnectPanel.SetActive(true);
         //connecting = false;
     }
 
     public void CreateRoomButtonClickInPanel()
     {
-        PhotonNetwork.CreateRoom(RoomNameInputField.text, new RoomOptions { MaxPlayers = maxPlayersPerRoom });
-        LobbyPanel.SetActive(false);
+        PhotonNetwork.CreateRoom(RoomNameInputField.text, new RoomOptions { MaxPlayers = maxPlayersPerRoom });        
         //PhotonNetwork.JoinRoom(RoomNameToCreat.text);
     }
 
@@ -143,12 +144,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public void Spawn(string character)
     {
-        GameObject player = PhotonNetwork.Instantiate("Character/" + character, Vector3.zero, Quaternion.identity);
-
         ConnectPanel.SetActive(false);
         RespwanPanel.SetActive(false);
-        InGameUI.SetActive(true);
-        ground.SetActive(true);
+
+        GameObject player = PhotonNetwork.Instantiate("Character/" + character, Vector3.zero, Quaternion.identity);
+
+        
         if (PhotonNetwork.IsMasterClient)
             spawnButton.SetActive(true);
 
@@ -160,7 +161,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.LocalPlayer.IsMasterClient)
         {
-            PhotonNetwork.Instantiate("Evil Wizard", Vector3.zero, Quaternion.identity);
+            PhotonNetwork.Instantiate("Monster/Evil Wizard", Vector3.zero, Quaternion.identity);
             PhotonNetwork.CurrentRoom.IsOpen = false;
             PV.RPC("SpawnBoss", RpcTarget.All);
             StageManager.active = true;

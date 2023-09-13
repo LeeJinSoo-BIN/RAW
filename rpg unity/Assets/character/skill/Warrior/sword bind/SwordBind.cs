@@ -35,13 +35,6 @@ public class SwordBind : MonoBehaviourPunCallbacks
         }
     }
 
-    [PunRPC]
-    void SetTarget(string targetName)
-    {
-        target = GameObject.Find(targetName);
-        transform.parent = target.transform;
-        transform.position += new Vector3(0f, 1f);        
-    }
 
     [PunRPC]
     void initSkill(float deal, float heal, float sheild, float power, float duration, string target_name, Vector2 target_pos)
