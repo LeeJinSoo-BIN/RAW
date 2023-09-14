@@ -25,7 +25,6 @@ public class Item : MonoBehaviour
         transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = sprite;
         transform.parent = ItemField.transform;
         name = item_name + ItemField.transform.childCount;
-        Debug.Log(name);
         itemCount = cnt;
     }
 }

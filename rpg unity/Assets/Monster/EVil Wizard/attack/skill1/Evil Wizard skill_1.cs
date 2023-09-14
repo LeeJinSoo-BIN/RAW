@@ -5,7 +5,7 @@ using Photon.Realtime;
 using System.Collections;
 
 
-public class skill_1 : MonoBehaviourPunCallbacks
+public class EvilWizardSkill_1 : MonoBehaviourPunCallbacks
 {
 
     public Vector3 startPosition;

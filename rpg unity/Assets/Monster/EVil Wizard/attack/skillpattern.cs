@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using Unity.VisualScripting;
 using UnityEngine.UIElements;
 
-public class skillIpattern : MonoBehaviourPunCallbacks
+public class EvilWizard : MonoBehaviourPunCallbacks
 {    
     //private skill_3 skill3;
     public GameObject fireprefab1;
@@ -15,7 +15,7 @@ public class skillIpattern : MonoBehaviourPunCallbacks
     public GameObject fireObject3;
     public GameObject characterGroup;
     public Animator animator;
-    private float _time = 0.0f;
+    private float time = 0f;
     private bool skillInvoked = false;
     //private bool mobControlEnabled = true; // MobControl ?????? ?????? ???????? ????
     private GameObject target;
@@ -35,8 +35,6 @@ public class skillIpattern : MonoBehaviourPunCallbacks
         bottomRight = GameObject.Find("ground").transform.Find("bottom right");
         characterGroup = GameObject.Find("Player Group");
         transform.parent = GameObject.Find("Enemy Group").transform;
-        
-        
     }
 
     private void Start()
@@ -48,17 +46,18 @@ public class skillIpattern : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.IsMasterClient && attackable && !isDeath)
         {
-            _time += Time.deltaTime;
+            time += Time.deltaTime;
 
-            if (_time >= patternCycle && skillInvoked == false) // 30???? ???? ?? ???? ????
+            if (time >= patternCycle && skillInvoked == false) // 30???? ???? ?? ???? ????
             {
                 //skillInvoked = true;
                 //DisableMobControl(); // MobControl?? ????????
                 //StartCoroutine(InvokeRandomSkillsRoutine());
                 randomPattern();
-                _time = 0;
+                time = 0;
             }
-            //StartCoroutine(InvokeRandomSkillsRoutine());
+            if(skillInvoked)
+                time = 0;
         }
     }
         
@@ -80,6 +79,7 @@ public class skillIpattern : MonoBehaviourPunCallbacks
         {
             spawnItem();
         }
+        Destroy(gameObject, 0.45f);
     }
 
     void spawnItem()
@@ -87,11 +87,13 @@ public class skillIpattern : MonoBehaviourPunCallbacks
         float x = Random.Range(-1f, 1f);
         float y = Random.Range(-0.3f, 0.3f);
         Vector3 spawn_pos = new Vector3(x + transform.position.x, y + transform.position.y, 0);
-        GameObject new_item = PhotonNetwork.Instantiate("items/item_prefab", spawn_pos, Quaternion.identity);
-        int rnd = Random.Range(0, 2);
+        int rnd = Random.Range(0, 4);
+        GameObject new_item = null;
+        if (rnd < 3)
+            new_item = PhotonNetwork.Instantiate("items/item_prefab", spawn_pos, Quaternion.identity);        
         if (rnd == 0)
             new_item.GetComponent<PhotonView>().RPC("initItem", RpcTarget.All, "red potion small", 1);
-        else
+        else if(rnd == 1)
             new_item.GetComponent<PhotonView>().RPC("initItem", RpcTarget.All, "blue potion small", 1);
     }
 
@@ -214,6 +216,24 @@ public class skillIpattern : MonoBehaviourPunCallbacks
     }
     
 
+    void skill5()
+    {
+        StartCoroutine(excuteSkill5());
+    }
+    IEnumerator excuteSkill5()
+    {
+        skillInvoked = true;
+        animator.SetTrigger("spawn creature");
+        float _time = 0f;
+        while (_time < 0.3f)
+        {
+            _time += Time.deltaTime;
+            yield return null;
+        }
+        PhotonNetwork.Instantiate("Monster/Flying Eye", staff.position, Quaternion.identity);
+        skillInvoked = false;
+    }
+
     private IEnumerator MoveMonsterToCharacter(Vector3 startPosition, Vector3 targetPosition, float speed, bool run = false, float distance = 2.0f)
     {
         float journeyLength = Vector3.Distance(startPosition, targetPosition);
@@ -240,7 +260,7 @@ public class skillIpattern : MonoBehaviourPunCallbacks
 
     void randomPattern()
     {
-        int randomSkill = Random.Range(1, 5);
+        int randomSkill = Random.Range(1, 6);
         switch (randomSkill)
         {
             case 1:                
@@ -252,8 +272,11 @@ public class skillIpattern : MonoBehaviourPunCallbacks
             case 3:                
                 skill3();
                 break;
-            case 4:                
+            case 4:
                 skill4();
+                break;
+            case 5:
+                skill5();
                 break;
         }
     }

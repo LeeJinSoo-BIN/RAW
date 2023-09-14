@@ -65,7 +65,7 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
                 }
                 if (type == 4)
                 {
-                    transform.GetComponent<skillIpattern>().Bind();
+                    //transform.GetComponent<EvilWizard>().Bind();
                 }
             }
             else if (type == 1) //heal

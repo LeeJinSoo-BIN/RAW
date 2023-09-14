@@ -15,16 +15,16 @@ MonoBehaviour:
   skillName: arrow normal
   castType: target-enemy
   dealType: throw
-  radius: {x: 1, y: 1}
-  range: {x: 1, y: 1}
+  radius: {x: 1.8, y: 1.8}
+  range: {x: 0, y: 0}
   animType: normal
   consumeMana: 0
   delay: 0.5
   duration: 0
   coolDown: 0
-  flatDeal: 1
+  flatDeal: 5
   dealIncreasePerSkillLevel: 1
-  dealIncreasePerPower: 1
+  dealIncreasePerPower: 0.1
   flatHeal: 0
   healIncreasePerSkillLevel: 0
   healIncreasePerPower: 0

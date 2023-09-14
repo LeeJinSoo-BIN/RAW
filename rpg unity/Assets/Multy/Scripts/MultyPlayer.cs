@@ -157,12 +157,16 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                     else if (current_skill.castType == "target-player") // targeting only character 
                     {
                         RaycastHit2D hit_target = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, playerLayer);
+                        if (hit_target.collider == null)
+                            return;
                         if (skillRangeAreaTargeting.transform.GetChild(1).gameObject.activeSelf)
                             CastingSkill(hit_target.point, hit_target.transform.gameObject);
                     }
                     else if (current_skill.castType == "target-enemy") // targeting only monster
                     {
                         RaycastHit2D hit_target = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, monsterLayer);
+                        if (hit_target.collider == null)
+                            return;
                         if (skillRangeAreaTargeting.transform.GetChild(1).gameObject.activeSelf)
                             CastingSkill(hit_target.point, hit_target.transform.gameObject);
                     }
@@ -170,6 +174,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                     {
                         LayerMask player_or_monster = (playerLayer | monsterLayer);
                         RaycastHit2D hit_target = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, player_or_monster);
+                        if (hit_target.collider == null)
+                            return;
                         if (skillRangeAreaTargeting.transform.GetChild(1).gameObject.activeSelf)
                             CastingSkill(hit_target.point, hit_target.transform.gameObject);
                     }
@@ -402,7 +408,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         GameObject skill = null;        
         float current_skill_deal = CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
             current_skill.flatDeal, current_skill.dealIncreasePerSkillLevel, current_skill.dealIncreasePerPower,
-            characterState.characterSpec.criticalPercent, characterState.characterSpec.criticalDamage, true);
+            characterState.characterSpec.criticalPercent, characterState.characterSpec.criticalDamage, affectedByCritical:true);
         float current_skill_heal = CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
             current_skill.flatHeal, current_skill.dealIncreasePerSkillLevel, current_skill.dealIncreasePerPower);
         float current_skill_shield = CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
@@ -426,7 +432,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             }
             else if (current_skill.skillName == "arrow gatling")
             {
-                StartCoroutine(Gatling(skillCastingPosition.position, skillPos, current_skill_deal));
+                StartCoroutine(Gatling(skillCastingPosition.position, skillPos));
             }
             else if (current_skill.skillName == "arrow charge")
             {
@@ -508,9 +514,11 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
-    IEnumerator Gatling(Vector2 oriPos, Vector2 desPos, float current_skill_deal)
+    IEnumerator Gatling(Vector2 oriPos, Vector2 desPos)
     {
-
+        float current_skill_deal = CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
+            current_skill.flatDeal, current_skill.dealIncreasePerSkillLevel, current_skill.dealIncreasePerPower,
+            characterState.characterSpec.criticalPercent, characterState.characterSpec.criticalDamage, affectedByCritical: true);
         for (int k = 0; k < 20; k++)
         {
             float _time = 0;
