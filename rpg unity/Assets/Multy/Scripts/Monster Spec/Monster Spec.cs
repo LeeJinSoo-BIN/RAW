@@ -6,7 +6,9 @@ using UnityEngine;
 public class MonsterSpec : ScriptableObject
 {
     public string monsterName;
+    public string monsterType;
     public string monsterDirectory;
+
     public float maxHealth;
     public float patternCycle;
     public List<MonsterSkillSpec> skillList;

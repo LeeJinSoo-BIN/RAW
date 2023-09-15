@@ -28,7 +28,7 @@ public class SkillInfo : MonoBehaviourPunCallbacks
     public float duration;
     public float skillLevel;
 
-    [PunRPC]
+    /*[PunRPC]
     public SkillInfo(SkillSpec currentSkillSpec, CharacterSpec castingCharacterSpec)
     {
         power = castingCharacterSpec.power;
@@ -47,8 +47,8 @@ public class SkillInfo : MonoBehaviourPunCallbacks
         shieldIncreasePerSkillLevel = currentSkillSpec.shieldIncreasePerSkillLevel;
 
         duration = currentSkillSpec.duration;
-        skillLevel = castingCharacterSpec.skillLevel[currentSkillSpec.skillName];
-    }    
+        //skillLevel = castingCharacterSpec.skillLevel[currentSkillSpec.skillName];
+    }    */
     
     /*public float dealWithoutCri()
     {        

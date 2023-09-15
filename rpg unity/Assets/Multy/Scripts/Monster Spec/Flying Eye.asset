@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Flying Eye
   m_EditorClassIdentifier: 
   monsterName: Flying Eye
+  monsterType: Normal
   monsterDirectory: Monster/Flying Eye
   maxHealth: 120
   patternCycle: 2

@@ -776,7 +776,7 @@ Transform:
   - {fileID: 5838030064198521808}
   - {fileID: 3232039407426989710}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!210 &119079104696226518
 SortingGroup:
@@ -2555,7 +2555,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35f12f740ef9b664bab4f6060b2c63cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterSpec: {fileID: 11400000, guid: d59c5f6d0be9f8b4585a069725ac6fba, type: 2}
+  characterSpec: {fileID: 0}
   health: {fileID: 6779331874258698343}
   mana: {fileID: 2812382519298704180}
   shield: {fileID: 3549845335685227674}

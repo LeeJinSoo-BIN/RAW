@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Evil Wizard
   m_EditorClassIdentifier: 
   monsterName: Evil Wizard
+  monsterType: Boss
   monsterDirectory: Monster/Evil Wizard
   maxHealth: 1000
   patternCycle: 6

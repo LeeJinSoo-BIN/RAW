@@ -20,7 +20,7 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
     private bool isDeath = false;
     public MultyPlayer playerControl;
     private float _timer = 0f;
-    void Start()
+    public void setUp()
     {
         shield.maxValue = characterSpec.maxHealth;
         shield.value = 0;

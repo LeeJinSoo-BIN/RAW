@@ -50,6 +50,8 @@ public class InGameUI : MonoBehaviour
         makeProfile();
         characterHealth = myCharacterState.health;
         characterMana = myCharacterState.mana;
+        quickSlotKeys.Clear();
+        quickSlotItems.Clear();
         for(int k = 0; k < quickSlotKeys.Count; k++)
         {
             quickSlotItems.Add(quickSlotKeys[k], "");
@@ -151,7 +153,7 @@ public class InGameUI : MonoBehaviour
             {
                 Transform currentSlot = skillKeyUI.transform.Find(keys[k].ToLower());
                 currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(skillThumbnailPath, skillNames[k]));
-                currentSlot.GetChild(3).GetComponent<TMP_Text>().text = GameManager.Instance.skillInfoDict[skillNames[k]].coolDown.ToString();
+                currentSlot.GetChild(3).GetComponent<TMP_Text>().text = GameManager.Instance.skillInfoDict[skillNames[k]].consumeMana.ToString();
             }
         }
         setQuickSlot("1", "red potion small");

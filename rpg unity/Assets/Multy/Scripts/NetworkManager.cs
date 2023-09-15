@@ -49,7 +49,17 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         DisconnectPanel.SetActive(true);
         LobbyPanel.SetActive(false);
     }
-
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) && PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.LeaveRoom();            
+        }
+        if (connecting)
+        {
+            ConnectButtonText.text = PhotonNetwork.NetworkClientState.ToString();
+        }
+    }
     public void Connect()
     {
         PhotonNetwork.ConnectUsingSettings();
@@ -114,7 +124,16 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         string room_name = EventSystem.current.currentSelectedGameObject.transform.GetChild(0).GetComponent<TMP_Text>().text;
         PhotonNetwork.JoinRoom(room_name);
     }
+    public override void OnLeftRoom()
+    {
+        connecting = false;
+        LobbyPanel.SetActive(true);        
 
+        InGameUI.SetActive(false);
+        ground.SetActive(false);
+        itemField.SetActive(false);
+        ConnectPanel.SetActive(false);
+    }
     public override void OnJoinedRoom()
     {
         LobbyPanel.SetActive(false);
@@ -132,16 +151,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         //PhotonNetwork.JoinRoom(RoomNameToCreat.text);
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape) && PhotonNetwork.IsConnected)
-            PhotonNetwork.Disconnect();
-        if (connecting)
-        {
-            ConnectButtonText.text = PhotonNetwork.NetworkClientState.ToString();
-        }
-    }
-
     public void Spawn(string character)
     {
         ConnectPanel.SetActive(false);
@@ -149,7 +158,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
         GameObject player = PhotonNetwork.Instantiate("Character/" + character, Vector3.zero, Quaternion.identity);
 
-        
+        GameManager.Instance.setUpCharacter(player);
         if (PhotonNetwork.IsMasterClient)
             spawnButton.SetActive(true);
 

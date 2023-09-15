@@ -49,7 +49,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     private int skill_num = 5;
     private List<string> skill_key = new List<string> { "Q", "W", "E", "R", "A" };
     public List<SkillSpec> skill_list = new List<SkillSpec>();
-    private Dictionary<string, SkillSpec> skills = new Dictionary<string, SkillSpec>();
+    private Dictionary<string, SkillSpec> keyToSkillSpec = new Dictionary<string, SkillSpec>();
     private SkillSpec current_skill;
     public CharacterState characterState;    
     private Dictionary<string, float> skillActivatedTime = new Dictionary<string, float>();
@@ -69,14 +69,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     private void Awake()
     {        
         deactivateSkill();
-
-        for (int i = 0; i < skill_num; i++)
-        {
-            characterState.characterSpec.skillLevel.Add(skill_list[i].skillName, characterState.characterSpec.skillLevelList[i]);
-            skills.Add(skill_key[i], skill_list[i]);
-            skillActivatedTime.Add(skill_list[i].skillName, 0f);
-            skillNameToKey.Add(skill_list[i].skillName, skill_key[i]);
-        }
+        
 
         NickNameText.text = PV.IsMine ? PhotonNetwork.NickName : PV.Owner.NickName;
         NickNameText.color = PV.IsMine ? Color.green : Color.red;
@@ -96,7 +89,18 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         transform.parent = playerGroup.transform;
         
     }
-  
+    public void loadData()
+    {
+        for (int i = 0; i < skill_num; i++)
+        {
+            if (!characterState.characterSpec.skillLevel.ContainsKey(skill_list[i].skillName))
+
+                //characterState.characterSpec.skillLevel.Add(skill_list[i].skillName, characterState.characterSpec.skillLevelList[i]);
+            keyToSkillSpec.Add(skill_key[i], skill_list[i]);
+            skillActivatedTime.Add(skill_list[i].skillName, 0f);
+            skillNameToKey.Add(skill_list[i].skillName, skill_key[i]);
+        }
+    }
     void Update()
     {
         if (PV.IsMine && !isDeath)
@@ -285,7 +289,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     void activateSkill(string now_skill_key)
     {
         current_casting_skill_key = now_skill_key;
-        current_skill = skills[now_skill_key];
+        current_skill = keyToSkillSpec[now_skill_key];
         
         Vector2 range_area = current_skill.range;
 

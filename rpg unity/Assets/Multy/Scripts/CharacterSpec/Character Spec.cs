@@ -15,8 +15,12 @@ public class CharacterSpec : ScriptableObject
     public float criticalDamage = 1.2f;
     public float criticalPercent = 50f;
     public float healPercent = 1f;
-    public Dictionary<string, int> skillLevel = new Dictionary<string, int>();
+    [System.Serializable]
+    public class SerializeDictSkillLevel : CustomDict.SerializableDictionary<string, int>
+    {
+
+    }
+    public SerializeDictSkillLevel skillLevel;
     public int maxInventoryNum = 24;
-    public int characterLevel = 1;
-    public int[] skillLevelList = new int[4];
+    public int characterLevel = 1;    
 }
