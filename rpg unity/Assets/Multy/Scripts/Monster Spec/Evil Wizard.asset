@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b9789160c338d543a94eada524f94ca, type: 3}
+  m_Name: Evil Wizard
+  m_EditorClassIdentifier: 
+  monsterName: Evil Wizard
+  monsterDirectory: Monster/Evil Wizard
+  maxHealth: 1000
+  patternCycle: 6
+  skillList:
+  - {fileID: 11400000, guid: d9d770af0694f854183b007830aceb46, type: 2}
+  - {fileID: 11400000, guid: b273e755f3b5be5458186bc2cc01540f, type: 2}
+  - {fileID: 11400000, guid: f0f6c9a733a847a4780c3066d480f1b3, type: 2}
+  - {fileID: 11400000, guid: f69e98a25a0985740bb154951a40ac43, type: 2}
+  - {fileID: 11400000, guid: bdfa651a8d76224489baee6a5af6bd55, type: 2}
+  defaultMovement: stop
+  defaultScale: {x: 3, y: 3, z: 1}
+  dropItems:
+    SD_Keys: []
+    SD_Values: []

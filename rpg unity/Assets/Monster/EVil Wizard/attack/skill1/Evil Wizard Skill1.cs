@@ -5,7 +5,7 @@ using Photon.Realtime;
 using System.Collections;
 
 
-public class EvilWizardSkill_1 : MonoBehaviourPunCallbacks
+public class EvilWizardSkill1 : MonoBehaviourPunCallbacks
 {
 
     public Vector3 startPosition;
@@ -15,8 +15,8 @@ public class EvilWizardSkill_1 : MonoBehaviourPunCallbacks
     private bool bomb = false;
     private BoxCollider2D skillCollider;
 
-    private float flatDeal = 50f;
-    private float level = 1;
+    private float Deal;
+    
     private void Start()
     {
         animator = gameObject.GetComponentInChildren<Animator>();
@@ -90,16 +90,17 @@ public class EvilWizardSkill_1 : MonoBehaviourPunCallbacks
             if (collision.transform.GetComponent<PhotonView>().IsMine)
             {
                 CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-                state.ProcessSkill(0, flatDeal * level);
+                state.ProcessSkill(0, Deal);
             }
         }
     }
 
     [PunRPC]
-    void InitSkill(Vector3 position, string targetName)
+    void InitSkill(Vector3 position, string targetName, float[] deal)
     {
         startPosition = position;
         character = GameObject.Find(targetName);
+        Deal = deal[0];
         ExecuteSkill();
     }
 }

@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class skill_3 : MonoBehaviourPunCallbacks
+public class EvilWizardSkill3 : MonoBehaviourPunCallbacks
 {
-    
-    private float Damage = 60f;
-    // Start is called before the first frame update
-    
-
+    float Deal;
+    private void Start()
+    {
+        Deal = int.Parse(name);
+    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
@@ -18,7 +18,7 @@ public class skill_3 : MonoBehaviourPunCallbacks
             if (collision.transform.GetComponent<PhotonView>().IsMine)
             {
                 CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-                state.ProcessSkill(0, Damage);
+                state.ProcessSkill(0, Deal);
             }
         }
     }

@@ -110,7 +110,7 @@ RectTransform:
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -736,7 +736,7 @@ GameObject:
   - component: {fileID: 2075375362394840460}
   - component: {fileID: 3579689265428412503}
   - component: {fileID: 3867682407519172524}
-  - component: {fileID: -88029914532303888}
+  - component: {fileID: 2259383325488950679}
   - component: {fileID: 8187238126603786994}
   - component: {fileID: 8376559663708693598}
   - component: {fileID: 3738683713220002454}
@@ -851,7 +851,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &-88029914532303888
+--- !u!114 &2259383325488950679
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -860,17 +860,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 5241684330125276703}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d30fd7aeaa50f014c8fb42321df26092, type: 3}
+  m_Script: {fileID: 11500000, guid: 5d3f0ff480f9257439895a31d8028613, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterGroup: {fileID: 0}
-  animator: {fileID: 3867682407519172524}
-  skill2Area: {fileID: 4154202892772460518}
-  skill3Area: {fileID: 8500275543979992489}
-  PV: {fileID: 8376559663708693598}
+  monsterSpec: {fileID: 11400000, guid: 2c329d4229b0fcc43bd102fc26842fe0, type: 2}
+  canvas: {fileID: 4005057331862599659}
+  level: 1
   attackable: 1
   isDeath: 0
-  canvas: {fileID: 4005057331862599659}
+  PV: {fileID: 8376559663708693598}
+  animator: {fileID: 3867682407519172524}
 --- !u!114 &8187238126603786994
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -883,14 +882,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a43f1dd9ca38c47588f08a821a9a4769, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 120
-  maxMana: 0
-  power: 10
   health: {fileID: 0}
   shield: {fileID: 0}
-  criticalPercent: 50
-  criticalDamage: 1.2
-  healPercent: 1
 --- !u!114 &8376559663708693598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -954,13 +947,13 @@ MonoBehaviour:
     Name: run
   - Type: 9
     SynchronizeType: 1
-    Name: attack2
-  - Type: 9
-    SynchronizeType: 1
     Name: Death
   - Type: 9
-    SynchronizeType: 1
-    Name: attack3
+    SynchronizeType: 0
+    Name: FE Bite
+  - Type: 9
+    SynchronizeType: 0
+    Name: FE Spin
   m_SynchronizeLayers:
   - SynchronizeType: 0
     LayerIndex: 0
@@ -1076,7 +1069,7 @@ SpriteRenderer:
   m_SortingOrder: 1
   m_Sprite: {fileID: -4795363162621231457, guid: 6d7cd4f7505dc674c891ca8946cfd98b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 1
+  m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1.5, y: 1.5}

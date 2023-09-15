@@ -661,7 +661,7 @@ GameObject:
   - component: {fileID: 7196801161601376449}
   - component: {fileID: 1399720485939322631}
   - component: {fileID: 2672548942401345917}
-  - component: {fileID: 7633901369386216509}
+  - component: {fileID: 435484925033273472}
   - component: {fileID: 4241070347977510028}
   - component: {fileID: 11439640600108841}
   - component: {fileID: 7273569848881289795}
@@ -776,7 +776,7 @@ Rigidbody2D:
   m_SleepingMode: 0
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &7633901369386216509
+--- !u!114 &435484925033273472
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -785,18 +785,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 4888214507846658816}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1220d35744b88014fa62105443ae7153, type: 3}
+  m_Script: {fileID: 11500000, guid: 5d3f0ff480f9257439895a31d8028613, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fireprefab1: {fileID: 7185363373457157081, guid: 1a1089b9d18fb2046a98d64864159087, type: 3}
-  fireprefab2: {fileID: 6986408986877286680, guid: 027573e78b3a03a4d9aef62a1662c54b, type: 3}
-  fireObject3: {fileID: 1684322100134748871}
-  characterGroup: {fileID: 0}
-  animator: {fileID: 7196801161601376449}
-  staff: {fileID: 6679292558783096967}
-  PV: {fileID: 4241070347977510028}
+  monsterSpec: {fileID: 11400000, guid: 8c4ccef3dc9fd2b41b4b070099974ce2, type: 2}
+  canvas: {fileID: 1325848742574612896}
+  level: 1
   attackable: 1
   isDeath: 0
+  PV: {fileID: 4241070347977510028}
+  animator: {fileID: 7196801161601376449}
 --- !u!114 &4241070347977510028
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -849,14 +847,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a43f1dd9ca38c47588f08a821a9a4769, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 2000
-  maxMana: 1000
-  power: 10
   health: {fileID: 0}
   shield: {fileID: 0}
-  criticalPercent: 50
-  criticalDamage: 1.2
-  healPercent: 1
 --- !u!114 &9140936220363964851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -877,9 +869,6 @@ MonoBehaviour:
     Name: run
   - Type: 9
     SynchronizeType: 1
-    Name: attack
-  - Type: 9
-    SynchronizeType: 1
     Name: Death
   - Type: 4
     SynchronizeType: 1
@@ -890,6 +879,9 @@ MonoBehaviour:
   - Type: 9
     SynchronizeType: 1
     Name: spawn creature
+  - Type: 9
+    SynchronizeType: 0
+    Name: Evil Wizard Fire
   m_SynchronizeLayers:
   - SynchronizeType: 0
     LayerIndex: 0

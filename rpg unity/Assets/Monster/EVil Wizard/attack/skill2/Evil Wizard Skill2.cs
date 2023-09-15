@@ -2,38 +2,21 @@ using UnityEngine;
 using System.Collections;
 using Unity.VisualScripting;
 using Photon.Pun;
+using UnityEngine.TextCore.Text;
 
-public class skill_2 : MonoBehaviour
+public class EvilWizardSkill2 : MonoBehaviour
 {
     //public GameObject character; // 캐릭터의 위치
     //private Animator animator; // 애니메이터 컴포넌트
 
-    private float flatHandDeal = 50f;
-    private float flatBombDeal = 50f;
-    private float level = 1;
+    private float handDeal;
+    private float bombDeal;   
     public bool hand = false;
     public bool bomb = false;
-
-    public void Start()
-    {
-        StartCoroutine(Vanish(10f));
-
-    }
+    
     public void ExecuteSkill()
     {
         StartCoroutine(Fire());
-    }
-
-    IEnumerator Vanish(float duration)
-    {
-        float time = 0;
-        while (time < duration)
-        {
-            time += Time.deltaTime;
-            yield return null;
-        }
-        //GetComponent<Animator>().SetTrigger("vanish");
-        Destroy(gameObject, 0.45f);
     }
 
     private IEnumerator Fire()
@@ -71,16 +54,25 @@ public class skill_2 : MonoBehaviour
                 if (hand)
                 {
                     CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-                    state.ProcessSkill(0, flatHandDeal * level);
+                    state.ProcessSkill(0, handDeal);
                 }
                 if (bomb)
                 {
                     CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-                    state.ProcessSkill(0, flatBombDeal * level);
+                    state.ProcessSkill(0, bombDeal);
                 }
             }
         }
     }
 
+    [PunRPC]
+    void InitSkill(Vector3 position, string targetName, float[] deal)
+    {
+        //startPosition = position;
+        //character = GameObject.Find(targetName);
+        handDeal = deal[0];
+        bombDeal = deal[1];
+        ExecuteSkill();
+    }
 }
 

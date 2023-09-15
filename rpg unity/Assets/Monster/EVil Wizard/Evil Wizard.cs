@@ -136,10 +136,10 @@ public class EvilWizard : MonoBehaviourPunCallbacks
         float y = Random.Range(bottomRight.position.y, topLeft.position.y);
         targetPos = new Vector3(x, y, 0);
     }
-    private void skill1()
+    private void skill1()//fireball
     {
         skillInvoked = true;
-        GameObject fire = PhotonNetwork.Instantiate("Monster/skill1", staff.position, Quaternion.identity);
+        GameObject fire = PhotonNetwork.Instantiate("Monster/Evil Wizard Skill1", staff.position, Quaternion.identity);
         // ????1 ???????? ?????????? ?????? ????
         findTarget();        
         fire.transform.GetComponent<PhotonView>().RPC("InitSkill", RpcTarget.All, staff.position, target.name);
@@ -149,15 +149,15 @@ public class EvilWizard : MonoBehaviourPunCallbacks
     {           
         StartCoroutine(excuteSkill2());
     }
-    IEnumerator excuteSkill2()
+    IEnumerator excuteSkill2()//firehand
     {
         skillInvoked = true;
         findTarget();
         Vector2 characterPosition = target.transform.position;
         Vector2 monsterPosition = gameObject.transform.position;
         yield return StartCoroutine(MoveMonsterToCharacter(monsterPosition, characterPosition, 5f, true));
-        GameObject fire = PhotonNetwork.Instantiate("Monster/skill2", target.transform.position, Quaternion.identity);
-        skill_2 skill2 = fire.GetComponentInChildren<skill_2>();
+        GameObject fire = PhotonNetwork.Instantiate("Monster/Evil Wizard Skill2", target.transform.position, Quaternion.identity);
+        EvilWizardSkill2 skill2 = fire.GetComponentInChildren<EvilWizardSkill2>();
         //skill2.character = target;
         skill2.ExecuteSkill();
         yield return StartCoroutine(MoveMonsterToCharacter(characterPosition, monsterPosition, 2f));

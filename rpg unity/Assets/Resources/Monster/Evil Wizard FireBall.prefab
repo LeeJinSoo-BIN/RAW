@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: -8066056116964031768}
   - component: {fileID: 7696036479403928059}
   m_Layer: 0
-  m_Name: skill1
+  m_Name: Evil Wizard FireBall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -212,7 +212,7 @@ GameObject:
   - component: {fileID: 7379024610781062082}
   - component: {fileID: 2125517155679417043}
   m_Layer: 0
-  m_Name: skill2
+  m_Name: Evil Wizard FireHand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

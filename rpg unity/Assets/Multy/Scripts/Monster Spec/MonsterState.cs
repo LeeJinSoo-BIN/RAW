@@ -7,25 +7,21 @@ using Photon.Realtime;
 
 public class MonsterState : MonoBehaviourPunCallbacks
 {
-    public int maxHealth;
-    public int maxMana;
-    public float power;
+    private MonsterSpec monsterSpec;    
     public Slider health;
     public Slider shield;
-    public float criticalPercent = 50f;
-    public float criticalDamage = 1.2f;
-    public float healPercent = 1f;
     private bool isDeath = false;
 
     private Dictionary<string, int> skillLevel = new Dictionary<string, int>();
 
     void Awake()
     {
+        monsterSpec = transform.GetComponent<MonsterControl>().monsterSpec;
         health = transform.GetChild(0).GetChild(0).GetChild(1).GetComponent<Slider>();
         shield = transform.GetChild(0).GetChild(0).GetChild(2).GetComponent<Slider>();
-        health.maxValue = maxHealth;        
-        health.value = maxHealth;
-        shield.maxValue = maxHealth;
+        health.maxValue = monsterSpec.maxHealth;
+        health.value = monsterSpec.maxHealth;
+        shield.maxValue = monsterSpec.maxHealth;
         shield.value = 0;
     }
 
@@ -41,21 +37,10 @@ public class MonsterState : MonoBehaviourPunCallbacks
         if (health.value <= 0 && !isDeath)
         {
             isDeath = true;
-            if(name == "Evil Wizard(Clone)")
-                transform.GetComponent<EvilWizard>().Death();
-            else
-                transform.GetComponent<FlyingEye>().Death();
+            transform.GetComponent<MonsterControl>().Death();
         }
-        if(type == 4)
-        {
-            if (name == "Evil Wizard(Clone)")
-                transform.GetComponent<EvilWizard>().Bind(duration);
-            //else                
-                //transform.GetComponent<FlyingEye>().Bind(duration);
-        }
-        if (name == "Evil Wizard(Clone)")
-            transform.GetComponent<EvilWizard>().Hit();
-        else
-            transform.GetComponent<FlyingEye>().Hit();
+        if (type == 4)        
+            transform.GetComponent<MonsterControl>().Bind(duration);        
+        transform.GetComponent<MonsterControl>().Hit();
     }
 }
