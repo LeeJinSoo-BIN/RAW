@@ -75,7 +75,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         connecting = false;
-        ConnectButtonText.text = "Ï†ëÏÜç";
+        ConnectButtonText.text = "¡¢º”";//"?ëÏÜç";
     }
 
     public override void OnJoinedLobby()
@@ -158,7 +158,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
         GameObject player = PhotonNetwork.Instantiate("Character/" + character, Vector3.zero, Quaternion.identity);
 
-        GameManager.Instance.setUpCharacter(player);
+        GameManager.Instance.setUpCharacter(player, character);
         if (PhotonNetwork.IsMasterClient)
             spawnButton.SetActive(true);
 

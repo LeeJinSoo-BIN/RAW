@@ -4065,9 +4065,9 @@ MonoBehaviour:
     - sword bind
     SD_Values:
     - {fileID: 11400000, guid: b11c2aeb8d9f62242a9eff81ddd929f6, type: 2}
+    - {fileID: 11400000, guid: 3729857baa3544af0a696b4f857eadd0, type: 2}
     - {fileID: 11400000, guid: dde8564a1eb914cbe9e92aac738df0ad, type: 2}
     - {fileID: 11400000, guid: 5d6e3d38a901a4c4a8068aab1b6d1074, type: 2}
-    - {fileID: 11400000, guid: 3729857baa3544af0a696b4f857eadd0, type: 2}
     - {fileID: 11400000, guid: 910a8cd9525d2426c9f5239907878503, type: 2}
     - {fileID: 11400000, guid: f888cf136ebf7aa41b3e9f99cccc509d, type: 2}
     - {fileID: 11400000, guid: b394f70740cc64b6ba54fb5c26a54da3, type: 2}
@@ -4079,6 +4079,15 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 9b1833944efb84ad99551e9a1c3cc98f, type: 2}
     - {fileID: 11400000, guid: 8530da1cbc2344789b5b95938d50177c, type: 2}
     - {fileID: 11400000, guid: 93d9c842df8f44cb19b2068d05bf134e, type: 2}
+  characterSpecDict:
+    SD_Keys:
+    - Arrow
+    - Magic
+    - Sword
+    SD_Values:
+    - {fileID: 11400000, guid: d59c5f6d0be9f8b4585a069725ac6fba, type: 2}
+    - {fileID: 11400000, guid: b25ca8162f1f01940bb8830fe1e1124f, type: 2}
+    - {fileID: 11400000, guid: c8180382a12288244a173ec36286d26f, type: 2}
 --- !u!1 &1083817703
 GameObject:
   m_ObjectHideFlags: 0

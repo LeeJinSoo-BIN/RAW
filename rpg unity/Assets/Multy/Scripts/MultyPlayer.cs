@@ -26,8 +26,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public Animator characterAnimator;
     public GameObject inventoryUi;
     private GameObject itemBox;
-    private GameObject gettingItem;
-    //private Dictionary<string, int> itemsInInventory = new Dictionary<string, int>();
+    private GameObject gettingItem;  
     private Dictionary<string, int> carringItems = new Dictionary<string, int>();
     public int maxInventoryCnt = 24;
     
@@ -48,7 +47,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
     private int skill_num = 5;
     private List<string> skill_key = new List<string> { "Q", "W", "E", "R", "A" };
-    public List<SkillSpec> skill_list = new List<SkillSpec>();
+    //public List<SkillSpec> skill_list = new List<SkillSpec>();
     private Dictionary<string, SkillSpec> keyToSkillSpec = new Dictionary<string, SkillSpec>();
     private SkillSpec current_skill;
     public CharacterState characterState;    
@@ -91,14 +90,13 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     }
     public void loadData()
     {
-        for (int i = 0; i < skill_num; i++)
+        List<string> skill_name_list = characterState.characterSpec.skillLevel.SD_Keys;        
+        for (int i = 0; i < characterState.characterSpec.skillLevel.Count; i++)
         {
-            if (!characterState.characterSpec.skillLevel.ContainsKey(skill_list[i].skillName))
-
-                //characterState.characterSpec.skillLevel.Add(skill_list[i].skillName, characterState.characterSpec.skillLevelList[i]);
-            keyToSkillSpec.Add(skill_key[i], skill_list[i]);
-            skillActivatedTime.Add(skill_list[i].skillName, 0f);
-            skillNameToKey.Add(skill_list[i].skillName, skill_key[i]);
+            Debug.Log(skill_name_list[i]);
+            keyToSkillSpec.Add(skill_key[i], GameManager.Instance.skillInfoDict[skill_name_list[i]]);
+            skillActivatedTime.Add(skill_name_list[i], 0f);
+            skillNameToKey.Add(skill_name_list[i], skill_key[i]);
         }
     }
     void Update()
@@ -350,7 +348,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         }        
         castSkill = CastSkill(skillPos, target);
         StartCoroutine(castSkill);
-        deactivateSkill();
+        if(!current_skill.skillName.Contains("normal"))
+            deactivateSkill();
     }
 
     IEnumerator CastSkill(Vector2 skillPos, GameObject targetObject = null)

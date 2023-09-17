@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3e4cf6686a9431a4bb8fc303909883b0, type: 3}
-  m_Name: archer spec
+  m_Name: mage spec
   m_EditorClassIdentifier: 
-  maxHealth: 900
-  maxMana: 1000
+  maxHealth: 800
+  maxMana: 1200
   recoverManaPerThreeSec: 5
   power: 10
   criticalDamage: 1.2
@@ -21,11 +21,11 @@ MonoBehaviour:
   healPercent: 1
   skillLevel:
     SD_Keys:
-    - arrow rain
-    - arrow dash
-    - arrow gatling
-    - arrow charge
-    - arrow normal
+    - magic floor
+    - magic heal
+    - magic totem
+    - magic global heal
+    - magic normal
     SD_Values: 0100000001000000010000000100000001000000
   maxInventoryNum: 24
   characterLevel: 1
