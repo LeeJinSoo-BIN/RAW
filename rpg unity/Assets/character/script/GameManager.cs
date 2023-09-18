@@ -27,18 +27,24 @@ public class GameManager : MonoBehaviour
     public SerializeDictItem itemInfoDict;
     public SerializeDictSkill skillInfoDict;
     public SerializeDictRollNameToSpec characterSpecDict;
+    public Transform inGameUI;
     void Awake()
     {
         Instance = this;
         Screen.SetResolution(960, 540, false);
     }
 
-    public void setUpCharacter(GameObject player, string roll)
+    public void setup(GameObject player, string roll)
     {
         CharacterSpec loadedSpec = loadCharacterSpec(roll);
         player.GetComponent<MultyPlayer>().characterState.characterSpec = loadedSpec;
-        player.GetComponentInChildren<CharacterState>().setUp();
         player.GetComponent<MultyPlayer>().loadData();
+        Debug.Log("loaded player data");
+        player.GetComponent<MultyPlayer>().characterState.setUp();
+        Debug.Log("set up state");
+        inGameUI.GetComponent<InGameUI>().myCharacter = player;
+        inGameUI.GetComponent<InGameUI>().setUp();
+        Debug.Log("set up ingame ui");
     }
     CharacterSpec loadCharacterSpec(string roll)
     {
@@ -54,6 +60,7 @@ public class GameManager : MonoBehaviour
         spec.maxInventoryNum = defaultSpec.maxInventoryNum;
         spec.characterLevel = defaultSpec.characterLevel;
         spec.skillLevel = defaultSpec.skillLevel;
+        spec.inventory = defaultSpec.inventory;
 
         
 

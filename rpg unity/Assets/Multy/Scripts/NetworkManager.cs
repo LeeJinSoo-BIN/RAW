@@ -151,19 +151,16 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         //PhotonNetwork.JoinRoom(RoomNameToCreat.text);
     }
 
-    public void Spawn(string character)
+    public void Spawn(string roll)
     {
         ConnectPanel.SetActive(false);
         RespwanPanel.SetActive(false);
 
-        GameObject player = PhotonNetwork.Instantiate("Character/" + character, Vector3.zero, Quaternion.identity);
+        GameObject player = PhotonNetwork.Instantiate("Character/" + roll, Vector3.zero, Quaternion.identity);
+        GameManager.Instance.setup(player, roll);
 
-        GameManager.Instance.setUpCharacter(player, character);
         if (PhotonNetwork.IsMasterClient)
-            spawnButton.SetActive(true);
-
-        InGameUI.GetComponent<InGameUI>().myCharacter = player;
-        InGameUI.GetComponent<InGameUI>().setUp();
+            spawnButton.SetActive(true);        
     }
 
     public void BossSpawnButtonClick()

@@ -41,10 +41,10 @@ public class InGameUI : MonoBehaviour
     public Dictionary<string, string> skillNameToKey = new Dictionary<string, string>();
     private string skillThumbnailPath = "Character/skills/thumbnails";
     private List<string> quickSlotKeys = new List<string> { "1", "2", "3", "4" };
-    public Dictionary<string, string> quickSlotItems = new Dictionary<string, string>();
+    public Dictionary<string, string> keyToItemName = new Dictionary<string, string>();
 
-    public Dictionary<string, int> carringItems;
-
+    public List<InventoryItem> inventory;
+    public Dictionary<string, qucikInventoryInfo> quickInventory;
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4))
@@ -61,10 +61,10 @@ public class InGameUI : MonoBehaviour
         makeProfile();
         characterHealth = myCharacterState.health;
         characterMana = myCharacterState.mana;        
-        quickSlotItems.Clear();
+        keyToItemName.Clear();
         for(int k = 0; k < quickSlotKeys.Count; k++)
         {
-            quickSlotItems.Add(quickSlotKeys[k], "");
+            keyToItemName.Add(quickSlotKeys[k], "");
         }
 
         setKeyMap();
@@ -177,16 +177,30 @@ public class InGameUI : MonoBehaviour
     
     void useQuickSlot(string key)
     {
-        if (carringItems.ContainsKey(quickSlotItems[key]))
+        if (quickInventory.ContainsKey(keyToItemName[key]))
         {
-            if (carringItems[quickSlotItems[key]] > 0)
+            if (quickInventory[keyToItemName[key]].count > 0)
             {
-                carringItems[quickSlotItems[key]]--;
+                quickInventory[keyToItemName[key]].count--;
             }
-            consumePotion(quickSlotItems[key]);
+            consumePotion(keyToItemName[key]);
             myCharacter.GetComponent<MultyPlayer>().updateInventory();
             updateThisQuickSlot(key);
         }
+        /*
+        for (int k = 0; k < inventory.Count; k++)
+        {
+            if(inventory[k].itemName == keyToItemName[key])
+            {
+                if (inventory[k].count > 0)
+                {
+                    inventory[k].count--;
+                    consumePotion(keyToItemName[key]);
+                    myCharacter.GetComponent<MultyPlayer>().updateInventory();
+                    updateThisQuickSlot(key);
+                }
+            }
+        }*/
     }
     public void updateAllQuickSlot(bool updateSprite = false)
     {
@@ -194,16 +208,15 @@ public class InGameUI : MonoBehaviour
         {
             Transform currentSlot = skillKeyUI.transform.Find(quickSlotKeys[k].ToLower());
             if(updateSprite)
-                currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(GameManager.Instance.itemInfoDict[quickSlotItems[quickSlotKeys[k]]].spriteDirectory);
-            if (carringItems.ContainsKey(quickSlotItems[quickSlotKeys[k]]))
-            {
-                Debug.Log(quickSlotItems[quickSlotKeys[k]] + " " + carringItems[quickSlotItems[quickSlotKeys[k]]]);
+                currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(GameManager.Instance.itemInfoDict[keyToItemName[quickSlotKeys[k]]].spriteDirectory);            
+            
+            if (quickInventory.ContainsKey(keyToItemName[quickSlotKeys[k]]))
+            {                
                 currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;
-                currentSlot.GetChild(2).GetComponent<TMP_Text>().text = carringItems[quickSlotItems[quickSlotKeys[k]]].ToString();
+                currentSlot.GetChild(2).GetComponent<TMP_Text>().text = quickInventory[keyToItemName[quickSlotKeys[k]]].count.ToString();
             }
             else
             {
-                Debug.Log(quickSlotItems[quickSlotKeys[k]] + " 0");
                 currentSlot.GetChild(0).GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f);
                 currentSlot.GetChild(2).GetComponent<TMP_Text>().text = "0";
             }
@@ -213,16 +226,15 @@ public class InGameUI : MonoBehaviour
     {
         Transform currentSlot = skillKeyUI.transform.Find(key);
         if(updateSprtie)
-            currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(GameManager.Instance.itemInfoDict[quickSlotItems[key]].spriteDirectory);        
-        if (carringItems.ContainsKey(quickSlotItems[key]))
+            currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(GameManager.Instance.itemInfoDict[keyToItemName[key]].spriteDirectory);        
+        if (quickInventory.ContainsKey(keyToItemName[key]))
         {
-            Debug.Log(quickSlotItems[key] + " " + carringItems[quickSlotItems[key]]);
             currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;
-            currentSlot.GetChild(2).GetComponent<TMP_Text>().text = carringItems[quickSlotItems[key]].ToString();
+            currentSlot.GetChild(2).GetComponent<TMP_Text>().text = quickInventory[keyToItemName[key]].count.ToString();
         }
         else
         {
-            Debug.Log(quickSlotItems[key] + " 0");
+            Debug.Log(keyToItemName[key] + " 0");
             currentSlot.GetChild(0).GetComponent<Image>().color = Color.gray;
             currentSlot.GetChild(2).GetComponent<TMP_Text>().text = "0";
         }
@@ -230,7 +242,7 @@ public class InGameUI : MonoBehaviour
     
     void setQuickSlot(string key, string itemName)
     {
-        quickSlotItems[key] = itemName;
+        keyToItemName[key] = itemName;
         updateThisQuickSlot(key, true);
     }
 

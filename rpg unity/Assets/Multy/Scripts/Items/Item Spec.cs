@@ -12,7 +12,7 @@ public class ItemSpec : ScriptableObject
     public string spriteDirectory;
     public int sellPrice;
     public int buyPrice;
-    public int maxCarryAmount;    
+    public int maxCarryAmount;
 
     public float recoveryHealth;
     public float recoveryMana;
@@ -23,7 +23,4 @@ public class ItemSpec : ScriptableObject
     public float increaseMaxMana;
     public float increaseCriticalPercent;
     public float incraserCriticalDamage;
-
-    
-    
 }

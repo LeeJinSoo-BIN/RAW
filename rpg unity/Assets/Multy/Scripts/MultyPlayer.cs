@@ -7,6 +7,7 @@ using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
 using System.IO;
+using System.ComponentModel;
 
 public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 {
@@ -25,11 +26,11 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public float characterMoveSpeed = 1.0f;
     public Animator characterAnimator;
     public GameObject inventoryUi;
-    private GameObject itemBox;
-    private GameObject gettingItem;  
-    private Dictionary<string, int> carringItems = new Dictionary<string, int>();
-    public int maxInventoryCnt = 24;
+    private GameObject itemBox;    
+    private int frontInventoryPos = 0;
+    private List<InventoryItem> inventory;
     
+    private Dictionary<string, qucikInventoryInfo> quickInventory = new Dictionary<string, qucikInventoryInfo>();
     public GameObject skillRadiusArea;
     public GameObject skillRadiusLengthPoint;
     public GameObject skillRangeAreaCircle;
@@ -48,11 +49,13 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     private List<string> skill_key = new List<string> { "Q", "W", "E", "R", "A" };    
     private Dictionary<string, SkillSpec> keyToSkillSpec = new Dictionary<string, SkillSpec>();
     private SkillSpec current_skill;
-    public CharacterState characterState;    
+    public CharacterState characterState;
+    private CharacterSpec characterSpec;
     private Dictionary<string, float> skillActivatedTime = new Dictionary<string, float>();
     private Dictionary<string, string> skillNameToKey = new Dictionary<string, string>();
     public InGameUI inGameUI;
     private GameObject itemDropField;
+    
     // Multy
     public Rigidbody2D RB;
     public PhotonView PV;
@@ -75,27 +78,34 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
         playerGroup = GameObject.Find("Player Group");
         enemyGroup = GameObject.Find("Enemy Group");
-        inGameUI = GameObject.Find("InGameUI").transform.GetChild(0).GetComponent<InGameUI>();
-        inGameUI.skillNameToKey = skillNameToKey;
+        inGameUI = GameObject.Find("InGameUI").transform.GetChild(0).GetComponent<InGameUI>();        
         inventoryUi = GameObject.Find("InGameUI").transform.GetChild(0).GetChild(3).gameObject;
-        itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;
-        gettingItem = inventoryUi.transform.GetChild(1).gameObject;
-        inGameUI.carringItems = carringItems;
+        itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;        
         itemDropField = GameObject.Find("Item Field").gameObject;
 
-        transform.parent = playerGroup.transform;
-        
+        transform.parent = playerGroup.transform;        
     }
     public void loadData()
     {
-        List<string> skill_name_list = characterState.characterSpec.skillLevel.SD_Keys;        
-        for (int i = 0; i < characterState.characterSpec.skillLevel.Count; i++)
-        {
-            Debug.Log(skill_name_list[i]);
+        characterSpec = characterState.characterSpec;
+        List<string> skill_name_list = characterSpec.skillLevel.SD_Keys;        
+        for (int i = 0; i < characterSpec.skillLevel.Count; i++)
+        {            
             keyToSkillSpec.Add(skill_key[i], GameManager.Instance.skillInfoDict[skill_name_list[i]]);
             skillActivatedTime.Add(skill_name_list[i], 0f);
             skillNameToKey.Add(skill_name_list[i], skill_key[i]);
         }
+        inGameUI.skillNameToKey = skillNameToKey;
+
+
+        inventory = characterSpec.inventory;
+        foreach (InventoryItem item in inventory)
+        {
+            quickInventory.Add(item.itemName, new qucikInventoryInfo() { count = item.count, position = item.position});
+        }
+        inGameUI.inventory = inventory;
+        inGameUI.quickInventory = quickInventory;        
+        updateInventory();        
     }
     void Update()
     {
@@ -407,14 +417,14 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         else
             characterAnimator.SetTrigger(current_skill.animType);
         GameObject skill = null;        
-        float current_skill_deal = CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
+        float current_skill_deal = CaculateCharacterSkillDamage(characterSpec.skillLevel[current_skill.skillName], characterSpec.power,
             current_skill.flatDeal, current_skill.dealIncreasePerSkillLevel, current_skill.dealIncreasePerPower,
-            characterState.characterSpec.criticalPercent, characterState.characterSpec.criticalDamage, affectedByCritical:true);
-        float current_skill_heal = CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
+            characterSpec.criticalPercent, characterSpec.criticalDamage, affectedByCritical:true);
+        float current_skill_heal = CaculateCharacterSkillDamage(characterSpec.skillLevel[current_skill.skillName], characterSpec.power,
             current_skill.flatHeal, current_skill.dealIncreasePerSkillLevel, current_skill.dealIncreasePerPower);
-        float current_skill_shield = CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
+        float current_skill_shield = CaculateCharacterSkillDamage(characterSpec.skillLevel[current_skill.skillName], characterSpec.power,
             current_skill.flatShield, current_skill.dealIncreasePerSkillLevel, current_skill.dealIncreasePerPower);
-        float current_skill_power = CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
+        float current_skill_power = CaculateCharacterSkillDamage(characterSpec.skillLevel[current_skill.skillName], characterSpec.power,
             current_skill.flatPower, current_skill.powerIncreasePerSkillLevel, current_skill.powerIncreasePerPower);
         Vector2 current_skill_target_pos = default(Vector2);
         string current_skill_target_name = name;
@@ -479,53 +489,129 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     void getItem(GameObject got_item)
     {
         string got_item_name = got_item.GetComponent<Item>().itemName;
-        int got_item_cnt = got_item.GetComponent<Item>().itemCount;        
-        if (carringItems.ContainsKey(got_item_name))
+        int got_item_cnt = got_item.GetComponent<Item>().itemCount;
+        bool gotten = false;
+        if (quickInventory.ContainsKey(got_item_name))
         {
-            carringItems[got_item_name] += got_item_cnt;            
+            quickInventory[got_item_name].count += got_item_cnt;
+            gotten = true;
         }
         else
         {
-            carringItems.Add(got_item_name, got_item_cnt);
+            if (quickInventory.Count < characterSpec.maxInventoryNum)
+            {
+                quickInventory.Add(got_item_name, new qucikInventoryInfo() { position = frontInventoryPos, count = got_item_cnt });
+                gotten = true;
+                FindFrontInventoryPos();
+            }
         }
-        updateInventory();
-        PV.RPC("itemDestroySync", RpcTarget.All, got_item.name);
-        inGameUI.updateAllQuickSlot();
-    }
+        if (gotten)
+        {
+            updateInventory();
+            PV.RPC("itemDestroySync", RpcTarget.All, got_item.name);
+            inGameUI.updateAllQuickSlot();
+        }
 
+        /*
+        for (int k = 0; k < inventory.Count; k++)
+        {
+            if (inventory[k].name == got_item_name)
+            {
+                inventory[k].count += got_item_cnt;
+                gotten = true;
+                break;
+            }
+        }
+        if (!gotten)
+        {
+            if(inventory.Count < characterSpec.maxInventoryNum) {
+                InventoryItem add_inventory = new InventoryItem();
+                add_inventory.name = got_item_name;
+                add_inventory.position = frontInventoryPos;
+                inventory.Add(add_inventory);
+                FindFrontInventoryPos();
+                gotten = true;
+            }
+        }
+        if (gotten)
+        {
+            updateInventory();
+            PV.RPC("itemDestroySync", RpcTarget.All, got_item.name);
+            inGameUI.updateAllQuickSlot();
+        }*/
+    }
+    public void FindFrontInventoryPos()
+    {
+        for(int k = 0; k < itemBox.transform.childCount; k++)
+        {
+            if (!itemBox.transform.GetChild(k).gameObject.activeSelf)
+            {
+                frontInventoryPos = k;
+                return;
+            }
+        }
+    }
     public void updateInventory()
     {
         List<string> destroyList = new List<string>();
-        foreach (string item in carringItems.Keys)
+        foreach (string item in quickInventory.Keys)
         {
-            Debug.Log(item);
-            Transform box = itemBox.transform.Find(item);
-            if (box != null)
-                box.GetChild(1).GetComponent<TMP_Text>().text = carringItems[item].ToString();
+            int pos = quickInventory[item].position;
+            int cnt = quickInventory[item].count;
+            Transform box = itemBox.transform.GetChild(pos);
+            if (box.GetChild(0).GetComponent<Image>().color.a != 0)
+            {
+                box.GetChild(1).GetComponent<TMP_Text>().text = cnt.ToString();
+            }
             else
             {
-                GameObject new_item = Instantiate(gettingItem);
-                new_item.transform.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(GameManager.Instance.itemInfoDict[item].spriteDirectory);
-                new_item.transform.GetChild(1).GetComponent<TMP_Text>().text = carringItems[item].ToString();
-                new_item.transform.SetParent(itemBox.transform);
-                new_item.transform.localScale = Vector3.one;
-                new_item.name = item;
-                new_item.SetActive(true);
+                box.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(GameManager.Instance.itemInfoDict[item].spriteDirectory);
+                box.GetChild(0).GetComponent<Image>().color = Color.white;
+                box.GetChild(1).GetComponent<TMP_Text>().text = cnt.ToString();
+                box.gameObject.SetActive(true);
             }
-
-            if (carringItems[item] == 0)
+            if (cnt == 0)
             {
-                if (box != null)
-                {
-                    Destroy(box.gameObject);
-                }
-                destroyList.Add(item);                
+                destroyList.Add(item);
+                box.GetChild(0).GetComponent<Image>().color = Color.white;
             }
         }
-        foreach(string name in destroyList)
+        foreach (string name in destroyList)
         {
-            carringItems.Remove(name);
+            quickInventory.Remove(name);
         }
+        /*for (int k = 0; k < inventory.Count; k++)
+        {
+            int pos = inventory[k].position;
+            int cnt = inventory[k].count;
+            Transform current_item_box = itemBox.transform.GetChild(pos);
+            if (cnt > 0)
+            {
+                if (current_item_box.gameObject.activeSelf)
+                {
+                    current_item_box.GetChild(1).GetComponent<TMP_Text>().text = cnt.ToString();
+                }
+                else
+                {
+                    current_item_box.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(GameManager.Instance.itemInfoDict[inventory[k].itemName].spriteDirectory);
+                    current_item_box.GetChild(1).GetComponent<TMP_Text>().text = cnt.ToString();
+                    current_item_box.name = inventory[k].itemName;
+                    current_item_box.gameObject.SetActive(true);
+                }
+            }
+            else
+            {
+                if (current_item_box.gameObject.activeSelf)
+                {
+                    current_item_box.gameObject.SetActive(false);
+                }
+                destroy.Add(k);
+            }
+        }
+        foreach(int index in destroy)
+        {
+            inventory.RemoveAt(index);
+        }*/
     }
     [PunRPC]
     void itemDestroySync(string itemName)

@@ -90,6 +90,6 @@ namespace CustomDict
             {
                 SyncDictionaryFromInspector();
             }
-        }
+        }       
     }
 }

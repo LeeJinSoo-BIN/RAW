@@ -889,7 +889,6 @@ MonoBehaviour:
   characterMoveSpeed: 1
   characterAnimator: {fileID: 5222682414527307526}
   inventoryUi: {fileID: 0}
-  maxInventoryCnt: 24
   skillRadiusArea: {fileID: 3979841789867000375}
   skillRadiusLengthPoint: {fileID: 8235665384502179872}
   skillRangeAreaCircle: {fileID: 2712003408169178684}
