@@ -10,7 +10,7 @@ public class ArrowGatling : MonoBehaviourPunCallbacks
     //private float Shield;
     //private float Power;    
     //public GameObject target;
-    public Vector2 targetPos;
+    private Vector2 targetPos;
     public PhotonView PV;
 
     private float speed = 8f;

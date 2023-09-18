@@ -20,7 +20,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public LayerMask playerLayer;
     public LayerMask monsterLayer;
 
-    private Vector3 goalPos;
+    public Vector3 goalPos;
     public float pointSpeed = 1.0f;
     public float characterMoveSpeed = 1.0f;
     public Animator characterAnimator;
@@ -44,10 +44,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     private string current_casting_skill_key;
     private Vector2 oriSkillRangeAreaBar;
     private IEnumerator castSkill;
-
-    private int skill_num = 5;
-    private List<string> skill_key = new List<string> { "Q", "W", "E", "R", "A" };
-    //public List<SkillSpec> skill_list = new List<SkillSpec>();
+    
+    private List<string> skill_key = new List<string> { "Q", "W", "E", "R", "A" };    
     private Dictionary<string, SkillSpec> keyToSkillSpec = new Dictionary<string, SkillSpec>();
     private SkillSpec current_skill;
     public CharacterState characterState;    
@@ -419,33 +417,19 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         float current_skill_power = CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
             current_skill.flatPower, current_skill.powerIncreasePerSkillLevel, current_skill.powerIncreasePerPower);
         Vector2 current_skill_target_pos = default(Vector2);
-        string current_skill_target_name = "";
+        string current_skill_target_name = name;
         if (current_skill.castType == "circle")
         {
             skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, current_skill.skillName), skillPos, Quaternion.identity);
         }
         else if (current_skill.castType == "bar")
-        {            
+        {
             skillPos += new Vector2(0f, 0.3f);
-            if (current_skill.skillName == "arrow dash")
-            {
-                skillPos -= new Vector2(0f, 0.3f);
-                StartCoroutine(Dash(skillPos, 5f));
-                goalPos = skillPos;
-            }
-            else if (current_skill.skillName == "arrow gatling")
-            {
-                StartCoroutine(Gatling(skillCastingPosition.position, skillPos));
-            }
-            else if (current_skill.skillName == "arrow charge")
-            {
+            current_skill_target_pos = skillPos;
+            if (current_skill.dealType == "throw")
                 skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, current_skill.skillName), skillCastingPosition.position, Quaternion.identity);
-                current_skill_target_pos = skillPos * 5;                
-            }
             else
-            {
                 skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, current_skill.skillName), skillPos, Quaternion.identity);
-            }
         }
         else if (current_skill.castType == "target-player" || current_skill.castType == "target-enemy" || current_skill.castType == "target-both") // target
         {
@@ -471,17 +455,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             }
         }
         if(skill != null)
-        {
-            //SkillInfo skillInfo = new SkillInfo(current_skill, characterState.characterSpec);            
-            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, current_skill.duration, current_skill_target_name, current_skill_target_pos);
-            /*Vector3 spawnPos = Vector3.zero;
-            if (current_skill.dealType == "throw")
-                spawnPos = skillCastingPosition.position;
-            else if (current_skill.dealType == "floor")
-                spawnPos = skillPos;
-            else if (current_skill.dealType == "buff")
-                spawnPos = targetObject.transform.position;
-            */
+        {            
+            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, current_skill.duration, current_skill_target_name, current_skill_target_pos);            
         }
         if (!current_skill.skillName.Contains("normal"))
         {
@@ -500,46 +475,6 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         attackable = true;        
     }
 
-    IEnumerator Dash(Vector3 goalPos, float speed)
-    {
-        while (true)
-        {
-            Vector2 _dirVec = goalPos - transform.position;
-            Vector2 _disVec = (Vector2)goalPos - (Vector2)transform.position;
-            Vector3 _dirMVec = _dirVec.normalized;
-            if (_dirVec.sqrMagnitude < 0.001f)
-            {
-                transform.position = goalPos;
-                break;
-            }            
-            transform.position += (_dirMVec * speed * Time.deltaTime);
-            yield return null;
-        }
-    }
-
-    IEnumerator Gatling(Vector2 oriPos, Vector2 desPos)
-    {
-        float current_skill_deal = CaculateCharacterSkillDamage(characterState.characterSpec.skillLevel[current_skill.skillName], characterState.characterSpec.power,
-            current_skill.flatDeal, current_skill.dealIncreasePerSkillLevel, current_skill.dealIncreasePerPower,
-            characterState.characterSpec.criticalPercent, characterState.characterSpec.criticalDamage, affectedByCritical: true);
-        for (int k = 0; k < 20; k++)
-        {
-            float _time = 0;
-            while (true)
-            {
-                if (_time > 0.05f)
-                {
-                    break;
-                }
-                _time += Time.deltaTime;
-                yield return null;
-            }
-            float rand_x = Random.Range(-0.1f, 0.1f);
-            float rand_y = Random.Range(-0.1f, 0.1f);
-            GameObject skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, current_skill.skillName), oriPos + new Vector2(rand_x, rand_y), Quaternion.identity);
-            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, 0f, 0f, 0f, 0f, "", desPos + new Vector2(rand_x, rand_y));
-        }
-    }
 
     void getItem(GameObject got_item)
     {
@@ -609,16 +544,6 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             return;
         }
         Vector3 _dirMVec = _dirVec.normalized;
-        /*if (_dirMVec.x > 0)
-        {
-            transform.localScale = new Vector3(-1, 1, 1);
-            canvas.transform.localScale = new Vector3(-1, 1, 1);
-        }
-        else if (_dirMVec.x < 0)
-        {
-            transform.localScale = new Vector3(1, 1, 1);
-            canvas.transform.localScale = new Vector3(1, 1, 1);
-        }*/
         PV.RPC("direction", RpcTarget.AllBuffered, _dirMVec);
         transform.position += (_dirMVec * characterMoveSpeed * Time.deltaTime);
     }

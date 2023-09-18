@@ -323,7 +323,7 @@ public class SkillManager : MonoBehaviour
             float rand_y = Random.Range(-0.1f, 0.1f);
             GameObject new_arrow = Instantiate(skill_arrow_gatling);
             new_arrow.transform.position = oriPos + new Vector2(rand_x, rand_y);
-            new_arrow.GetComponent<ArrowGatling>().targetPos = desPos + new Vector2(rand_x, rand_y);
+            //new_arrow.GetComponent<ArrowGatling>().targetPos = desPos + new Vector2(rand_x, rand_y);
         }
     }
 

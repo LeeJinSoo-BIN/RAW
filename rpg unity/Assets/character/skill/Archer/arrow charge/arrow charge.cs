@@ -78,7 +78,7 @@ public class ArrowCharge : MonoBehaviourPunCallbacks
         }
         if (target_pos != default(Vector2))
         {
-            targetPos = target_pos;
+            targetPos = target_pos * 5;
         }
         //StartCoroutine(Vanish(duration));
 

@@ -884,6 +884,7 @@ MonoBehaviour:
   monsterLayer:
     serializedVersion: 2
     m_Bits: 512
+  goalPos: {x: 0, y: 0, z: 0}
   pointSpeed: 5
   characterMoveSpeed: 1
   characterAnimator: {fileID: 5222682414527307526}
