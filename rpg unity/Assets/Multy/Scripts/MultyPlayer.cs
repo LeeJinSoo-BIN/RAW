@@ -280,7 +280,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         skillRangeAreaTargeting.SetActive(false);
         current_casting_skill_key = "";
         isActivingSkill = false;
-        //StopCoroutine(castSkill);
+        //StopCoroutine(castSkill);        
     }
     void activateSkill(string now_skill_key)
     {

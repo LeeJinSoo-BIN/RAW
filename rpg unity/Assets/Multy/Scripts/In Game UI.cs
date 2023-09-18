@@ -116,13 +116,15 @@ public class InGameUI : MonoBehaviour
     IEnumerator CoolDownCoroutine(string skill_name, float coolingTime)
     {
         string key = skillNameToKey[skill_name];
-        skillKeyUI.transform.Find(key.ToLower()).GetChild(1).GetComponent<Image>().fillAmount = 100;
+        Image skill_cool = skillKeyUI.transform.Find(key.ToLower()).GetChild(1).GetComponent<Image>();
+        skill_cool.fillAmount = 100;
         float _time = coolingTime;
-        while (_time >= 0)
+        if (coolingTime == 0)        
+            skill_cool.fillAmount = 0;
+        while (_time >= 0 && coolingTime > 0)
         {
             _time -= Time.deltaTime;
-            skillKeyUI.transform.Find(key.ToLower()).GetChild(1).GetComponent<Image>().fillAmount = _time / coolingTime;
-            
+            skill_cool.fillAmount = _time / coolingTime;            
             yield return null;
         }
         
@@ -159,11 +161,14 @@ public class InGameUI : MonoBehaviour
         List<string> skillNames = skillNameToKey.Keys.ToList();
         for(int k = 0; k < skillNameToKey.Count; k++)
         {
-            if (keys[k].ToLower() == "q" || keys[k].ToLower() == "w" || keys[k].ToLower() == "e" || keys[k].ToLower() == "r")
+            string key = keys[k].ToLower();
+            if (key == "q" || key == "w" || key == "e" || key == "r")
             {
-                Transform currentSlot = skillKeyUI.transform.Find(keys[k].ToLower());
+                Transform currentSlot = skillKeyUI.transform.Find(key);
                 currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(skillThumbnailPath, skillNames[k]));
+                currentSlot.GetChild(2).GetComponent<TMP_Text>().text = keys[k];
                 currentSlot.GetChild(3).GetComponent<TMP_Text>().text = GameManager.Instance.skillInfoDict[skillNames[k]].consumeMana.ToString();
+                StartCoroutine(CoolDownCoroutine(skillNames[k], 0f));
             }
         }
         setQuickSlot("1", "red potion small");

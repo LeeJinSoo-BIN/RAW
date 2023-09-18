@@ -2583,6 +2583,7 @@ MonoBehaviour:
   power: 0
   characterAnimator: {fileID: 5222682414527307526}
   playerControl: {fileID: 6093407450503403606}
+  PV: {fileID: 8582268070166807158}
 --- !u!1 &5338463465364138536
 GameObject:
   m_ObjectHideFlags: 0

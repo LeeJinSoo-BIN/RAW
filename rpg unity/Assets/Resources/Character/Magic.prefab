@@ -876,6 +876,7 @@ MonoBehaviour:
   monsterLayer:
     serializedVersion: 2
     m_Bits: 512
+  goalPos: {x: 0, y: 0, z: 0}
   pointSpeed: 5
   characterMoveSpeed: 1
   characterAnimator: {fileID: 5222682414527307526}
@@ -4394,6 +4395,7 @@ MonoBehaviour:
   power: 0
   characterAnimator: {fileID: 5222682414527307526}
   playerControl: {fileID: 6093407450503403606}
+  PV: {fileID: 8582268070166807158}
 --- !u!1 &8500139407171787526
 GameObject:
   m_ObjectHideFlags: 0

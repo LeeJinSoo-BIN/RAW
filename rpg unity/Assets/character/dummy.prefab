@@ -3649,6 +3649,7 @@ MonoBehaviour:
   power: 0
   characterAnimator: {fileID: 6308030836626245559}
   playerControl: {fileID: 0}
+  PV: {fileID: 0}
 --- !u!1 &8245904191574495730
 GameObject:
   m_ObjectHideFlags: 0

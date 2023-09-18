@@ -25,6 +25,6 @@ MonoBehaviour:
   speed: 4
   run: 1
   distance: 0
-  castPos: target
-  targetSideDistance: 0
+  castPos: side
+  targetSideDistance: -0.34
   spawnPos: 0

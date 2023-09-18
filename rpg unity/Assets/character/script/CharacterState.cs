@@ -20,6 +20,7 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
     private bool isDeath = false;
     public MultyPlayer playerControl;
     private float _timer = 0f;
+    public PhotonView PV;
     public void setUp()
     {
         shield.maxValue = characterSpec.maxHealth;
@@ -34,11 +35,14 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
     // Update is called once per frame
     void Update()
     {
-        _timer += Time.deltaTime;
-        if (_timer >= 3f)
+        if (PV.IsMine)
         {
-            _timer = 0f;
-            mana.value += characterSpec.recoverManaPerThreeSec;
+            _timer += Time.deltaTime;
+            if (_timer >= 3f)
+            {
+                _timer = 0f;
+                mana.value += characterSpec.recoverManaPerThreeSec;
+            }
         }
     }
     
