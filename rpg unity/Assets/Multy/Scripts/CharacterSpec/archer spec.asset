@@ -28,7 +28,9 @@ MonoBehaviour:
     - arrow normal
     SD_Values: 0100000001000000010000000100000001000000
   maxInventoryNum: 24
-  inventory:
-  - {fileID: 11400000, guid: b1098ecdb9eb2614b834bbd178d71ca5, type: 2}
-  - {fileID: 11400000, guid: 6f3c3ada41ab30742b2c6dc779b708d7, type: 2}
+  inventory: []
+  equipment:
+  - {fileID: 11400000, guid: 5108b4843e52e9640bbc6dcb37f194bf, type: 2}
+  - {fileID: 11400000, guid: f7de936b32d1b2547891139fb661380f, type: 2}
+  - {fileID: 11400000, guid: bf1a78a6d9ed6524bbc955423ae86787, type: 2}
   characterLevel: 1

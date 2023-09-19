@@ -22,5 +22,6 @@ public class ItemSpec : ScriptableObject
     public float increaseMaxHealth;
     public float increaseMaxMana;
     public float increaseCriticalPercent;
-    public float incraserCriticalDamage;
+    public float increaseCriticalDamage;
+    public float increasePerReinforce;
 }

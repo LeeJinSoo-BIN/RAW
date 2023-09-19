@@ -2160,6 +2160,13 @@ MonoBehaviour:
   - 
   _backListString:
   - 
+  BodyParts:
+    SD_Keys: []
+    SD_Values: []
+  PartsPath:
+    SD_Keys: []
+    SD_Values: []
+  PV: {fileID: 0}
 --- !u!1 &3550993373080581772
 GameObject:
   m_ObjectHideFlags: 0

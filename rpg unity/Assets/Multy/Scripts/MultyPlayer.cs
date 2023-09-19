@@ -102,8 +102,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         foreach (InventoryItem item in inventory)
         {
             quickInventory.Add(item.itemName, new qucikInventoryInfo() { count = item.count, position = item.position});
-        }
-        inGameUI.inventory = inventory;
+        }        
         inGameUI.quickInventory = quickInventory;        
         updateInventory();        
     }
@@ -491,18 +490,21 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         string got_item_name = got_item.GetComponent<Item>().itemName;
         int got_item_cnt = got_item.GetComponent<Item>().itemCount;
         bool gotten = false;
+        Debug.Log(got_item_name);
         if (quickInventory.ContainsKey(got_item_name))
         {
+            Debug.Log("had");
             quickInventory[got_item_name].count += got_item_cnt;
             gotten = true;
         }
         else
         {
             if (quickInventory.Count < characterSpec.maxInventoryNum)
-            {
-                quickInventory.Add(got_item_name, new qucikInventoryInfo() { position = frontInventoryPos, count = got_item_cnt });
-                gotten = true;
+            {                
                 FindFrontInventoryPos();
+                quickInventory.Add(got_item_name, new qucikInventoryInfo() { position = frontInventoryPos, count = got_item_cnt });
+                Debug.Log("new" + frontInventoryPos);
+                gotten = true;                
             }
         }
         if (gotten)
@@ -544,7 +546,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     {
         for(int k = 0; k < itemBox.transform.childCount; k++)
         {
-            if (!itemBox.transform.GetChild(k).gameObject.activeSelf)
+            if (itemBox.transform.GetChild(k).GetChild(0).GetComponent<Image>().color.a == 0)
             {
                 frontInventoryPos = k;
                 return;
@@ -562,18 +564,19 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             if (box.GetChild(0).GetComponent<Image>().color.a != 0)
             {
                 box.GetChild(1).GetComponent<TMP_Text>().text = cnt.ToString();
+                box.GetChild(0).GetComponent<Image>().color = Color.white;
             }
             else
             {
-                box.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(GameManager.Instance.itemInfoDict[item].spriteDirectory);
-                box.GetChild(0).GetComponent<Image>().color = Color.white;
                 box.GetChild(1).GetComponent<TMP_Text>().text = cnt.ToString();
-                box.gameObject.SetActive(true);
+                box.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(GameManager.Instance.itemInfoDict[item].spriteDirectory);
+                box.GetChild(0).GetComponent<Image>().color = Color.white;                
             }
             if (cnt == 0)
             {
-                destroyList.Add(item);
-                box.GetChild(0).GetComponent<Image>().color = Color.white;
+                destroyList.Add(item);                
+                box.GetChild(1).GetComponent<TMP_Text>().text = "";
+                box.GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0);
             }
         }
         foreach (string name in destroyList)

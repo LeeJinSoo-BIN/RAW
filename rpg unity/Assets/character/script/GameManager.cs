@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour
     public SerializeDictSkill skillInfoDict;
     public SerializeDictRollNameToSpec characterSpecDict;
     public Transform inGameUI;
+    
     void Awake()
     {
         Instance = this;
@@ -39,6 +40,7 @@ public class GameManager : MonoBehaviour
         CharacterSpec loadedSpec = loadCharacterSpec(roll);
         player.GetComponent<MultyPlayer>().characterState.characterSpec = loadedSpec;
         player.GetComponent<MultyPlayer>().loadData();
+        equipItem(player);
         Debug.Log("loaded player data");
         player.GetComponent<MultyPlayer>().characterState.setUp();
         Debug.Log("set up state");
@@ -61,9 +63,83 @@ public class GameManager : MonoBehaviour
         spec.characterLevel = defaultSpec.characterLevel;
         spec.skillLevel = defaultSpec.skillLevel;
         spec.inventory = defaultSpec.inventory;
-
-        
+        spec.equipment = defaultSpec.equipment;        
 
         return spec;
+    }
+
+    void equipItem(GameObject player)
+    {
+        CharacterSpec spec =  player.transform.GetComponent<MultyPlayer>().characterState.characterSpec;
+        List<InventoryItem> equipment = spec.equipment;
+        SPUM_SpriteList spriteList = player.GetComponentInChildren<SPUM_SpriteList>();
+
+        foreach (InventoryItem item in equipment)
+        {
+            string current_item_sprite = itemInfoDict[item.itemName].spriteDirectory;
+            spriteList.PartsPath[itemInfoDict[item.itemName].itemType] = current_item_sprite;
+            Debug.Log(spriteList.PartsPath[itemInfoDict[item.itemName].itemType]);
+            /*if (itemInfoDict[item.itemName].itemType == "hair")
+            {
+                hair_path[0] = current_item_sprite;
+            }
+            else if (itemInfoDict[item.itemName].itemType == "helmet1")
+            {
+                hair_path[1] = current_item_sprite;
+            }
+            else if (itemInfoDict[item.itemName].itemType == "helmet2")
+            {
+                hair_path[2] = current_item_sprite;
+            }
+            else if (itemInfoDict[item.itemName].itemType == "face hair")
+            {
+                hair_path[3] = current_item_sprite;
+            }
+            else if (itemInfoDict[item.itemName].itemType == "cloth")
+            {
+                cloth_path[0] = current_item_sprite;
+                cloth_path[1] = current_item_sprite;
+                cloth_path[2] = current_item_sprite;
+            }
+            else if (itemInfoDict[item.itemName].itemType == "armor")
+            {
+                armor_path[0] = current_item_sprite;
+                armor_path[1] = current_item_sprite;
+                armor_path[2] = current_item_sprite;
+            }
+            else if (itemInfoDict[item.itemName].itemType == "pant")
+            {
+                pant_path[0] = current_item_sprite;
+                pant_path[1] = current_item_sprite;
+            }
+            else if (itemInfoDict[item.itemName].itemType == "weapon left")
+            {
+                weapon_path[0] = current_item_sprite;
+            }
+            else if (itemInfoDict[item.itemName].itemType == "weapon right")
+            {
+                weapon_path[1] = current_item_sprite;
+            }
+            else if (itemInfoDict[item.itemName].itemType == "shield left")
+            {
+                weapon_path[2] = current_item_sprite;
+            }
+            else if (itemInfoDict[item.itemName].itemType == "shield right")
+            {
+                weapon_path[3] = current_item_sprite;
+            }
+            else if (itemInfoDict[item.itemName].itemType == "back")
+            {
+                back_path[0] = current_item_sprite;
+            }*/
+        }
+        
+        /*spriteList._hairListString = hair_path;
+        spriteList._clothListString = cloth_path;
+        spriteList._armorListString = armor_path;
+        spriteList._pantListString = pant_path;
+        spriteList._weaponListString = weapon_path;
+        spriteList._backListString = back_path;*/
+        spriteList.ResyncData();
     }
 }

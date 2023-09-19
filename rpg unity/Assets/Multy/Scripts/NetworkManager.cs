@@ -155,8 +155,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         ConnectPanel.SetActive(false);
         RespwanPanel.SetActive(false);
-
-        GameObject player = PhotonNetwork.Instantiate("Character/" + roll, Vector3.zero, Quaternion.identity);
+        GameObject player = PhotonNetwork.Instantiate("Character/Player", Vector3.zero, Quaternion.identity);
         GameManager.Instance.setup(player, roll);
 
         if (PhotonNetwork.IsMasterClient)

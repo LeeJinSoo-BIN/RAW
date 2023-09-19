@@ -28,4 +28,9 @@ MonoBehaviour:
     - magic normal
     SD_Values: 0100000001000000010000000100000001000000
   maxInventoryNum: 24
+  inventory: []
+  equipment:
+  - {fileID: 11400000, guid: 85234da9a1aa8ec4f8824e3ed0eda15b, type: 2}
+  - {fileID: 11400000, guid: bf1a78a6d9ed6524bbc955423ae86787, type: 2}
+  - {fileID: 11400000, guid: f7de936b32d1b2547891139fb661380f, type: 2}
   characterLevel: 1

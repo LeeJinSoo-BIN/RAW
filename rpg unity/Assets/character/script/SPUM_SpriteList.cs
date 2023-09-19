@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using Photon.Pun;
+using CustomDict;
+using System;
 
 public class SPUM_SpriteList : MonoBehaviour
 {
@@ -21,47 +24,54 @@ public class SPUM_SpriteList : MonoBehaviour
     public List<string> _pantListString = new List<string>();
     public List<string> _weaponListString = new List<string>();
     public List<string> _backListString = new List<string>();
-    
+
+
+    [Serializable]
+    public class SerializeDictPartsToSpriteRenderer : SerializableDictionary<string, SpriteRenderer> { }
+    public SerializeDictPartsToSpriteRenderer BodyParts;
+
+    [Serializable]
+    public class SerializeDictPartsToPath : SerializableDictionary<string, string> { }
+    public SerializeDictPartsToPath PartsPath;
+
+
+    public PhotonView PV;
 
 
     public void Reset()
     {
-        for(var i = 0 ; i < _hairList.Count;i++)
+        for (var i = 0; i < _hairList.Count; i++)
         {
-            if(_hairList[i]!=null) _hairList[i].sprite = null;
+            if (_hairList[i] != null) _hairList[i].sprite = null;
         }
-        for(var i = 0 ; i < _clothList.Count;i++)
+        for (var i = 0; i < _clothList.Count; i++)
         {
-            if(_clothList[i]!=null) _clothList[i].sprite = null;
+            if (_clothList[i] != null) _clothList[i].sprite = null;
         }
-        for(var i = 0 ; i < _armorList.Count;i++)
+        for (var i = 0; i < _armorList.Count; i++)
         {
-            if(_armorList[i]!=null) _armorList[i].sprite = null;
+            if (_armorList[i] != null) _armorList[i].sprite = null;
         }
-        for(var i = 0 ; i < _pantList.Count;i++)
+        for (var i = 0; i < _pantList.Count; i++)
         {
-            if(_pantList[i]!=null) _pantList[i].sprite = null;
+            if (_pantList[i] != null) _pantList[i].sprite = null;
         }
-        for(var i = 0 ; i < _weaponList.Count;i++)
+        for (var i = 0; i < _weaponList.Count; i++)
         {
-            if(_weaponList[i]!=null) _weaponList[i].sprite = null;
+            if (_weaponList[i] != null) _weaponList[i].sprite = null;
         }
-        for(var i = 0 ; i < _backList.Count;i++)
+        for (var i = 0; i < _backList.Count; i++)
         {
-            if(_backList[i]!=null) _backList[i].sprite = null;
+            if (_backList[i] != null) _backList[i].sprite = null;
         }
     }
-
-    public void LoadSpriteSting()
-    {
-
-    }
+    
 
     public void LoadSpriteStingProcess(List<SpriteRenderer> SpList, List<string> StringList)
     {
-        for(var i = 0 ; i < StringList.Count ; i++)
+        for (var i = 0; i < StringList.Count; i++)
         {
-            if(StringList[i].Length > 1)
+            if (StringList[i].Length > 1)
             {
 
                 // Assets/SPUM/SPUM_Sprites/BodySource/Species/0_Human/Human_1.png
@@ -72,13 +82,13 @@ public class SPUM_SpriteList : MonoBehaviour
     public void LoadSprite(SPUM_SpriteList data)
     {
         //스프라이트 데이터 연동
-        SetSpriteList(_hairList,data._hairList);
-        SetSpriteList(_bodyList,data._bodyList);
-        SetSpriteList(_clothList,data._clothList);
-        SetSpriteList(_armorList,data._armorList);
-        SetSpriteList(_pantList,data._pantList);
-        SetSpriteList(_weaponList,data._weaponList);
-        SetSpriteList(_backList,data._backList);
+        SetSpriteList(_hairList, data._hairList);
+        SetSpriteList(_bodyList, data._bodyList);
+        SetSpriteList(_clothList, data._clothList);
+        SetSpriteList(_armorList, data._armorList);
+        SetSpriteList(_pantList, data._pantList);
+        SetSpriteList(_weaponList, data._weaponList);
+        SetSpriteList(_backList, data._backList);
 
         //색 데이터 연동.
         _eyeList[0].color = data._eyeList[0].color;
@@ -94,14 +104,22 @@ public class SPUM_SpriteList : MonoBehaviour
 
     public void SetSpriteList(List<SpriteRenderer> tList, List<SpriteRenderer> tData)
     {
-        for(var i = 0 ; i < tData.Count;i++)
+        for (var i = 0; i < tData.Count; i++)
         {
-            if(tData[i]!=null) tList[i].sprite = tData[i].sprite;
+            if (tData[i] != null) tList[i].sprite = tData[i].sprite;
             else tList[i] = null;
         }
     }
-
     public void ResyncData()
+    {
+        foreach (string part in PartsPath.Keys)
+        {
+            PV.RPC("changeSprite", RpcTarget.AllBuffered, part, PartsPath[part]);
+        }
+    }
+
+
+    /*public void ResyncData()
     {
         Debug.Log("Resync");
         SyncPath(_hairList,_hairListString);
@@ -116,23 +134,21 @@ public class SPUM_SpriteList : MonoBehaviour
         Debug.Log("weapon");
         SyncPath(_backList,_backListString);
         Debug.Log("back");
-    }
-
+    }    */
     public void SyncPath(List<SpriteRenderer> _objList, List<string> _pathList)
     {
-        for(var i = 0 ; i < _pathList.Count ; i++)
+        for (var i = 0; i < _pathList.Count; i++)
         {
-            
 
-            if(_pathList[i].Length > 1 ) 
+            if (_pathList[i].Length > 1)
             {
                 string tPath = _pathList[i];
-                tPath = tPath.Replace("Assets/character/","");
-                tPath = tPath.Replace(".png","");
+                /*tPath = tPath.Replace("Assets/character/","");
+                tPath = tPath.Replace(".png","");*/
                 Debug.Log(tPath);
                 Sprite[] tSP = Resources.LoadAll<Sprite>(tPath);
                 Debug.Log(tSP.Length);
-                if(tSP.Length > 1)
+                if (tSP.Length > 1)
                 {
                     _objList[i].sprite = tSP[i];
                 }
@@ -147,4 +163,31 @@ public class SPUM_SpriteList : MonoBehaviour
             }
         }
     }
+
+    [PunRPC]
+    void changeSprite(string part, string path)
+    {
+        if (part == "cloth")
+        {
+            BodyParts["cloth body"].sprite = Resources.LoadAll<Sprite>(path)[0];
+            BodyParts["cloth left arm"].sprite = Resources.LoadAll<Sprite>(path)[1];
+            BodyParts["cloth right arm"].sprite = Resources.LoadAll<Sprite>(path)[2];
+        }
+        else if (part == "armor")
+        {
+            BodyParts["armor body"].sprite = Resources.LoadAll<Sprite>(path)[0];
+            BodyParts["armor left shoulder"].sprite = Resources.LoadAll<Sprite>(path)[1];
+            BodyParts["armor right shoulder"].sprite = Resources.LoadAll<Sprite>(path)[2];
+        }
+        else if (part == "pant")
+        {
+            BodyParts["pant left"].sprite = Resources.LoadAll<Sprite>(path)[0];
+            BodyParts["pant right"].sprite = Resources.LoadAll<Sprite>(path)[1];
+        }
+        else
+        {
+            BodyParts[part].sprite = Resources.LoadAll<Sprite>(path)[0];
+        }
+    }
+
 }

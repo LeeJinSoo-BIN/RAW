@@ -28,4 +28,9 @@ MonoBehaviour:
     - sword normal
     SD_Values: 0100000001000000010000000100000001000000
   maxInventoryNum: 24
+  inventory: []
+  equipment:
+  - {fileID: 11400000, guid: 47d95b0d4f4a86b408a4f1dae78e077d, type: 2}
+  - {fileID: 11400000, guid: f7de936b32d1b2547891139fb661380f, type: 2}
+  - {fileID: 11400000, guid: bf1a78a6d9ed6524bbc955423ae86787, type: 2}
   characterLevel: 1

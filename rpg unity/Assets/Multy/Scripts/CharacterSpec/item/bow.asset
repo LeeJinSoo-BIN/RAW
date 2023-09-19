@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bf61dd04f9319d64f897302fd2712b02, type: 3}
-  m_Name: inventory item 1
+  m_Name: bow
   m_EditorClassIdentifier: 
-  itemName: blue potion small
-  count: 1
-  position: 2
+  itemName: bow
+  count: 0
+  position: 0
   reinforce: 0

@@ -17,13 +17,11 @@ public class CharacterSpec : ScriptableObject
     public float criticalPercent = 50f;
     public float healPercent = 1f;
     [Serializable]
-    public class SerializeDictSkillLevel : SerializableDictionary<string, int> { }    
+    public class SerializeDictSkillLevel : SerializableDictionary<string, int> { }
     public SerializeDictSkillLevel skillLevel;
-    public int maxInventoryNum = 24;
-    [Serializable]
-    public class SerializeDictInventory : SerializableDictionary<string, int> { }
+    public int maxInventoryNum = 24;    
     public List<InventoryItem> inventory;
 
-    
+    public List<InventoryItem> equipment;
     public int characterLevel = 1;    
 }

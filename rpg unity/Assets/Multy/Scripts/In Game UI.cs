@@ -42,8 +42,7 @@ public class InGameUI : MonoBehaviour
     private string skillThumbnailPath = "Character/skills/thumbnails";
     private List<string> quickSlotKeys = new List<string> { "1", "2", "3", "4" };
     public Dictionary<string, string> keyToItemName = new Dictionary<string, string>();
-
-    public List<InventoryItem> inventory;
+    
     public Dictionary<string, qucikInventoryInfo> quickInventory;
     private void Update()
     {
@@ -151,6 +150,8 @@ public class InGameUI : MonoBehaviour
     {
         GameObject myCharacterHead = Instantiate(myCharacter.transform.Find("Root").GetChild(0).GetChild(0).GetChild(2).GetChild(0).gameObject);
         makeNewHead(myCharacterHead);
+        foreach(Transform child in CharacterProfile.transform)
+            Destroy(child.gameObject);
         myCharacterHead.transform.parent = CharacterProfile.transform;
         myCharacterHead.transform.localPosition = Vector3.zero;
     }
@@ -233,8 +234,7 @@ public class InGameUI : MonoBehaviour
             currentSlot.GetChild(2).GetComponent<TMP_Text>().text = quickInventory[keyToItemName[key]].count.ToString();
         }
         else
-        {
-            Debug.Log(keyToItemName[key] + " 0");
+        {            
             currentSlot.GetChild(0).GetComponent<Image>().color = Color.gray;
             currentSlot.GetChild(2).GetComponent<TMP_Text>().text = "0";
         }

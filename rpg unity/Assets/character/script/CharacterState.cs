@@ -9,29 +9,44 @@ using UnityEditor;
 
 public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
 {
-    
+
     public CharacterSpec characterSpec;
     public Slider health;
     public Slider mana;
     public Slider shield;
     public float power;
     public Animator characterAnimator;
-    
+
     private bool isDeath = false;
     public MultyPlayer playerControl;
     private float _timer = 0f;
     public PhotonView PV;
     public void setUp()
     {
-        shield.maxValue = characterSpec.maxHealth;
-        shield.value = 0;
-        health.maxValue = characterSpec.maxHealth;
-        health.value = characterSpec.maxHealth;
-        mana.maxValue = characterSpec.maxMana;
-        mana.value = characterSpec.maxMana;
+        PV.RPC("syncMax", RpcTarget.AllBuffered, "shield", characterSpec.maxHealth);
+        PV.RPC("syncMax", RpcTarget.AllBuffered, "health", characterSpec.maxHealth);
+        PV.RPC("syncMax", RpcTarget.AllBuffered, "mana", characterSpec.maxMana);        
         power = characterSpec.power;
     }
-
+    [PunRPC]
+    void syncMax(string what, float max)
+    {
+        if(what == "health")
+        {
+            health.maxValue = max;
+            health.value = max;
+        }
+        else if(what == "shield")
+        {
+            shield.maxValue = max;
+            shield.value = 0;
+        }
+        else if(what == "mana")
+        {
+            mana.maxValue = max;
+            mana.value = max;
+        }
+    }
     // Update is called once per frame
     void Update()
     {
