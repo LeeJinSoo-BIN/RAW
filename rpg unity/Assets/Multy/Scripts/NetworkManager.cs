@@ -98,9 +98,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
     public override void OnCreatedRoom()
     {
-
+        Debug.Log("¹æ »ý¼º");
     }
-
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
         Debug.Log("room list updated");        
@@ -164,11 +163,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         ConnectPanel.transform.GetChild(2).gameObject.SetActive(true);
         ConnectPanel.transform.GetChild(3).gameObject.SetActive(true);
         InGameUI.transform.GetChild(1).GetChild(4).gameObject.SetActive(false);
-    }
-    public override void OnDisconnected(DisconnectCause cause)
-    {
-        Debug.Log("¼­¹ö ¿¬°á ²÷±è");
-    }
+    }    
 
     public void CreateRoomButtonClickInPanel()
     {
@@ -201,6 +196,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnDisconnected(DisconnectCause cause)
     {
+        Debug.Log("¼­¹ö ¿¬°á ²÷±è");
         DisconnectPanel.SetActive(true);
         RespwanPanel.SetActive(false);
         InGameUI.SetActive(false);
