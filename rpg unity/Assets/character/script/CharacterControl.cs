@@ -243,8 +243,7 @@ public class CharacterControl : MonoBehaviour
         (float x, float y) radius_xy = SkillManager.instance.skillData[current_casting_skill_name].radius;
         Vector2 radius_area = new Vector2(radius_xy.x, radius_xy.y);
         skillRadiusArea.transform.localScale = radius_area;
-        skillRadiusArea.SetActive(true);
-        Debug.Log(current_casting_skill_name);
+        skillRadiusArea.SetActive(true);        
         isActivingSkill = true;
         if (current_casting_skill_type == 0) // circle
         {            
@@ -381,9 +380,7 @@ public class CharacterControl : MonoBehaviour
     {
         string got_item_name = got_item.transform.GetChild(0).name.Split(" ")[0];
         int got_item_cnt = int.Parse(got_item.transform.GetChild(0).name.Split(" ")[1]);
-        Sprite got_item_sprite = got_item.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
-        Debug.Log(got_item_name);
-        Debug.Log(itemsInInventory);
+        Sprite got_item_sprite = got_item.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;        
         if (itemsInInventory.ContainsKey(got_item_name))
         {
             int item_index = itemsInInventory[got_item_name];

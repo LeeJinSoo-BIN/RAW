@@ -13,7 +13,11 @@ public class SwordShield : MonoBehaviourPunCallbacks
     public GameObject target;
     //public Vector2 targetPos;
     public PhotonView PV;
-
+    private void Awake()
+    {
+        PV = transform.parent.GetComponent<PhotonView>();
+        Destroy(gameObject, 5f);
+    }
     IEnumerator Vanish(float duration)
     {
         float time = 0;

@@ -120,6 +120,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                     if (hit.collider == null || hit.transform.CompareTag("Not Ground"))
                         return;
                     goalPos = hit.point;
+                    if (castSkill != null)
+                        StopCoroutine(castSkill);
                     StartCoroutine(pointingGoal(goalPos));
                     if (isActivingSkill)
                         deactivateSkill();
@@ -342,25 +344,26 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         return false;
     }
     void CastingSkill(Vector2 skillPos, GameObject target = null)
-    {
-        Debug.Log("casting skill");
+    {        
         if (isCoolDown())
         {
-            Debug.Log("쿨타임");
+            print("쿨타임");
             return;
         }
         if (characterState.mana.value < current_skill.consumeMana)
         {
-            Debug.Log("마나 부족");
+            print("마나 부족");
             return;
-        }        
-        castSkill = CastSkill(skillPos, target);
+        }
+        if(castSkill != null)
+            StopCoroutine(castSkill);
+        castSkill = CastSkill(skillPos, current_skill, target);
         StartCoroutine(castSkill);
         if(!current_skill.skillName.Contains("normal"))
             deactivateSkill();
     }
 
-    IEnumerator CastSkill(Vector2 skillPos, GameObject targetObject = null)
+    IEnumerator CastSkill(Vector2 skillPos, SkillSpec currentCastingSkill, GameObject targetObject = null)
     {
         float skill_radius_len = Vector2.Distance(skillRadiusLengthPoint.transform.position, transform.position);
 
@@ -381,8 +384,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         float ratio = Mathf.Sqrt((x_intersect - target.x) * (x_intersect - target.x) + (y_intersect - target.y) * (y_intersect - target.y));
 
         skill_radius_len *= ratio;
-
-        if (current_skill.castType == "circle" || current_skill.castType == "target-player" || current_skill.castType == "target-enemy" || current_skill.castType == "target-both")
+        if (currentCastingSkill.castType == "circle" || currentCastingSkill.castType == "target-player" || currentCastingSkill.castType == "target-enemy" || currentCastingSkill.castType == "target-both")
         {
             goalPos = skillPos;
             characterAnimator.SetBool("IsRunning", true);
@@ -399,9 +401,9 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 yield return null;
             }
         }
-        else if (current_skill.castType == "bar")
+        else if (currentCastingSkill.castType == "bar")
         {
-            Vector3 _dirMVec = ((Vector3)skillPos - transform.position).normalized;            
+            Vector3 _dirMVec = ((Vector3)skillPos - transform.position).normalized;
             PV.RPC("direction", RpcTarget.AllBuffered, _dirMVec);
         }
 
@@ -409,79 +411,79 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         movable = false;
         attackable = false;
         characterAnimator.SetBool("IsRunning", false);
-        if (current_skill.animType == "normal")
+        if (currentCastingSkill.animType == "normal")
         {
             int attack = Random.Range(1, 4);
             characterAnimator.SetTrigger("attack" + attack.ToString());
         }
         else
-            characterAnimator.SetTrigger(current_skill.animType);
-        GameObject skill = null;        
-        float current_skill_deal = CaculateCharacterSkillDamage(characterSpec.skillLevel[current_skill.skillName], characterSpec.power,
-            current_skill.flatDeal, current_skill.dealIncreasePerSkillLevel, current_skill.dealIncreasePerPower,
-            characterSpec.criticalPercent, characterSpec.criticalDamage, affectedByCritical:true);
-        float current_skill_heal = CaculateCharacterSkillDamage(characterSpec.skillLevel[current_skill.skillName], characterSpec.power,
-            current_skill.flatHeal, current_skill.healIncreasePerSkillLevel, current_skill.healIncreasePerPower);
-        float current_skill_shield = CaculateCharacterSkillDamage(characterSpec.skillLevel[current_skill.skillName], characterSpec.power,
-            current_skill.flatShield, current_skill.shieldIncreasePerSkillLevel, current_skill.shieldIncreasePerPower);
-        float current_skill_power = CaculateCharacterSkillDamage(characterSpec.skillLevel[current_skill.skillName], characterSpec.power,
-            current_skill.flatPower, current_skill.powerIncreasePerSkillLevel, current_skill.powerIncreasePerPower);
+            characterAnimator.SetTrigger(currentCastingSkill.animType);
+        GameObject skill = null;
+        float current_skill_deal = CaculateCharacterSkillDamage(characterSpec.skillLevel[currentCastingSkill.skillName], characterSpec.power,
+            currentCastingSkill.flatDeal, currentCastingSkill.dealIncreasePerSkillLevel, currentCastingSkill.dealIncreasePerPower,
+            characterSpec.criticalPercent, characterSpec.criticalDamage, affectedByCritical: true);
+        float current_skill_heal = CaculateCharacterSkillDamage(characterSpec.skillLevel[currentCastingSkill.skillName], characterSpec.power,
+            currentCastingSkill.flatHeal, currentCastingSkill.healIncreasePerSkillLevel, currentCastingSkill.healIncreasePerPower);
+        float current_skill_shield = CaculateCharacterSkillDamage(characterSpec.skillLevel[currentCastingSkill.skillName], characterSpec.power,
+            currentCastingSkill.flatShield, currentCastingSkill.shieldIncreasePerSkillLevel, currentCastingSkill.shieldIncreasePerPower);
+        float current_skill_power = CaculateCharacterSkillDamage(characterSpec.skillLevel[currentCastingSkill.skillName], characterSpec.power,
+            currentCastingSkill.flatPower, currentCastingSkill.powerIncreasePerSkillLevel, currentCastingSkill.powerIncreasePerPower);
         Vector2 current_skill_target_pos = default(Vector2);
         string current_skill_target_name = name;
-        if (current_skill.castType == "circle")
+        if (currentCastingSkill.castType == "circle")
         {
-            skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, current_skill.skillName), skillPos, Quaternion.identity);
+            skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), skillPos, Quaternion.identity);
         }
-        else if (current_skill.castType == "bar")
+        else if (currentCastingSkill.castType == "bar")
         {
             skillPos += new Vector2(0f, 0.3f);
             current_skill_target_pos = skillPos;
-            if (current_skill.dealType == "throw")
-                skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, current_skill.skillName), skillCastingPosition.position, Quaternion.identity);
+            if (currentCastingSkill.dealType == "throw")
+                skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), skillCastingPosition.position, Quaternion.identity);
             else
-                skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, current_skill.skillName), skillPos, Quaternion.identity);
+                skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), skillPos, Quaternion.identity);
         }
-        else if (current_skill.castType == "target-player" || current_skill.castType == "target-enemy" || current_skill.castType == "target-both") // target
+        else if (currentCastingSkill.castType == "target-player" || currentCastingSkill.castType == "target-enemy" || currentCastingSkill.castType == "target-both") // target
         {
-            if (current_skill.dealType == "throw")
-                skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, current_skill.skillName), skillCastingPosition.position, Quaternion.identity);
+            if (currentCastingSkill.dealType == "throw")
+                skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), skillCastingPosition.position, Quaternion.identity);
             else
-                skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, current_skill.skillName), targetObject.transform.position, Quaternion.identity);
+                skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), targetObject.transform.position, Quaternion.identity);
 
             current_skill_target_name = targetObject.name;
         }
-        else if (current_skill.castType == "buff-self")
+        else if (currentCastingSkill.castType == "buff-self")
         {
-            skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, current_skill.skillName), Vector3.zero, Quaternion.identity);
+            skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), Vector3.zero, Quaternion.identity);
             current_skill_target_name = gameObject.name;
         }
-        else if (current_skill.castType == "buff-player" || current_skill.castType == "buff-enemy") // buff
+        else if (currentCastingSkill.castType == "buff-player" || currentCastingSkill.castType == "buff-enemy") // buff
         {
             foreach (Transform tar in targetObject.GetComponentInChildren<Transform>())
             {
-                skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, current_skill.skillName), tar.transform.position, Quaternion.identity);
+                skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), tar.transform.position, Quaternion.identity);
                 current_skill_target_name = tar.name;
-                skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, current_skill.duration, current_skill_target_name, current_skill_target_pos);
+                skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, currentCastingSkill.duration, current_skill_target_name, current_skill_target_pos);
             }
         }
-        if(skill != null)
-        {            
-            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, current_skill.duration, current_skill_target_name, current_skill_target_pos);            
+        if (skill != null)
+        {
+            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, currentCastingSkill.duration, current_skill_target_name, current_skill_target_pos);
         }
 
-        skillActivatedTime[current_skill.skillName] = Time.time;
-        inGameUI.CoolDown(current_skill.skillName, current_skill.coolDown);
-        
-        characterState.mana.value -= current_skill.consumeMana;
-        
+        skillActivatedTime[currentCastingSkill.skillName] = Time.time;
+        inGameUI.CoolDown(currentCastingSkill.skillName, currentCastingSkill.coolDown);
+
+        characterState.mana.value -= currentCastingSkill.consumeMana;
+
         float delay = 0;
-        while (delay < current_skill.delay)
+        while (delay < currentCastingSkill.delay)
         {
             delay += Time.deltaTime;
             yield return null;
         }
         movable = true;
-        attackable = true;        
+        attackable = true;
     }
 
 
@@ -489,11 +491,9 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     {
         string got_item_name = got_item.GetComponent<Item>().itemName;
         int got_item_cnt = got_item.GetComponent<Item>().itemCount;
-        bool gotten = false;
-        Debug.Log(got_item_name);
+        bool gotten = false;        
         if (quickInventory.ContainsKey(got_item_name))
-        {
-            Debug.Log("had");
+        {            
             quickInventory[got_item_name].count += got_item_cnt;
             gotten = true;
         }
@@ -502,8 +502,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             if (quickInventory.Count < characterSpec.maxInventoryNum)
             {                
                 FindFrontInventoryPos();
-                quickInventory.Add(got_item_name, new qucikInventoryInfo() { position = frontInventoryPos, count = got_item_cnt });
-                Debug.Log("new" + frontInventoryPos);
+                quickInventory.Add(got_item_name, new qucikInventoryInfo() { position = frontInventoryPos, count = got_item_cnt });                
                 gotten = true;                
             }
         }

@@ -11,11 +11,14 @@ public class MagicGlobalHeal : MonoBehaviourPunCallbacks
     public GameObject target;
     //public Vector2 targetPos;
     public PhotonView PV;
-        
+    
     void Excute()
     {
-        CharacterState state = transform.parent.GetComponentInChildren<CharacterState>();       
-        state.ProcessSkill(1, Heal);
+        if (PV.IsMine)
+        {
+            CharacterState state = transform.parent.GetComponentInChildren<CharacterState>();
+            state.ProcessSkill(1, Heal);
+        }
     }
 
     IEnumerator Vanish(float duration)
@@ -47,8 +50,9 @@ public class MagicGlobalHeal : MonoBehaviourPunCallbacks
         {
             //targetPos = target_pos;
         }
-        StartCoroutine(Vanish(duration));
-
+        PV = transform.parent.GetComponent<PhotonView>();
+        StartCoroutine(Vanish(duration));        
         Excute();
+        
     }
 }

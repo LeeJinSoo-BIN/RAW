@@ -70,7 +70,7 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
                 float _shield = shield.value;
                 shield.value -= value;
                 value -= _shield;
-                Debug.Log(value);
+                print(value);
                 if (value > 0)
                     health.value -= value;
                 if (health.value <= 0 && !isDeath)

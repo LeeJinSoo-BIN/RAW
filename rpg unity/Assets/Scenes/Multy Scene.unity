@@ -4718,6 +4718,7 @@ GameObject:
   m_Component:
   - component: {fileID: 726141346}
   - component: {fileID: 726141345}
+  - component: {fileID: 726141347}
   m_Layer: 0
   m_Name: StageManager
   m_TagString: Untagged
@@ -4741,6 +4742,7 @@ MonoBehaviour:
   stageTime: 0
   stageText: {fileID: 1893673532978793790}
   timeText: {fileID: 8030209171413592067}
+  PV: {fileID: 726141347}
 --- !u!4 &726141346
 Transform:
   m_ObjectHideFlags: 0
@@ -4756,6 +4758,29 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &726141347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 726141344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 726141345}
+  sceneViewId: 2
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &758191076
 GameObject:
   m_ObjectHideFlags: 0
