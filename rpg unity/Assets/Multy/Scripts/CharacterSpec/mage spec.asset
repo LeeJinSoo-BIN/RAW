@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e4cf6686a9431a4bb8fc303909883b0, type: 3}
   m_Name: mage spec
   m_EditorClassIdentifier: 
-  maxHealth: 800
-  maxMana: 1200
+  nickName: mage
+  maxHealth: 700
+  maxMana: 1000
   recoverManaPerThreeSec: 5
   power: 10
   criticalDamage: 1.2

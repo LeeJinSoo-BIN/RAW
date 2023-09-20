@@ -76,6 +76,9 @@ MonoBehaviour:
   - SyncPath
   - changeSprite
   - syncMax
+  - setActiveCollider
+  - setName
+  - selectedRoll
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

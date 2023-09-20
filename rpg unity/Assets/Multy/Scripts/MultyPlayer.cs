@@ -88,6 +88,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public void loadData()
     {
         characterSpec = characterState.characterSpec;
+        PV.RPC("setName", RpcTarget.AllBuffered, characterSpec.nickName + PV.ViewID.ToString());
         List<string> skill_name_list = characterSpec.skillLevel.SD_Keys;        
         for (int i = 0; i < characterSpec.skillLevel.Count; i++)
         {            
@@ -420,9 +421,9 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             current_skill.flatDeal, current_skill.dealIncreasePerSkillLevel, current_skill.dealIncreasePerPower,
             characterSpec.criticalPercent, characterSpec.criticalDamage, affectedByCritical:true);
         float current_skill_heal = CaculateCharacterSkillDamage(characterSpec.skillLevel[current_skill.skillName], characterSpec.power,
-            current_skill.flatHeal, current_skill.dealIncreasePerSkillLevel, current_skill.dealIncreasePerPower);
+            current_skill.flatHeal, current_skill.healIncreasePerSkillLevel, current_skill.healIncreasePerPower);
         float current_skill_shield = CaculateCharacterSkillDamage(characterSpec.skillLevel[current_skill.skillName], characterSpec.power,
-            current_skill.flatShield, current_skill.dealIncreasePerSkillLevel, current_skill.dealIncreasePerPower);
+            current_skill.flatShield, current_skill.shieldIncreasePerSkillLevel, current_skill.shieldIncreasePerPower);
         float current_skill_power = CaculateCharacterSkillDamage(characterSpec.skillLevel[current_skill.skillName], characterSpec.power,
             current_skill.flatPower, current_skill.powerIncreasePerSkillLevel, current_skill.powerIncreasePerPower);
         Vector2 current_skill_target_pos = default(Vector2);
@@ -707,5 +708,11 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         {
             curPos = (Vector3)stream.ReceiveNext();
         }
+    }
+
+    [PunRPC]
+    void setName(string nickName)
+    {
+        name = nickName;
     }
 }

@@ -28,8 +28,8 @@ MonoBehaviour:
   flatHeal: 0
   healIncreasePerSkillLevel: 0
   healIncreasePerPower: 0
-  flatShield: 50
-  shieldIncreasePerSkillLevel: 1
+  flatShield: 45
+  shieldIncreasePerSkillLevel: 5
   shieldIncreasePerPower: 1
   flatPower: 0
   powerIncreasePerSkillLevel: 0

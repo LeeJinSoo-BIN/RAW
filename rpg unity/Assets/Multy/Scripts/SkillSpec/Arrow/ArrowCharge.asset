@@ -18,12 +18,12 @@ MonoBehaviour:
   radius: {x: 20, y: 20}
   range: {x: 20, y: 8}
   animType: skillBow2
-  consumeMana: 120
+  consumeMana: 150
   delay: 3
   duration: 0
   coolDown: 15
   flatDeal: 50
-  dealIncreasePerSkillLevel: 1
+  dealIncreasePerSkillLevel: 10
   dealIncreasePerPower: 1
   flatHeal: 0
   healIncreasePerSkillLevel: 0

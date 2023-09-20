@@ -110,7 +110,7 @@ public class SPUM_SpriteList : MonoBehaviour
             else tList[i] = null;
         }
     }
-    public void ResyncData()
+    public void setSprite()
     {
         foreach (string part in PartsPath.Keys)
         {
@@ -119,7 +119,7 @@ public class SPUM_SpriteList : MonoBehaviour
     }
 
 
-    /*public void ResyncData()
+    public void ResyncData()
     {
         Debug.Log("Resync");
         SyncPath(_hairList,_hairListString);
@@ -134,7 +134,7 @@ public class SPUM_SpriteList : MonoBehaviour
         Debug.Log("weapon");
         SyncPath(_backList,_backListString);
         Debug.Log("back");
-    }    */
+    }    
     public void SyncPath(List<SpriteRenderer> _objList, List<string> _pathList)
     {
         for (var i = 0; i < _pathList.Count; i++)
@@ -143,8 +143,8 @@ public class SPUM_SpriteList : MonoBehaviour
             if (_pathList[i].Length > 1)
             {
                 string tPath = _pathList[i];
-                /*tPath = tPath.Replace("Assets/character/","");
-                tPath = tPath.Replace(".png","");*/
+                tPath = tPath.Replace("Assets/character/","");
+                tPath = tPath.Replace(".png","");
                 Debug.Log(tPath);
                 Sprite[] tSP = Resources.LoadAll<Sprite>(tPath);
                 Debug.Log(tSP.Length);

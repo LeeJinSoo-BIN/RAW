@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e4cf6686a9431a4bb8fc303909883b0, type: 3}
   m_Name: warrior spec
   m_EditorClassIdentifier: 
-  maxHealth: 1300
+  nickName: warrior
+  maxHealth: 1000
   maxMana: 700
   recoverManaPerThreeSec: 5
   power: 10

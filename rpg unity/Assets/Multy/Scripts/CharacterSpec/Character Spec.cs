@@ -9,6 +9,7 @@ using UnityEngine;
 [CreateAssetMenu]
 public class CharacterSpec : ScriptableObject
 {
+    public string nickName;
     public float maxHealth = 1000f;
     public float maxMana = 1000f;
     public float recoverManaPerThreeSec = 5f;

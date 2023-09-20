@@ -18,7 +18,7 @@ MonoBehaviour:
   radius: {x: 0, y: 0}
   range: {x: 0, y: 0}
   animType: attack3
-  consumeMana: 120
+  consumeMana: 200
   delay: 0
   duration: 3
   coolDown: 15
@@ -26,7 +26,7 @@ MonoBehaviour:
   dealIncreasePerSkillLevel: 0
   dealIncreasePerPower: 0
   flatHeal: 50
-  healIncreasePerSkillLevel: 1
+  healIncreasePerSkillLevel: 5
   healIncreasePerPower: 1
   flatShield: 0
   shieldIncreasePerSkillLevel: 0

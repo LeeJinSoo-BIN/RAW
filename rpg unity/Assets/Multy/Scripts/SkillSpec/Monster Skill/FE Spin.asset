@@ -19,8 +19,8 @@ MonoBehaviour:
   - 20
   increaseDealPerLevel:
   - 20
-  firstDelay: 0.2
-  skillDuration: 0.3
+  firstDelay: 0.1
+  skillDuration: 0.4
   areaChildNum: 3
   speed: 3
   run: 1

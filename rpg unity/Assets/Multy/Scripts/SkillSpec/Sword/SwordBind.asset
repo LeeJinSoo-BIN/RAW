@@ -18,10 +18,10 @@ MonoBehaviour:
   radius: {x: 2, y: 2}
   range: {x: 0, y: 0}
   animType: skill1
-  consumeMana: 130
+  consumeMana: 150
   delay: 1
   duration: 7
-  coolDown: 15
+  coolDown: 20
   flatDeal: 20
   dealIncreasePerSkillLevel: 1
   dealIncreasePerPower: 1

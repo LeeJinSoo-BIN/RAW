@@ -163,10 +163,9 @@ public class MonsterControl : MonoBehaviour
         }        
     }
     IEnumerator directAttack()
-    {        
-        GameObject area = transform.GetChild(currentCastingSkill.areaChildNum).gameObject;
-        area.name = ((int)(currentCastingSkill.flatDeal[0] + currentCastingSkill.increaseDealPerLevel[0] * level)).ToString();
-        area.SetActive(true);
+    {   
+        int deal = (int)(currentCastingSkill.flatDeal[0] + currentCastingSkill.increaseDealPerLevel[0] * level);
+        PV.RPC("setActiveCollider", RpcTarget.All, currentCastingSkill.areaChildNum, true, deal);
         float _time = 0f;
         while (true)
         {
@@ -175,7 +174,15 @@ public class MonsterControl : MonoBehaviour
             _time += Time.deltaTime;
             yield return null;
         }
-        area.SetActive(false);        
+        PV.RPC("setActiveCollider", RpcTarget.All, currentCastingSkill.areaChildNum, false, deal);
+    }
+
+    [PunRPC]
+    void setActiveCollider(int childNum, bool onOff, int deal)
+    {
+        GameObject area = transform.GetChild(childNum).gameObject;
+        area.name = deal.ToString();
+        area.SetActive(onOff);
     }
     
 

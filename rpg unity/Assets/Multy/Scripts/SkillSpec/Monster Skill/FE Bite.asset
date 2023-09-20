@@ -19,12 +19,12 @@ MonoBehaviour:
   - 35
   increaseDealPerLevel:
   - 35
-  firstDelay: 0.3
+  firstDelay: 0.7
   skillDuration: 0.3
   areaChildNum: 2
   speed: 4
   run: 1
   distance: 0
   castPos: side
-  targetSideDistance: -0.34
+  targetSideDistance: -0.18
   spawnPos: 0

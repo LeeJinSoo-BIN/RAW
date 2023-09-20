@@ -22,8 +22,8 @@ MonoBehaviour:
   delay: 1.2
   duration: 2
   coolDown: 5
-  flatDeal: 8
-  dealIncreasePerSkillLevel: 1
+  flatDeal: 5
+  dealIncreasePerSkillLevel: 5
   dealIncreasePerPower: 1
   flatHeal: 0
   healIncreasePerSkillLevel: 0

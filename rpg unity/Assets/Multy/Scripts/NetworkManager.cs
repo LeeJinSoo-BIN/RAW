@@ -143,6 +143,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         itemField.SetActive(true);
         ConnectPanel.SetActive(true);
         //connecting = false;
+        ConnectPanel.transform.GetChild(1).gameObject.SetActive(true);
+        ConnectPanel.transform.GetChild(2).gameObject.SetActive(true);
+        ConnectPanel.transform.GetChild(3).gameObject.SetActive(true);
     }
 
     public void CreateRoomButtonClickInPanel()
@@ -153,6 +156,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public void Spawn(string roll)
     {
+        PV.RPC("selectedRoll", RpcTarget.AllBuffered, roll);
         ConnectPanel.SetActive(false);
         RespwanPanel.SetActive(false);
         GameObject player = PhotonNetwork.Instantiate("Character/Player", Vector3.zero, Quaternion.identity);
@@ -186,5 +190,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         spawnButton.SetActive(false);
         InGameUI.GetComponent<InGameUI>().BossSetUp();
+    }
+
+    [PunRPC]
+    void selectedRoll(string roll)
+    {
+        ConnectPanel.transform.Find(roll.ToUpper()).gameObject.SetActive(false);
     }
 }
