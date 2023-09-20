@@ -79,11 +79,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("서버 접속");
         connectedToMaster = true;
-        ConnectButtonText.text = "접속";//"?묒냽";
+        ConnectButtonText.text = "접속하기";//"?묒냽";
         if (joinedToLobby)
             JoinLobby();
-    }
-    
+        
+    }    
     public override void OnJoinedLobby()
     {
         Debug.Log("로비 접속");
@@ -106,7 +106,14 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Debug.Log("room list updated");        
         foreach(RoomInfo room in roomList)
         {
-            roomListDict[room.Name] = room;
+            if (room.RemovedFromList)
+            {
+                roomListDict.Remove(room.Name);
+            }
+            else
+            {
+                roomListDict[room.Name] = room;
+            }            
         }
         UpdateRoomList();
     }
@@ -116,15 +123,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         for (int k = 0; k < RoomList.transform.childCount; k++)
         {
             Destroy(RoomList.transform.GetChild(k).gameObject);
-        }
-        List<string> deleteList = new List<string>();
+        }        
         foreach (string room in roomListDict.Keys)
-        {
-            if (roomListDict[room].RemovedFromList)
-            {
-                deleteList.Add(room);
-                continue;
-            }
+        {            
             GameObject Room = Instantiate(roomInfo);
             Room.transform.SetParent(RoomList.transform);
             Room.transform.localScale = new Vector3(1, 1, 1);
@@ -135,8 +136,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             if (roomListDict[room].PlayerCount == roomListDict[room].MaxPlayers || !roomListDict[room].IsOpen)
                 Room.GetComponent<Button>().interactable = false;
         }
-        foreach (string room in deleteList)
-            roomListDict.Remove(room);
     }
 
     public void JoinRoomButtonClickInJoinPanel()
@@ -165,6 +164,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         ConnectPanel.transform.GetChild(2).gameObject.SetActive(true);
         ConnectPanel.transform.GetChild(3).gameObject.SetActive(true);
         InGameUI.transform.GetChild(1).GetChild(4).gameObject.SetActive(false);
+    }
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        Debug.Log("서버 연결 끊김");
     }
 
     public void CreateRoomButtonClickInPanel()
