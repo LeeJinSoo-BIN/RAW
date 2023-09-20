@@ -146,6 +146,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         ConnectPanel.transform.GetChild(1).gameObject.SetActive(true);
         ConnectPanel.transform.GetChild(2).gameObject.SetActive(true);
         ConnectPanel.transform.GetChild(3).gameObject.SetActive(true);
+        InGameUI.transform.GetChild(1).GetChild(4).gameObject.SetActive(false);
     }
 
     public void CreateRoomButtonClickInPanel()

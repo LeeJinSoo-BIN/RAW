@@ -468,11 +468,10 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         {            
             skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, current_skill.duration, current_skill_target_name, current_skill_target_pos);            
         }
-        if (!current_skill.skillName.Contains("normal"))
-        {
-            skillActivatedTime[current_skill.skillName] = Time.time;
-            inGameUI.CoolDown(current_skill.skillName, current_skill.coolDown);
-        }
+
+        skillActivatedTime[current_skill.skillName] = Time.time;
+        inGameUI.CoolDown(current_skill.skillName, current_skill.coolDown);
+        
         characterState.mana.value -= current_skill.consumeMana;
         
         float delay = 0;

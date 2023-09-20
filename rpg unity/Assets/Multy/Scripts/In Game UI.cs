@@ -108,14 +108,16 @@ public class InGameUI : MonoBehaviour
             yield return null;
         }
     }
-    public void CoolDown(string key, float coolingTime)
+    public void CoolDown(string skillName, float coolingTime)
     {
-        StartCoroutine(CoolDownCoroutine(key, coolingTime));
+        StartCoroutine(CoolDownCoroutine(skillName, coolingTime));
     }
     IEnumerator CoolDownCoroutine(string skill_name, float coolingTime)
     {
         string key = skillNameToKey[skill_name];
-        Image skill_cool = skillKeyUI.transform.Find(key.ToLower()).GetChild(1).GetComponent<Image>();
+        Transform currentKeyUI = skillKeyUI.transform.Find(key.ToLower());
+        if(currentKeyUI == null) yield break;
+        Image skill_cool = currentKeyUI.GetChild(1).GetComponent<Image>();
         skill_cool.fillAmount = 100;
         float _time = coolingTime;
         if (coolingTime == 0)        

@@ -10497,7 +10497,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.1718138, g: 0.1718138, b: 0.3679245, a: 1}
+  m_Color: {r: 0.17866677, g: 0.27895233, b: 0.5188679, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -17917,7 +17917,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC548\uB155 \uB098\uB294 \uC608\uB9B0"
+  m_text: "\uCC44\uD305"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: aaa171b0ffb81664ea3302986fcceb08, type: 2}
   m_sharedMaterial: {fileID: 6603612433681367412, guid: aaa171b0ffb81664ea3302986fcceb08, type: 2}

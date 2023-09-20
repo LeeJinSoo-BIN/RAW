@@ -21,8 +21,8 @@ MonoBehaviour:
   consumeMana: 0
   delay: 0.5
   duration: 0
-  coolDown: 0
-  flatDeal: 4
+  coolDown: 1
+  flatDeal: 1
   dealIncreasePerSkillLevel: 1
   dealIncreasePerPower: 0.1
   flatHeal: 0
