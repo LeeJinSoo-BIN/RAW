@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using Unity.VisualScripting;
 using TMPro;
 using UnityEngine.EventSystems;
+using Photon.Pun.Demo.Cockpit;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
@@ -21,7 +22,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public GameObject InGameUI;
     public GameObject ground;
     public GameObject itemField;
-    private bool connecting = true;
+    private bool connectedToMaster = false;
+    private bool joinedToLobby = false;
     public TMP_Text ConnectButtonText;
     public PhotonView PV;
     public GameObject spawnButton;
@@ -30,6 +32,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public GameObject RoomList;
     public GameObject LobbyPanel;
     public TMP_InputField RoomNameInputField;
+
+    private Dictionary<string, RoomInfo> roomListDict = new Dictionary<string, RoomInfo>();
 
     private void Awake()
     {
@@ -53,9 +57,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         if (Input.GetKeyDown(KeyCode.Escape) && PhotonNetwork.InRoom)
         {
-            PhotonNetwork.LeaveRoom();            
+            PhotonNetwork.LeaveRoom();
         }
-        if (connecting)
+        if (!connectedToMaster)
         {
             ConnectButtonText.text = PhotonNetwork.NetworkClientState.ToString();
         }
@@ -67,24 +71,31 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
 
     public void JoinLobby()
-    {
-        connecting = true;
+    {        
         PhotonNetwork.JoinLobby();
     }
 
     public override void OnConnectedToMaster()
     {
-        connecting = false;
+        Debug.Log("辑滚 立加");
+        connectedToMaster = true;
         ConnectButtonText.text = "立加";//"?戩啀";
+        if (joinedToLobby)
+            JoinLobby();
     }
-
+    
     public override void OnJoinedLobby()
     {
-        connecting = false;
+        Debug.Log("肺厚 立加");
+        joinedToLobby = true;
         LobbyPanel.SetActive(true);
         DisconnectPanel.SetActive(false);
+        roomListDict.Clear();
     }
-
+    public override void OnLeftLobby()
+    {
+        Debug.Log("肺厚 立加 谗辫");
+    }
     public override void OnCreatedRoom()
     {
 
@@ -92,31 +103,40 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        //print("room list updated");
-        UpdateRoomList(roomList);
+        Debug.Log("room list updated");        
+        foreach(RoomInfo room in roomList)
+        {
+            roomListDict[room.Name] = room;
+        }
+        UpdateRoomList();
     }
 
-    void UpdateRoomList(List<RoomInfo> roomList)
-    {
+    void UpdateRoomList()
+    { 
         for (int k = 0; k < RoomList.transform.childCount; k++)
         {
             Destroy(RoomList.transform.GetChild(k).gameObject);
         }
-        //print(roomList.Count);
-        for (int k = 0; k < roomList.Count; k++)
+        List<string> deleteList = new List<string>();
+        foreach (string room in roomListDict.Keys)
         {
-            if (roomList[k].RemovedFromList) continue;
+            if (roomListDict[room].RemovedFromList)
+            {
+                deleteList.Add(room);
+                continue;
+            }
             GameObject Room = Instantiate(roomInfo);
-
             Room.transform.SetParent(RoomList.transform);
             Room.transform.localScale = new Vector3(1, 1, 1);
             Room.SetActive(true);
-            Room.transform.GetChild(0).GetComponent<TMP_Text>().text = roomList[k].Name;
-            string count = roomList[k].PlayerCount + " / " + roomList[k].MaxPlayers;
+            Room.transform.GetChild(0).GetComponent<TMP_Text>().text = roomListDict[room].Name;
+            string count = roomListDict[room].PlayerCount + " / " + roomListDict[room].MaxPlayers;
             Room.transform.GetChild(1).GetComponent<TMP_Text>().text = count;
-            if (roomList[k].PlayerCount == roomList[k].MaxPlayers || !roomList[k].IsOpen)
+            if (roomListDict[room].PlayerCount == roomListDict[room].MaxPlayers || !roomListDict[room].IsOpen)
                 Room.GetComponent<Button>().interactable = false;
         }
+        foreach (string room in deleteList)
+            roomListDict.Remove(room);
     }
 
     public void JoinRoomButtonClickInJoinPanel()
@@ -125,10 +145,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.JoinRoom(room_name);
     }
     public override void OnLeftRoom()
-    {
-        connecting = false;
-        LobbyPanel.SetActive(true);        
-
+    {        
+        LobbyPanel.SetActive(true);
         InGameUI.SetActive(false);
         ground.SetActive(false);
         itemField.SetActive(false);
