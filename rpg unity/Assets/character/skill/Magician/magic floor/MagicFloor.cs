@@ -26,9 +26,14 @@ public class MagicFloor : MonoBehaviourPunCallbacks
             yield return null;
         }
         GetComponent<Animator>().SetTrigger("vanish");
+        PV.RPC("destroySelf", RpcTarget.AllBuffered);
+    }
+    [PunRPC]
+    void destroySelf()
+    {
         Destroy(gameObject, 0.45f);
     }
-    
+
     void Update()
     {
         if (time > cycle)
@@ -45,6 +50,8 @@ public class MagicFloor : MonoBehaviourPunCallbacks
 
     public void OnTriggerStay2D(Collider2D collision)
     {
+        if (collision == null)
+            return;
         if (collision.CompareTag("Monster"))
         {
             if (active && PV.IsMine)

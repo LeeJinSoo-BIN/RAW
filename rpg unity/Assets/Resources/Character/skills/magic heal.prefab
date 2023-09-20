@@ -69,7 +69,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  PV: {fileID: 0}
+  parentPV: {fileID: 0}
+  PV: {fileID: 8183103352549399960}
 --- !u!114 &8183103352549399960
 MonoBehaviour:
   m_ObjectHideFlags: 0

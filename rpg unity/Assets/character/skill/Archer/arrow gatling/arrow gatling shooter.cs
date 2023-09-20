@@ -14,17 +14,6 @@ public class ArrowGatlingShooter : MonoBehaviour
     private Vector2 targetPos;
     public PhotonView PV;
 
-
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     IEnumerator Excute(Vector2 desPos)
     {
         for (int k = 0; k < 20; k++)
@@ -42,9 +31,15 @@ public class ArrowGatlingShooter : MonoBehaviour
             float rand_x = Random.Range(-0.1f, 0.1f);
             float rand_y = Random.Range(-0.1f, 0.1f);
             GameObject skill = PhotonNetwork.Instantiate("Character/skills/arrow gatling arrow", (Vector2)transform.position + new Vector2(rand_x, rand_y), Quaternion.identity);
-            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, Deal, 0f, 0f, 0f, 0f, "", desPos + new Vector2(rand_x, rand_y));
+            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.AllBuffered, Deal, 0f, 0f, 0f, 1f, "", desPos + new Vector2(rand_x, rand_y));
         }
-        Destroy(gameObject);
+        PV.RPC("destroySelf", RpcTarget.AllBuffered);
+    }
+    
+    [PunRPC]
+    void destroySelf()
+    {
+        Destroy(gameObject, 0.45f);
     }
 
     [PunRPC]
@@ -62,9 +57,7 @@ public class ArrowGatlingShooter : MonoBehaviour
         if (target_pos != default(Vector2))
         {
             targetPos = target_pos;
-        }
-        //StartCoroutine(Vanish(duration));
-
+        }        
         StartCoroutine(Excute(target_pos));
     }
 }

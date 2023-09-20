@@ -20,7 +20,7 @@ MonoBehaviour:
   animType: dash
   consumeMana: 45
   delay: 0
-  duration: 0
+  duration: 1
   coolDown: 5
   flatDeal: 0
   dealIncreasePerSkillLevel: 0

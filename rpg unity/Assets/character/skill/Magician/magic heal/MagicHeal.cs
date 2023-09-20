@@ -10,11 +10,12 @@ public class MagicHeal : MonoBehaviourPunCallbacks
     //private float Power;
     public GameObject target;
     //public Vector2 targetPos;
+    public PhotonView parentPV;
     public PhotonView PV;
     
     public void Excute()
     {
-        if (PV.IsMine)
+        if (parentPV.IsMine)
         {
             CharacterState state = transform.parent.GetComponentInChildren<CharacterState>();
             state.ProcessSkill(1, Heal);
@@ -30,9 +31,13 @@ public class MagicHeal : MonoBehaviourPunCallbacks
             yield return null;
         }
         GetComponent<Animator>().SetTrigger("vanish");
+        PV.RPC("destroySelf", RpcTarget.AllBuffered);
+    }
+    [PunRPC]
+    void destroySelf()
+    {
         Destroy(gameObject, 0.45f);
     }
-
 
     [PunRPC]
     void initSkill(float deal, float heal, float sheild, float power, float duration, string target_name, Vector2 target_pos)
@@ -50,7 +55,7 @@ public class MagicHeal : MonoBehaviourPunCallbacks
         {
             //targetPos = target_pos;
         }
-        PV = transform.parent.GetComponent<PhotonView>();
+        parentPV = transform.parent.GetComponent<PhotonView>();
         StartCoroutine(Vanish(duration));
         Excute();
         

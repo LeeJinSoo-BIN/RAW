@@ -47,13 +47,10 @@ public class MagicNormal : MonoBehaviourPunCallbacks
         }
     }
 
-    void destroy_self()
-    {
-        Destroy(gameObject);
-    }
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (collision == null)
+            return;
         if (collision.CompareTag("Monster"))
         {
             targetPos = transform.position;
@@ -65,6 +62,22 @@ public class MagicNormal : MonoBehaviourPunCallbacks
             }
         }
 
+    }
+    IEnumerator Vanish(float duration)
+    {
+        float time = 0;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            yield return null;
+        }
+        GetComponent<Animator>().SetTrigger("vanish");
+        PV.RPC("destroySelf", RpcTarget.AllBuffered);
+    }
+    [PunRPC]
+    void destroySelf()
+    {
+        Destroy(gameObject, 0.45f);
     }
 
     [PunRPC]
@@ -83,7 +96,7 @@ public class MagicNormal : MonoBehaviourPunCallbacks
         {
             //targetPos = target_pos;
         }
-
+        StartCoroutine(Vanish(duration));
         StartCoroutine(Excute());
     }
 }

@@ -54,6 +54,8 @@ public class ArrowNormal : MonoBehaviourPunCallbacks
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (collision == null)
+            return;
         if (collision.CompareTag("Monster"))
         {
             targetPos = transform.position;

@@ -418,7 +418,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         }
         else
             characterAnimator.SetTrigger(currentCastingSkill.animType);
-        GameObject skill = null;
+        List<GameObject> skill = new List<GameObject>();
         float current_skill_deal = CaculateCharacterSkillDamage(characterSpec.skillLevel[currentCastingSkill.skillName], characterSpec.power,
             currentCastingSkill.flatDeal, currentCastingSkill.dealIncreasePerSkillLevel, currentCastingSkill.dealIncreasePerPower,
             characterSpec.criticalPercent, characterSpec.criticalDamage, affectedByCritical: true);
@@ -432,48 +432,46 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         string current_skill_target_name = name;
         if (currentCastingSkill.castType == "circle")
         {
-            skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), skillPos, Quaternion.identity);
+            skill.Add(PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), skillPos, Quaternion.identity));
         }
         else if (currentCastingSkill.castType == "bar")
         {
             skillPos += new Vector2(0f, 0.3f);
             current_skill_target_pos = skillPos;
             if (currentCastingSkill.dealType == "throw")
-                skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), skillCastingPosition.position, Quaternion.identity);
+                skill.Add(PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), skillCastingPosition.position, Quaternion.identity));
             else
-                skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), skillPos, Quaternion.identity);
+                skill.Add(PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), skillPos, Quaternion.identity));
         }
         else if (currentCastingSkill.castType == "target-player" || currentCastingSkill.castType == "target-enemy" || currentCastingSkill.castType == "target-both") // target
         {
             if (currentCastingSkill.dealType == "throw")
-                skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), skillCastingPosition.position, Quaternion.identity);
+                skill.Add(PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), skillCastingPosition.position, Quaternion.identity));
             else
-                skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), targetObject.transform.position, Quaternion.identity);
+                skill.Add(PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), targetObject.transform.position, Quaternion.identity));
 
             current_skill_target_name = targetObject.name;
         }
         else if (currentCastingSkill.castType == "buff-self")
         {
-            skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), Vector3.zero, Quaternion.identity);
+            skill.Add(PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), Vector3.zero, Quaternion.identity));
             current_skill_target_name = gameObject.name;
         }
         else if (currentCastingSkill.castType == "buff-player" || currentCastingSkill.castType == "buff-enemy") // buff
         {
             foreach (Transform tar in targetObject.GetComponentInChildren<Transform>())
             {
-                skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), tar.transform.position, Quaternion.identity);
-                current_skill_target_name = tar.name;
-                skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, currentCastingSkill.duration, current_skill_target_name, current_skill_target_pos);
+                skill.Add(PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), tar.transform.position, Quaternion.identity));
+                current_skill_target_name = tar.name;                
             }
         }
-        if (skill != null)
+        foreach (GameObject skill_ in skill)
         {
-            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, currentCastingSkill.duration, current_skill_target_name, current_skill_target_pos);
+            skill_.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, currentCastingSkill.duration, current_skill_target_name, current_skill_target_pos);
         }
 
         skillActivatedTime[currentCastingSkill.skillName] = Time.time;
         inGameUI.CoolDown(currentCastingSkill.skillName, currentCastingSkill.coolDown);
-
         characterState.mana.value -= currentCastingSkill.consumeMana;
 
         float delay = 0;
@@ -509,7 +507,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         if (gotten)
         {
             updateInventory();
-            PV.RPC("itemDestroySync", RpcTarget.All, got_item.name);
+            PV.RPC("itemDestroySync", RpcTarget.AllBuffered, got_item.name);
             inGameUI.updateAllQuickSlot();
         }
 

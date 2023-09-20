@@ -10,9 +10,8 @@ public class MagicTotem : MonoBehaviourPunCallbacks
     //private float Shield;
     private float Power;    
     //public GameObject target;
-    //public Vector2 targetPos;
+    //public Vector2 targetPos;    
     public PhotonView PV;
-
     float dropTime = 0.3f;
     float _time = 0f;
     public GameObject aura;
@@ -26,9 +25,13 @@ public class MagicTotem : MonoBehaviourPunCallbacks
             yield return null;
         }
         GetComponent<Animator>().SetTrigger("vanish");
+        PV.RPC("destroySelf", RpcTarget.AllBuffered);
+    }
+    [PunRPC]
+    void destroySelf()
+    {
         Destroy(gameObject, 0.45f);
     }
-    
     IEnumerator Excute()
     {
         while(_time <= dropTime)
@@ -40,6 +43,8 @@ public class MagicTotem : MonoBehaviourPunCallbacks
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (collision == null)
+            return;
         if (collision.CompareTag("Monster") && PV.IsMine)
         {
             if (_time <= dropTime)
@@ -62,6 +67,8 @@ public class MagicTotem : MonoBehaviourPunCallbacks
 
     private void OnTriggerExit2D(Collider2D collision)
     {
+        if (collision == null)
+            return;
         if (collision.CompareTag("Player") && collision.transform.GetComponent<PhotonView>().IsMine)
         {
             Transform having_aura = collision.transform.Find("aura");

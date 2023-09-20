@@ -29,11 +29,11 @@ public class ArrowGatling : MonoBehaviourPunCallbacks
                 {
                     transform.GetChild(1).gameObject.SetActive(true);
                     transform.GetChild(0).gameObject.SetActive(false);
-                    Invoke("destroy_self", 0.3f);
+                    PV.RPC("destroySelf", RpcTarget.AllBuffered);
                 }
                 else
                 {
-                    Destroy(gameObject);
+                    PV.RPC("destroySelf", RpcTarget.AllBuffered);
                     break;
                 }
             }
@@ -50,15 +50,12 @@ public class ArrowGatling : MonoBehaviourPunCallbacks
             }
             yield return null;
         }
-    }
-
-    void destroy_self()
-    {
-        Destroy(gameObject);
-    }
+    }    
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (collision == null)
+            return;
         if (collision.CompareTag("Monster"))
         {
             targetPos = transform.position;
@@ -70,6 +67,11 @@ public class ArrowGatling : MonoBehaviourPunCallbacks
             }
         }
 
+    }
+    [PunRPC]
+    void destroySelf()
+    {
+        Destroy(gameObject, 0.45f);
     }
 
     [PunRPC]
@@ -87,9 +89,7 @@ public class ArrowGatling : MonoBehaviourPunCallbacks
         if (target_pos != default(Vector2))
         {
             targetPos = target_pos;
-        }
-        //StartCoroutine(Vanish(duration));
-
+        }        
         StartCoroutine(Excute());
     }
 }

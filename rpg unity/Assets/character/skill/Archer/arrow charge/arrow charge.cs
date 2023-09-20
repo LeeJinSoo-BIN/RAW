@@ -34,7 +34,7 @@ public class ArrowCharge : MonoBehaviourPunCallbacks
                 Vector2 dir = targetPos - (Vector2)transform.position;
                 if (dir.magnitude < 0.01f)
                 {
-                    Destroy(gameObject);
+                    PV.RPC("destroySelf", RpcTarget.AllBuffered);
                     break;
                 }
 
@@ -47,13 +47,10 @@ public class ArrowCharge : MonoBehaviourPunCallbacks
             yield return null;
         }
     }
-
-    void destroy_self()
-    {
-        Destroy(gameObject);
-    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (collision == null)
+            return;
         if (current_time > charge_time)
         {
             if (collision.CompareTag("Monster") && PV.IsMine)
@@ -62,6 +59,12 @@ public class ArrowCharge : MonoBehaviourPunCallbacks
                 MonsterPV.RPC("MonsterDamage", RpcTarget.All, 0, Deal, 0f);                
             }
         }
+    }
+
+    [PunRPC]
+    void destroySelf()
+    {
+        Destroy(gameObject, 0.45f);
     }
 
     [PunRPC]
@@ -79,9 +82,7 @@ public class ArrowCharge : MonoBehaviourPunCallbacks
         if (target_pos != default(Vector2))
         {
             targetPos = target_pos * 5;
-        }
-        //StartCoroutine(Vanish(duration));
-
+        }        
         StartCoroutine(Excute());
     }
 }

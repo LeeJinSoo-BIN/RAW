@@ -20,7 +20,7 @@ MonoBehaviour:
   animType: skillBow1
   consumeMana: 100
   delay: 1.7
-  duration: 0
+  duration: 2
   coolDown: 8
   flatDeal: 0.5
   dealIncreasePerSkillLevel: 0.1

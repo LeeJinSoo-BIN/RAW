@@ -25,8 +25,13 @@ public class ArrowDash : MonoBehaviour
             }
             target.transform.position += _dirVec.normalized * speed * Time.deltaTime;
             yield return null;
-        }        
-        Destroy(gameObject);
+        }
+        PV.RPC("destroySelf", RpcTarget.AllBuffered);
+    }
+    [PunRPC]
+    void destroySelf()
+    {
+        Destroy(gameObject, 0.45f);
     }
 
     [PunRPC]

@@ -27,11 +27,18 @@ public class ArrowRain : MonoBehaviourPunCallbacks
             GetComponent<Animator>().SetTrigger("vanish");
         }
         catch { }
+        PV.RPC("destroySelf", RpcTarget.AllBuffered);
+    }
+    [PunRPC]
+    void destroySelf()
+    {
         Destroy(gameObject, 0.45f);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (collision == null)
+            return;
         if (collision.CompareTag("Monster") && PV.IsMine)
         {
             PhotonView MonsterPV = collision.transform.GetComponent<PhotonView>();
