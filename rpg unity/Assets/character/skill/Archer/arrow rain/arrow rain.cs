@@ -21,17 +21,17 @@ public class ArrowRain : MonoBehaviourPunCallbacks
         {
             time += Time.deltaTime;
             yield return null;
-        }
-        try
-        {
-            GetComponent<Animator>().SetTrigger("vanish");
-        }
-        catch { }
+        }        
         PV.RPC("destroySelf", RpcTarget.AllBuffered);
     }
     [PunRPC]
     void destroySelf()
     {
+        try
+        {
+            GetComponent<Animator>().SetTrigger("vanish");
+        }
+        catch { }
         Destroy(gameObject, 0.45f);
     }
 

@@ -64,7 +64,12 @@ public class ArrowCharge : MonoBehaviourPunCallbacks
     [PunRPC]
     void destroySelf()
     {
-        Destroy(gameObject, 0.45f);
+        try
+        {
+            GetComponent<Animator>().SetTrigger("vanish");
+        }
+        catch { }
+        Destroy(gameObject);
     }
 
     [PunRPC]
@@ -81,7 +86,7 @@ public class ArrowCharge : MonoBehaviourPunCallbacks
         }
         if (target_pos != default(Vector2))
         {
-            targetPos = target_pos * 5;
+            targetPos = target_pos;
         }        
         StartCoroutine(Excute());
     }

@@ -29,12 +29,16 @@ public class MagicGlobalHeal : MonoBehaviourPunCallbacks
             time += Time.deltaTime;
             yield return null;
         }
-        GetComponent<Animator>().SetTrigger("vanish");
         PV.RPC("destroySelf", RpcTarget.AllBuffered);
     }
     [PunRPC]
     void destroySelf()
     {
+        try
+        {
+            GetComponent<Animator>().SetTrigger("vanish");
+        }
+        catch { }
         Destroy(gameObject, 0.45f);
     }
 

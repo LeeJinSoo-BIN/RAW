@@ -10,19 +10,18 @@ using UnityEngine;
 public class CharacterSpec : ScriptableObject
 {
     public string nickName;
-    public float maxHealth = 1000f;
-    public float maxMana = 1000f;
-    public float recoverManaPerThreeSec = 5f;
-    public float power = 1f;
-    public float criticalDamage = 1.2f;
-    public float criticalPercent = 50f;
-    public float healPercent = 1f;
+    public float maxHealth;
+    public float maxMana;
+    public float recoverManaPerThreeSec;
+    public float power;
+    public float criticalDamage;
+    public float criticalPercent;
+    public float healPercent;
     [Serializable]
     public class SerializeDictSkillLevel : SerializableDictionary<string, int> { }
     public SerializeDictSkillLevel skillLevel;
-    public int maxInventoryNum = 24;    
+    public int maxInventoryNum;    
     public List<InventoryItem> inventory;
-
     public List<InventoryItem> equipment;
-    public int characterLevel = 1;    
+    public int characterLevel;    
 }

@@ -27,11 +27,11 @@ public class ArrowNormal : MonoBehaviourPunCallbacks
                 {
                     transform.GetChild(1).gameObject.SetActive(true);
                     transform.GetChild(0).gameObject.SetActive(false);
-                    Destroy(gameObject, 0.3f);
+                    PV.RPC("destroySelf", RpcTarget.AllBuffered, 0.3f);
                 }
                 else
                 {
-                    Destroy(gameObject);
+                    PV.RPC("destroySelf", RpcTarget.AllBuffered, 0f);
                     break;
                 }
             }
@@ -47,9 +47,14 @@ public class ArrowNormal : MonoBehaviourPunCallbacks
         }
     }
 
-    void destroy_self()
+    void destroy_self(float time = 0.45f)
     {
-        Destroy(gameObject);
+        try
+        {
+            GetComponent<Animator>().SetTrigger("vanish");
+        }
+        catch { }
+        Destroy(gameObject, time);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

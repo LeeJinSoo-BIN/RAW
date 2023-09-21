@@ -24,6 +24,11 @@ public class SwordNormal : MonoBehaviourPunCallbacks
     [PunRPC]
     void destroySelf()
     {
+        try
+        {
+            GetComponent<Animator>().SetTrigger("vanish");
+        }
+        catch { }
         Destroy(gameObject, 0.45f);
     }
 

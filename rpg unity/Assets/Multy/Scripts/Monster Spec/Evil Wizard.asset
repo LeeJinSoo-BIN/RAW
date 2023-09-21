@@ -15,7 +15,7 @@ MonoBehaviour:
   monsterName: Evil Wizard
   monsterType: Boss
   monsterDirectory: Monster/Evil Wizard
-  maxHealth: 1000
+  maxHealth: 700
   patternCycle: 6
   skillList:
   - {fileID: 11400000, guid: d9d770af0694f854183b007830aceb46, type: 2}

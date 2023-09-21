@@ -71,7 +71,12 @@ public class ArrowGatling : MonoBehaviourPunCallbacks
     [PunRPC]
     void destroySelf()
     {
-        Destroy(gameObject, 0.45f);
+        try
+        {
+            GetComponent<Animator>().SetTrigger("vanish");
+        }
+        catch { }
+        Destroy(gameObject);
     }
 
     [PunRPC]

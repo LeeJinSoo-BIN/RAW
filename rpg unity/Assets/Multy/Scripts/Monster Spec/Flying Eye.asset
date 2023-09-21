@@ -15,7 +15,7 @@ MonoBehaviour:
   monsterName: Flying Eye
   monsterType: Normal
   monsterDirectory: Monster/Flying Eye
-  maxHealth: 80
+  maxHealth: 100
   patternCycle: 2
   skillList:
   - {fileID: 11400000, guid: 35e8da350c0fb6c46ad1d54c63c5b40b, type: 2}
