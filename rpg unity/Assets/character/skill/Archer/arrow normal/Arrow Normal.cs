@@ -47,7 +47,7 @@ public class ArrowNormal : MonoBehaviourPunCallbacks
         }
     }
 
-    void destroy_self(float time = 0.45f)
+    void destroySelf(float time = 0.45f)
     {
         try
         {

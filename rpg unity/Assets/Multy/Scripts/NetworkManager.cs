@@ -34,7 +34,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public TMP_InputField RoomNameInputField;
 
     private Dictionary<string, RoomInfo> roomListDict = new Dictionary<string, RoomInfo>();
-
+    
+    private List<string> chatLog = new List<string>();
+    public TMP_InputField chatInput;
     private void Awake()
     {
         Screen.SetResolution(960, 540, false);
@@ -63,7 +65,42 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             ConnectButtonText.text = PhotonNetwork.NetworkClientState.ToString();
         }
+
+        if(PhotonNetwork.InRoom)
+        {
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+            {
+                if (chatInput.isFocused)
+                {                    
+                    Debug.Log("2");
+                    if (chatInput.text == "")
+                    {
+                        Debug.Log("4");
+                        chatInput.DeactivateInputField();
+                    }
+                    else
+                    {
+                        Debug.Log("3");
+                        sendChat();
+                        chatInput.ActivateInputField();
+                    }
+                }
+                else
+                {
+                    Debug.Log("1");
+                    chatInput.Select();                    
+                    chatInput.ActivateInputField();
+                }
+            }
+        }
     }
+
+    public void sendChat()
+    {
+        Debug.Log(chatInput.text);        
+        chatInput.text = "";
+    }
+
     public void Connect()
     {
         PhotonNetwork.ConnectUsingSettings();
@@ -91,6 +128,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         LobbyPanel.SetActive(true);
         DisconnectPanel.SetActive(false);
         roomListDict.Clear();
+        chatLog.Clear();
     }
     public override void OnLeftLobby()
     {

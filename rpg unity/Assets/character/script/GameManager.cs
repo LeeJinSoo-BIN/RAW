@@ -34,7 +34,6 @@ public class GameManager : MonoBehaviour
         Instance = this;
         Screen.SetResolution(960, 540, false);
     }
-
     public void setup(GameObject player, string roll)
     {
         CharacterSpec loadedSpec = loadCharacterSpec(roll);

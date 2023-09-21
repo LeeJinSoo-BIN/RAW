@@ -55,7 +55,9 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     private Dictionary<string, string> skillNameToKey = new Dictionary<string, string>();
     public InGameUI inGameUI;
     private GameObject itemDropField;
-    
+
+    public TMP_InputField chatInput;
+
     // Multy
     public Rigidbody2D RB;
     public PhotonView PV;
@@ -80,8 +82,10 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         enemyGroup = GameObject.Find("Enemy Group");
         inGameUI = GameObject.Find("InGameUI").transform.GetChild(0).GetComponent<InGameUI>();        
         inventoryUi = GameObject.Find("InGameUI").transform.GetChild(0).GetChild(3).gameObject;
+        chatInput = GameObject.Find("InGameUI").transform.GetChild(0).GetChild(1).GetChild(3).GetChild(1).GetComponent<TMP_InputField>(); 
         itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;        
         itemDropField = GameObject.Find("Item Field").gameObject;
+        
 
         transform.parent = playerGroup.transform;        
     }
@@ -201,17 +205,21 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                     characterAnimator.SetTrigger("attack" + attack.ToString());
                     goalPos = transform.position;
                 }*/
-                if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.A))
+                if (!chatInput.isFocused)
                 {
-                    string now_input_key = Input.inputString.ToUpper();
-                    if (now_input_key == current_casting_skill_key)
-                        deactivateSkill();
-                    else
+                    if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.A))
                     {
-                        deactivateSkill();
-                        activateSkill(now_input_key);
+                        string now_input_key = Input.inputString.ToUpper();
+                        if (now_input_key.Length > 1)
+                            return;
+                        if (now_input_key == current_casting_skill_key)
+                            deactivateSkill();
+                        else
+                        {
+                            deactivateSkill();
+                            activateSkill(now_input_key);
+                        }
                     }
-
                 }
             }
             if (isActivingSkill)
