@@ -44,6 +44,10 @@ public class InGameUI : MonoBehaviour
     public Dictionary<string, string> keyToItemName = new Dictionary<string, string>();
     
     public Dictionary<string, qucikInventoryInfo> quickInventory;
+
+    public RectTransform ChatBox;
+    public RectTransform ChatExpandButtonIcon;
+    public Button ChatExpandButton;
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4))
@@ -253,9 +257,17 @@ public class InGameUI : MonoBehaviour
     {
         myCharacterState.ProcessSkill(1, GameManager.Instance.itemInfoDict[itemName].recoveryHealth);
         myCharacterState.ProcessSkill(5, GameManager.Instance.itemInfoDict[itemName].recoveryMana);
-
     }
 
+    public void ClickExpandChatLog()
+    {
+        Debug.Log("clicked");
+        if (ChatBox.sizeDelta.y == 120)
+            ChatBox.sizeDelta = new Vector2(ChatBox.sizeDelta.x, 500);
+        else
+            ChatBox.sizeDelta = new Vector2(ChatBox.sizeDelta.x, 120);
+        ChatExpandButtonIcon.localScale = new Vector3(ChatExpandButtonIcon.localScale.x, -ChatExpandButtonIcon.localScale.y, 1);        
+    }
 
 }
 

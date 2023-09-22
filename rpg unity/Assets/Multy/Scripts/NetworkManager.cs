@@ -8,6 +8,7 @@ using Unity.VisualScripting;
 using TMPro;
 using UnityEngine.EventSystems;
 using Photon.Pun.Demo.Cockpit;
+using System;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
@@ -34,9 +35,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public TMP_InputField RoomNameInputField;
 
     private Dictionary<string, RoomInfo> roomListDict = new Dictionary<string, RoomInfo>();
+
+    private string chatLog;
+    public TMP_InputField inGameChatInputField;
+    public TMP_Text inGameChatBox;
+    private bool chatEnd = false;
     
-    private List<string> chatLog = new List<string>();
-    public TMP_InputField chatInput;
     private void Awake()
     {
         Screen.SetResolution(960, 540, false);
@@ -54,6 +58,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         ConnectPanel.SetActive(false);
         DisconnectPanel.SetActive(true);
         LobbyPanel.SetActive(false);
+        inGameChatInputField.onSubmit.AddListener(delegate { sendChat(); });
     }
     private void Update()
     {
@@ -65,40 +70,37 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             ConnectButtonText.text = PhotonNetwork.NetworkClientState.ToString();
         }
-
         if(PhotonNetwork.InRoom)
         {
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             {
-                if (chatInput.isFocused)
+                if (!inGameChatInputField.isFocused && !chatEnd)
                 {                    
-                    Debug.Log("2");
-                    if (chatInput.text == "")
-                    {
-                        Debug.Log("4");
-                        chatInput.DeactivateInputField();
-                    }
-                    else
-                    {
-                        Debug.Log("3");
-                        sendChat();
-                        chatInput.ActivateInputField();
-                    }
+                    inGameChatInputField.ActivateInputField();
                 }
-                else
-                {
-                    Debug.Log("1");
-                    chatInput.Select();                    
-                    chatInput.ActivateInputField();
-                }
+                chatEnd = false;
             }
+        }            
+    }    
+    public void sendChat()
+    {        
+        if (inGameChatInputField.text != "")
+        {
+            string chat = inGameChatInputField.text;
+            PV.RPC("sendChatLog", RpcTarget.All, PhotonNetwork.NickName + " : " + chat);            
+            inGameChatInputField.text = "";            
+            chatEnd = false;
+        }
+        else
+        {
+            inGameChatInputField.DeactivateInputField();
+            chatEnd = true;
         }
     }
 
-    public void sendChat()
+    void updateChatLog()
     {
-        Debug.Log(chatInput.text);        
-        chatInput.text = "";
+        inGameChatBox.text = chatLog;
     }
 
     public void Connect()
@@ -128,7 +130,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         LobbyPanel.SetActive(true);
         DisconnectPanel.SetActive(false);
         roomListDict.Clear();
-        chatLog.Clear();
+        chatLog = "";
+        updateChatLog();
     }
     public override void OnLeftLobby()
     {
@@ -252,5 +255,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     void selectedRoll(string roll)
     {
         ConnectPanel.transform.Find(roll.ToUpper()).gameObject.SetActive(false);
+    }
+
+    [PunRPC]
+    void sendChatLog(string chat)
+    {
+        chatLog += "\n" + chat;
+        updateChatLog();
     }
 }
