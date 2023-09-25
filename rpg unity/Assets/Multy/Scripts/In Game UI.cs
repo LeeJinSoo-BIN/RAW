@@ -159,7 +159,7 @@ public class InGameUI : MonoBehaviour
         foreach(Transform child in CharacterProfile.transform)
             Destroy(child.gameObject);
         myCharacterHead.transform.parent = CharacterProfile.transform;
-        myCharacterHead.transform.localPosition = Vector3.zero;
+        myCharacterHead.transform.localPosition = new Vector3(0f, 1f, 0f);
     }
 
     public void setKeyMap()

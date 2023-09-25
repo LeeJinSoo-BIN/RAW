@@ -19,7 +19,7 @@ public class ArrowNormal : MonoBehaviourPunCallbacks
     IEnumerator Excute()
     {
         while (true)
-        {
+        {            
             Vector2 dir = targetPos - (Vector2)transform.position;
             if (dir.magnitude < 0.01f)
             {
@@ -50,11 +50,11 @@ public class ArrowNormal : MonoBehaviourPunCallbacks
     [PunRPC]
     void destroySelf(float time = 0.45f)
     {
-        try
-        {
+        /*try
+        {            
             GetComponent<Animator>().SetTrigger("vanish");
         }
-        catch { }
+        catch { }*/
         Destroy(gameObject, time);
     }
 
@@ -69,7 +69,7 @@ public class ArrowNormal : MonoBehaviourPunCallbacks
             if (PV.IsMine)
             {
                 PhotonView MonsterPV = collision.transform.GetComponent<PhotonView>();
-                MonsterPV.RPC("MonsterDamage", RpcTarget.All, 0, Deal, 0f);
+                MonsterPV.RPC("MonsterDamage", RpcTarget.All, 5, Deal, 0f);
             }
         }
 
@@ -84,7 +84,12 @@ public class ArrowNormal : MonoBehaviourPunCallbacks
         //Power = power
         if (target_name != "")
         {
-            target = GameObject.Find(target_name);            
+            target = GameObject.Find(target_name);
+            if (target == null)
+            {
+                PV.RPC("destroySelf", RpcTarget.AllBuffered, 0f);
+                return;
+            }
             targetPos = target.transform.Find("hit position").transform.position;
         }
         if (target_pos != default(Vector2))

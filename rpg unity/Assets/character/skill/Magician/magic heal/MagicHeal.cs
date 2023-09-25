@@ -53,7 +53,13 @@ public class MagicHeal : MonoBehaviourPunCallbacks
         if (target_name != "")
         {
             target = GameObject.Find(target_name);
+            if (target == null)
+            {
+                PV.RPC("destroySelf", RpcTarget.AllBuffered, 0f);
+                return;
+            }
             transform.parent = target.transform;
+            transform.localPosition = Vector3.zero;
         }
         if (target_pos != default(Vector2))
         {

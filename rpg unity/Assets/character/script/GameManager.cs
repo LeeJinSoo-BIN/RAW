@@ -1,8 +1,10 @@
 using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class GameManager : MonoBehaviour
 {
@@ -28,11 +30,19 @@ public class GameManager : MonoBehaviour
     public SerializeDictSkill skillInfoDict;
     public SerializeDictRollNameToSpec characterSpecDict;
     public Transform inGameUI;
-
+    public TMP_Dropdown resolutionDropdown;
+    public TMP_Text windowText;
+    public GameObject OptionPanel;
     void Awake()
     {
         Instance = this;
         Screen.SetResolution(960, 540, false);
+        OptionPanel.SetActive(false);
+    }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+            OptionPanel.SetActive(!OptionPanel.activeSelf);
     }
     public void setup(GameObject player, string roll)
     {
@@ -64,7 +74,7 @@ public class GameManager : MonoBehaviour
         spec.skillLevel = defaultSpec.skillLevel;
         spec.inventory = defaultSpec.inventory;
         spec.equipment = defaultSpec.equipment;
-
+        spec.colors = defaultSpec.colors;
         return spec;
     }
 
@@ -77,8 +87,47 @@ public class GameManager : MonoBehaviour
         {
             string current_item_sprite = itemInfoDict[item.itemName].spriteDirectory;
             spriteList.PartsPath[itemInfoDict[item.itemName].itemType] = current_item_sprite;
-            Debug.Log(spriteList.PartsPath[itemInfoDict[item.itemName].itemType]);
-            spriteList.setSprite();
+            //Debug.Log(spriteList.PartsPath[itemInfoDict[item.itemName].itemType]);
         }
+        spriteList._hairAndEyeColor = spec.colors;        
+        spriteList.setSprite();
+    }
+
+
+    public void setResolution()
+    {
+        string selected_resolution_string = resolutionDropdown.options[resolutionDropdown.value].text;        
+        string[] selected_resolution = selected_resolution_string.Split(" x ");
+        bool window = false;
+        if (windowText.text == "창모드")
+            window = true;
+        else
+            window = false;
+        Screen.SetResolution(int.Parse(selected_resolution[0]), int.Parse(selected_resolution[1]), window);
+    }
+
+    public void setWindow()
+    {
+        if (windowText.text == "창모드")
+        {
+            Screen.fullScreen = false;
+            windowText.text = "전체화면";
+        }
+        else
+        {
+            Screen.fullScreen= true;
+            windowText.text = "창모드";
+        }
+    }
+
+    public void ClickQuitButton()
+    {
+        if (Application.isPlaying) 
+            Application.Quit();
+    }
+    public void CloseButtonClick()
+    {
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        current_clicked_button.transform.parent.gameObject.SetActive(false);
     }
 }

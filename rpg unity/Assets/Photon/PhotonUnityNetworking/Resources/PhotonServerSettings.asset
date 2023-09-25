@@ -81,6 +81,8 @@ MonoBehaviour:
   - selectedRoll
   - destroySelf
   - sendChatLog
+  - setCreatureName
+  - setColors
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

@@ -23,5 +23,6 @@ public class CharacterSpec : ScriptableObject
     public int maxInventoryNum;    
     public List<InventoryItem> inventory;
     public List<InventoryItem> equipment;
+    public List<Color> colors;
     public int characterLevel;    
 }

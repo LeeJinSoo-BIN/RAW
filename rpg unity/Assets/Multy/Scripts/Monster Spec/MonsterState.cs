@@ -25,7 +25,7 @@ public class MonsterState : MonoBehaviourPunCallbacks
         if (monsterSpec.monsterType == "Boss")
             weight = playerNum;
         else if (monsterSpec.monsterType == "Normal")
-            weight = playerNum * 0.5f;
+            weight += (playerNum - 1) * 0.25f;
         health.maxValue = monsterSpec.maxHealth * weight;
         health.value = health.maxValue;
         shield.maxValue = health.maxValue;
@@ -35,6 +35,8 @@ public class MonsterState : MonoBehaviourPunCallbacks
     [PunRPC]
     void MonsterDamage(int type, float value, float duration)
     {
+        if (type == 5 && monsterSpec.monsterType.ToLower() == "normal")
+            value *= 2;
         float _shield = shield.value;
         shield.value -= value;
         value -= _shield;
@@ -47,7 +49,7 @@ public class MonsterState : MonoBehaviourPunCallbacks
             transform.GetComponent<MonsterControl>().Death();
         }
         if (type == 4)        
-            transform.GetComponent<MonsterControl>().Bind(duration);        
+            transform.GetComponent<MonsterControl>().Bind(duration);
         transform.GetComponent<MonsterControl>().Hit();
     }
 }

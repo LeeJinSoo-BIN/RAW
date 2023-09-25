@@ -40,7 +40,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public TMP_InputField inGameChatInputField;
     public TMP_Text inGameChatBox;
     private bool chatEnd = false;
-    
+
+    public TMP_Text disconnectButtonText;
+    public GameObject quitButton;
     private void Awake()
     {
         Screen.SetResolution(960, 540, false);
@@ -62,10 +64,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && PhotonNetwork.InRoom)
-        {
-            PhotonNetwork.LeaveRoom();
-        }
         if (!connectedToMaster)
         {
             ConnectButtonText.text = PhotonNetwork.NetworkClientState.ToString();
@@ -110,8 +108,17 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     }
 
     public void JoinLobby()
-    {        
-        PhotonNetwork.JoinLobby();
+    {
+        if (NickNameInput.text != "")
+            PhotonNetwork.JoinLobby();
+    }
+
+    public void ClickConnectButton()
+    {
+        if (ConnectButtonText.text == "접속하기")
+            JoinLobby();
+        else if (ConnectButtonText.text == "로그인")
+            Connect();
     }
 
     public override void OnConnectedToMaster()
@@ -119,6 +126,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Debug.Log("서버 접속");
         connectedToMaster = true;
         ConnectButtonText.text = "접속하기";//"?묒냽";
+        disconnectButtonText.text = "로그아웃";
+        quitButton.SetActive(true);
         if (joinedToLobby)
             JoinLobby();
         
@@ -129,12 +138,16 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         joinedToLobby = true;
         LobbyPanel.SetActive(true);
         DisconnectPanel.SetActive(false);
+        disconnectButtonText.text = "접속 끊기";
         roomListDict.Clear();
         chatLog = "";
         updateChatLog();
     }
     public override void OnLeftLobby()
     {
+        LobbyPanel.SetActive(false);
+        DisconnectPanel.SetActive(true);
+        disconnectButtonText.text = "로그아웃";
         Debug.Log("로비 접속 끊김");
     }
     public override void OnCreatedRoom()
@@ -204,6 +217,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         ConnectPanel.transform.GetChild(2).gameObject.SetActive(true);
         ConnectPanel.transform.GetChild(3).gameObject.SetActive(true);
         InGameUI.transform.GetChild(1).GetChild(4).gameObject.SetActive(false);
+        disconnectButtonText.text = "나가기";
     }    
 
     public void CreateRoomButtonClickInPanel()
@@ -242,6 +256,21 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         RespwanPanel.SetActive(false);
         InGameUI.SetActive(false);
         ground.SetActive(false);
+        disconnectButtonText.text = "게임 종료";
+        ConnectButtonText.text = "로그인";
+        quitButton.SetActive(false);
+    }
+
+    public void ClickDisconnectButton()
+    {
+        if (disconnectButtonText.text == "나가기")
+            PhotonNetwork.LeaveRoom();
+        else if (disconnectButtonText.text == "로그아웃")
+            PhotonNetwork.Disconnect();
+        else if (disconnectButtonText.text == "접속 끊기")
+            PhotonNetwork.LeaveLobby();
+        else if ( disconnectButtonText.text == "게임 종료")
+            Application.Quit();
     }
 
     [PunRPC]

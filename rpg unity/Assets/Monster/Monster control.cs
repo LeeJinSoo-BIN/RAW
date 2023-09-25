@@ -35,7 +35,7 @@ public class MonsterControl : MonoBehaviour
         bottomRight = GameObject.Find("ground").transform.Find("bottom right");
         characterGroup = GameObject.Find("Player Group");
         transform.parent = GameObject.Find("Enemy Group").transform;
-
+        name += transform.parent.childCount;
         patternCycle = monsterSpec.patternCycle;
     }
 
@@ -146,7 +146,7 @@ public class MonsterControl : MonoBehaviour
             spawnPos = target.transform.position;
         else
             spawnPos = transform.Find(currentCastingSkill.spawnPos).position;
-        GameObject spawnObject = PhotonNetwork.Instantiate(currentCastingSkill.skillDirectory, spawnPos, Quaternion.identity);
+        GameObject spawnObject = PhotonNetwork.Instantiate(currentCastingSkill.skillDirectory, spawnPos, Quaternion.identity);        
         int numDeal = currentCastingSkill.flatDeal.Length;
         float[] deal = new float[numDeal];
         for(int k = 0; k < currentCastingSkill.flatDeal.Length; k++)
@@ -184,8 +184,12 @@ public class MonsterControl : MonoBehaviour
         area.name = deal.ToString();
         area.SetActive(onOff);
     }
-    
 
+    [PunRPC]
+    void setCreatureName(string newName)
+    {
+        name = newName;
+    }
 
 
     private void findTarget()
@@ -260,9 +264,12 @@ public class MonsterControl : MonoBehaviour
         attackable = false;
         isDeath = true;
         animator.SetTrigger("Death");
-        foreach (string itemName in monsterSpec.dropItems.Keys) 
+        if (PhotonNetwork.IsMasterClient)
         {
-            spawnItem(itemName, monsterSpec.dropItems[itemName]);
+            foreach (string itemName in monsterSpec.dropItems.Keys)
+            {
+                spawnItem(itemName, monsterSpec.dropItems[itemName]);
+            }
         }
         Destroy(gameObject, 0.45f);
     }

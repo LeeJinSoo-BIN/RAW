@@ -39,11 +39,11 @@ public class ArrowGatlingShooter : MonoBehaviour
     [PunRPC]
     void destroySelf()
     {
-        try
+        /*try
         {
             GetComponent<Animator>().SetTrigger("vanish");
         }
-        catch { }
+        catch { }*/
         Destroy(gameObject, 0.45f);
     }
 

@@ -25,7 +25,7 @@ public class SPUM_SpriteList : MonoBehaviour
     public List<string> _weaponListString = new List<string>();
     public List<string> _backListString = new List<string>();
 
-
+    public List<Color> _hairAndEyeColor = new List<Color>();
     [Serializable]
     public class SerializeDictPartsToSpriteRenderer : SerializableDictionary<string, SpriteRenderer> { }
     public SerializeDictPartsToSpriteRenderer BodyParts;
@@ -116,6 +116,7 @@ public class SPUM_SpriteList : MonoBehaviour
         {
             PV.RPC("changeSprite", RpcTarget.AllBuffered, part, PartsPath[part]);
         }
+        PV.RPC("setColors", RpcTarget.AllBuffered);
     }
 
 
@@ -188,6 +189,13 @@ public class SPUM_SpriteList : MonoBehaviour
         {
             BodyParts[part].sprite = Resources.LoadAll<Sprite>(path)[0];
         }
+    }
+    [PunRPC]
+    void setColors()
+    {
+        _hairList[0].color = _hairAndEyeColor[0];
+        _eyeList[0].color = _hairAndEyeColor[1];
+        _eyeList[1].color = _hairAndEyeColor[2];
     }
 
 }

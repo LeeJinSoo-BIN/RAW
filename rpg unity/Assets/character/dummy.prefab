@@ -2160,6 +2160,7 @@ MonoBehaviour:
   - 
   _backListString:
   - 
+  _hairAndEyeColor: []
   BodyParts:
     SD_Keys: []
     SD_Values: []

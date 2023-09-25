@@ -17,19 +17,19 @@ public class SwordNormal : MonoBehaviourPunCallbacks
         if (PV.IsMine)
         {
             PhotonView MonsterPV = target.transform.GetComponent<PhotonView>();
-            MonsterPV.RPC("MonsterDamage", RpcTarget.All, 0, Deal, 0f);
+            MonsterPV.RPC("MonsterDamage", RpcTarget.All, 5, Deal, 0f);
         }
         PV.RPC("destroySelf", RpcTarget.AllBuffered);
     }
     [PunRPC]
     void destroySelf()
     {
-        try
+        /*try
         {
             GetComponent<Animator>().SetTrigger("vanish");
         }
-        catch { }
-        Destroy(gameObject, 0.45f);
+        catch { }*/
+        Destroy(gameObject);
     }
 
     [PunRPC]
@@ -42,6 +42,11 @@ public class SwordNormal : MonoBehaviourPunCallbacks
         if (target_name != "")
         {
             target = GameObject.Find(target_name);
+            if (target == null)
+            {
+                PV.RPC("destroySelf", RpcTarget.AllBuffered, 0f);
+                return;
+            }
             transform.parent = target.transform;
         }
         if (target_pos != default(Vector2))

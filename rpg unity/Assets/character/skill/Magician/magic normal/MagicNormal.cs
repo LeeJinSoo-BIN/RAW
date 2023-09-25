@@ -58,7 +58,7 @@ public class MagicNormal : MonoBehaviourPunCallbacks
             if (PV.IsMine)
             {
                 PhotonView MonsterPV = collision.transform.GetComponent<PhotonView>();
-                MonsterPV.RPC("MonsterDamage", RpcTarget.All, 0, Deal, 0f);
+                MonsterPV.RPC("MonsterDamage", RpcTarget.All, 5, Deal, 0f);
             }
         }
 
@@ -66,11 +66,11 @@ public class MagicNormal : MonoBehaviourPunCallbacks
     [PunRPC]
     void destroySelf(float time = 0.45f)
     {
-        try
+        /*try
         {
             GetComponent<Animator>().SetTrigger("vanish");
         }
-        catch { }
+        catch { }*/
         Destroy(gameObject, time);
     }
 
@@ -84,6 +84,11 @@ public class MagicNormal : MonoBehaviourPunCallbacks
         if (target_name != "")
         {
             target = GameObject.Find(target_name);
+            if (target == null)
+            {
+                PV.RPC("destroySelf", RpcTarget.AllBuffered, 0f);
+                return;
+            }
             targetPos = target.transform.Find("hit position").transform.position;
         }
         if (target_pos != default(Vector2))
