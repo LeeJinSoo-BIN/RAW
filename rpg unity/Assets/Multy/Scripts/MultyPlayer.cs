@@ -80,9 +80,10 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
         playerGroup = GameObject.Find("Player Group");
         enemyGroup = GameObject.Find("Enemy Group");
-        inGameUI = GameObject.Find("InGameUI").transform.GetChild(0).GetComponent<InGameUI>();        
-        inventoryUi = GameObject.Find("InGameUI").transform.GetChild(0).GetChild(3).gameObject;
-        chatInput = GameObject.Find("InGameUI").transform.GetChild(0).GetChild(1).GetChild(3).GetChild(1).GetComponent<TMP_InputField>(); 
+        Transform inGameUICanvas = GameObject.Find("In Game UI Canvas").transform;
+        inGameUI = inGameUICanvas.GetComponent<InGameUI>();
+        inventoryUi = inGameUICanvas.GetChild(3).gameObject;
+        chatInput = inGameUICanvas.GetChild(1).GetChild(3).GetChild(1).GetComponent<TMP_InputField>(); 
         itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;        
         itemDropField = GameObject.Find("Item Field").gameObject;
         
