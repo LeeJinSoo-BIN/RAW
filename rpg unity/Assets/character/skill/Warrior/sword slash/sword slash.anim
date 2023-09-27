@@ -90,9 +90,9 @@ AnimationClip:
         outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
       - serializedVersion: 3
         time: 0.16666667
-        value: {x: -0.7136382, y: 0, z: 0}
-        inSlope: {x: -0.16264604, y: 0, z: 0}
-        outSlope: {x: -0.16264604, y: 0, z: 0}
+        value: {x: -0.69638765, y: 0, z: 0}
+        inSlope: {x: 0.008669817, y: 0, z: 0}
+        outSlope: {x: 0.008669817, y: 0, z: 0}
         tangentMode: 0
         weightedMode: 0
         inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
@@ -100,8 +100,44 @@ AnimationClip:
       - serializedVersion: 3
         time: 0.65
         value: {x: -0.9, y: 0, z: 0}
-        inSlope: {x: -0.6000001, y: 0, z: 0}
-        outSlope: {x: -0.6000001, y: 0, z: 0}
+        inSlope: {x: -1.1428571, y: 0, z: 0}
+        outSlope: {x: -1.1428571, y: 0, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+        outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+      - serializedVersion: 3
+        time: 0.7
+        value: {x: -2.08, y: -0.06024796, z: 0}
+        inSlope: {x: -10.200007, y: -2.1421492, z: 0}
+        outSlope: {x: -10.200007, y: -2.1421492, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+        outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+      - serializedVersion: 3
+        time: 0.71666664
+        value: {x: -2.25, y: -0.099173546, z: 0}
+        inSlope: {x: 0, y: -2.4991734, z: 0}
+        outSlope: {x: 0, y: -2.4991734, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+        outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+      - serializedVersion: 3
+        time: 0.73333335
+        value: {x: -1.57, y: -0.14256209, z: 0}
+        inSlope: {x: 34.79997, y: -2.6776862, z: 0}
+        outSlope: {x: 34.79997, y: -2.6776862, z: 0}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+        outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+      - serializedVersion: 3
+        time: 0.75
+        value: {x: -1.09, y: -0.18743809, z: 0}
+        inSlope: {x: 0, y: -2.677686, z: 0}
+        outSlope: {x: 0, y: -2.677686, z: 0}
         tangentMode: 0
         weightedMode: 0
         inWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
@@ -374,8 +410,44 @@ AnimationClip:
       - serializedVersion: 3
         time: 0.65
         value: -0.9
-        inSlope: -0.6000001
-        outSlope: -0.6000001
+        inSlope: -1.1428571
+        outSlope: -1.1428571
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.7
+        value: -2.08
+        inSlope: -10.200007
+        outSlope: -10.200007
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.71666664
+        value: -2.25
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.73333335
+        value: -1.57
+        inSlope: 34.79997
+        outSlope: 34.79997
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.75
+        value: -1.09
+        inSlope: 0
+        outSlope: 0
         tangentMode: 136
         weightedMode: 0
         inWeight: 0.33333334
@@ -501,7 +573,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.x
+    attribute: m_LocalEulerAngles.z
     path: 
     classID: 4
     script: {fileID: 0}
@@ -525,7 +597,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.z
+    attribute: m_LocalEulerAngles.x
     path: 
     classID: 4
     script: {fileID: 0}

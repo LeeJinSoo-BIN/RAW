@@ -29,7 +29,7 @@ public class SwordSlash : MonoBehaviourPunCallbacks
     {
         try
         {
-            GetComponent<Animator>().SetTrigger("vanish");
+            GetComponentInChildren<Animator>().SetTrigger("vanish");            
         }
         catch { }
         Destroy(gameObject, 0.45f);

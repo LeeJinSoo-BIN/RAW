@@ -9,7 +9,7 @@ public class StageManager : MonoBehaviourPunCallbacks, IPunObservable
 {
     public int stage;
     public static bool active = false;
-    public float stageTime;
+    public static float stageTime;
 
     public TMP_Text stageText;
     public TMP_Text timeText;

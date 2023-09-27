@@ -211,13 +211,16 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         InGameUI.SetActive(true);
         ground.SetActive(true);
         itemField.SetActive(true);
-        ConnectPanel.SetActive(true);
-        //connecting = false;
+        ConnectPanel.SetActive(true);        
         ConnectPanel.transform.GetChild(1).gameObject.SetActive(true);
         ConnectPanel.transform.GetChild(2).gameObject.SetActive(true);
         ConnectPanel.transform.GetChild(3).gameObject.SetActive(true);
-        InGameUI.transform.GetChild(1).GetChild(4).gameObject.SetActive(false);
+        InGameUI.transform.GetChild(0).gameObject.SetActive(true);
+        InGameUI.transform.GetChild(1).gameObject.SetActive(true);
+        InGameUI.transform.GetChild(2).gameObject.SetActive(false);
         disconnectButtonText.text = "³ª°¡±â";
+        StageManager.stageTime = 0;
+        StageManager.active = false;        
     }    
 
     public void CreateRoomButtonClickInPanel()

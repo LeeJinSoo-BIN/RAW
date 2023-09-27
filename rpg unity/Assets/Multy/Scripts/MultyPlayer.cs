@@ -81,12 +81,11 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         playerGroup = GameObject.Find("Player Group");
         enemyGroup = GameObject.Find("Enemy Group");
         Transform inGameUICanvas = GameObject.Find("In Game UI Canvas").transform;
-        inGameUI = inGameUICanvas.GetComponent<InGameUI>();
-        inventoryUi = inGameUICanvas.GetChild(3).gameObject;
-        chatInput = inGameUICanvas.GetChild(1).GetChild(3).GetChild(1).GetComponent<TMP_InputField>(); 
-        itemBox = inventoryUi.transform.GetChild(0).GetChild(2).gameObject;        
-        itemDropField = GameObject.Find("Item Field").gameObject;
-        
+        inGameUI = inGameUICanvas.GetComponent<InGameUI>();        
+        chatInput = inGameUICanvas.GetChild(0).GetChild(3).GetChild(1).GetComponent<TMP_InputField>();
+        inventoryUi = inGameUICanvas.GetChild(2).gameObject;
+        itemBox = inventoryUi.transform.GetChild(2).gameObject;        
+        itemDropField = GameObject.Find("Item Field").gameObject;        
 
         transform.parent = playerGroup.transform;        
     }
@@ -546,7 +545,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     {
         for(int k = 0; k < itemBox.transform.childCount; k++)
         {
-            if (itemBox.transform.GetChild(k).GetChild(0).GetComponent<Image>().color.a == 0)
+            if (itemBox.transform.GetChild(k).GetChild(1).GetComponent<Image>().color.a == 0)
             {
                 frontInventoryPos = k;
                 return;
@@ -561,22 +560,22 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             int pos = quickInventory[item].position;
             int cnt = quickInventory[item].count;
             Transform box = itemBox.transform.GetChild(pos);
-            if (box.GetChild(0).GetComponent<Image>().color.a != 0)
+            if (box.GetChild(1).GetComponent<Image>().color.a != 0)
             {
-                box.GetChild(1).GetComponent<TMP_Text>().text = cnt.ToString();
-                box.GetChild(0).GetComponent<Image>().color = Color.white;
+                box.GetChild(2).GetComponent<TMP_Text>().text = cnt.ToString();
+                box.GetChild(1).GetComponent<Image>().color = Color.white;
             }
             else
             {
-                box.GetChild(1).GetComponent<TMP_Text>().text = cnt.ToString();
-                box.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(GameManager.Instance.itemInfoDict[item].spriteDirectory);
-                box.GetChild(0).GetComponent<Image>().color = Color.white;                
+                box.GetChild(2).GetComponent<TMP_Text>().text = cnt.ToString();
+                box.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(GameManager.Instance.itemInfoDict[item].spriteDirectory);
+                box.GetChild(1).GetComponent<Image>().color = Color.white;                
             }
             if (cnt == 0)
             {
                 destroyList.Add(item);                
-                box.GetChild(1).GetComponent<TMP_Text>().text = "";
-                box.GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0);
+                box.GetChild(2).GetComponent<TMP_Text>().text = "";
+                box.GetChild(1).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0);
             }
         }
         foreach (string name in destroyList)

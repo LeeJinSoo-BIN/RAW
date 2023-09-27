@@ -39,11 +39,7 @@ public class GameManager : MonoBehaviour
         Screen.SetResolution(960, 540, false);
         OptionPanel.SetActive(false);
     }
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-            OptionPanel.SetActive(!OptionPanel.activeSelf);
-    }
+    
     public void setup(GameObject player, string roll)
     {
         CharacterSpec loadedSpec = loadCharacterSpec(roll);
