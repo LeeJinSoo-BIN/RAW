@@ -186,10 +186,10 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             }
             if (!chatInput.isFocused)
             {
-                if (Input.GetKeyDown(KeyCode.I))
+                /*if (Input.GetKeyDown(KeyCode.I))
                 {
                     inventoryUi.SetActive(!inventoryUi.activeSelf);
-                }
+                }*/
                 if (Input.GetKeyDown(KeyCode.S))
                 {
                     goalPos = transform.position;

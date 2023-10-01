@@ -54,7 +54,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     private void Start()
     {
         Connect();
-        InGameUI.SetActive(false);
+        InGameUI.transform.GetChild(0).gameObject.SetActive(false);
+        InGameUI.transform.GetChild(1).gameObject.SetActive(false);
+        InGameUI.transform.GetChild(2).gameObject.SetActive(false);
         ground.SetActive(false);
         itemField.SetActive(false);
         ConnectPanel.SetActive(false);
