@@ -1,16 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class UIManager : MonoBehaviour
 {
     // Start is called before the first frame update
-    private GameObject currentFocusWindow;
+    public static UIManager Instance;
+    public GameObject currentFocusWindow;
     public GameObject inventoryPanel;
     public GameObject optionPanel;
-    private HashSet<GameObject> openedWindows = new HashSet<GameObject>();
+    public HashSet<GameObject> openedWindows = new HashSet<GameObject>();
     void Start()
     {
+        Instance = this;
         inventoryPanel.SetActive(false);
         optionPanel.SetActive(false);
     }
@@ -34,13 +37,20 @@ public class UIManager : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.I))
         {
-            Debug.Log("I");
-            Debug.Log(inventoryPanel.activeSelf);
             if(inventoryPanel.activeSelf)
             {
-                inventoryPanel.SetActive(false);
-                openedWindows.Remove(inventoryPanel);
-                updateCurrentFocusWindow();
+                if (currentFocusWindow == inventoryPanel)
+                {
+                    inventoryPanel.SetActive(false);
+                    openedWindows.Remove(inventoryPanel);
+                    updateCurrentFocusWindow();
+                }
+                else
+                {
+                    currentFocusWindow.GetComponent<Canvas>().sortingOrder -= 1;
+                    inventoryPanel.GetComponent<Canvas>().sortingOrder = openedWindows.Count + 5;
+                    currentFocusWindow = inventoryPanel;
+                }
             }
             else
             {
@@ -50,7 +60,7 @@ public class UIManager : MonoBehaviour
             
     }
 
-    void updateCurrentFocusWindow(GameObject currentWindow = null)
+    public void updateCurrentFocusWindow(GameObject currentWindow = null)
     {        
         if(currentWindow != null)
         {
@@ -69,4 +79,12 @@ public class UIManager : MonoBehaviour
         }
         Debug.Log(openedWindows.Count + " " + currentFocusWindow);
     }
+    /*public void CloseButtonClick()
+    {
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        current_clicked_button.transform.parent.gameObject.SetActive(false);
+        openedWindows.Remove(current_clicked_button.transform.parent.gameObject);
+        updateCurrentFocusWindow();
+    }*/
+
 }

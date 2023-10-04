@@ -120,10 +120,5 @@ public class GameManager : MonoBehaviour
     {
         if (Application.isPlaying) 
             Application.Quit();
-    }
-    public void CloseButtonClick()
-    {
-        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
-        current_clicked_button.transform.parent.gameObject.SetActive(false);
-    }
+    }   
 }
