@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -82,7 +83,10 @@ public class UIManager : MonoBehaviour
         }
 
     }
+    public void ClickSkillLevelUpButton()
+    {
 
+    }
     public void updateCurrentFocusWindow(GameObject currentWindow = null)
     {        
         if(currentWindow != null)

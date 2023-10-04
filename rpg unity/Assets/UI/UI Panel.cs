@@ -20,17 +20,18 @@ public class UIPanel : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        GameObject clickedObject = eventData.pointerCurrentRaycast.gameObject.transform.parent.gameObject;
-        if (clickedObject.name == "back")
+        GameObject clickedPanel = eventData.pointerCurrentRaycast.gameObject.transform.parent.gameObject;
+        GameObject clickedObject = eventData.pointerCurrentRaycast.gameObject;
+        if (clickedObject.name == "back" || clickedObject.name == "drag area")
         {
             UIManager.Instance.currentFocusWindow.GetComponent<Canvas>().sortingOrder -= 1;
-            clickedObject.GetComponent<Canvas>().sortingOrder = UIManager.Instance.openedWindows.Count + 5;
-            UIManager.Instance.currentFocusWindow = clickedObject;
-            if (eventData.pointerCurrentRaycast.gameObject.name == "drag area")
+            clickedPanel.GetComponent<Canvas>().sortingOrder = UIManager.Instance.openedWindows.Count + 5;
+            UIManager.Instance.currentFocusWindow = clickedPanel;
+            if (clickedObject.name == "drag area")
             {
                 Vector3 dragStartMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                distanceMosePos.x = clickedObject.transform.position.x - dragStartMousePos.x;
-                distanceMosePos.y = clickedObject.transform.position.y - dragStartMousePos.y;
+                distanceMosePos.x = clickedPanel.transform.position.x - dragStartMousePos.x;
+                distanceMosePos.y = clickedPanel.transform.position.y - dragStartMousePos.y;
                 draging = true;
             }
         }
