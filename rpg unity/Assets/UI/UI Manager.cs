@@ -9,6 +9,7 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance;
     public GameObject currentFocusWindow;
     public GameObject inventoryPanel;
+    public GameObject skillPanel;
     public GameObject optionPanel;
     public HashSet<GameObject> openedWindows = new HashSet<GameObject>();
     void Start()
@@ -57,7 +58,29 @@ public class UIManager : MonoBehaviour
                 updateCurrentFocusWindow(inventoryPanel);
             }
         }
-            
+        else if (Input.GetKeyDown(KeyCode.K))
+        {
+            if (skillPanel.activeSelf)
+            {
+                if (currentFocusWindow == skillPanel)
+                {
+                    skillPanel.SetActive(false);
+                    openedWindows.Remove(skillPanel);
+                    updateCurrentFocusWindow();
+                }
+                else
+                {
+                    currentFocusWindow.GetComponent<Canvas>().sortingOrder -= 1;
+                    skillPanel.GetComponent<Canvas>().sortingOrder = openedWindows.Count + 5;
+                    currentFocusWindow = skillPanel;
+                }
+            }
+            else
+            {
+                updateCurrentFocusWindow(skillPanel);
+            }
+        }
+
     }
 
     public void updateCurrentFocusWindow(GameObject currentWindow = null)
