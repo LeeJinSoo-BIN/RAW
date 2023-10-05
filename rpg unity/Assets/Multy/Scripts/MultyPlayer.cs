@@ -25,7 +25,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public float pointSpeed = 1.0f;
     public float characterMoveSpeed = 1.0f;
     public Animator characterAnimator;
-    public GameObject inventoryUi;
+    private GameObject inventoryUi;
     private GameObject itemBox;    
     private int frontInventoryPos = 0;
     private List<InventoryItem> inventory;
@@ -83,7 +83,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         Transform inGameUICanvas = GameObject.Find("In Game UI Canvas").transform;
         inGameUI = inGameUICanvas.GetComponent<InGameUI>();        
         chatInput = inGameUICanvas.GetChild(0).GetChild(3).GetChild(1).GetComponent<TMP_InputField>();
-        inventoryUi = inGameUICanvas.GetChild(2).gameObject;
+        inventoryUi = GameObject.Find("Panel Canvas").transform.Find("inventory Panel").gameObject;
         itemBox = inventoryUi.transform.GetChild(2).gameObject;        
         itemDropField = GameObject.Find("Item Field").gameObject;        
 

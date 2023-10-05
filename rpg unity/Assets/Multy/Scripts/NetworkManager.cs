@@ -21,6 +21,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public GameObject ConnectPanel;
 
     public GameObject InGameUI;
+    public GameObject PanelCanvas;
     public GameObject ground;
     public GameObject itemField;
     private bool connectedToMaster = false;
@@ -56,7 +57,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         Connect();
         InGameUI.transform.GetChild(0).gameObject.SetActive(false);
         InGameUI.transform.GetChild(1).gameObject.SetActive(false);
-        InGameUI.transform.GetChild(2).gameObject.SetActive(false);
+        for(int k = 0; k < PanelCanvas.transform.childCount; k++)
+        {
+            PanelCanvas.transform.GetChild(k).gameObject.SetActive(false);
+        }
         ground.SetActive(false);
         itemField.SetActive(false);
         ConnectPanel.SetActive(false);
@@ -218,8 +222,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         ConnectPanel.transform.GetChild(2).gameObject.SetActive(true);
         ConnectPanel.transform.GetChild(3).gameObject.SetActive(true);
         InGameUI.transform.GetChild(0).gameObject.SetActive(true);
-        InGameUI.transform.GetChild(1).gameObject.SetActive(true);
-        InGameUI.transform.GetChild(2).gameObject.SetActive(false);
+        InGameUI.transform.GetChild(1).gameObject.SetActive(true);        
         disconnectButtonText.text = "³ª°¡±â";
         StageManager.stageTime = 0;
         StageManager.active = false;        
