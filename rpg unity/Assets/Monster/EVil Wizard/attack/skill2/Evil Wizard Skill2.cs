@@ -47,18 +47,20 @@ public class EvilWizardSkill2 : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {        
-        if (collision.CompareTag("Player"))
+        if(collision == null)
+            return;
+        if (collision.CompareTag("Player") && collision.name == "foot")
         {
-            if (collision.transform.GetComponent<PhotonView>().IsMine)
+            if (collision.transform.parent.GetComponent<PhotonView>().IsMine )
             {
                 if (hand)
                 {
-                    CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
+                    CharacterState state = collision.transform.parent.GetComponentInChildren<CharacterState>();
                     state.ProcessSkill(0, handDeal);
                 }
                 if (bomb)
                 {
-                    CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
+                    CharacterState state = collision.transform.parent.GetComponentInChildren<CharacterState>();
                     state.ProcessSkill(0, bombDeal);
                 }
             }

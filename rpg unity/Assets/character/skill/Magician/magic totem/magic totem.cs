@@ -49,23 +49,26 @@ public class MagicTotem : MonoBehaviourPunCallbacks
     {
         if (collision == null)
             return;
-        if (collision.CompareTag("Monster") && PV.IsMine)
+        if (collision.CompareTag("Monster") && collision.name == "foot" && PV.IsMine)
         {
             if (_time <= dropTime)
             {
-                PhotonView MonsterPV = collision.transform.GetComponent<PhotonView>();
+                PhotonView MonsterPV = collision.transform.parent.GetComponent<PhotonView>();
                 MonsterPV.RPC("MonsterDamage", RpcTarget.All, 0, Deal, 0f);                
             }
         }
-        else if (collision.CompareTag("Player") && collision.transform.GetComponent<PhotonView>().IsMine)
+        else if (collision.CompareTag("Player") && collision.name == "foot")
         {
-            GameObject new_aura = Instantiate(aura);
-            new_aura.transform.parent = collision.transform;
-            new_aura.transform.localPosition = Vector3.zero;
-            new_aura.transform.localScale = Vector3.one;
-            new_aura.name = "aura";
-            CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-            state.ProcessSkill(3, Power);
+            if (collision.transform.parent.GetComponent<PhotonView>().IsMine)
+            {
+                GameObject new_aura = Instantiate(aura);
+                new_aura.transform.parent = collision.transform.parent;
+                new_aura.transform.localPosition = Vector3.zero;
+                new_aura.transform.localScale = Vector3.one;
+                new_aura.name = "aura";
+                CharacterState state = collision.transform.parent.GetComponentInChildren<CharacterState>();
+                state.ProcessSkill(3, Power);
+            }
         }        
     }
 
@@ -73,21 +76,24 @@ public class MagicTotem : MonoBehaviourPunCallbacks
     {
         if (collision == null)
             return;
-        if (collision.CompareTag("Player") && collision.transform.GetComponent<PhotonView>().IsMine)
+        if (collision.CompareTag("Player") && collision.name =="foot")            
         {
-            Transform having_aura = collision.transform.Find("aura");
-            if (having_aura != null)
+            if (collision.transform.parent.GetComponent<PhotonView>().IsMine)
             {
-                having_aura.GetChild(0).GetComponent<Animator>().SetTrigger("vanish");
-                Destroy(having_aura.gameObject, 0.45f);
-            }                
-            CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-            state.ProcessSkill(3, -Power);
+                Transform having_aura = collision.transform.parent.Find("aura");
+                if (having_aura != null)
+                {
+                    having_aura.GetChild(0).GetComponent<Animator>().SetTrigger("vanish");
+                    Destroy(having_aura.gameObject, 0.45f);
+                }
+                CharacterState state = collision.transform.parent.GetComponentInChildren<CharacterState>();
+                state.ProcessSkill(3, -Power);
+            }
         }
     }
 
     [PunRPC]
-    void initSkill(float deal, float heal, float sheild, float power, float duration, string target_name, Vector2 target_pos)
+    void initSkill(float deal, float heal, float sheild, float power, float sync, float duration, string target_name, Vector2 target_pos)
     {
         Deal = deal;
         //Heal = heal;

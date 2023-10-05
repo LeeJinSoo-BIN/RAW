@@ -53,7 +53,7 @@ public class ArrowCharge : MonoBehaviourPunCallbacks
             return;
         if (current_time > charge_time)
         {
-            if (collision.CompareTag("Monster") && PV.IsMine)
+            if (collision.CompareTag("Monster") && PV.IsMine && collision.name != "foot")
             {
                 PhotonView MonsterPV = collision.transform.GetComponent<PhotonView>();
                 MonsterPV.RPC("MonsterDamage", RpcTarget.All, 0, Deal, 0f);                
@@ -73,7 +73,7 @@ public class ArrowCharge : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void initSkill(float deal, float heal, float sheild, float power, float duration, string target_name, Vector2 target_pos)
+    void initSkill(float deal, float heal, float sheild, float power, float sync, float duration, string target_name, Vector2 target_pos)
     {
         Deal = deal;
         //Heal = heal;

@@ -31,7 +31,7 @@ public class ArrowGatlingShooter : MonoBehaviour
             float rand_x = Random.Range(-0.1f, 0.1f);
             float rand_y = Random.Range(-0.1f, 0.1f);
             GameObject skill = PhotonNetwork.Instantiate("Character/skills/arrow gatling arrow", (Vector2)transform.position + new Vector2(rand_x, rand_y), Quaternion.identity);
-            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.AllBuffered, Deal, 0f, 0f, 0f, 1f, "", desPos + new Vector2(rand_x, rand_y));
+            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.AllBuffered, Deal, 0f, 0f, 0f, 0f, 1f, "", desPos + new Vector2(rand_x, rand_y));
         }
         PV.RPC("destroySelf", RpcTarget.AllBuffered);
     }
@@ -48,7 +48,7 @@ public class ArrowGatlingShooter : MonoBehaviour
     }
 
     [PunRPC]
-    void initSkill(float deal, float heal, float sheild, float power, float duration, string target_name, Vector2 target_pos)
+    void initSkill(float deal, float heal, float sheild, float power, float sync, float duration, string target_name, Vector2 target_pos)
     {
         Deal = deal;
         //Heal = heal;

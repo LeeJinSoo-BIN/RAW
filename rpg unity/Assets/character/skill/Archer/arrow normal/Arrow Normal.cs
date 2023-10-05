@@ -62,7 +62,7 @@ public class ArrowNormal : MonoBehaviourPunCallbacks
     {
         if (collision == null)
             return;
-        if (collision.CompareTag("Monster"))
+        if (collision.CompareTag("Monster") && collision.name != "foot")
         {
             targetPos = transform.position;
             explosion = true;
@@ -76,7 +76,7 @@ public class ArrowNormal : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void initSkill(float deal, float heal, float sheild, float power, float duration, string target_name, Vector2 target_pos)
+    void initSkill(float deal, float heal, float sheild, float power, float sync, float duration, string target_name, Vector2 target_pos)
     {
         Deal = deal;
         //Heal = heal;

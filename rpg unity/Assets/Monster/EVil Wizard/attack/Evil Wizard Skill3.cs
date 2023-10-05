@@ -13,11 +13,13 @@ public class EvilWizardSkill3 : MonoBehaviourPunCallbacks
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
+        if(collision == null)
+            return;
+        if (collision.CompareTag("Player") && collision.name == "foot")
         {
             if (collision.transform.GetComponent<PhotonView>().IsMine)
             {
-                CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
+                CharacterState state = collision.transform.parent.GetComponentInChildren<CharacterState>();
                 state.ProcessSkill(0, Deal);
             }
         }

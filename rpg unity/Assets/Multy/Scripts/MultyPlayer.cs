@@ -465,12 +465,12 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             {
                 skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), tar.transform.position, Quaternion.identity);
                 current_skill_target_name = tar.name;
-                skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, currentCastingSkill.duration, current_skill_target_name, current_skill_target_pos);
+                skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, currentCastingSkill.dealSync, currentCastingSkill.duration, current_skill_target_name, current_skill_target_pos);
             }
             skill = null;
         }
-        if(skill != null) 
-            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, currentCastingSkill.duration, current_skill_target_name, current_skill_target_pos);
+        if (skill != null)
+            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, currentCastingSkill.dealSync, currentCastingSkill.duration, current_skill_target_name, current_skill_target_pos);
         
         skillActivatedTime[currentCastingSkill.skillName] = Time.time;
         inGameUI.CoolDown(currentCastingSkill.skillName, currentCastingSkill.coolDown);

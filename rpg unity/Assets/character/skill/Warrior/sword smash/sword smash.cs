@@ -7,11 +7,24 @@ public class SwordSmash : MonoBehaviourPunCallbacks
     private float Deal;
     //private float Heal;
     //private float Shield;
-    //private float Power;    
+    //private float Power;
+    private float DealSync;
     public GameObject target;
     //public Vector3 targetPos;
     public PhotonView PV;
 
+    IEnumerator Excute()
+    {
+        if (!PV.IsMine)
+            yield break;
+        float _timer = 0f;
+        while (_timer < DealSync)
+        {
+            _timer += Time.deltaTime;
+            yield return null;
+        }
+        giveDeal();
+    }
     IEnumerator Vanish(float duration)
     {
         float time = 0;
@@ -42,7 +55,7 @@ public class SwordSmash : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void initSkill(float deal, float heal, float sheild, float power, float duration, string target_name, Vector2 target_pos)
+    void initSkill(float deal, float heal, float sheild, float power, float sync, float duration, string target_name, Vector2 target_pos)
     {
         Deal = deal;
         //Heal = heal;
@@ -62,11 +75,12 @@ public class SwordSmash : MonoBehaviourPunCallbacks
         {
             //targetPos = target_pos;
         }        
+        DealSync = sync;
         StartCoroutine(Vanish(duration));
         if(transform.localScale.x < 0f)
             transform.position += new Vector3(-1.5f, 0.3f);
         else
             transform.position += new Vector3(1.5f, 0.3f);
-        giveDeal();
+        StartCoroutine(Excute());
     }
 }

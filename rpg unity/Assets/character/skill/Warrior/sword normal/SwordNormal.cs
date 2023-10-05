@@ -8,6 +8,7 @@ public class SwordNormal : MonoBehaviourPunCallbacks
     //private float Heal;
     //private float Shield;
     //private float Power;    
+    private float DealSync;
     public GameObject target;
     //public Vector3 targetPos;
     public PhotonView PV;
@@ -21,6 +22,18 @@ public class SwordNormal : MonoBehaviourPunCallbacks
         }
         PV.RPC("destroySelf", RpcTarget.AllBuffered);
     }
+    IEnumerator Excute()
+    {
+        if (!PV.IsMine)
+            yield break;
+        float _timer = 0f;
+        while (_timer < DealSync)
+        {
+            _timer += Time.deltaTime;
+            yield return null;
+        }
+        giveDeal();
+    }
     [PunRPC]
     void destroySelf()
     {
@@ -33,7 +46,7 @@ public class SwordNormal : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void initSkill(float deal, float heal, float sheild, float power, float duration, string target_name, Vector2 target_pos)
+    void initSkill(float deal, float heal, float sheild, float power, float sync, float duration, string target_name, Vector2 target_pos)
     {
         Deal = deal;
         //Heal = heal;
@@ -52,7 +65,8 @@ public class SwordNormal : MonoBehaviourPunCallbacks
         if (target_pos != default(Vector2))
         {
             //targetPos = target_pos;
-        }        
-        giveDeal();
+        }
+        DealSync = sync;
+        StartCoroutine(Excute());        
     }
 }

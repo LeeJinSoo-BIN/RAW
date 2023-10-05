@@ -16,9 +16,11 @@ public class SkillSpec : ScriptableObject
 
     public string animType; //attack1,2,3, skill1,2,3
     public float consumeMana;
-    public float delay;
+    public float delay;    
     public float duration;
     public float coolDown;
+
+    public float dealSync;
 
     public float flatDeal;
     public float dealIncreasePerSkillLevel;

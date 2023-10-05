@@ -9,11 +9,21 @@ public class ArrowRain : MonoBehaviourPunCallbacks
     //private float Heal;
     //private float Shield;
     //private float Power;    
+    private float dealSync;
     //public GameObject target;
     public Vector2 targetPos;
     public PhotonView PV;
 
-
+    IEnumerator Excute()
+    {
+        float _timer = 0f;
+        while(_timer < dealSync)
+        {
+            _timer += Time.deltaTime;
+            yield return null;
+        }
+        GetComponent<PolygonCollider2D>().enabled = true;
+    }
     IEnumerator Vanish(float duration)
     {
         float time = 0;
@@ -39,15 +49,15 @@ public class ArrowRain : MonoBehaviourPunCallbacks
     {
         if (collision == null)
             return;
-        if (collision.CompareTag("Monster") && PV.IsMine)
+        if (collision.CompareTag("Monster") && collision.name == "foot" && PV.IsMine)
         {
-            PhotonView MonsterPV = collision.transform.GetComponent<PhotonView>();
+            PhotonView MonsterPV = collision.transform.parent.GetComponent<PhotonView>();
             MonsterPV.RPC("MonsterDamage", RpcTarget.All, 0, Deal, 0f);
         }
 
     }
     [PunRPC]
-    void initSkill(float deal, float heal, float sheild, float power, float duration, string target_name, Vector2 target_pos)
+    void initSkill(float deal, float heal, float sheild, float power, float sync, float duration, string target_name, Vector2 target_pos)
     {
         Deal = deal;
         //Heal = heal;
@@ -62,6 +72,8 @@ public class ArrowRain : MonoBehaviourPunCallbacks
         {
             targetPos = target_pos;
         }
+        dealSync = sync;
+        StartCoroutine(Excute());
         StartCoroutine(Vanish(duration));
     }
 }

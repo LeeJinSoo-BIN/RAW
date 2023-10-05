@@ -11,7 +11,9 @@ public class FlyingEyeAttack2 : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
+        if (collision == null)
+            return;
+        if (collision.CompareTag("Player") && collision.name != "foot")
         {
             if (collision.transform.GetComponent<PhotonView>().IsMine)
             {
