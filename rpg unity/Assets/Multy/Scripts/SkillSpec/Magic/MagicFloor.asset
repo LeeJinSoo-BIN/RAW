@@ -15,6 +15,7 @@ MonoBehaviour:
   skillName: magic floor
   castType: circle
   dealType: floor
+  maxLevel: 5
   radius: {x: 1, y: 1}
   range: {x: 1, y: 1}
   animType: attack3
@@ -22,6 +23,7 @@ MonoBehaviour:
   delay: 0
   duration: 3
   coolDown: 7
+  dealSync: 0
   flatDeal: 1
   dealIncreasePerSkillLevel: 0.5
   dealIncreasePerPower: 1

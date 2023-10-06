@@ -10,9 +10,22 @@ public class SwordSlash : MonoBehaviourPunCallbacks
     //private float Heal;
     //private float Shield;
     //private float Power;
+    private float DealSync;
+    public PolygonCollider2D attackArea;
     //public GameObject target;
     //public Vector2 targetPos;
     public PhotonView PV;
+    
+    IEnumerator Excute()
+    {
+        float _time = 0f;
+        while(_time < DealSync)
+        {
+            _time += Time.deltaTime;
+            yield return null;
+        }
+        attackArea.enabled = true;
+    }
 
     IEnumerator Vanish(float duration)
     {
@@ -61,7 +74,9 @@ public class SwordSlash : MonoBehaviourPunCallbacks
         {
             //targetPos = target_pos;
         }
+        DealSync = sync;
         StartCoroutine(Vanish(duration));
+        StartCoroutine(Excute());
     }
 
 }

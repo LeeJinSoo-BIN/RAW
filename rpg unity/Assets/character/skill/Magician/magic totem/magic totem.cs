@@ -10,7 +10,7 @@ public class MagicTotem : MonoBehaviourPunCallbacks
     //private float Shield;
     private float Power;    
     //public GameObject target;
-    //public Vector2 targetPos;    
+    //public Vector2 targetPos;
     public PhotonView PV;
     float dropTime = 0.3f;
     float _time = 0f;
@@ -109,7 +109,6 @@ public class MagicTotem : MonoBehaviourPunCallbacks
             //targetPos = target_pos;
         }
         StartCoroutine(Vanish(duration));
-
         StartCoroutine(Excute());
     }
 }

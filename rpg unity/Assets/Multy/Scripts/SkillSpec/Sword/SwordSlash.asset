@@ -15,6 +15,7 @@ MonoBehaviour:
   skillName: sword slash
   castType: bar
   dealType: throw
+  maxLevel: 5
   radius: {x: 1.5, y: 1.5}
   range: {x: 0.1, y: 0}
   animType: skillSword2
@@ -22,6 +23,7 @@ MonoBehaviour:
   delay: 1
   duration: 1
   coolDown: 7
+  dealSync: 0.65
   flatDeal: 7
   dealIncreasePerSkillLevel: 1
   dealIncreasePerPower: 1

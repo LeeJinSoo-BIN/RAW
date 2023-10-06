@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using TMPro;
 using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
@@ -15,14 +18,19 @@ public class UIManager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public GameObject optionPanel;
     public HashSet<GameObject> openedWindows = new HashSet<GameObject>();
     public LayerMask panelMask;
+    public GameObject myCharacter;
     RaycastHit hit;
     Vector3 distanceMosePos = new Vector3(0f, 0f, 0f);
     private bool draging = false;
+    GameObject skillBox;
+    GameObject skillInfo;
     void Start()
     {
         Instance = this;
         inventoryPanel.SetActive(false);
         optionPanel.SetActive(false);
+        skillBox = skillPanel.transform.GetChild(2).gameObject;
+        skillInfo = skillPanel.transform.GetChild(3).gameObject;        
     }
 
     // Update is called once per frame
@@ -104,6 +112,11 @@ public class UIManager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
             }
         }
     }
+    public void SetUP()
+    {
+        ResetSkillPanel();
+        UpdateSkillPanel();
+    }
     public void ClickSkillLevelUpButton()
     {
 
@@ -148,6 +161,41 @@ public class UIManager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
                 distanceMosePos.x = clickedPanel.transform.position.x - dragStartMousePos.x;
                 distanceMosePos.y = clickedPanel.transform.position.y - dragStartMousePos.y;
                 draging = true;
+            }
+        }
+    }
+    public void ResetSkillPanel()
+    {
+        for(int k = 0; k < skillBox.transform.childCount; k++)
+        {
+            Destroy(skillBox.transform.GetChild(k).gameObject);
+        }
+    }
+    public void UpdateSkillPanel()
+    {
+        List<string> skillName = myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel.SD_Keys;
+        foreach (string name in skillName)
+        {
+            if (name.Contains("normal"))
+                continue;
+            if(skillBox.transform.Find(name) == null)
+            {
+                GameObject newSkill = Instantiate(skillInfo);
+                newSkill.name = name;
+                newSkill.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(GameManager.Instance.skillThumbnailPath, name));
+                newSkill.transform.GetChild(2).GetComponent<TMP_Text>().text = name;
+                string max_level = GameManager.Instance.skillInfoDict[name].maxLevel.ToString();
+                string current_level = myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel[name].ToString();
+                newSkill.transform.GetChild(3).GetComponent<TMP_Text>().text = current_level + " / " + max_level;                
+                newSkill.transform.parent = skillBox.transform;
+                newSkill.transform.localScale = Vector3.one;
+                newSkill.gameObject.SetActive(true);
+            }
+            else
+            {
+                string max_level = GameManager.Instance.skillInfoDict[name].maxLevel.ToString();
+                string current_level = myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel[name].ToString();
+                skillBox.transform.Find(name).transform.GetChild(3).GetComponent<TMP_Text>().text = current_level + " / " + max_level;
             }
         }
     }

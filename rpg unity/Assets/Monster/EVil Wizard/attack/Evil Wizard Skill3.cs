@@ -17,7 +17,7 @@ public class EvilWizardSkill3 : MonoBehaviourPunCallbacks
             return;
         if (collision.CompareTag("Player") && collision.name == "foot")
         {
-            if (collision.transform.GetComponent<PhotonView>().IsMine)
+            if (collision.transform.parent.GetComponent<PhotonView>().IsMine)
             {
                 CharacterState state = collision.transform.parent.GetComponentInChildren<CharacterState>();
                 state.ProcessSkill(0, Deal);

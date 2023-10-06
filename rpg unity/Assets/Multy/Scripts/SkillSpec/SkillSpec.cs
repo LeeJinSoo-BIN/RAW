@@ -10,7 +10,7 @@ public class SkillSpec : ScriptableObject
     public string skillName;
     public string castType;
     public string dealType;
-
+    public int maxLevel;
     public Vector2 radius;
     public Vector2 range;
 

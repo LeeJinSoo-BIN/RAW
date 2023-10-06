@@ -15,6 +15,7 @@ MonoBehaviour:
   skillName: arrow gatling
   castType: bar
   dealType: throw
+  maxLevel: 5
   radius: {x: 2, y: 2}
   range: {x: 2, y: 1}
   animType: skillBow1
@@ -22,6 +23,7 @@ MonoBehaviour:
   delay: 1.7
   duration: 2
   coolDown: 8
+  dealSync: 0
   flatDeal: 0.5
   dealIncreasePerSkillLevel: 0.1
   dealIncreasePerPower: 0.1

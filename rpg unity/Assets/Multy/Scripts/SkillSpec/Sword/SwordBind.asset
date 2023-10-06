@@ -15,6 +15,7 @@ MonoBehaviour:
   skillName: sword bind
   castType: target-enemy
   dealType: instant
+  maxLevel: 5
   radius: {x: 2, y: 2}
   range: {x: 0, y: 0}
   animType: skill1
@@ -22,6 +23,7 @@ MonoBehaviour:
   delay: 1
   duration: 7
   coolDown: 20
+  dealSync: 0.8
   flatDeal: 20
   dealIncreasePerSkillLevel: 1
   dealIncreasePerPower: 1

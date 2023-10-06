@@ -15,6 +15,7 @@ MonoBehaviour:
   skillName: magic heal
   castType: target-player
   dealType: floor
+  maxLevel: 5
   radius: {x: 1.5, y: 1.5}
   range: {x: 2, y: 2}
   animType: attack3
@@ -22,6 +23,7 @@ MonoBehaviour:
   delay: 0
   duration: 1
   coolDown: 3
+  dealSync: 0
   flatDeal: 0
   dealIncreasePerSkillLevel: 0
   dealIncreasePerPower: 0

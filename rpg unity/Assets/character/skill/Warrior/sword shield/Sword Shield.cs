@@ -10,6 +10,7 @@ public class SwordShield : MonoBehaviourPunCallbacks
     //private float Heal;
     private float Shield;
     //private float Power;
+    private float Sync;
     public GameObject target;
     //public Vector2 targetPos;
     public PhotonView PV;
@@ -35,13 +36,17 @@ public class SwordShield : MonoBehaviourPunCallbacks
         Destroy(gameObject, 0.45f);
     }
 
-    public void gainShield()
+    IEnumerator gainShield()
     {
-        if (PV.IsMine)
+        if (!PV.IsMine)
+            yield break;
+        float _timer = 0f;
+        while(_timer < Sync)
         {
-            CharacterState state = target.transform.GetComponentInChildren<CharacterState>();
-            state.ProcessSkill(2, Shield);
+            _timer += Time.deltaTime;
+            yield return null;
         }
+        target.transform.GetComponentInChildren<CharacterState>().ProcessSkill(2, Shield);
     }
 
     [PunRPC]
@@ -65,9 +70,9 @@ public class SwordShield : MonoBehaviourPunCallbacks
         {
             //targetPos = target_pos;
         }
+        Sync = sync;
         StartCoroutine(Vanish(duration));
-
-        gainShield();
+        StartCoroutine(gainShield());
     }
 
 }

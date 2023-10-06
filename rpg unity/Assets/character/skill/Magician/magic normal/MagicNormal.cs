@@ -51,7 +51,7 @@ public class MagicNormal : MonoBehaviourPunCallbacks
     {
         if (collision == null)
             return;
-        if (collision.CompareTag("Monster"))
+        if (collision.CompareTag("Monster") && collision.name != "foot")
         {
             targetPos = transform.position;
             explosion = true;

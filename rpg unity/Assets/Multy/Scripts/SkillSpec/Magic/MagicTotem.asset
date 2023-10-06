@@ -15,6 +15,7 @@ MonoBehaviour:
   skillName: magic totem
   castType: circle
   dealType: floor
+  maxLevel: 5
   radius: {x: 1.5, y: 1.5}
   range: {x: 2, y: 2}
   animType: attack3
@@ -22,6 +23,7 @@ MonoBehaviour:
   delay: 1
   duration: 5
   coolDown: 10
+  dealSync: 0.1
   flatDeal: 30
   dealIncreasePerSkillLevel: 0
   dealIncreasePerPower: 0

@@ -15,6 +15,7 @@ MonoBehaviour:
   skillName: sword shield
   castType: buff-self
   dealType: buff
+  maxLevel: 5
   radius: {x: 0, y: 0}
   range: {x: 0, y: 0}
   animType: skillSword1
@@ -22,6 +23,7 @@ MonoBehaviour:
   delay: 1
   duration: 1
   coolDown: 10
+  dealSync: 0
   flatDeal: 0
   dealIncreasePerSkillLevel: 0
   dealIncreasePerPower: 0

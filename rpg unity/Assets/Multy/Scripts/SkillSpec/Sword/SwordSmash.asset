@@ -15,6 +15,7 @@ MonoBehaviour:
   skillName: sword smash
   castType: target-enemy
   dealType: instant
+  maxLevel: 5
   radius: {x: 1, y: 1}
   range: {x: 0, y: 0}
   animType: skill3
@@ -22,6 +23,7 @@ MonoBehaviour:
   delay: 1
   duration: 1
   coolDown: 5
+  dealSync: 0.5
   flatDeal: 5
   dealIncreasePerSkillLevel: 1
   dealIncreasePerPower: 1

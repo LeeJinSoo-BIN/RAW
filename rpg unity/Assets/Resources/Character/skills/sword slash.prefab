@@ -60,6 +60,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4a48e1224cdaf94782a9f7aa92be96f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attackArea: {fileID: 6260551577931673243}
   PV: {fileID: 2943787393599803749}
 --- !u!114 &2943787393599803749
 MonoBehaviour:
@@ -90,7 +91,7 @@ PolygonCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1430010131037424820}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:

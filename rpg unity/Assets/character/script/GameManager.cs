@@ -32,12 +32,12 @@ public class GameManager : MonoBehaviour
     public Transform inGameUI;
     public TMP_Dropdown resolutionDropdown;
     public TMP_Text windowText;
-    public GameObject OptionPanel;
+    public GameObject PanelList;
+    public string skillThumbnailPath = "Character/skills/thumbnails";
     void Awake()
     {
         Instance = this;
-        Screen.SetResolution(960, 540, false);
-        OptionPanel.SetActive(false);
+        Screen.SetResolution(960, 540, false);        
     }
     
     public void setup(GameObject player, string roll)
@@ -50,7 +50,9 @@ public class GameManager : MonoBehaviour
         player.GetComponent<MultyPlayer>().characterState.setUp();
         Debug.Log("set up state");
         inGameUI.GetComponent<InGameUI>().myCharacter = player;
-        inGameUI.GetComponent<InGameUI>().setUp();
+        inGameUI.GetComponent<InGameUI>().setUp();        
+        PanelList.GetComponent<UIManager>().myCharacter = player;
+        PanelList.GetComponent<UIManager>().SetUP();
         Debug.Log("set up ingame ui");
     }
     CharacterSpec loadCharacterSpec(string roll)

@@ -15,6 +15,7 @@ MonoBehaviour:
   skillName: arrow charge
   castType: bar
   dealType: throw
+  maxLevel: 5
   radius: {x: 20, y: 20}
   range: {x: 20, y: 8}
   animType: skillBow2
@@ -22,6 +23,7 @@ MonoBehaviour:
   delay: 3
   duration: 8
   coolDown: 15
+  dealSync: 0
   flatDeal: 50
   dealIncreasePerSkillLevel: 10
   dealIncreasePerPower: 1

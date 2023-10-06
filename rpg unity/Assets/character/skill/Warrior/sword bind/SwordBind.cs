@@ -10,6 +10,8 @@ public class SwordBind : MonoBehaviourPunCallbacks
     //private float Heal;
     //private float Shield;
     //private float Power;
+    private float DealSync;
+    private float Duration;
     public GameObject target;
     //public Vector2 targetPos;
     public PhotonView PV;
@@ -33,6 +35,17 @@ public class SwordBind : MonoBehaviourPunCallbacks
         }
         catch { }
         Destroy(gameObject, 0.45f);
+    }
+
+    IEnumerator Excute()
+    {
+        float _time = 0f;
+        while (_time < DealSync)
+        {
+            _time += Time.deltaTime;
+            yield return null;
+        }
+        Bind(Duration);
     }
     public void Bind(float duration)
     {
@@ -66,8 +79,9 @@ public class SwordBind : MonoBehaviourPunCallbacks
         {
             //targetPos = target_pos;
         }
-        StartCoroutine(Vanish(duration));
-
-        Bind(duration);
+        Duration = duration;
+        DealSync = sync;
+        StartCoroutine(Vanish(duration));        
+        StartCoroutine(Excute());
     }
 }

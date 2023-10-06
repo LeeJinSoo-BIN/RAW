@@ -35,7 +35,9 @@ public class MonsterState : MonoBehaviourPunCallbacks
     [PunRPC]
     void MonsterDamage(int type, float value, float duration)
     {
-        if (type == 5 && monsterSpec.monsterType.ToLower() == "normal")
+        if (type == 5 && monsterSpec.monsterType.ToLower() == "normal") // 기본공격
+            value *= 5;
+        else if (type == 0 && monsterSpec.monsterType.ToLower() == "normal") // 공격
             value *= 2;
         float _shield = shield.value;
         shield.value -= value;

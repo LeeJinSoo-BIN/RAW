@@ -8,18 +8,23 @@ public class MagicHeal : MonoBehaviourPunCallbacks
     private float Heal;
     //private float Shield;
     //private float Power;
+    private float DealSync;
     public GameObject target;
     //public Vector2 targetPos;
     public PhotonView parentPV;
     public PhotonView PV;
     
-    public void Excute()
+    IEnumerator Excute()
     {
-        if (parentPV.IsMine)
+        if (!parentPV.IsMine)
+        yield break;
+        float _timer = 0f;
+        while (_timer < DealSync)
         {
-            CharacterState state = transform.parent.GetComponentInChildren<CharacterState>();
-            state.ProcessSkill(1, Heal);
+            _timer += Time.deltaTime;
+            yield return null;
         }
+        transform.parent.GetComponentInChildren<CharacterState>().ProcessSkill(1, Heal);        
     }
 
     IEnumerator Vanish(float duration)
@@ -65,9 +70,10 @@ public class MagicHeal : MonoBehaviourPunCallbacks
         {
             //targetPos = target_pos;
         }
+        DealSync = sync;
         parentPV = transform.parent.GetComponent<PhotonView>();
         StartCoroutine(Vanish(duration));
-        Excute();
+        StartCoroutine(Excute());
         
     }
 }

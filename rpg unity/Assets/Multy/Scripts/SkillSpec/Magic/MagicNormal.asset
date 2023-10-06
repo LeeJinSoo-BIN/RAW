@@ -15,6 +15,7 @@ MonoBehaviour:
   skillName: magic normal
   castType: target-enemy
   dealType: throw
+  maxLevel: 5
   radius: {x: 1.5, y: 1.5}
   range: {x: 0, y: 0}
   animType: normal
@@ -22,6 +23,7 @@ MonoBehaviour:
   delay: 0.5
   duration: 0
   coolDown: 1.1
+  dealSync: 0
   flatDeal: 1
   dealIncreasePerSkillLevel: 1
   dealIncreasePerPower: 0.1

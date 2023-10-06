@@ -39,7 +39,7 @@ public class InGameUI : MonoBehaviour
     
     public GameObject skillKeyUI;
     public Dictionary<string, string> skillNameToKey = new Dictionary<string, string>();
-    private string skillThumbnailPath = "Character/skills/thumbnails";
+    
     private List<string> quickSlotKeys = new List<string> { "1", "2", "3", "4" };
     public Dictionary<string, string> keyToItemName = new Dictionary<string, string>();
     
@@ -172,7 +172,7 @@ public class InGameUI : MonoBehaviour
             if (key == "q" || key == "w" || key == "e" || key == "r")
             {
                 Transform currentSlot = skillKeyUI.transform.Find(key);
-                currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(skillThumbnailPath, skillNames[k]));
+                currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(GameManager.Instance.skillThumbnailPath, skillNames[k]));
                 currentSlot.GetChild(2).GetComponent<TMP_Text>().text = keys[k];
                 currentSlot.GetChild(3).GetComponent<TMP_Text>().text = GameManager.Instance.skillInfoDict[skillNames[k]].consumeMana.ToString();
                 StartCoroutine(CoolDownCoroutine(skillNames[k], 0f));

@@ -65,7 +65,7 @@ public class SPUM_SpriteList : MonoBehaviour
             if (_backList[i] != null) _backList[i].sprite = null;
         }
     }
-    
+
 
     public void LoadSpriteStingProcess(List<SpriteRenderer> SpList, List<string> StringList)
     {
@@ -116,26 +116,29 @@ public class SPUM_SpriteList : MonoBehaviour
         {
             PV.RPC("changeSprite", RpcTarget.AllBuffered, part, PartsPath[part]);
         }
-        PV.RPC("setColors", RpcTarget.AllBuffered);
+        for (int k = 0; k < 3; k++)
+        {
+            PV.RPC("setColors", RpcTarget.AllBuffered, k, _hairAndEyeColor[k].r, _hairAndEyeColor[k].g, _hairAndEyeColor[k].b);
+        }
     }
 
 
     public void ResyncData()
     {
         Debug.Log("Resync");
-        SyncPath(_hairList,_hairListString);
+        SyncPath(_hairList, _hairListString);
         Debug.Log("hair");
-        SyncPath(_clothList,_clothListString);
+        SyncPath(_clothList, _clothListString);
         Debug.Log("cloth");
-        SyncPath(_armorList,_armorListString);
+        SyncPath(_armorList, _armorListString);
         Debug.Log("armor");
-        SyncPath(_pantList,_pantListString);
+        SyncPath(_pantList, _pantListString);
         Debug.Log("pant");
-        SyncPath(_weaponList,_weaponListString);
+        SyncPath(_weaponList, _weaponListString);
         Debug.Log("weapon");
-        SyncPath(_backList,_backListString);
+        SyncPath(_backList, _backListString);
         Debug.Log("back");
-    }    
+    }
     public void SyncPath(List<SpriteRenderer> _objList, List<string> _pathList)
     {
         for (var i = 0; i < _pathList.Count; i++)
@@ -144,8 +147,8 @@ public class SPUM_SpriteList : MonoBehaviour
             if (_pathList[i].Length > 1)
             {
                 string tPath = _pathList[i];
-                tPath = tPath.Replace("Assets/character/","");
-                tPath = tPath.Replace(".png","");
+                tPath = tPath.Replace("Assets/character/", "");
+                tPath = tPath.Replace(".png", "");
                 Debug.Log(tPath);
                 Sprite[] tSP = Resources.LoadAll<Sprite>(tPath);
                 Debug.Log(tSP.Length);
@@ -191,11 +194,14 @@ public class SPUM_SpriteList : MonoBehaviour
         }
     }
     [PunRPC]
-    void setColors()
+    void setColors(int which, float r, float g, float b)
     {
-        _hairList[0].color = _hairAndEyeColor[0];
-        _eyeList[0].color = _hairAndEyeColor[1];
-        _eyeList[1].color = _hairAndEyeColor[2];
+        if (which == 0)
+            _hairList[0].color = new Color(r, g, b);
+        else if (which == 1)
+            _eyeList[0].color = new Color(r, g, b);
+        else if (which == 2)
+            _eyeList[1].color = new Color(r, g, b);
     }
 
 }

@@ -15,6 +15,7 @@ MonoBehaviour:
   skillName: arrow rain
   castType: circle
   dealType: floor
+  maxLevel: 5
   radius: {x: 2, y: 2}
   range: {x: 1, y: 1}
   animType: skillBow1
@@ -22,7 +23,7 @@ MonoBehaviour:
   delay: 1.2
   duration: 2
   coolDown: 5
-  dealSync: 0.2
+  dealSync: 0.4
   flatDeal: 5
   dealIncreasePerSkillLevel: 5
   dealIncreasePerPower: 1
