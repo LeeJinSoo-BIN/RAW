@@ -40,7 +40,7 @@ public class ArrowDash : MonoBehaviour
     }
 
     [PunRPC]
-    void initSkill(float deal, float heal, float sheild, float power, float sync, float duration, string target_name, Vector2 target_pos)
+    void initSkill(float deal, float heal, float sheild, float power, bool isCritical, float sync, float duration, string target_name, Vector2 target_pos)
     {
         //Deal = deal;
         //Heal = heal;

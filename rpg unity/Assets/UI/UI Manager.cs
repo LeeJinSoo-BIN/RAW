@@ -104,12 +104,7 @@ public class UIManager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
             if (EventSystem.current.IsPointerOverGameObject() == false)
             {
                 currentFocusWindow = null;
-            }
-            else
-            {
-                Debug.Log(EventSystem.current.currentSelectedGameObject);
-                //currentFocusWindow = null;
-            }
+            }            
         }
     }
     public void SetUP()
@@ -181,14 +176,15 @@ public class UIManager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
             if(skillBox.transform.Find(name) == null)
             {
                 GameObject newSkill = Instantiate(skillInfo);
-                newSkill.name = name;
+                newSkill.name = name;                
                 newSkill.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(GameManager.Instance.skillThumbnailPath, name));
                 newSkill.transform.GetChild(2).GetComponent<TMP_Text>().text = name;
                 string max_level = GameManager.Instance.skillInfoDict[name].maxLevel.ToString();
                 string current_level = myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel[name].ToString();
                 newSkill.transform.GetChild(3).GetComponent<TMP_Text>().text = current_level + " / " + max_level;                
-                newSkill.transform.parent = skillBox.transform;
-                newSkill.transform.localScale = Vector3.one;
+                newSkill.transform.SetParent(skillBox.transform, false);
+                newSkill.transform.localPosition = Vector3.zero;
+                newSkill.transform.localScale = Vector3.one;                
                 newSkill.gameObject.SetActive(true);
             }
             else

@@ -421,15 +421,19 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         else
             characterAnimator.SetTrigger(currentCastingSkill.animType);
         GameObject skill = null;
-        float current_skill_deal = CaculateCharacterSkillDamage(characterSpec.skillLevel[currentCastingSkill.skillName], characterSpec.power,
+        float[] current_skill_deal_ = CaculateCharacterSkillDamage(characterSpec.skillLevel[currentCastingSkill.skillName], characterState.power,
             currentCastingSkill.flatDeal, currentCastingSkill.dealIncreasePerSkillLevel, currentCastingSkill.dealIncreasePerPower,
             characterSpec.criticalPercent, characterSpec.criticalDamage, affectedByCritical: true);
-        float current_skill_heal = CaculateCharacterSkillDamage(characterSpec.skillLevel[currentCastingSkill.skillName], characterSpec.power,
-            currentCastingSkill.flatHeal, currentCastingSkill.healIncreasePerSkillLevel, currentCastingSkill.healIncreasePerPower);
-        float current_skill_shield = CaculateCharacterSkillDamage(characterSpec.skillLevel[currentCastingSkill.skillName], characterSpec.power,
-            currentCastingSkill.flatShield, currentCastingSkill.shieldIncreasePerSkillLevel, currentCastingSkill.shieldIncreasePerPower);
-        float current_skill_power = CaculateCharacterSkillDamage(characterSpec.skillLevel[currentCastingSkill.skillName], characterSpec.power,
-            currentCastingSkill.flatPower, currentCastingSkill.powerIncreasePerSkillLevel, currentCastingSkill.powerIncreasePerPower);
+        bool isCritical = false;
+        if (current_skill_deal_[1] == 1)
+            isCritical = true;
+        float current_skill_deal = current_skill_deal_[0];
+        float current_skill_heal = CaculateCharacterSkillDamage(characterSpec.skillLevel[currentCastingSkill.skillName], characterState.power,
+            currentCastingSkill.flatHeal, currentCastingSkill.healIncreasePerSkillLevel, currentCastingSkill.healIncreasePerPower)[0];
+        float current_skill_shield = CaculateCharacterSkillDamage(characterSpec.skillLevel[currentCastingSkill.skillName], characterState.power,
+            currentCastingSkill.flatShield, currentCastingSkill.shieldIncreasePerSkillLevel, currentCastingSkill.shieldIncreasePerPower)[0];
+        float current_skill_power = CaculateCharacterSkillDamage(characterSpec.skillLevel[currentCastingSkill.skillName], characterState.power,
+            currentCastingSkill.flatPower, currentCastingSkill.powerIncreasePerSkillLevel, currentCastingSkill.powerIncreasePerPower)[0];
         Vector2 current_skill_target_pos = default(Vector2);
         string current_skill_target_name = name;
         if (currentCastingSkill.castType == "circle")
@@ -465,12 +469,12 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             {
                 skill = PhotonNetwork.Instantiate(Path.Combine(skillResourceDir, currentCastingSkill.skillName), tar.transform.position, Quaternion.identity);
                 current_skill_target_name = tar.name;
-                skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, currentCastingSkill.dealSync, currentCastingSkill.duration, current_skill_target_name, current_skill_target_pos);
+                skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, isCritical, currentCastingSkill.dealSync, currentCastingSkill.duration, current_skill_target_name, current_skill_target_pos);
             }
             skill = null;
         }
         if (skill != null)
-            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, currentCastingSkill.dealSync, currentCastingSkill.duration, current_skill_target_name, current_skill_target_pos);
+            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, isCritical, currentCastingSkill.dealSync, currentCastingSkill.duration, current_skill_target_name, current_skill_target_pos);
         
         skillActivatedTime[currentCastingSkill.skillName] = Time.time;
         inGameUI.CoolDown(currentCastingSkill.skillName, currentCastingSkill.coolDown);
@@ -679,10 +683,12 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         Destroy(new_move_pointer);
     }
 
-    float CaculateCharacterSkillDamage(float skillLevel, float casterPower, float flat, float perSkillLevel, float perPower, float criticalPercent = 0f, float criticalDamage = 1f, bool affectedByCritical = false)
+    float[] CaculateCharacterSkillDamage(float skillLevel, float casterPower, float flat, float perSkillLevel, float perPower, float criticalPercent = 0f, float criticalDamage = 1f, bool affectedByCritical = false)
     {
-        float value = flat + perSkillLevel * skillLevel
+        float[] value = new float[2];
+        value[0] = flat + perSkillLevel * skillLevel
             + perPower * casterPower;
+        value[1] = 0;
         if (affectedByCritical) // damage
         {
             float crit = Random.Range(0f, 100f);
@@ -690,7 +696,9 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             float critical_damage = criticalDamage;
             if (crit < criticalPercent)
                 critical_damage = 1;
-            value *= critical_damage;
+            else
+                value[1] = 1;
+            value[0] *= critical_damage;
         }
         return value;
     }

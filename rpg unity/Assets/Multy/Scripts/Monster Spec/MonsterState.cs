@@ -35,7 +35,7 @@ public class MonsterState : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void MonsterDamage(int type, float value, float duration)
+    void MonsterDamage(int type, float value, float duration, bool isCritical)
     {
         if (type == 5 && monsterSpec.monsterType.ToLower() == "normal") // 기본공격
             value *= 5;
@@ -45,7 +45,7 @@ public class MonsterState : MonoBehaviourPunCallbacks
         shield.value -= value;
         value -= _shield;
         Debug.Log(value);
-        PopDamage(type, value);
+        PopDamage(type, value, isCritical);
         if (value > 0)
             health.value -= value;
         if (health.value <= 0 && !isDeath)
@@ -58,7 +58,7 @@ public class MonsterState : MonoBehaviourPunCallbacks
         transform.GetComponent<MonsterControl>().Hit();
     }
 
-    void PopDamage(int type, float value)
+    void PopDamage(int type, float value, bool isCritical)
     {
         Debug.Log("pop");
         GameObject damage = Instantiate(Resources.Load<GameObject>("Character/skills/damage"));
@@ -68,6 +68,12 @@ public class MonsterState : MonoBehaviourPunCallbacks
         if (type == 0 || type == 4 || type == 5)
         {
             damageText.color = new Color(1f, (100f / 255f), (100f / 255f));
+            if (isCritical)
+            {
+                damageText.color = new Color(1f, (50f / 255f), (50f / 255f));
+                damageText.fontStyle = FontStyles.Bold;
+                damageText.fontSize = 0.4f;
+            }
         }
         else if (type == 1)
         {

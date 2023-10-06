@@ -11,6 +11,7 @@ public class SwordSlash : MonoBehaviourPunCallbacks
     //private float Shield;
     //private float Power;
     private float DealSync;
+    private bool IsCritical;
     public PolygonCollider2D attackArea;
     //public GameObject target;
     //public Vector2 targetPos;
@@ -54,17 +55,18 @@ public class SwordSlash : MonoBehaviourPunCallbacks
         if (collision.CompareTag("Monster") && PV.IsMine && collision.name != "foot")
         {
             PhotonView MonsterPV = collision.transform.GetComponent<PhotonView>();
-            MonsterPV.RPC("MonsterDamage", RpcTarget.All, 0, Deal, 0f);
+            MonsterPV.RPC("MonsterDamage", RpcTarget.All, 0, Deal, 0f, IsCritical);
         }
     }
 
     [PunRPC]
-    void initSkill(float deal, float heal, float sheild, float power, float sync, float duration, string target_name, Vector2 target_pos)
+    void initSkill(float deal, float heal, float sheild, float power, bool isCritical, float sync, float duration, string target_name, Vector2 target_pos)
     {
         Deal = deal;
         //Heal = heal;
         //Shield = sheild;
         //Power = power;
+        IsCritical = isCritical;
         if (target_name != "")
         {
             //target = GameObject.Find(target_name);

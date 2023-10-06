@@ -160,6 +160,7 @@ public class InGameUI : MonoBehaviour
             Destroy(child.gameObject);
         myCharacterHead.transform.parent = CharacterProfile.transform;
         myCharacterHead.transform.localPosition = new Vector3(0f, 1f, 0f);
+        CharacterProfile.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = "Lv. " + myCharacterState.characterSpec.characterLevel.ToString();
     }
 
     public void setKeyMap()
