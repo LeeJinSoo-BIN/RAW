@@ -83,6 +83,7 @@ MonoBehaviour:
   - sendChatLog
   - setCreatureName
   - setColors
+  - TimeLimitGame
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

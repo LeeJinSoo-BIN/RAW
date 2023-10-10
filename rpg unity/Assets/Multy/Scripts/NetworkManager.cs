@@ -9,6 +9,7 @@ using TMPro;
 using UnityEngine.EventSystems;
 using Photon.Pun.Demo.Cockpit;
 using System;
+using WebSocketSharp;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
@@ -29,6 +30,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public TMP_Text ConnectButtonText;
     public PhotonView PV;
     public GameObject spawnButton;
+    public GameObject timeLimit;
 
     public GameObject roomInfo;
     public GameObject RoomList;
@@ -222,10 +224,19 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         ConnectPanel.transform.GetChild(2).gameObject.SetActive(true);
         ConnectPanel.transform.GetChild(3).gameObject.SetActive(true);
         InGameUI.transform.GetChild(0).gameObject.SetActive(true);
-        InGameUI.transform.GetChild(1).gameObject.SetActive(true);        
+        InGameUI.transform.GetChild(0).GetChild(4).gameObject.SetActive(false);
+        InGameUI.transform.GetChild(1).gameObject.SetActive(true);
+        InGameUI.transform.GetChild(2).gameObject.SetActive(true);
+        InGameUI.transform.GetChild(3).gameObject.SetActive(false);
+
+        if(!PhotonNetwork.IsMasterClient)
+        {
+            InGameUI.transform.GetChild(1).gameObject.SetActive(false);
+            InGameUI.transform.GetChild(2).gameObject.SetActive(false);
+        }
         disconnectButtonText.text = "³ª°¡±â";
         StageManager.stageTime = 0;
-        StageManager.active = false;        
+        StageManager.active = false;
     }    
 
     public void CreateRoomButtonClickInPanel()
@@ -250,10 +261,17 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.LocalPlayer.IsMasterClient)
         {
+            if (!timeLimit.GetComponent<TMP_InputField>().text.IsNullOrEmpty() && !int.TryParse(timeLimit.GetComponent<TMP_InputField>().text, out _))
+                return;
+            float limitTime;
+            if (timeLimit.GetComponent<TMP_InputField>().text.IsNullOrEmpty())
+                limitTime = 0;
+            else
+                limitTime = int.Parse(timeLimit.GetComponent<TMP_InputField>().text);
+            StageManager.LimitTime = limitTime;
             PhotonNetwork.Instantiate("Monster/Evil Wizard", Vector3.zero, Quaternion.identity);
             PhotonNetwork.CurrentRoom.IsOpen = false;
-            PV.RPC("SpawnBoss", RpcTarget.All);
-            StageManager.active = true;
+            PV.RPC("SpawnBoss", RpcTarget.All);            
         }
     }
 
@@ -285,7 +303,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     void SpawnBoss()
     {
         spawnButton.SetActive(false);
-        InGameUI.GetComponent<InGameUI>().BossSetUp();
+        timeLimit.SetActive(false);
+        StageManager.active = true;
+        InGameUI.GetComponent<InGameUI>().BossSetUp();        
     }
 
     [PunRPC]
