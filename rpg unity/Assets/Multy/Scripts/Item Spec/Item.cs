@@ -19,8 +19,8 @@ public class Item : MonoBehaviour
     void initItem(string item_name, int cnt)
     {
         itemName = item_name;
-        Sprite sprite = Resources.Load<Sprite>(GameManager.Instance.itemInfoDict[itemName].spriteDirectory);
-        spec = GameManager.Instance.itemInfoDict[itemName];
+        Sprite sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[itemName].spriteDirectory);
+        spec = DataBase.Instance.itemInfoDict[itemName];
         transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = sprite;
         transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = sprite;
         transform.parent = ItemField.transform;

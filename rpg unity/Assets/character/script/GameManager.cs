@@ -5,38 +5,22 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static DataBase;
 
 public class GameManager : MonoBehaviour
 {
+    [System.Serializable]
+    public class SerializeDictRollNameToSpec : CustomDict.SerializableDictionary<string, CharacterSpec> { }
+
     public static GameManager Instance;
-    [System.Serializable]
-    public class SerializeDictItem : CustomDict.SerializableDictionary<string, ItemSpec>
-    {
-
-    }
-    [System.Serializable]
-    public class SerializeDictSkill : CustomDict.SerializableDictionary<string, SkillSpec>
-    {
-
-    }
-    [System.Serializable]
-    public class SerializeDictRollNameToSpec : CustomDict.SerializableDictionary<string, CharacterSpec>
-    {
-
-    }
-
-    //Entitys 코드 분류에 따라, 엔티티 프리팹을 딕셔너리에 저장 
-    public SerializeDictItem itemInfoDict;
-    public SerializeDictSkill skillInfoDict;
-    public SerializeDictRollNameToSpec characterSpecDict;
     public Transform inGameUI;
     public TMP_Dropdown resolutionDropdown;
     public TMP_Text windowText;
     public GameObject PanelList;
     public string skillThumbnailPath = "Character/skills/thumbnails";
+    public SerializeDictRollNameToSpec characterSpecDict;
     void Awake()
-    {
-        Instance = this;
+    {        
         Screen.SetResolution(960, 540, false);        
     }
     
@@ -83,8 +67,8 @@ public class GameManager : MonoBehaviour
         SPUM_SpriteList spriteList = player.GetComponentInChildren<SPUM_SpriteList>();
         foreach (InventoryItem item in equipment)
         {
-            string current_item_sprite = itemInfoDict[item.itemName].spriteDirectory;
-            spriteList.PartsPath[itemInfoDict[item.itemName].itemType] = current_item_sprite;
+            string current_item_sprite = DataBase.Instance.itemInfoDict[item.itemName].spriteDirectory;
+            spriteList.PartsPath[DataBase.Instance.itemInfoDict[item.itemName].itemType] = current_item_sprite;
             //Debug.Log(spriteList.PartsPath[itemInfoDict[item.itemName].itemType]);
         }
         spriteList._hairAndEyeColor = spec.colors;        

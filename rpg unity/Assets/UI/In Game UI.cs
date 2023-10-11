@@ -175,7 +175,7 @@ public class InGameUI : MonoBehaviour
                 Transform currentSlot = skillKeyUI.transform.Find(key);
                 currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(GameManager.Instance.skillThumbnailPath, skillNames[k]));
                 currentSlot.GetChild(2).GetComponent<TMP_Text>().text = keys[k];
-                currentSlot.GetChild(3).GetComponent<TMP_Text>().text = GameManager.Instance.skillInfoDict[skillNames[k]].consumeMana.ToString();
+                currentSlot.GetChild(3).GetComponent<TMP_Text>().text = DataBase.Instance.skillInfoDict[skillNames[k]].consumeMana.ToString();
                 StartCoroutine(CoolDownCoroutine(skillNames[k], 0f));
             }
         }
@@ -216,7 +216,7 @@ public class InGameUI : MonoBehaviour
         {
             Transform currentSlot = skillKeyUI.transform.Find(quickSlotKeys[k].ToLower());
             if(updateSprite)
-                currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(GameManager.Instance.itemInfoDict[keyToItemName[quickSlotKeys[k]]].spriteDirectory);            
+                currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[keyToItemName[quickSlotKeys[k]]].spriteDirectory);            
             
             if (quickInventory.ContainsKey(keyToItemName[quickSlotKeys[k]]))
             {                
@@ -234,7 +234,7 @@ public class InGameUI : MonoBehaviour
     {
         Transform currentSlot = skillKeyUI.transform.Find(key);
         if(updateSprtie)
-            currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(GameManager.Instance.itemInfoDict[keyToItemName[key]].spriteDirectory);        
+            currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[keyToItemName[key]].spriteDirectory);        
         if (quickInventory.ContainsKey(keyToItemName[key]))
         {
             currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;
@@ -256,8 +256,8 @@ public class InGameUI : MonoBehaviour
 
     void consumePotion(string itemName)
     {
-        myCharacterState.ProcessSkill(1, GameManager.Instance.itemInfoDict[itemName].recoveryHealth);
-        myCharacterState.ProcessSkill(5, GameManager.Instance.itemInfoDict[itemName].recoveryMana);
+        myCharacterState.ProcessSkill(1, DataBase.Instance.itemInfoDict[itemName].recoveryHealth);
+        myCharacterState.ProcessSkill(5, DataBase.Instance.itemInfoDict[itemName].recoveryMana);
     }
 
     public void ClickExpandChatLog()

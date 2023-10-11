@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -6,17 +7,27 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using WebSocketSharp;
 
-public class Login : MonoBehaviour
+public class Login : MonoBehaviourPunCallbacks
 {
     // Start is called before the first frame update
     public TMP_InputField pwInputField;
     public TMP_InputField pwCheckInputField;
     public TMP_InputField idInputField;
-    private Selectable currentField;
+    private int maxNumServerPlayer = 20;
+    public TMP_Text currentNumOnlinePlayer;
+    private string selectedCharacterName;
+    public GameObject characterSelectList;
+    public GameObject characterSelectButton;
+    public AccountInfo defaultAccountInfo;    
+
+    public GameObject LoginPanel;
+    public GameObject SelectCharacterPanel;
     void Start()
     {
-        
+        LoginPanel.SetActive(true);
+        SelectCharacterPanel.SetActive(false);
     }
 
     // Update is called once per frame
@@ -32,8 +43,11 @@ public class Login : MonoBehaviour
         }
         else
             Input.imeCompositionMode = IMECompositionMode.Auto;
-        
-       
+
+        /*if (PhotonNetwork.IsConnected)
+        {
+            updatePlayerCount();
+        }*/
     }
 
     public void Show_Hide_PassWordCheck(bool show)
@@ -42,14 +56,14 @@ public class Login : MonoBehaviour
             return;
         if (show)
         {
-            idInputField.transform.position = new Vector3(idInputField.transform.position.x, idInputField.transform.position.y + 50, 0);
-            pwInputField.transform.position = new Vector3(pwInputField.transform.position.x, pwInputField.transform.position.y + 50, 0);
+            idInputField.transform.localPosition = new Vector3(idInputField.transform.localPosition.x, idInputField.transform.localPosition.y + 90, 0);
+            pwInputField.transform.localPosition = new Vector3(pwInputField.transform.localPosition.x, pwInputField.transform.localPosition.y + 90, 0);
             pwCheckInputField.gameObject.SetActive(show);
         }
         else
         {
-            idInputField.transform.position = new Vector3(idInputField.transform.position.x, idInputField.transform.position.y - 50, 0);
-            pwInputField.transform.position = new Vector3(pwInputField.transform.position.x, pwInputField.transform.position.y - 50, 0);
+            idInputField.transform.localPosition = new Vector3(idInputField.transform.localPosition.x, idInputField.transform.localPosition.y - 90, 0);
+            pwInputField.transform.localPosition = new Vector3(pwInputField.transform.localPosition.x, pwInputField.transform.localPosition.y - 90, 0);
             pwCheckInputField.gameObject.SetActive(show);
         }
     }
@@ -71,14 +85,27 @@ public class Login : MonoBehaviour
     {
         if (!pwCheckInputField.gameObject.activeSelf)
         {
-            Debug.Log("login");
+            if (!idInputField.text.IsNullOrEmpty() && !pwInputField.text.IsNullOrEmpty())
+            {
+                PhotonNetwork.ConnectUsingSettings();
+            }
         }
     }
+    public override void OnConnectedToMaster()
+    {
+        PhotonNetwork.JoinLobby();
+    }
 
+    public override void OnJoinedLobby()
+    {
+        LoginPanel.SetActive(false);
+        updateCharacterList();
+        SelectCharacterPanel.SetActive(true);        
+    }
     public void ClickChannel()
     {
         string channelName = EventSystem.current.currentSelectedGameObject.name;
-        PhotonNetwork.JoinRoom(channelName);
+        PhotonNetwork.JoinOrCreateRoom(channelName, new RoomOptions { MaxPlayers = maxNumServerPlayer }, null);
     }
     public void IME_Off()
     {
@@ -95,5 +122,46 @@ public class Login : MonoBehaviour
     {
         Debug.Log("Auto");
         Input.imeCompositionMode = IMECompositionMode.Auto;
+    }
+
+    void updatePlayerCount()
+    {
+        currentNumOnlinePlayer.text = PhotonNetwork.CountOfPlayersInRooms.ToString() + " / " + maxNumServerPlayer.ToString();
+    }
+    void updateCharacterList()
+    {
+
+        foreach (CharacterSpec character in defaultAccountInfo.characterList)
+        {
+            GameObject characterButton = Instantiate(characterSelectButton);
+            List<InventoryItem> equipment = character.equipment;
+            SPUM_SpriteList spriteList = characterButton.transform.GetChild(0).GetComponentInChildren<SPUM_SpriteList>();
+            foreach (InventoryItem item in equipment)
+            {
+                string current_item_sprite = DataBase.Instance.itemInfoDict[item.itemName].spriteDirectory;
+                spriteList.PartsPath[DataBase.Instance.itemInfoDict[item.itemName].itemType] = current_item_sprite;
+                //Debug.Log(spriteList.PartsPath[itemInfoDict[item.itemName].itemType]);
+            }
+            spriteList._hairAndEyeColor = character.colors;
+            spriteList.setSprite();
+
+            characterButton.transform.GetChild(1).name = character.nickName;
+            characterButton.transform.GetChild(2).GetComponent<TMP_Text>().text = character.nickName;
+
+            characterButton.SetActive(true);
+            characterButton.transform.parent = characterSelectList.transform;
+            characterButton.transform.localPosition = Vector3.zero;
+            characterButton.transform.localScale = Vector3.one;
+        }
+    }
+
+    public override void OnJoinedRoom()
+    {
+
+    }
+        public void ClickCharacterSelectButton()
+    {
+        string channelName = EventSystem.current.currentSelectedGameObject.name;
+        PhotonNetwork.JoinOrCreateRoom("palletTown", new RoomOptions { MaxPlayers = maxNumServerPlayer }, null);
     }
 }

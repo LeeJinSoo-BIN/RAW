@@ -96,7 +96,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         List<string> skill_name_list = characterSpec.skillLevel.SD_Keys;        
         for (int i = 0; i < characterSpec.skillLevel.Count; i++)
         {            
-            keyToSkillSpec.Add(skill_key[i], GameManager.Instance.skillInfoDict[skill_name_list[i]]);
+            keyToSkillSpec.Add(skill_key[i], DataBase.Instance.skillInfoDict[skill_name_list[i]]);
             skillActivatedTime.Add(skill_name_list[i], 0f);
             skillNameToKey.Add(skill_name_list[i], skill_key[i]);
         }
@@ -572,7 +572,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             else
             {
                 box.GetChild(2).GetComponent<TMP_Text>().text = cnt.ToString();
-                box.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(GameManager.Instance.itemInfoDict[item].spriteDirectory);
+                box.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[item].spriteDirectory);
                 box.GetChild(1).GetComponent<Image>().color = Color.white;                
             }
             if (cnt == 0)

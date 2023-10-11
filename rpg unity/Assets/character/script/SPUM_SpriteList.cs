@@ -114,11 +114,17 @@ public class SPUM_SpriteList : MonoBehaviour
     {
         foreach (string part in PartsPath.Keys)
         {
-            PV.RPC("changeSprite", RpcTarget.AllBuffered, part, PartsPath[part]);
+            if(PV != null)
+                PV.RPC("changeSprite", RpcTarget.AllBuffered, part, PartsPath[part]);
+            else
+                changeSprite(part, PartsPath[part]);
         }
         for (int k = 0; k < 3; k++)
         {
-            PV.RPC("setColors", RpcTarget.AllBuffered, k, _hairAndEyeColor[k].r, _hairAndEyeColor[k].g, _hairAndEyeColor[k].b);
+            if(PV != null)
+                PV.RPC("setColors", RpcTarget.AllBuffered, k, _hairAndEyeColor[k].r, _hairAndEyeColor[k].g, _hairAndEyeColor[k].b);
+            else
+                setColors(k, _hairAndEyeColor[k].r, _hairAndEyeColor[k].g, _hairAndEyeColor[k].b);
         }
     }
 

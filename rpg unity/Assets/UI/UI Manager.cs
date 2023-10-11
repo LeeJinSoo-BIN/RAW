@@ -179,7 +179,7 @@ public class UIManager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
                 newSkill.name = name;                
                 newSkill.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(GameManager.Instance.skillThumbnailPath, name));
                 newSkill.transform.GetChild(2).GetComponent<TMP_Text>().text = name;
-                string max_level = GameManager.Instance.skillInfoDict[name].maxLevel.ToString();
+                string max_level = DataBase.Instance.skillInfoDict[name].maxLevel.ToString();
                 string current_level = myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel[name].ToString();
                 newSkill.transform.GetChild(3).GetComponent<TMP_Text>().text = current_level + " / " + max_level;                
                 newSkill.transform.SetParent(skillBox.transform, false);
@@ -189,7 +189,7 @@ public class UIManager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
             }
             else
             {
-                string max_level = GameManager.Instance.skillInfoDict[name].maxLevel.ToString();
+                string max_level = DataBase.Instance.skillInfoDict[name].maxLevel.ToString();
                 string current_level = myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel[name].ToString();
                 skillBox.transform.Find(name).transform.GetChild(3).GetComponent<TMP_Text>().text = current_level + " / " + max_level;
             }
