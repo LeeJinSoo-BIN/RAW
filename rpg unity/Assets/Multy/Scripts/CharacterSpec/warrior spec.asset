@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: warrior spec
   m_EditorClassIdentifier: 
   nickName: warrior
+  lastTown: Pallet Town
   maxHealth: 1000
   maxMana: 700
   recoverManaPerThreeSec: 5

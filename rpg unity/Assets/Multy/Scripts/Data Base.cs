@@ -13,8 +13,12 @@ public class DataBase : MonoBehaviour
     
 
     public SerializeDictItem itemInfoDict;
-    public SerializeDictSkill skillInfoDict;    
+    public SerializeDictSkill skillInfoDict;
 
+    public string skillThumbnailPath = "Character/skills/thumbnails";
+
+    public CharacterSpec selectedCharacterSpec;
+    public string currentMapName;
 
     private void Awake()
     {

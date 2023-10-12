@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: mage spec
   m_EditorClassIdentifier: 
   nickName: mage
+  lastTown: Pallet Town
   maxHealth: 700
   maxMana: 1000
   recoverManaPerThreeSec: 5

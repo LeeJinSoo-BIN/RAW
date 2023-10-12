@@ -11,22 +11,20 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     // Start is called before the first frame update
-    public static UIManager Instance;
+    //public static UIManager Instance;
     public GameObject currentFocusWindow;
     public GameObject inventoryPanel;
     public GameObject skillPanel;
     public GameObject optionPanel;
-    public HashSet<GameObject> openedWindows = new HashSet<GameObject>();
-    public LayerMask panelMask;
-    public GameObject myCharacter;
-    RaycastHit hit;
+    public HashSet<GameObject> openedWindows = new HashSet<GameObject>();    
+    public GameObject myCharacter;    
     Vector3 distanceMosePos = new Vector3(0f, 0f, 0f);
     private bool draging = false;
-    GameObject skillBox;
-    GameObject skillInfo;
-    void Start()
+    public GameObject skillBox;
+    public GameObject skillInfo;
+    void Awake()
     {
-        Instance = this;
+        //Instance = this;
         inventoryPanel.SetActive(false);
         optionPanel.SetActive(false);
         skillBox = skillPanel.transform.GetChild(2).gameObject;
@@ -112,6 +110,11 @@ public class UIManager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         ResetSkillPanel();
         UpdateSkillPanel();
     }
+
+    public void setUI()
+    {
+
+    }
     public void ClickSkillLevelUpButton()
     {
 
@@ -177,7 +180,7 @@ public class UIManager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
             {
                 GameObject newSkill = Instantiate(skillInfo);
                 newSkill.name = name;                
-                newSkill.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(GameManager.Instance.skillThumbnailPath, name));
+                newSkill.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(DataBase.Instance.skillThumbnailPath, name));
                 newSkill.transform.GetChild(2).GetComponent<TMP_Text>().text = name;
                 string max_level = DataBase.Instance.skillInfoDict[name].maxLevel.ToString();
                 string current_level = myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel[name].ToString();

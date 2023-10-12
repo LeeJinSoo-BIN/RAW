@@ -6,6 +6,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using WebSocketSharp;
 
@@ -24,6 +25,14 @@ public class Login : MonoBehaviourPunCallbacks
 
     public GameObject LoginPanel;
     public GameObject SelectCharacterPanel;
+    private void Awake()
+    {
+        Screen.SetResolution(960, 540, false);
+        PhotonNetwork.SendRate = 60;
+        PhotonNetwork.SerializationRate = 30;
+        Application.targetFrameRate = 60;
+        PhotonNetwork.AutomaticallySyncScene = true;
+    }
     void Start()
     {
         LoginPanel.SetActive(true);
@@ -56,14 +65,14 @@ public class Login : MonoBehaviourPunCallbacks
             return;
         if (show)
         {
-            idInputField.transform.localPosition = new Vector3(idInputField.transform.localPosition.x, idInputField.transform.localPosition.y + 90, 0);
-            pwInputField.transform.localPosition = new Vector3(pwInputField.transform.localPosition.x, pwInputField.transform.localPosition.y + 90, 0);
+            idInputField.transform.localPosition = new Vector3(idInputField.transform.localPosition.x, idInputField.transform.localPosition.y + 95, 0);
+            pwInputField.transform.localPosition = new Vector3(pwInputField.transform.localPosition.x, pwInputField.transform.localPosition.y + 95, 0);
             pwCheckInputField.gameObject.SetActive(show);
         }
         else
         {
-            idInputField.transform.localPosition = new Vector3(idInputField.transform.localPosition.x, idInputField.transform.localPosition.y - 90, 0);
-            pwInputField.transform.localPosition = new Vector3(pwInputField.transform.localPosition.x, pwInputField.transform.localPosition.y - 90, 0);
+            idInputField.transform.localPosition = new Vector3(idInputField.transform.localPosition.x, idInputField.transform.localPosition.y - 95, 0);
+            pwInputField.transform.localPosition = new Vector3(pwInputField.transform.localPosition.x, pwInputField.transform.localPosition.y - 95, 0);
             pwCheckInputField.gameObject.SetActive(show);
         }
     }
@@ -130,11 +139,10 @@ public class Login : MonoBehaviourPunCallbacks
     }
     void updateCharacterList()
     {
-
-        foreach (CharacterSpec character in defaultAccountInfo.characterList)
+        for(int k = 0; k < defaultAccountInfo.characterList.Count; k++)
         {
             GameObject characterButton = Instantiate(characterSelectButton);
-            List<InventoryItem> equipment = character.equipment;
+            List<InventoryItem> equipment = defaultAccountInfo.characterList[k].equipment;
             SPUM_SpriteList spriteList = characterButton.transform.GetChild(0).GetComponentInChildren<SPUM_SpriteList>();
             foreach (InventoryItem item in equipment)
             {
@@ -142,11 +150,11 @@ public class Login : MonoBehaviourPunCallbacks
                 spriteList.PartsPath[DataBase.Instance.itemInfoDict[item.itemName].itemType] = current_item_sprite;
                 //Debug.Log(spriteList.PartsPath[itemInfoDict[item.itemName].itemType]);
             }
-            spriteList._hairAndEyeColor = character.colors;
+            spriteList._hairAndEyeColor = defaultAccountInfo.characterList[k].colors;
             spriteList.setSprite();
 
-            characterButton.transform.GetChild(1).name = character.nickName;
-            characterButton.transform.GetChild(2).GetComponent<TMP_Text>().text = character.nickName;
+            characterButton.transform.GetChild(1).name = k.ToString();
+            characterButton.transform.GetChild(2).GetComponent<TMP_Text>().text = defaultAccountInfo.characterList[k].nickName;
 
             characterButton.SetActive(true);
             characterButton.transform.parent = characterSelectList.transform;
@@ -157,11 +165,15 @@ public class Login : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-
+        PhotonNetwork.NickName = DataBase.Instance.selectedCharacterSpec.nickName;
+        //SceneManager.LoadScene(DataBase.Instance.currentMapName);
+        PhotonNetwork.LoadLevel(DataBase.Instance.currentMapName);
     }
         public void ClickCharacterSelectButton()
     {
-        string channelName = EventSystem.current.currentSelectedGameObject.name;
+        int whichCharacter = int.Parse(EventSystem.current.currentSelectedGameObject.name);
         PhotonNetwork.JoinOrCreateRoom("palletTown", new RoomOptions { MaxPlayers = maxNumServerPlayer }, null);
+        DataBase.Instance.selectedCharacterSpec = defaultAccountInfo.characterList[whichCharacter];
+        DataBase.Instance.currentMapName = defaultAccountInfo.characterList[whichCharacter].lastTown;
     }
 }

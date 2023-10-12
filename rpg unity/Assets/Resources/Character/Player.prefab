@@ -496,11 +496,11 @@ GameObject:
   - component: {fileID: 5222682414527307526}
   - component: {fileID: -2677639423468516633}
   - component: {fileID: 2703929767633843399}
-  - component: {fileID: 8582268070166807158}
-  - component: {fileID: 2919887382818646889}
   - component: {fileID: 6093407450503403606}
+  - component: {fileID: 8454928352174660119}
   - component: {fileID: 2525424354244394760}
   - component: {fileID: -3376386395603907257}
+  - component: {fileID: 8582268070166807158}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -626,48 +626,6 @@ Rigidbody2D:
   m_SleepingMode: 0
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &8582268070166807158
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2067154607245451622}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents:
-  - {fileID: 2919887382818646889}
-  - {fileID: 6093407450503403606}
-  - {fileID: 2525424354244394760}
-  - {fileID: -3376386395603907257}
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
---- !u!114 &2919887382818646889
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2067154607245451622}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e7cb724808c322458aa4d15f5035fa9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizeVelocity: 1
-  m_SynchronizeAngularVelocity: 0
-  m_TeleportEnabled: 0
-  m_TeleportIfDistanceGreaterThan: 3
 --- !u!114 &6093407450503403606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -703,7 +661,7 @@ MonoBehaviour:
   skillRangeAreaBar: {fileID: 1447337166237228790}
   skillRangeAreaTargeting: {fileID: 3605601585895083399}
   skillCastingPosition: {fileID: 1518338842775235164}
-  characterState: {fileID: 9197635126964762791}
+  characterState: {fileID: 8454928352174660119}
   inGameUI: {fileID: 0}
   chatInput: {fileID: 0}
   RB: {fileID: 2703929767633843399}
@@ -711,6 +669,26 @@ MonoBehaviour:
   NickNameText: {fileID: 8583234297100577743}
   canvas: {fileID: 3755055751684691459}
   sortingGroup: {fileID: 119079104696226518}
+--- !u!114 &8454928352174660119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2067154607245451622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35f12f740ef9b664bab4f6060b2c63cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterSpec: {fileID: 0}
+  health: {fileID: 6779331874258698343}
+  mana: {fileID: 2812382519298704180}
+  shield: {fileID: 3549845335685227674}
+  power: 0
+  characterAnimator: {fileID: 5222682414527307526}
+  playerControl: {fileID: 6093407450503403606}
+  PV: {fileID: 8582268070166807158}
 --- !u!114 &2525424354244394760
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -796,6 +774,32 @@ MonoBehaviour:
   m_SynchronizeLayers:
   - SynchronizeType: 0
     LayerIndex: 0
+--- !u!114 &8582268070166807158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2067154607245451622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 6093407450503403606}
+  - {fileID: 8454928352174660119}
+  - {fileID: 2525424354244394760}
+  - {fileID: -3376386395603907257}
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &2151046186782198923
 GameObject:
   m_ObjectHideFlags: 0
@@ -2671,8 +2675,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5190928105052631954}
-  - component: {fileID: 9197635126964762791}
-  - component: {fileID: 8922750235409855591}
   m_Layer: 5
   m_Name: state
   m_TagString: Untagged
@@ -2701,49 +2703,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &9197635126964762791
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4812154794525018292}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35f12f740ef9b664bab4f6060b2c63cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  characterSpec: {fileID: 0}
-  health: {fileID: 6779331874258698343}
-  mana: {fileID: 2812382519298704180}
-  shield: {fileID: 3549845335685227674}
-  power: 0
-  characterAnimator: {fileID: 5222682414527307526}
-  playerControl: {fileID: 6093407450503403606}
-  PV: {fileID: 8922750235409855591}
---- !u!114 &8922750235409855591
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4812154794525018292}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents:
-  - {fileID: 9197635126964762791}
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
 --- !u!1 &5274105675958941916
 GameObject:
   m_ObjectHideFlags: 0

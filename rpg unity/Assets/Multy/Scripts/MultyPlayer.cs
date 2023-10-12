@@ -80,13 +80,15 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
         playerGroup = GameObject.Find("Player Group");
         enemyGroup = GameObject.Find("Enemy Group");
-        Transform inGameUICanvas = GameObject.Find("In Game UI Canvas").transform;
-        inGameUI = inGameUICanvas.GetComponent<InGameUI>();        
-        chatInput = inGameUICanvas.GetChild(0).GetChild(3).GetChild(1).GetComponent<TMP_InputField>();
-        inventoryUi = GameObject.Find("Panel Canvas").transform.Find("inventory Panel").gameObject;
-        itemBox = inventoryUi.transform.GetChild(2).gameObject;        
-        itemDropField = GameObject.Find("Item Field").gameObject;        
-
+        if (PV.IsMine)
+        {
+            Transform inGameUICanvas = GameObject.Find("In Game UI Canvas").transform;
+            inGameUI = inGameUICanvas.GetComponent<InGameUI>();
+            chatInput = inGameUICanvas.Find("Game").Find("Chat").Find("chat Input").GetComponent<TMP_InputField>();
+            inventoryUi = GameObject.Find("Panel Canvas").transform.Find("inventory Panel").gameObject;
+            itemBox = inventoryUi.transform.GetChild(2).gameObject;
+            itemDropField = GameObject.Find("Item Field").gameObject;
+        }
         transform.parent = playerGroup.transform;        
     }
     public void loadData()
@@ -186,10 +188,6 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             }
             if (!chatInput.isFocused)
             {
-                /*if (Input.GetKeyDown(KeyCode.I))
-                {
-                    inventoryUi.SetActive(!inventoryUi.activeSelf);
-                }*/
                 if (Input.GetKeyDown(KeyCode.S))
                 {
                     goalPos = transform.position;

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: archer spec
   m_EditorClassIdentifier: 
   nickName: archer
+  lastTown: Pallet Town
   maxHealth: 800
   maxMana: 900
   recoverManaPerThreeSec: 5

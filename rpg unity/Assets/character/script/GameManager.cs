@@ -1,3 +1,4 @@
+using Photon.Pun;
 using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
@@ -5,28 +6,29 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using static DataBase;
 
 public class GameManager : MonoBehaviour
-{
-    [System.Serializable]
-    public class SerializeDictRollNameToSpec : CustomDict.SerializableDictionary<string, CharacterSpec> { }
-
-    public static GameManager Instance;
+{   
     public Transform inGameUI;
     public TMP_Dropdown resolutionDropdown;
     public TMP_Text windowText;
     public GameObject PanelList;
-    public string skillThumbnailPath = "Character/skills/thumbnails";
-    public SerializeDictRollNameToSpec characterSpecDict;
+    //public string skillThumbnailPath = "Character/skills/thumbnails";    
     void Awake()
     {        
-        Screen.SetResolution(960, 540, false);        
+        //Screen.SetResolution(960, 540, false);
     }
-    
-    public void setup(GameObject player, string roll)
+
+    private void Start()
     {
-        CharacterSpec loadedSpec = loadCharacterSpec(roll);
+        GameObject player = PhotonNetwork.Instantiate("Character/Player", Vector3.zero, Quaternion.identity);
+        setup(player);
+        GameObject.Find("Main Camera").transform.GetComponent<CameraFollow>().myCharacterTransform = player.transform;
+    }
+
+    public void setup(GameObject player)
+    {
+        CharacterSpec loadedSpec = DataBase.Instance.selectedCharacterSpec;
         player.GetComponent<MultyPlayer>().characterState.characterSpec = loadedSpec;
         player.GetComponent<MultyPlayer>().loadData();
         equipItem(player);
@@ -39,7 +41,7 @@ public class GameManager : MonoBehaviour
         PanelList.GetComponent<UIManager>().SetUP();
         Debug.Log("set up ingame ui");
     }
-    CharacterSpec loadCharacterSpec(string roll)
+    /*CharacterSpec loadCharacterSpec(string roll)
     {
         CharacterSpec spec = new CharacterSpec();
         CharacterSpec defaultSpec = characterSpecDict[roll];
@@ -58,7 +60,7 @@ public class GameManager : MonoBehaviour
         spec.equipment = defaultSpec.equipment;
         spec.colors = defaultSpec.colors;
         return spec;
-    }
+    }*/
 
     void equipItem(GameObject player)
     {
