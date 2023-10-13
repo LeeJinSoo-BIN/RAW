@@ -25,15 +25,17 @@ public class InGameUI : MonoBehaviour
     public TMP_Text currentManaText;
 
     public GameObject Boss;
-    public Slider uiBossHealth;
-    public Slider bossHealth;
-    public TMP_Text bossMaxHealthText;
-    public TMP_Text bossCurrentHealthText;
-    private bool bossConnected;
     public MonsterState bossState;
+    public Slider bossHealth;
 
     public GameObject BossStateUI;
-    public GameObject BossSpawnButton;
+    public Slider uiBossHealth;    
+    public TMP_Text bossMaxHealthText;
+    public TMP_Text bossCurrentHealthText;
+    private bool bossConnected;    
+
+    
+    public GameObject StageUI;
 
     public GameObject CharacterProfile;
     
@@ -48,6 +50,11 @@ public class InGameUI : MonoBehaviour
     public RectTransform ChatBox;
     public RectTransform ChatExpandButtonIcon;
     public Button ChatExpandButton;
+
+    private void Start()
+    {
+        BossStateUI.SetActive(false);        
+    }
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4))
@@ -69,12 +76,7 @@ public class InGameUI : MonoBehaviour
         {
             keyToItemName.Add(quickSlotKeys[k], "");
         }
-
         setKeyMap();
-
-        if (GameObject.Find("Enemy Group").transform.childCount > 0)
-            BossSpawnButton.SetActive(false);
-        
         StartCoroutine(update_health());
     }
 

@@ -722,7 +722,7 @@ MonoBehaviour:
     m_Bits: 512
   goalPos: {x: 0, y: 0, z: 0}
   pointSpeed: 5
-  characterMoveSpeed: 1
+  characterMoveSpeed: 1.2
   characterAnimator: {fileID: 5222682414527307526}
   skillRadiusArea: {fileID: 3979841789867000375}
   skillRadiusLengthPoint: {fileID: 8235665384502179872}
