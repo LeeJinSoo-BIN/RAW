@@ -132,7 +132,6 @@ GameObject:
   - component: {fileID: 3448170615804940042}
   - component: {fileID: 5190247538210213919}
   - component: {fileID: 2852581488637255446}
-  - component: {fileID: 9018397326211550198}
   m_Layer: 5
   m_Name: default UI
   m_TagString: Untagged
@@ -204,18 +203,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &9018397326211550198
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4173961003821122995}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02e7df0d994df3e4b9b8593585d50bdb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &4603124958258486864
 GameObject:
   m_ObjectHideFlags: 0
@@ -762,7 +749,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 9018397326211550198}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UIPanel, Assembly-CSharp
         m_MethodName: CloseButtonClick
         m_Mode: 1

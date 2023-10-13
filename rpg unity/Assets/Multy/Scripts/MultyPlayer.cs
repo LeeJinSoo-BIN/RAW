@@ -75,21 +75,21 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
         NickNameText.text = PV.IsMine ? PhotonNetwork.NickName : PV.Owner.NickName;
         NickNameText.color = PV.IsMine ? Color.green : Color.red;
-
-        //sortingGroup.sortingOrder = PV.IsMine ? 1 : 0;
-
         playerGroup = GameObject.Find("Player Group");
-        enemyGroup = GameObject.Find("Enemy Group");
+        enemyGroup = GameObject.Find("Enemy Group");        
+        //sortingGroup.sortingOrder = PV.IsMine ? 1 : 0;        
         if (PV.IsMine)
         {
+            
             Transform inGameUICanvas = GameObject.Find("In Game UI Canvas").transform;
             inGameUI = inGameUICanvas.GetComponent<InGameUI>();
             chatInput = inGameUICanvas.Find("Game").Find("Chat").Find("chat Input").GetComponent<TMP_InputField>();
             inventoryUi = GameObject.Find("Panel Canvas").transform.Find("inventory Panel").gameObject;
             itemBox = inventoryUi.transform.GetChild(2).gameObject;
             itemDropField = GameObject.Find("Item Field").gameObject;
+            
         }
-        transform.parent = playerGroup.transform;        
+        transform.parent = playerGroup.transform;
     }
     public void loadData()
     {
@@ -97,7 +97,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         PV.RPC("setName", RpcTarget.AllBuffered, characterSpec.nickName + PV.ViewID.ToString());
         List<string> skill_name_list = characterSpec.skillLevel.SD_Keys;        
         for (int i = 0; i < characterSpec.skillLevel.Count; i++)
-        {            
+        {
             keyToSkillSpec.Add(skill_key[i], DataBase.Instance.skillInfoDict[skill_name_list[i]]);
             skillActivatedTime.Add(skill_name_list[i], 0f);
             skillNameToKey.Add(skill_name_list[i], skill_key[i]);

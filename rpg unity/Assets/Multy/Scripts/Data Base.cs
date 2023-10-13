@@ -16,7 +16,7 @@ public class DataBase : MonoBehaviour
     public SerializeDictSkill skillInfoDict;
 
     public string skillThumbnailPath = "Character/skills/thumbnails";
-
+    public AccountInfo defaultAccountInfo;
     public CharacterSpec selectedCharacterSpec;
     public string currentMapName;
 

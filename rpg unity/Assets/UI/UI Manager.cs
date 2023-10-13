@@ -22,15 +22,20 @@ public class UIManager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     private bool draging = false;
     public GameObject skillBox;
     public GameObject skillInfo;
+
+    public TMP_InputField chatInput;
     void Awake()
     {
         //Instance = this;
         inventoryPanel.SetActive(false);
         optionPanel.SetActive(false);
         skillBox = skillPanel.transform.GetChild(2).gameObject;
-        skillInfo = skillPanel.transform.GetChild(3).gameObject;        
+        skillInfo = skillPanel.transform.GetChild(3).gameObject;
     }
-
+    void Start()
+    {
+        chatInput = GameObject.Find("In Game UI Canvas").transform.Find("Game").Find("Chat").Find("chat Input").GetComponent<TMP_InputField>();
+    }
     // Update is called once per frame
     void Update()
     {
@@ -53,48 +58,51 @@ public class UIManager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
                 updateCurrentFocusWindow(optionPanel);
             }
         }
-        else if (Input.GetKeyDown(KeyCode.I))
+        if (!chatInput.isFocused)
         {
-            if (inventoryPanel.activeSelf)
+            if (Input.GetKeyDown(KeyCode.I))
             {
-                if (currentFocusWindow == inventoryPanel)
+                if (inventoryPanel.activeSelf)
                 {
-                    inventoryPanel.SetActive(false);
-                    openedWindows.Remove(inventoryPanel);
-                    updateCurrentFocusWindow();
+                    if (currentFocusWindow == inventoryPanel)
+                    {
+                        inventoryPanel.SetActive(false);
+                        openedWindows.Remove(inventoryPanel);
+                        updateCurrentFocusWindow();
+                    }
+                    else
+                    {
+                        currentFocusWindow.GetComponent<Canvas>().sortingOrder -= 1;
+                        inventoryPanel.GetComponent<Canvas>().sortingOrder = openedWindows.Count + 5;
+                        currentFocusWindow = inventoryPanel;
+                    }
                 }
                 else
                 {
-                    currentFocusWindow.GetComponent<Canvas>().sortingOrder -= 1;
-                    inventoryPanel.GetComponent<Canvas>().sortingOrder = openedWindows.Count + 5;
-                    currentFocusWindow = inventoryPanel;
+                    updateCurrentFocusWindow(inventoryPanel);
                 }
             }
-            else
+            else if (Input.GetKeyDown(KeyCode.K))
             {
-                updateCurrentFocusWindow(inventoryPanel);
-            }
-        }
-        else if (Input.GetKeyDown(KeyCode.K))
-        {
-            if (skillPanel.activeSelf)
-            {
-                if (currentFocusWindow == skillPanel)
+                if (skillPanel.activeSelf)
                 {
-                    skillPanel.SetActive(false);
-                    openedWindows.Remove(skillPanel);
-                    updateCurrentFocusWindow();
+                    if (currentFocusWindow == skillPanel)
+                    {
+                        skillPanel.SetActive(false);
+                        openedWindows.Remove(skillPanel);
+                        updateCurrentFocusWindow();
+                    }
+                    else
+                    {
+                        currentFocusWindow.GetComponent<Canvas>().sortingOrder -= 1;
+                        skillPanel.GetComponent<Canvas>().sortingOrder = openedWindows.Count + 5;
+                        currentFocusWindow = skillPanel;
+                    }
                 }
                 else
                 {
-                    currentFocusWindow.GetComponent<Canvas>().sortingOrder -= 1;
-                    skillPanel.GetComponent<Canvas>().sortingOrder = openedWindows.Count + 5;
-                    currentFocusWindow = skillPanel;
+                    updateCurrentFocusWindow(skillPanel);
                 }
-            }
-            else
-            {
-                updateCurrentFocusWindow(skillPanel);
             }
         }
         if (Input.GetMouseButtonDown(0))
@@ -102,7 +110,7 @@ public class UIManager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
             if (EventSystem.current.IsPointerOverGameObject() == false)
             {
                 currentFocusWindow = null;
-            }            
+            }
         }
     }
     public void SetUP()
@@ -162,6 +170,11 @@ public class UIManager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
             }
         }
     }
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        draging = false;
+    }
+
     public void ResetSkillPanel()
     {
         for(int k = 0; k < skillBox.transform.childCount; k++)
@@ -199,10 +212,7 @@ public class UIManager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         }
     }
 
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        draging = false;
-    }
+    
     public void CloseButtonClick()
     {
         GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;

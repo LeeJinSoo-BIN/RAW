@@ -21,10 +21,14 @@ public class Login : MonoBehaviourPunCallbacks
     private string selectedCharacterName;
     public GameObject characterSelectList;
     public GameObject characterSelectButton;
-    public AccountInfo defaultAccountInfo;    
+       
 
     public GameObject LoginPanel;
     public GameObject SelectCharacterPanel;
+    public Button LoginButton;
+
+    public GameObject StatusPop;
+    public TMP_Text connectStatusText;
     private void Awake()
     {
         Screen.SetResolution(960, 540, false);
@@ -53,10 +57,8 @@ public class Login : MonoBehaviourPunCallbacks
         else
             Input.imeCompositionMode = IMECompositionMode.Auto;
 
-        /*if (PhotonNetwork.IsConnected)
-        {
-            updatePlayerCount();
-        }*/
+        
+
     }
 
     public void Show_Hide_PassWordCheck(bool show)
@@ -89,13 +91,25 @@ public class Login : MonoBehaviourPunCallbacks
             }
         }
     }
-
+    IEnumerator LoginMessageUpdate()
+    {
+        while (true)
+        {
+            connectStatusText.text = PhotonNetwork.NetworkClientState.ToString();
+            if (PhotonNetwork.IsConnected)
+                break;
+            yield return null;
+        }
+    }
     public void LogIn()
     {
         if (!pwCheckInputField.gameObject.activeSelf)
         {
             if (!idInputField.text.IsNullOrEmpty() && !pwInputField.text.IsNullOrEmpty())
             {
+                LoginButton.enabled = false;
+                StatusPop.SetActive(true);
+                StartCoroutine(LoginMessageUpdate());
                 PhotonNetwork.ConnectUsingSettings();
             }
         }
@@ -103,6 +117,11 @@ public class Login : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         PhotonNetwork.JoinLobby();
+        StatusPop.SetActive(false);
+    }
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        LoginButton.enabled = true;
     }
 
     public override void OnJoinedLobby()
@@ -139,10 +158,10 @@ public class Login : MonoBehaviourPunCallbacks
     }
     void updateCharacterList()
     {
-        for(int k = 0; k < defaultAccountInfo.characterList.Count; k++)
+        for(int k = 0; k < DataBase.Instance.defaultAccountInfo.characterList.Count; k++)
         {
             GameObject characterButton = Instantiate(characterSelectButton);
-            List<InventoryItem> equipment = defaultAccountInfo.characterList[k].equipment;
+            List<InventoryItem> equipment = DataBase.Instance.defaultAccountInfo.characterList[k].equipment;
             SPUM_SpriteList spriteList = characterButton.transform.GetChild(0).GetComponentInChildren<SPUM_SpriteList>();
             foreach (InventoryItem item in equipment)
             {
@@ -150,11 +169,11 @@ public class Login : MonoBehaviourPunCallbacks
                 spriteList.PartsPath[DataBase.Instance.itemInfoDict[item.itemName].itemType] = current_item_sprite;
                 //Debug.Log(spriteList.PartsPath[itemInfoDict[item.itemName].itemType]);
             }
-            spriteList._hairAndEyeColor = defaultAccountInfo.characterList[k].colors;
+            spriteList._hairAndEyeColor = DataBase.Instance.defaultAccountInfo.characterList[k].colors;
             spriteList.setSprite();
 
             characterButton.transform.GetChild(1).name = k.ToString();
-            characterButton.transform.GetChild(2).GetComponent<TMP_Text>().text = defaultAccountInfo.characterList[k].nickName;
+            characterButton.transform.GetChild(2).GetComponent<TMP_Text>().text = DataBase.Instance.defaultAccountInfo.characterList[k].nickName;
 
             characterButton.SetActive(true);
             characterButton.transform.parent = characterSelectList.transform;
@@ -164,16 +183,16 @@ public class Login : MonoBehaviourPunCallbacks
     }
 
     public override void OnJoinedRoom()
-    {
-        PhotonNetwork.NickName = DataBase.Instance.selectedCharacterSpec.nickName;
-        //SceneManager.LoadScene(DataBase.Instance.currentMapName);
-        PhotonNetwork.LoadLevel(DataBase.Instance.currentMapName);
+    {        
+        if (PhotonNetwork.IsMasterClient)
+            PhotonNetwork.LoadLevel(DataBase.Instance.currentMapName);
     }
         public void ClickCharacterSelectButton()
     {
         int whichCharacter = int.Parse(EventSystem.current.currentSelectedGameObject.name);
         PhotonNetwork.JoinOrCreateRoom("palletTown", new RoomOptions { MaxPlayers = maxNumServerPlayer }, null);
-        DataBase.Instance.selectedCharacterSpec = defaultAccountInfo.characterList[whichCharacter];
-        DataBase.Instance.currentMapName = defaultAccountInfo.characterList[whichCharacter].lastTown;
+        DataBase.Instance.selectedCharacterSpec = DataBase.Instance.defaultAccountInfo.characterList[whichCharacter];
+        DataBase.Instance.currentMapName = DataBase.Instance.defaultAccountInfo.characterList[whichCharacter].lastTown;
+        PhotonNetwork.NickName = DataBase.Instance.selectedCharacterSpec.nickName;
     }
 }

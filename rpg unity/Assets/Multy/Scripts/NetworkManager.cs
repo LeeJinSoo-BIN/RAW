@@ -46,6 +46,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public TMP_Text disconnectButtonText;
     public GameObject quitButton;
+
+    private Dictionary<string, int> rollNum = new Dictionary<string, int>();
     private void Awake()
     {
         Screen.SetResolution(960, 540, false);
@@ -69,6 +71,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         DisconnectPanel.SetActive(true);
         LobbyPanel.SetActive(false);
         inGameChatInputField.onSubmit.AddListener(delegate { sendChat(); });
+
+        rollNum.Add("Sword", 0);
+        rollNum.Add("Arrow", 1);
+        rollNum.Add("Magic", 2);
     }
     private void Update()
     {
@@ -251,7 +257,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         ConnectPanel.SetActive(false);
         RespwanPanel.SetActive(false);
         GameObject player = PhotonNetwork.Instantiate("Character/Player", Vector3.zero, Quaternion.identity);
-        //GameManager.Instance.setup(player, roll);
+        DataBase.Instance.selectedCharacterSpec = DataBase.Instance.defaultAccountInfo.characterList[rollNum[roll]];
+        GameObject.Find("GameManager").GetComponent<GameManager>().setup(player);
 
         if (PhotonNetwork.IsMasterClient)
             spawnButton.SetActive(true);        
