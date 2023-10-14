@@ -7,8 +7,10 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class UIManager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
 {
     // Start is called before the first frame update
     //public static UIManager Instance;
@@ -36,6 +38,8 @@ public class UIManager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         //Instance = this;
         inventoryPanel.SetActive(false);
         optionPanel.SetActive(false);
+        skillPanel.SetActive(false);
+        partyPanel.SetActive(false);
         chatInput = GameObject.Find("In Game UI Canvas").transform.Find("Game").Find("Chat").Find("chat Input").GetComponent<TMP_InputField>();
         //skillBox = skillPanel.transform.GetChild(2).gameObject;
         //skillInfo = skillPanel.transform.GetChild(3).gameObject;
@@ -218,15 +222,18 @@ public class UIManager : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public void UpdatePartyPanel()
     {
+        if (!PhotonNetwork.InRoom)
+            return;
         UpdatePartyMember();
         UpdateInGameUser();
     }
     public void UpdatePartyMember()
     {
-
+        
     }
     public void UpdateInGameUser()
     {
+        Player[] players = PhotonNetwork.PlayerList;
 
     }
     public void CloseButtonClick()
