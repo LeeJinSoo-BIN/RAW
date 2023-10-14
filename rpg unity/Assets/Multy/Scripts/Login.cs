@@ -9,6 +9,9 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using WebSocketSharp;
+using System;
+using System.Data;
+using MySql.Data.MySqlClient;
 
 public class Login : MonoBehaviourPunCallbacks
 {
@@ -29,6 +32,7 @@ public class Login : MonoBehaviourPunCallbacks
 
     public GameObject StatusPop;
     public TMP_Text connectStatusText;
+
     private void Awake()
     {
         Screen.SetResolution(960, 540, false);
@@ -46,7 +50,7 @@ public class Login : MonoBehaviourPunCallbacks
     // Update is called once per frame
     void Update()
     {
-        if (pwInputField.isFocused || pwCheckInputField.isFocused) // password 에 포커스가 되어있을때
+        if (pwInputField.isFocused || pwCheckInputField.isFocused) // password ?? ???????? ??????????
         {
             Input.imeCompositionMode = IMECompositionMode.Off;
         }
@@ -101,19 +105,62 @@ public class Login : MonoBehaviourPunCallbacks
             yield return null;
         }
     }
-    public void LogIn()
+
+    public void OnLoginButtonClicked()
     {
         if (!pwCheckInputField.gameObject.activeSelf)
         {
             if (!idInputField.text.IsNullOrEmpty() && !pwInputField.text.IsNullOrEmpty())
             {
-                LoginButton.enabled = false;
-                StatusPop.SetActive(true);
-                StartCoroutine(LoginMessageUpdate());
-                PhotonNetwork.ConnectUsingSettings();
+                try
+                {
+                    MySqlConnection conn = DBControl.SqlConn;
+
+                    conn.Open();
+
+                    int loginStatus = 0;
+
+                    string loginId = idInputField.text;
+                    string loginPw = pwInputField.text;
+
+                    string selectQuery = "SELECT * FROM account WHERE name = \'" + loginId + "\' ";
+
+                    MySqlCommand selectCommand = new MySqlCommand(selectQuery, conn);
+                    MySqlDataReader userAccount = selectCommand.ExecuteReader();
+
+                    while (userAccount.Read())
+                    {
+                        if (loginId == (string)userAccount["name"] && loginPw == (string)userAccount["password"])
+                        {
+                            loginStatus = 1;
+                        }
+                    }
+
+                    conn.Close();
+
+                    if (loginStatus == 1)
+                    {
+                        Debug.Log("Success");
+
+                        LoginButton.enabled = false;
+                        StatusPop.SetActive(true);
+                        StartCoroutine(LoginMessageUpdate());
+                        PhotonNetwork.ConnectUsingSettings();
+                    }
+                    else
+                    {
+                        Debug.Log("Fail");
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e.Message);
+                }
             }
         }
+        
     }
+
     public override void OnConnectedToMaster()
     {
         PhotonNetwork.JoinLobby();
