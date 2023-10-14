@@ -15,7 +15,6 @@ using MySql.Data.MySqlClient;
 
 public class Login : MonoBehaviourPunCallbacks
 {
-    // Start is called before the first frame update
     public TMP_InputField pwInputField;
     public TMP_InputField pwCheckInputField;
     public TMP_InputField idInputField;
@@ -25,7 +24,6 @@ public class Login : MonoBehaviourPunCallbacks
     public GameObject characterSelectList;
     public GameObject characterSelectButton;
        
-
     public GameObject LoginPanel;
     public GameObject SelectCharacterPanel;
     public Button LoginButton;
@@ -47,7 +45,6 @@ public class Login : MonoBehaviourPunCallbacks
         SelectCharacterPanel.SetActive(false);
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (pwInputField.isFocused || pwCheckInputField.isFocused) // password ?? ???????? ??????????
@@ -60,9 +57,6 @@ public class Login : MonoBehaviourPunCallbacks
         }
         else
             Input.imeCompositionMode = IMECompositionMode.Auto;
-
-        
-
     }
 
     public void Show_Hide_PassWordCheck(bool show)
@@ -88,13 +82,43 @@ public class Login : MonoBehaviourPunCallbacks
         if (pwCheckInputField.gameObject.activeSelf)
         {
             if (pwCheckInputField.text == pwInputField.text)
-                Debug.Log("account");
+            {
+                try
+                {
+                    MySqlConnection conn = DBControl.SqlConn;
+
+                    conn.Open();
+
+                    string loginId = idInputField.text;
+                    string loginPw = pwInputField.text;
+
+                    string insertQuery = "INSERT INTO account (name, password) VALUES (\'" + loginId + "\', \'" + loginPw + "\'); ";
+
+                    MySqlCommand command = new MySqlCommand(insertQuery, conn);
+
+                    if (command.ExecuteNonQuery() == 1)
+                    {
+                        Debug.Log("register success");
+                    }
+                    else
+                    {
+                        Debug.Log("fail");
+                    }
+
+                    conn.Close();
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e.Message);
+                }
+            }
             else
             {
                 Debug.Log("wrong");
             }
         }
     }
+
     IEnumerator LoginMessageUpdate()
     {
         while (true)
@@ -108,9 +132,12 @@ public class Login : MonoBehaviourPunCallbacks
 
     public void OnLoginButtonClicked()
     {
+        string loginId = idInputField.text;
+        string loginPw = pwInputField.text;
+
         if (!pwCheckInputField.gameObject.activeSelf)
         {
-            if (!idInputField.text.IsNullOrEmpty() && !pwInputField.text.IsNullOrEmpty())
+            if (!loginId.IsNullOrEmpty() && !loginPw.IsNullOrEmpty())
             {
                 try
                 {
@@ -119,9 +146,6 @@ public class Login : MonoBehaviourPunCallbacks
                     conn.Open();
 
                     int loginStatus = 0;
-
-                    string loginId = idInputField.text;
-                    string loginPw = pwInputField.text;
 
                     string selectQuery = "SELECT * FROM account WHERE name = \'" + loginId + "\' ";
 
@@ -158,7 +182,6 @@ public class Login : MonoBehaviourPunCallbacks
                 }
             }
         }
-        
     }
 
     public override void OnConnectedToMaster()
@@ -166,6 +189,7 @@ public class Login : MonoBehaviourPunCallbacks
         PhotonNetwork.JoinLobby();
         StatusPop.SetActive(false);
     }
+
     public override void OnDisconnected(DisconnectCause cause)
     {
         LoginButton.enabled = true;
@@ -177,16 +201,19 @@ public class Login : MonoBehaviourPunCallbacks
         updateCharacterList();
         SelectCharacterPanel.SetActive(true);        
     }
+
     public void ClickChannel()
     {
         string channelName = EventSystem.current.currentSelectedGameObject.name;
         PhotonNetwork.JoinOrCreateRoom(channelName, new RoomOptions { MaxPlayers = maxNumServerPlayer }, null);
     }
+
     public void IME_Off()
     {
         Debug.Log("Off");
         Input.imeCompositionMode = IMECompositionMode.Off;
     }
+
     public void IME_On()
     {
         Debug.Log("On");
@@ -203,6 +230,7 @@ public class Login : MonoBehaviourPunCallbacks
     {
         currentNumOnlinePlayer.text = PhotonNetwork.CountOfPlayersInRooms.ToString() + " / " + maxNumServerPlayer.ToString();
     }
+
     void updateCharacterList()
     {
         for(int k = 0; k < DataBase.Instance.defaultAccountInfo.characterList.Count; k++)
@@ -234,7 +262,8 @@ public class Login : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsMasterClient)
             PhotonNetwork.LoadLevel(DataBase.Instance.currentMapName);
     }
-        public void ClickCharacterSelectButton()
+
+    public void ClickCharacterSelectButton()
     {
         int whichCharacter = int.Parse(EventSystem.current.currentSelectedGameObject.name);
         PhotonNetwork.JoinOrCreateRoom("palletTown", new RoomOptions { MaxPlayers = maxNumServerPlayer }, null);
