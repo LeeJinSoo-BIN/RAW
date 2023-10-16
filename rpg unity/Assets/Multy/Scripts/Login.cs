@@ -28,8 +28,9 @@ public class Login : MonoBehaviourPunCallbacks
     public GameObject SelectCharacterPanel;
     public Button LoginButton;
 
-    public GameObject StatusPop;
-    public TMP_Text connectStatusText;
+    public GameObject PopPanel;
+    public TMP_Text popTitle;
+    public TMP_Text popContent;
 
     private void Awake()
     {
@@ -86,8 +87,8 @@ public class Login : MonoBehaviourPunCallbacks
                 try
                 {
                     MySqlConnection conn = DBControl.SqlConn;
-
-                    conn.Open();
+                    if (conn.State != ConnectionState.Open)
+                        conn.Open();
 
                     string loginId = idInputField.text;
                     string loginPw = pwInputField.text;
@@ -99,37 +100,42 @@ public class Login : MonoBehaviourPunCallbacks
                     if (command.ExecuteNonQuery() == 1)
                     {
                         Debug.Log("register success");
+                        StartCoroutine(popMessage("계정 생성 성공", "로그인 해주세요."));
                     }
                     else
                     {
                         Debug.Log("fail");
+                        StartCoroutine(popMessage("계정 생성 실패", "서버 오류"));
                     }
-
-                    conn.Close();
+                    if (conn.State == ConnectionState.Open)
+                        conn.Close();
                 }
                 catch (Exception e)
                 {
-                    Debug.Log(e.Message);
+                    Debug.LogError(e.Message);
+                    if (e.Message.Contains("Duplicate"))
+                    {
+                        StartCoroutine(popMessage("계정 생성 실패", "이미 등록된 아이디 입니다."));
+                    }
+                    else
+                        StartCoroutine(popMessage("서버 오류", e.Message));
                 }
             }
             else
             {
                 Debug.Log("wrong");
+                StartCoroutine(popMessage("오류", "비밀번호가 일치하지 않습니다."));
             }
         }
     }
 
-    IEnumerator LoginMessageUpdate()
+    public void ConnectWithOutLogin()
     {
-        while (true)
-        {
-            connectStatusText.text = PhotonNetwork.NetworkClientState.ToString();
-            if (PhotonNetwork.IsConnected)
-                break;
-            yield return null;
-        }
+        LoginButton.enabled = false;
+        PopPanel.SetActive(true);
+        StartCoroutine(LoginMessageUpdate());
+        PhotonNetwork.ConnectUsingSettings();
     }
-
     public void OnLoginButtonClicked()
     {
         string loginId = idInputField.text;
@@ -142,8 +148,8 @@ public class Login : MonoBehaviourPunCallbacks
                 try
                 {
                     MySqlConnection conn = DBControl.SqlConn;
-
-                    conn.Open();
+                    if (conn.State != ConnectionState.Open)
+                        conn.Open();
 
                     int loginStatus = 0;
 
@@ -159,26 +165,28 @@ public class Login : MonoBehaviourPunCallbacks
                             loginStatus = 1;
                         }
                     }
-
-                    conn.Close();
+                    if(conn.State == ConnectionState.Open)
+                        conn.Close();
 
                     if (loginStatus == 1)
                     {
                         Debug.Log("Success");
 
                         LoginButton.enabled = false;
-                        StatusPop.SetActive(true);
+                        PopPanel.SetActive(true);
                         StartCoroutine(LoginMessageUpdate());
                         PhotonNetwork.ConnectUsingSettings();
                     }
                     else
                     {
                         Debug.Log("Fail");
+                        StartCoroutine(popMessage("로그인 실패", "아이디와 비밀번호를 확인해주세요."));
                     }
                 }
                 catch (Exception e)
                 {
-                    Debug.Log(e.Message);
+                    Debug.LogError(e.Message);
+                    StartCoroutine(popMessage("서버 오류", e.Message));
                 }
             }
         }
@@ -187,7 +195,7 @@ public class Login : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         PhotonNetwork.JoinLobby();
-        StatusPop.SetActive(false);
+        PopPanel.SetActive(false);
     }
 
     public override void OnDisconnected(DisconnectCause cause)
@@ -271,4 +279,30 @@ public class Login : MonoBehaviourPunCallbacks
         DataBase.Instance.currentMapName = DataBase.Instance.defaultAccountInfo.characterList[whichCharacter].lastTown;
         PhotonNetwork.NickName = DataBase.Instance.selectedCharacterSpec.nickName;
     }
+
+    IEnumerator popMessage(string title, string content, float popTime = 2f)
+    {
+        popTitle.text = title;
+        popContent.text = content;
+        PopPanel.SetActive(true);
+        float _time = 0f;
+        while(_time < popTime)
+        {
+            _time += Time.deltaTime;
+            yield return null;
+        }
+        PopPanel.SetActive(false);
+    }
+    IEnumerator LoginMessageUpdate()
+    {
+        popTitle.text = "접속중";
+        while (true)
+        {
+            popContent.text = PhotonNetwork.NetworkClientState.ToString();
+            if (PhotonNetwork.IsConnected)
+                break;
+            yield return null;
+        }
+    }
+
 }

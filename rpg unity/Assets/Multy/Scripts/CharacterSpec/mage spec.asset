@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: mage spec
   m_EditorClassIdentifier: 
   nickName: mage
+  roll: "\uB9C8\uBC95\uC0AC"
+  characterLevel: 1
   lastTown: Pallet Town
   maxHealth: 700
   maxMana: 1000
@@ -39,4 +41,3 @@ MonoBehaviour:
   - {r: 1, g: 0.854902, b: 0.28627452, a: 1}
   - {r: 0.25882354, g: 0.4784314, b: 1, a: 1}
   - {r: 0.25882354, g: 0.4784314, b: 1, a: 1}
-  characterLevel: 1

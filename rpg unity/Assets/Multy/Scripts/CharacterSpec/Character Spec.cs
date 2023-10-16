@@ -10,7 +10,10 @@ using UnityEngine;
 public class CharacterSpec : ScriptableObject
 {
     public string nickName;
-    public string lastTown;
+    public string roll;
+    public int characterLevel;
+
+    public string lastTown;    
     public float maxHealth;
     public float maxMana;
     public float recoverManaPerThreeSec;
@@ -25,5 +28,5 @@ public class CharacterSpec : ScriptableObject
     public List<InventoryItem> inventory;
     public List<InventoryItem> equipment;
     public List<Color> colors;
-    public int characterLevel;    
+        
 }

@@ -16,6 +16,9 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
     public Slider mana;
     public Slider shield;
     public float power;
+    public string roll;
+    public int level;
+    public string nick;
     public Animator characterAnimator;
 
     private bool isDeath = false;
@@ -24,30 +27,50 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
     public PhotonView PV;
     public void setUp()
     {
-        PV.RPC("syncMax", RpcTarget.AllBuffered, "shield", characterSpec.maxHealth);
-        PV.RPC("syncMax", RpcTarget.AllBuffered, "health", characterSpec.maxHealth);
-        PV.RPC("syncMax", RpcTarget.AllBuffered, "mana", characterSpec.maxMana);        
-        power = characterSpec.power;
+        PV.RPC("syncInfoNum", RpcTarget.AllBuffered, "shield", characterSpec.maxHealth);
+        PV.RPC("syncInfoNum", RpcTarget.AllBuffered, "health", characterSpec.maxHealth);
+        PV.RPC("syncInfoNum", RpcTarget.AllBuffered, "mana", characterSpec.maxMana);
+        PV.RPC("syncInfoNum", RpcTarget.AllBuffered, "level", (float)characterSpec.characterLevel);
+        PV.RPC("syncInfoNum", RpcTarget.AllBuffered, "power", characterSpec.power);
+        PV.RPC("syncInfoString", RpcTarget.AllBuffered, "nick", characterSpec.nickName);
+        PV.RPC("syncInfoString", RpcTarget.AllBuffered, "roll", characterSpec.roll);        
     }
     [PunRPC]
-    void syncMax(string what, float max)
+    void syncInfoNum(string what, float value)
     {
         if(what == "health")
         {
-            health.maxValue = max;
-            health.value = max;
+            health.maxValue = value;
+            health.value = value;
         }
         else if(what == "shield")
         {
-            shield.maxValue = max;
+            shield.maxValue = value;
             shield.value = 0;
         }
         else if(what == "mana")
         {
-            mana.maxValue = max;
-            mana.value = max;
+            mana.maxValue = value;
+            mana.value = value;
+        }
+        else if(what == "level")
+        {
+            level = (int)value;
+        }
+        else if(what == "power")
+        {
+            power = value;
         }
     }
+    [PunRPC]
+    void syncInfoString(string what, string value)
+    {
+        if (what == "nick")
+            nick = value;
+        else if (what == "roll")
+            roll = value;
+    }
+
     // Update is called once per frame
     void Update()
     {

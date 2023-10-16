@@ -20,8 +20,14 @@ public class DBControl : MonoBehaviour
     {
         try
         {
-            Debug.Log("DB connected");
+            Debug.Log("DB connecting");
             SqlConn = new MySqlConnection(strConn);
+            SqlConn.Open();
+            if (SqlConn.Ping())
+                Debug.Log("DB Connected success");
+            else
+                Debug.Log("DB Connected fail");
+            SqlConn.Close();
         }
         catch (System.Exception e)
         {

@@ -1,7 +1,9 @@
 using Photon.Pun;
+using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class newNetworkManager : MonoBehaviourPunCallbacks
@@ -12,6 +14,10 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     private string chatLog = "";
 
     public PhotonView PV;
+
+    public UIManager UIManager;
+
+    
     void Start()
     {
         inGameChatInputField.onSubmit.AddListener(delegate { sendChat(); });
@@ -46,18 +52,38 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         {
             inGameChatInputField.DeactivateInputField();
             chatEnd = true;
-        }
+        }        
     }
-
+    
     void updateChatLog()
     {
         inGameChatBox.text = chatLog;
     }
 
+    public void InviteParty(Player reciver, string ment)
+    {
+        PV.RPC("sendAndRecieveInviteParty", reciver, ment);
+    }
     [PunRPC]
     void sendChatLog(string chat)
     {
         chatLog += "\n" + chat;
         updateChatLog();
+    }
+
+
+    [PunRPC]
+    void sendAndRecieveInviteParty(string ment)
+    {
+        UIManager.recieveInvite(ment);
+    }
+
+    [PunRPC]
+    void acceptOrRejectInviteParty(bool accept)
+    {
+        if (accept)
+        {
+
+        }
     }
 }

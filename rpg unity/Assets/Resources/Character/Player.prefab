@@ -755,6 +755,9 @@ MonoBehaviour:
   mana: {fileID: 2812382519298704180}
   shield: {fileID: 3549845335685227674}
   power: 0
+  roll: 
+  level: 0
+  nick: 
   characterAnimator: {fileID: 5222682414527307526}
   playerControl: {fileID: 6093407450503403606}
   PV: {fileID: 8582268070166807158}
