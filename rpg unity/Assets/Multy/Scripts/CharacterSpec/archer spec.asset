@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: archer spec
   m_EditorClassIdentifier: 
   nickName: archer
+  roll: "\uAD81\uC218"
+  characterLevel: 1
   lastTown: Pallet Town
   maxHealth: 800
   maxMana: 900
@@ -39,4 +41,3 @@ MonoBehaviour:
   - {r: 0.4431373, g: 0.14901961, b: 0.14901961, a: 1}
   - {r: 0.4431373, g: 0.14901961, b: 0.14901961, a: 1}
   - {r: 0.4431373, g: 0.14901961, b: 0.14901961, a: 1}
-  characterLevel: 1

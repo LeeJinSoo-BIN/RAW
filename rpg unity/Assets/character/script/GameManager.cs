@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
     public TMP_Dropdown resolutionDropdown;
     public TMP_Text windowText;
     public GameObject PanelList;
-    //public string skillThumbnailPath = "Character/skills/thumbnails";    
+    public bool oldVersion = false;
     void Awake()
     {        
         //Screen.SetResolution(960, 540, false);
@@ -21,9 +21,12 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        GameObject player = PhotonNetwork.Instantiate("Character/Player", Vector3.zero, Quaternion.identity);
-        setup(player);
-        GameObject.Find("Main Camera").transform.GetComponent<CameraFollow>().myCharacterTransform = player.transform;
+        if (!oldVersion)
+        {
+            GameObject player = PhotonNetwork.Instantiate("Character/Player", Vector3.zero, Quaternion.identity);
+            setup(player);
+            GameObject.Find("Main Camera").transform.GetComponent<CameraFollow>().myCharacterTransform = player.transform;
+        }
     }
 
     public void setup(GameObject player)

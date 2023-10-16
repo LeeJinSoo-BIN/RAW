@@ -2987,7 +2987,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 484064388}
-  - component: {fileID: 484064387}
   - component: {fileID: 484064389}
   m_Layer: 0
   m_Name: DatabaseManager
@@ -2996,18 +2995,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &484064387
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 484064386}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a3e68ac38faa47f096b67d99fcd51ca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &484064388
 Transform:
   m_ObjectHideFlags: 0
@@ -8697,9 +8684,16 @@ MonoBehaviour:
   inventoryPanel: {fileID: 3238529060519262108}
   skillPanel: {fileID: 26587591}
   optionPanel: {fileID: 2132486862}
+  partyPanel: {fileID: 0}
   myCharacter: {fileID: 0}
-  skillBox: {fileID: 0}
-  skillInfo: {fileID: 0}
+  skillBox: {fileID: 864656742}
+  skillInfo: {fileID: 388280718}
+  inGameUserBox: {fileID: 0}
+  inGameUserInfo: {fileID: 0}
+  partyMemberBox: {fileID: 0}
+  partyMemberInfo: {fileID: 0}
+  chatInput: {fileID: 0}
+  PlayerGroup: {fileID: 0}
 --- !u!114 &1452743546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19674,13 +19668,13 @@ MonoBehaviour:
   maxManaText: {fileID: 647836613}
   currentManaText: {fileID: 1354403079}
   Boss: {fileID: 0}
-  uiBossHealth: {fileID: 3599834601108042755}
+  bossState: {fileID: 0}
   bossHealth: {fileID: 0}
+  BossStateUI: {fileID: 393448478188330761}
+  uiBossHealth: {fileID: 3599834601108042755}
   bossMaxHealthText: {fileID: 8142963458905425925}
   bossCurrentHealthText: {fileID: 4827365045515506141}
-  bossState: {fileID: 0}
-  BossStateUI: {fileID: 393448478188330761}
-  BossSpawnButton: {fileID: 2851534109790667596}
+  StageUI: {fileID: 0}
   CharacterProfile: {fileID: 3088663544086192109}
   skillKeyUI: {fileID: 8564413401944167145}
   ChatBox: {fileID: 1449697055}

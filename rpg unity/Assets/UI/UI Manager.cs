@@ -19,6 +19,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public GameObject skillPanel;
     public GameObject optionPanel;
     public GameObject partyPanel;
+    public GameObject invitePartyPanel;
     public HashSet<GameObject> openedWindows = new HashSet<GameObject>();    
     public GameObject myCharacter;    
     Vector3 distanceMosePos = new Vector3(0f, 0f, 0f);
@@ -28,25 +29,36 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     public GameObject inGameUserBox;
     public GameObject inGameUserInfo;
+    private Dictionary<string, Player> inGameUserList = new Dictionary<string, Player>();
 
     public GameObject partyMemberBox;
     public GameObject partyMemberInfo;
 
     public TMP_InputField chatInput;
+
+    public GameObject PlayerGroup;
+    public newNetworkManager networkManager;
+    public bool oldVersion = false;
     void Awake()
     {
         //Instance = this;
         inventoryPanel.SetActive(false);
         optionPanel.SetActive(false);
         skillPanel.SetActive(false);
-        partyPanel.SetActive(false);
+        if (!oldVersion)
+        {
+            partyPanel.SetActive(false);
+            inGameUserInfo.SetActive(false);
+            invitePartyPanel.SetActive(false);
+        }
         chatInput = GameObject.Find("In Game UI Canvas").transform.Find("Game").Find("Chat").Find("chat Input").GetComponent<TMP_InputField>();
         //skillBox = skillPanel.transform.GetChild(2).gameObject;
         //skillInfo = skillPanel.transform.GetChild(3).gameObject;
     }
     void Start()
     {
-        
+        if (!oldVersion)
+            UpdatePartyPanel();
     }
     // Update is called once per frame
     void Update()
@@ -134,7 +146,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public void ClickSkillLevelUpButton()
     {
 
-    }
+    }    
     public void updateCurrentFocusWindow(GameObject currentWindow = null)
     {        
         if(currentWindow != null)
@@ -191,7 +203,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         }
     }
     public void UpdateSkillPanel()
-    {
+    {        
         List<string> skillName = myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel.SD_Keys;
         foreach (string name in skillName)
         {
@@ -220,6 +232,13 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         }
     }
 
+    public void ClickPartyInviteButton()
+    {
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        Debug.Log(inGameUserList[current_clicked_button.name]);
+        networkManager.InviteParty(inGameUserList[current_clicked_button.name], "초대초대");
+    }
+    
     public void UpdatePartyPanel()
     {
         if (!PhotonNetwork.InRoom)
@@ -227,14 +246,44 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         UpdatePartyMember();
         UpdateInGameUser();
     }
+    
     public void UpdatePartyMember()
     {
         
     }
     public void UpdateInGameUser()
     {
-        Player[] players = PhotonNetwork.PlayerList;
+        for (int k = 0; k < inGameUserBox.transform.childCount; k++)
+        {
+            Destroy(inGameUserBox.transform.GetChild(k).gameObject);
+        }
+        inGameUserList.Clear();
+        foreach (Transform user in PlayerGroup.transform)
+        {
+            if (user.GetComponent<PhotonView>().IsMine)
+            {
+                continue;
+            }
+            else
+            {
+                CharacterState currentUserState = user.GetComponent<CharacterState>();
+                GameObject userInfo = Instantiate(inGameUserInfo);
+                userInfo.transform.GetChild(0).GetComponent<TMP_Text>().text = "닉네임: " + currentUserState.nick;
+                userInfo.transform.GetChild(1).GetComponent<TMP_Text>().text = "Lv. " + currentUserState.level.ToString();
+                userInfo.transform.GetChild(2).GetComponent<TMP_Text>().text = "직업: " + currentUserState.roll;
+                userInfo.transform.GetChild(3).name = currentUserState.nick;
+                inGameUserList.Add(currentUserState.nick, currentUserState.PV.Owner);
+                userInfo.transform.parent = inGameUserBox.transform;
+                userInfo.transform.localScale = Vector3.one;
+                userInfo.SetActive(true);
+            }
+        }
 
+    }
+    public void recieveInvite(string ment)
+    {
+        invitePartyPanel.SetActive(true);
+        invitePartyPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = ment;
     }
     public void CloseButtonClick()
     {

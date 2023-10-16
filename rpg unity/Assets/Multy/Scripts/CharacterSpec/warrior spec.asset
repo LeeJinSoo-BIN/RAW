@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: warrior spec
   m_EditorClassIdentifier: 
   nickName: warrior
+  roll: "\uC804\uC0AC"
+  characterLevel: 1
   lastTown: Pallet Town
   maxHealth: 1000
   maxMana: 700
@@ -39,4 +41,3 @@ MonoBehaviour:
   - {r: 0.5568628, g: 0.5568628, b: 0.5568628, a: 1}
   - {r: 0.7058824, g: 0.6901961, b: 0.19215688, a: 1}
   - {r: 0.7058824, g: 0.6901961, b: 0.19215688, a: 1}
-  characterLevel: 1

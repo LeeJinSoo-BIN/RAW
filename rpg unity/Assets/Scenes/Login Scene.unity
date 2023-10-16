@@ -1003,8 +1003,9 @@ MonoBehaviour:
   LoginPanel: {fileID: 1221797688}
   SelectCharacterPanel: {fileID: 1362998425}
   LoginButton: {fileID: 793463875}
-  StatusPop: {fileID: 1526018537}
-  connectStatusText: {fileID: 410688581}
+  PopPanel: {fileID: 1526018537}
+  popTitle: {fileID: 2017155023}
+  popContent: {fileID: 410688581}
 --- !u!4 &373080856
 Transform:
   m_ObjectHideFlags: 0
@@ -1108,7 +1109,7 @@ GameObject:
   - component: {fileID: 410688582}
   - component: {fileID: 410688581}
   m_Layer: 5
-  m_Name: status
+  m_Name: content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2113,7 +2114,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 373080855}
         m_TargetAssemblyTypeName: Login, Assembly-CSharp
-        m_MethodName: OnLoginButtonClicked
+        m_MethodName: ConnectWithOutLogin
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3198,7 +3199,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1197068840
 Transform:
   m_ObjectHideFlags: 0
@@ -5245,7 +5246,7 @@ GameObject:
   - component: {fileID: 2017155024}
   - component: {fileID: 2017155023}
   m_Layer: 5
-  m_Name: connecting
+  m_Name: title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
