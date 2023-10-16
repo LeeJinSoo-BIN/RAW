@@ -25,8 +25,14 @@ public class DBControl : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            Debug.Log(e.ToString());
+            Debug.Log(e.Message);
         }
+    }
+
+    private void Start()
+    {
+        SqlConn.Open();
+        SqlConn.Close();
     }
 
     private void OnApplicationQuit()

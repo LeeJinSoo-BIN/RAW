@@ -157,6 +157,7 @@ public class Login : MonoBehaviourPunCallbacks
                         if (loginId == (string)userAccount["name"] && loginPw == (string)userAccount["password"])
                         {
                             loginStatus = 1;
+                            break;
                         }
                     }
 
