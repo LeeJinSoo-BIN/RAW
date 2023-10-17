@@ -18,15 +18,16 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     public UIManager UIManager;
 
     public Dictionary<string, party> allPartys = new Dictionary<string, party>();
-    public HashSet<string> captainsList = new HashSet<string>();
+    public HashSet<string> usersInParty = new HashSet<string>();
     public string myPartyCaptainName;
+
     public struct party
     {
         public string partyName;
-        public HashSet<string> partyMembersNickName;        
+        public HashSet<string> partyMembersNickName;
     }
-    
-    
+
+
     void Start()
     {
         inGameChatInputField.onSubmit.AddListener(delegate { sendChat(); });
@@ -61,9 +62,9 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         {
             inGameChatInputField.DeactivateInputField();
             chatEnd = true;
-        }        
+        }
     }
-    
+
     void updateChatLog()
     {
         inGameChatBox.text = chatLog;
@@ -79,26 +80,40 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
 
 
     [PunRPC]
-    void sendAndRecieveInviteParty(string partyName, string fromWho)
+    void sendAndReceiveInviteParty(string partyName, string fromWho)
     {
-        UIManager.recieveInvite(partyName, fromWho);
+        UIManager.receiveInvite(partyName, fromWho);
+        UIManager.UpdatePartyPanel();
     }
     [PunRPC]
-    void sendAndRecieveJoinRequestParty(string fromWho)
+    void sendAndReceiveJoinRequestParty(string fromWho)
     {
-        UIManager.recieveJoinRequest(fromWho);
+        UIManager.receiveJoinRequest(fromWho);
+        UIManager.UpdatePartyPanel();
+    }
+
+    [PunRPC]
+    void kickPartyMember(string captain, string who)
+    {
+        allPartys[captain].partyMembersNickName.Remove(who);
+        if(who == DataBase.Instance.currentCharacterNickname)
+        {
+            myPartyCaptainName = "";
+        }
+        usersInParty.Remove(who);
+        UIManager.UpdatePartyPanel();
     }
 
     [PunRPC]
     void registParty(string partyName, string captain)
-    {        
-        if(!allPartys.ContainsKey(captain) && !captainsList.Contains(captain))
+    {
+        if (!allPartys.ContainsKey(captain))
         {
             party newParty;
             newParty.partyName = partyName;
             newParty.partyMembersNickName = new HashSet<string> { captain };
             allPartys.Add(captain, newParty);
-            captainsList.Add(captain);
+            usersInParty.Add(captain);
         }
         UIManager.UpdatePartyPanel();
     }
@@ -107,35 +122,47 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     void joinParty(string captainName, string member)
     {
         allPartys[captainName].partyMembersNickName.Add(member);
+        if (member == DataBase.Instance.currentCharacterNickname)
+            myPartyCaptainName = captainName;
+        usersInParty.Add(member);
         UIManager.UpdatePartyPanel();
     }
 
     [PunRPC]
     void LeaveParty(string captainName, string leaveName)
     {
-        allPartys[captainName].partyMembersNickName.Remove(leaveName);        
+        allPartys[captainName].partyMembersNickName.Remove(leaveName);
+        if (leaveName == DataBase.Instance.currentCharacterNickname)
+            myPartyCaptainName = "";
+        usersInParty.Remove(leaveName);
+        UIManager.UpdatePartyPanel();
     }
 
     [PunRPC]
     void ChangeCaptain(string captainName, string newCaptainName, bool exit)
     {
-        captainsList.Remove(captainName);
-        captainsList.Add(newCaptainName);
-        allPartys.Add(newCaptainName, allPartys[captainName]);
+        party newParty = allPartys[captainName];
+        allPartys.Add(newCaptainName, newParty);
         allPartys.Remove(captainName);
+        if (myPartyCaptainName == captainName)
+            myPartyCaptainName = newCaptainName;
+        if (captainName == DataBase.Instance.currentCharacterNickname)
+            myPartyCaptainName = "";
         if (exit)
         {
             allPartys[newCaptainName].partyMembersNickName.Remove(captainName);
+            usersInParty.Remove(captainName);
         }
+        UIManager.UpdatePartyPanel();
     }
 
     [PunRPC]
     void BoomParty(string captainName)
     {
         allPartys.Remove(captainName);
-        captainsList.Remove(captainName);
+        usersInParty.Remove(captainName);
         if (myPartyCaptainName == captainName)
             myPartyCaptainName = "";
-
+        UIManager.UpdatePartyPanel();
     }
 }

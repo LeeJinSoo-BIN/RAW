@@ -10,7 +10,6 @@ using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
 using WebSocketSharp;
-using UnityEditor.Experimental.GraphView;
 
 public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
 {
@@ -22,6 +21,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public GameObject optionPanel;
     public GameObject partyPanel;
     public GameObject invitePartyPanel;
+    public GameObject joinPartyRequestPanel;
     public HashSet<GameObject> openedWindows = new HashSet<GameObject>();    
     public GameObject myCharacter;    
     Vector3 distanceMosePos = new Vector3(0f, 0f, 0f);
@@ -57,10 +57,12 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             partyPanel.SetActive(false);            
             invitePartyPanel.SetActive(false);
+            joinPartyRequestPanel.SetActive(false);
 
             inGameUserInfo.SetActive(false);
             partyMemberInfo.SetActive(false);
             partyListInfo.SetActive(false);
+
         }
         chatInput = GameObject.Find("In Game UI Canvas").transform.Find("Game").Find("Chat").Find("chat Input").GetComponent<TMP_InputField>();
         //skillBox = skillPanel.transform.GetChild(2).gameObject;
@@ -104,11 +106,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 }
                 else if (Input.GetKeyDown(KeyCode.K))
                 {
-                    currentKeyDownPanel = skillPanel;
+                    currentKeyDownPanel = skillPanel;                    
                 }
                 else if (Input.GetKeyDown(KeyCode.P))
                 {
-                    currentKeyDownPanel = partyPanel;
+                    currentKeyDownPanel = partyPanel;                    
                 }
                 if (currentKeyDownPanel == null)
                     return;
@@ -123,7 +125,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                     }
                     else
                     {
-                        currentFocusWindow.GetComponent<Canvas>().sortingOrder -= 1;
+                        if(currentFocusWindow != null)
+                            currentFocusWindow.GetComponent<Canvas>().sortingOrder -= 1;
                         currentKeyDownPanel.GetComponent<Canvas>().sortingOrder = openedWindows.Count + 5;
                         currentFocusWindow = currentKeyDownPanel;
                     }
@@ -273,13 +276,18 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             foreach (string memberNickName in networkManager.allPartys[networkManager.myPartyCaptainName].partyMembersNickName)
             {
+                Debug.Log(memberNickName);
                 GameObject newMember = Instantiate(partyMemberInfo);
                 newMember.transform.GetChild(1).GetComponent<TMP_Text>().text = PlayerGroup.transform.Find(memberNickName).GetComponent<CharacterState>().nick;
+                if (memberNickName == networkManager.myPartyCaptainName)
+                    newMember.transform.GetChild(1).GetComponent<TMP_Text>().text = "*" + newMember.transform.GetChild(1).GetComponent<TMP_Text>().text;
                 newMember.transform.GetChild(2).GetComponent<TMP_Text>().text = "Lv. " + PlayerGroup.transform.Find(memberNickName).GetComponent<CharacterState>().level.ToString();
                 newMember.transform.GetChild(3).GetComponent<TMP_Text>().text = "직업: " + PlayerGroup.transform.Find(memberNickName).GetComponent<CharacterState>().roll;
                 newMember.transform.GetChild(4).name = memberNickName;
                 if (networkManager.myPartyCaptainName != DataBase.Instance.currentCharacterNickname)
-                    newMember.transform.GetChild(4).GetComponent<Button>().enabled = false;
+                    newMember.transform.GetChild(4).GetComponent<Button>().interactable = false;
+                else if (memberNickName == DataBase.Instance.currentCharacterNickname)
+                    newMember.transform.GetChild(4).GetComponent<Button>().interactable= false;
                 newMember.transform.parent = partyMemberBox.transform;
                 
                 newMember.SetActive(true);
@@ -302,22 +310,21 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             }
             else
             {
-                if (networkManager.captainsList.Contains(user.name))
-                    continue;
-                if (!networkManager.myPartyCaptainName.IsNullOrEmpty())
-                {
-                    if (networkManager.allPartys[networkManager.myPartyCaptainName].partyMembersNickName.Contains(user.name))
-                        continue;
-                }
                 CharacterState currentUserState = user.GetComponent<CharacterState>();
+                inGameUserList.Add(user.name, currentUserState.PV.Owner);
+                if (networkManager.usersInParty.Contains(user.name))
+                    continue;
+
                 GameObject userInfo = Instantiate(inGameUserInfo);
                 userInfo.transform.GetChild(0).GetComponent<TMP_Text>().text = "닉네임: " + currentUserState.nick;
                 userInfo.transform.GetChild(1).GetComponent<TMP_Text>().text = "Lv. " + currentUserState.level.ToString();
                 userInfo.transform.GetChild(2).GetComponent<TMP_Text>().text = "직업: " + currentUserState.roll;
                 userInfo.transform.GetChild(3).name = user.name;
-                if(!networkManager.captainsList.Contains(DataBase.Instance.currentCharacterNickname))
-                    userInfo.transform.GetChild(3).GetComponent<Button>().enabled = false;
-                inGameUserList.Add(user.name, currentUserState.PV.Owner);
+                if (networkManager.myPartyCaptainName != DataBase.Instance.currentCharacterNickname)
+                    userInfo.transform.GetChild(3).GetComponent<Button>().interactable = false;
+                else if (networkManager.allPartys[DataBase.Instance.currentCharacterNickname].partyMembersNickName.Count >= 3)
+                    userInfo.transform.GetChild(3).GetComponent<Button>().interactable = false;
+
                 userInfo.transform.parent = inGameUserBox.transform;
                 userInfo.transform.localScale = Vector3.one;
                 userInfo.SetActive(true);
@@ -335,15 +342,15 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             GameObject newParty = Instantiate(partyListInfo);
             string partyName = networkManager.allPartys[captain].partyName;
-            string currentMemNum = networkManager.allPartys[captain].partyMembersNickName.Count.ToString();
+            int currentMemNum = networkManager.allPartys[captain].partyMembersNickName.Count;
 
             newParty.transform.GetChild(0).GetComponent<TMP_Text>().text = "파티장: " + PlayerGroup.transform.Find(captain).GetComponent<CharacterState>().nick;
             newParty.transform.GetChild(1).GetComponent<TMP_Text>().text = "파티명: " + partyName;
-            newParty.transform.GetChild(2).GetComponent<TMP_Text>().text = "인원: " + currentMemNum + "/3";
+            newParty.transform.GetChild(2).GetComponent<TMP_Text>().text = "인원: " + currentMemNum.ToString() + "/3";
             newParty.transform.GetChild(3).name = captain;
-            if (captain == networkManager.myPartyCaptainName)
+            if (networkManager.usersInParty.Contains(DataBase.Instance.currentCharacterNickname) || currentMemNum == 3)
             {
-                newParty.transform.GetChild(3).GetComponent<Button>().enabled = false;
+                newParty.transform.GetChild(3).GetComponent<Button>().interactable = false;
             }
 
             newParty.transform.parent = partyListBox.transform;
@@ -355,19 +362,57 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     public void ClickMakePartyButton()
     {
+        if (networkManager.usersInParty.Contains(DataBase.Instance.currentCharacterNickname))
+            return;
         string partyName = partyMakeNameInput.text;
         if (partyMakeNameInput.text.IsNullOrEmpty())
             partyName = "파티 고고";
-        networkManager.PV.RPC("registParty", RpcTarget.AllBuffered, partyName, DataBase.Instance.currentCharacterNickname);
         networkManager.myPartyCaptainName = DataBase.Instance.currentCharacterNickname;
-        UpdatePartyPanel();
+        networkManager.PV.RPC("registParty", RpcTarget.AllBuffered, partyName, DataBase.Instance.currentCharacterNickname);
+        
     }
+
+
+    public void ClickLeavePartyButton()
+    {
+        if (networkManager.myPartyCaptainName.IsNullOrEmpty())
+            return;
+        if(networkManager.myPartyCaptainName == DataBase.Instance.currentCharacterNickname)
+        {
+            if (networkManager.allPartys[networkManager.myPartyCaptainName].partyMembersNickName.Count == 1)
+            {
+                networkManager.PV.RPC("BoomParty", RpcTarget.AllBuffered, DataBase.Instance.currentCharacterNickname);
+            }
+            else
+            {
+                foreach(string memName in networkManager.allPartys[DataBase.Instance.currentCharacterNickname].partyMembersNickName)
+                {
+                    if (memName == DataBase.Instance.currentCharacterNickname)
+                        continue;
+                    networkManager.PV.RPC("ChangeCaptain", RpcTarget.AllBuffered, DataBase.Instance.currentCharacterNickname, memName, true);
+                    break;
+                }
+            }
+        }
+        else
+        {
+            networkManager.PV.RPC("LeaveParty", RpcTarget.AllBuffered, networkManager.myPartyCaptainName, DataBase.Instance.currentCharacterNickname);
+        }
+    }
+
+    public void ClickKickPartyMemberButton()
+    {
+        if (networkManager.myPartyCaptainName != DataBase.Instance.currentCharacterNickname)
+            return;
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        networkManager.PV.RPC("kickPartyMember", RpcTarget.AllBuffered, DataBase.Instance.currentCharacterNickname, current_clicked_button.name);
+    }
+
     public void ClickAcceptPartyInviteButton()
     {
         GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
         if (networkManager.allPartys[current_clicked_button.name].partyMembersNickName.Count < 3)
         {
-            networkManager.myPartyCaptainName = current_clicked_button.name;
             networkManager.PV.RPC("joinParty", RpcTarget.AllBuffered, current_clicked_button.name, DataBase.Instance.currentCharacterNickname);
         }
         else
@@ -386,11 +431,35 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         updateCurrentFocusWindow();
     }
 
+    public void ClickAcceptJoinPartyRequestButton()
+    {
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        if (networkManager.allPartys[DataBase.Instance.currentCharacterNickname].partyMembersNickName.Count < 3)
+        {
+            networkManager.PV.RPC("joinParty", RpcTarget.AllBuffered, DataBase.Instance.currentCharacterNickname, current_clicked_button.name);
+        }
+        else
+        {
+
+        }
+        joinPartyRequestPanel.SetActive(false);        
+        openedWindows.Remove(joinPartyRequestPanel);
+        updateCurrentFocusWindow();
+    }
+
+    public void ClickRejectJoinPartyRequestButton()
+    {
+        joinPartyRequestPanel.SetActive(false);
+        openedWindows.Remove(joinPartyRequestPanel);
+        updateCurrentFocusWindow();
+    }
+
+
     public void ClickPartyInviteButton()
     {
         GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
         Debug.Log(inGameUserList[current_clicked_button.name]);
-        networkManager.PV.RPC("sendAndRecieveInviteParty",
+        networkManager.PV.RPC("sendAndReceiveInviteParty",
             inGameUserList[current_clicked_button.name],
             networkManager.allPartys[networkManager.myPartyCaptainName].partyName,
             DataBase.Instance.currentCharacterNickname);
@@ -399,27 +468,27 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public void ClickPartyJoinRequsetButton()
     {
         GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
-        //networkManager.PV.RPC("sendAndRecieveJoinRequestParty", 방장 Player, DataBase.Instance.currentCharacterNickname);
+        networkManager.PV.RPC("sendAndReceiveJoinRequestParty", inGameUserList[current_clicked_button.name], DataBase.Instance.currentCharacterNickname);
     }
-    public void recieveInvite(string partyName, string captain)
+    public void receiveInvite(string partyName, string captain)
     {        
         updateCurrentFocusWindow(invitePartyPanel);
         CharacterState captainInfo = PlayerGroup.transform.Find(captain).GetComponent<CharacterState>();
         string captainNick = captainInfo.nick;
         string captainLevel = captainInfo.level.ToString();
         string captainRoll = captainInfo.roll;
-        invitePartyPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = string.Format("{0}님\r\n레벨:{1}\r\n직업:{2}\r\n이 파티 초대를 보냈습니다.\r\n\r\n파티명: {3}", captainNick, captainLevel, captainRoll, partyName);
+        invitePartyPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = string.Format("{0}님\r\n레벨: {1}\r\n직업: {2}\r\n이 파티 초대를 보냈습니다.\r\n\r\n파티명: {3}", captainNick, captainLevel, captainRoll, partyName);
         invitePartyPanel.transform.GetChild(2).GetChild(1).name = captain;
     }
-    public void recieveJoinRequest(string fromWho)
-    {/*
-        updateCurrentFocusWindow(invitePartyPanel);
+    public void receiveJoinRequest(string fromWho)
+    {
+        updateCurrentFocusWindow(joinPartyRequestPanel);
         CharacterState captainInfo = PlayerGroup.transform.Find(fromWho).GetComponent<CharacterState>();
         string captainNick = captainInfo.nick;
         string captainLevel = captainInfo.level.ToString();
         string captainRoll = captainInfo.roll;
-        invitePartyPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = string.Format("{0}님\r\n레벨:{1}\r\n직업:{2}\r\n이 파티 초대를 보냈습니다.\r\n\r\n파티명: {3}", captainNick, captainLevel, captainRoll, partyName);
-        invitePartyPanel.transform.GetChild(2).GetChild(1).name = fromWho;*/
+        joinPartyRequestPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = string.Format("{0}님\r\n레벨: {1}\r\n직업: {2}\r\n이 파티 가입 요청을 보냈습니다.", captainNick, captainLevel, captainRoll);
+        joinPartyRequestPanel.transform.GetChild(2).GetChild(1).name = fromWho;
     }
 
     public void CloseButtonClick()
