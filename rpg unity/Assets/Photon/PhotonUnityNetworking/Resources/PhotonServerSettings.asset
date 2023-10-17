@@ -90,6 +90,11 @@ MonoBehaviour:
   - acceptOrRejectInviteParty
   - joinParty
   - registParty
+  - BoomParty
+  - ChangeCaptain
+  - leaveParty
+  - LeaveParty
+  - sendAndRecieveJoinRequestParty
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

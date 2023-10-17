@@ -69,10 +69,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         inGameChatBox.text = chatLog;
     }
 
-    public void InviteParty(Player reciver, string ment, string fromWho)
-    {
-        PV.RPC("sendAndRecieveInviteParty", reciver, ment, fromWho);
-    }
+
     [PunRPC]
     void sendChatLog(string chat)
     {
@@ -82,9 +79,14 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
 
 
     [PunRPC]
-    void sendAndRecieveInviteParty(string ment, string fromWho)
+    void sendAndRecieveInviteParty(string partyName, string fromWho)
     {
-        UIManager.recieveInvite(ment, fromWho);
+        UIManager.recieveInvite(partyName, fromWho);
+    }
+    [PunRPC]
+    void sendAndRecieveJoinRequestParty(string fromWho)
+    {
+        UIManager.recieveJoinRequest(fromWho);
     }
 
     [PunRPC]
@@ -106,5 +108,34 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     {
         allPartys[captainName].partyMembersNickName.Add(member);
         UIManager.UpdatePartyPanel();
+    }
+
+    [PunRPC]
+    void LeaveParty(string captainName, string leaveName)
+    {
+        allPartys[captainName].partyMembersNickName.Remove(leaveName);        
+    }
+
+    [PunRPC]
+    void ChangeCaptain(string captainName, string newCaptainName, bool exit)
+    {
+        captainsList.Remove(captainName);
+        captainsList.Add(newCaptainName);
+        allPartys.Add(newCaptainName, allPartys[captainName]);
+        allPartys.Remove(captainName);
+        if (exit)
+        {
+            allPartys[newCaptainName].partyMembersNickName.Remove(captainName);
+        }
+    }
+
+    [PunRPC]
+    void BoomParty(string captainName)
+    {
+        allPartys.Remove(captainName);
+        captainsList.Remove(captainName);
+        if (myPartyCaptainName == captainName)
+            myPartyCaptainName = "";
+
     }
 }

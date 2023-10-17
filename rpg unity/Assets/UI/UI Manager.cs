@@ -10,6 +10,7 @@ using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
 using WebSocketSharp;
+using UnityEditor.Experimental.GraphView;
 
 public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
 {
@@ -389,7 +390,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     {
         GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
         Debug.Log(inGameUserList[current_clicked_button.name]);
-        networkManager.InviteParty(inGameUserList[current_clicked_button.name],
+        networkManager.PV.RPC("sendAndRecieveInviteParty",
+            inGameUserList[current_clicked_button.name],
             networkManager.allPartys[networkManager.myPartyCaptainName].partyName,
             DataBase.Instance.currentCharacterNickname);
     }
@@ -397,17 +399,29 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public void ClickPartyJoinRequsetButton()
     {
         GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        //networkManager.PV.RPC("sendAndRecieveJoinRequestParty", 방장 Player, DataBase.Instance.currentCharacterNickname);
     }
-    public void recieveInvite(string ment, string captain)
+    public void recieveInvite(string partyName, string captain)
     {        
         updateCurrentFocusWindow(invitePartyPanel);
         CharacterState captainInfo = PlayerGroup.transform.Find(captain).GetComponent<CharacterState>();
         string captainNick = captainInfo.nick;
         string captainLevel = captainInfo.level.ToString();
         string captainRoll = captainInfo.roll;
-        invitePartyPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = string.Format("{0}님\r\n레벨:{1}\r\n직업:{2}\r\n이 파티 초대를 보냈습니다.\r\n\r\n파티명: {3}", captainNick, captainLevel, captainRoll, ment);
+        invitePartyPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = string.Format("{0}님\r\n레벨:{1}\r\n직업:{2}\r\n이 파티 초대를 보냈습니다.\r\n\r\n파티명: {3}", captainNick, captainLevel, captainRoll, partyName);
         invitePartyPanel.transform.GetChild(2).GetChild(1).name = captain;
     }
+    public void recieveJoinRequest(string fromWho)
+    {/*
+        updateCurrentFocusWindow(invitePartyPanel);
+        CharacterState captainInfo = PlayerGroup.transform.Find(fromWho).GetComponent<CharacterState>();
+        string captainNick = captainInfo.nick;
+        string captainLevel = captainInfo.level.ToString();
+        string captainRoll = captainInfo.roll;
+        invitePartyPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = string.Format("{0}님\r\n레벨:{1}\r\n직업:{2}\r\n이 파티 초대를 보냈습니다.\r\n\r\n파티명: {3}", captainNick, captainLevel, captainRoll, partyName);
+        invitePartyPanel.transform.GetChild(2).GetChild(1).name = fromWho;*/
+    }
+
     public void CloseButtonClick()
     {
         GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
