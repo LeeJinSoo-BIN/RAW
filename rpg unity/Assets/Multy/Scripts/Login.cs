@@ -136,7 +136,7 @@ public class Login : MonoBehaviourPunCallbacks
         StartCoroutine(LoginMessageUpdate());
         PhotonNetwork.ConnectUsingSettings();
     }
-    public void OnLoginButtonClicked()
+    public void ClickLoginButton()
     {
         string loginId = idInputField.text;
         string loginPw = pwInputField.text;

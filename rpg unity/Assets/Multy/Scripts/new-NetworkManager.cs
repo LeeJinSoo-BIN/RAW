@@ -17,6 +17,15 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
 
     public UIManager UIManager;
 
+    public Dictionary<string, party> allPartys = new Dictionary<string, party>();
+    public HashSet<string> captainsList = new HashSet<string>();
+    public string myPartyCaptainName;
+    public struct party
+    {
+        public string partyName;
+        public HashSet<string> partyMembersNickName;        
+    }
+    
     
     void Start()
     {
@@ -60,9 +69,9 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         inGameChatBox.text = chatLog;
     }
 
-    public void InviteParty(Player reciver, string ment)
+    public void InviteParty(Player reciver, string ment, string fromWho)
     {
-        PV.RPC("sendAndRecieveInviteParty", reciver, ment);
+        PV.RPC("sendAndRecieveInviteParty", reciver, ment, fromWho);
     }
     [PunRPC]
     void sendChatLog(string chat)
@@ -73,17 +82,29 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
 
 
     [PunRPC]
-    void sendAndRecieveInviteParty(string ment)
+    void sendAndRecieveInviteParty(string ment, string fromWho)
     {
-        UIManager.recieveInvite(ment);
+        UIManager.recieveInvite(ment, fromWho);
     }
 
     [PunRPC]
-    void acceptOrRejectInviteParty(bool accept)
-    {
-        if (accept)
+    void registParty(string partyName, string captain)
+    {        
+        if(!allPartys.ContainsKey(captain) && !captainsList.Contains(captain))
         {
-
+            party newParty;
+            newParty.partyName = partyName;
+            newParty.partyMembersNickName = new HashSet<string> { captain };
+            allPartys.Add(captain, newParty);
+            captainsList.Add(captain);
         }
+        UIManager.UpdatePartyPanel();
+    }
+
+    [PunRPC]
+    void joinParty(string captainName, string member)
+    {
+        allPartys[captainName].partyMembersNickName.Add(member);
+        UIManager.UpdatePartyPanel();
     }
 }
