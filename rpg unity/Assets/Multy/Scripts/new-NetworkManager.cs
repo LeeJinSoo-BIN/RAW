@@ -21,6 +21,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     public HashSet<string> usersInParty = new HashSet<string>();
     public string myPartyCaptainName;
 
+    public TMP_Text disconnectButtonText;
     public struct party
     {
         public string partyName;
@@ -70,6 +71,17 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         inGameChatBox.text = chatLog;
     }
 
+    public void ClickDisconnectButton()
+    {
+        if (disconnectButtonText.text == "나가기")
+            PhotonNetwork.LeaveRoom();
+        else if (disconnectButtonText.text == "로그아웃")
+            PhotonNetwork.Disconnect();
+        else if (disconnectButtonText.text == "접속 끊기")
+            PhotonNetwork.LeaveLobby();
+        else if (disconnectButtonText.text == "게임 종료")
+            Application.Quit();
+    }
 
     [PunRPC]
     void sendChatLog(string chat)
