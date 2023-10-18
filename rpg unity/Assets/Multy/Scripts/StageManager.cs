@@ -17,6 +17,9 @@ public class StageManager : MonoBehaviourPunCallbacks//, IPunObservable
     public static float LimitTime;
     public PhotonView PV;
     public GameObject timeLimitGameOver;
+
+    private Color failColor = new Color((94f / 255f), 0, 0);
+    private Color succesColor = new Color(0, (94f / 255f), 0);
     void Start()
     {
         
@@ -50,17 +53,10 @@ public class StageManager : MonoBehaviourPunCallbacks//, IPunObservable
         }
         timeLimitGameOver.SetActive(true);
     }
-    
-    
-   /* public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+
+    [PunRPC]
+    void gameOver()
     {
-        if (stream.IsWriting)
-        {
-            stream.SendNext(stageTime);
-        }
-        else
-        {
-            stageTime = (float)stream.ReceiveNext();
-        }
-    }*/
+
+    }
 }

@@ -50,6 +50,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     public GameObject PlayerGroup;
     public newNetworkManager networkManager;
+    public TMP_Dropdown resolutionDropdown;
+    public TMP_Text windowText;
     public bool oldVersion = false;
     void Awake()
     {
@@ -68,7 +70,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             partyListInfo.SetActive(false);
             enterDungeonPanel.SetActive(false);
         }
+        GetComponent<Canvas>().worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
+        GetComponent<Canvas>().sortingLayerName = "ui";
         chatInput = GameObject.Find("In Game UI Canvas").transform.Find("Game").Find("Chat").Find("chat Input").GetComponent<TMP_InputField>();
+        networkManager = GameObject.Find("NetworkManager").GetComponent<newNetworkManager>();
+        PlayerGroup = GameObject.Find("Player Group");
         //skillBox = skillPanel.transform.GetChild(2).gameObject;
         //skillInfo = skillPanel.transform.GetChild(3).gameObject;
     }
@@ -76,6 +82,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     {
         if (!oldVersion)
             UpdatePartyPanel();
+
     }
     // Update is called once per frame
     void Update()
@@ -513,6 +520,38 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         else
             _timeLimit = float.Parse(timeLimitInputfield.text);
         networkManager.movePortal(_timeLimit);
+    }
+
+    public void setResolution()
+    {
+        string selected_resolution_string = resolutionDropdown.options[resolutionDropdown.value].text;
+        string[] selected_resolution = selected_resolution_string.Split(" x ");
+        bool window = false;
+        if (windowText.text == "창모드")
+            window = true;
+        else
+            window = false;
+        Screen.SetResolution(int.Parse(selected_resolution[0]), int.Parse(selected_resolution[1]), window);
+    }
+
+    public void setWindow()
+    {
+        if (windowText.text == "창모드")
+        {
+            Screen.fullScreen = false;
+            windowText.text = "전체화면";
+        }
+        else
+        {
+            Screen.fullScreen = true;
+            windowText.text = "창모드";
+        }
+    }
+
+    public void ClickQuitButton()
+    {
+        if (Application.isPlaying)
+            Application.Quit();
     }
 
     public void CloseButtonClick()

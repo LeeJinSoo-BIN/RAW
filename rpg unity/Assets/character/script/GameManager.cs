@@ -11,10 +11,7 @@ using WebSocketSharp;
 public class GameManager : MonoBehaviour
 {   
     public Transform inGameUI;
-    public TMP_Dropdown resolutionDropdown;
-    public TMP_Text windowText;
     public GameObject PanelList;
-
     public newNetworkManager networkManager;
 
     public bool oldVersion = false;
@@ -77,39 +74,5 @@ public class GameManager : MonoBehaviour
         PhotonNetwork.Instantiate("Monster/Evil Wizard", Vector3.zero, Quaternion.identity);
         //PhotonNetwork.CurrentRoom.IsOpen = false;
         networkManager.PV.RPC("SpawnBoss", RpcTarget.All);
-    }
-
-
-
-    public void setResolution()
-    {
-        string selected_resolution_string = resolutionDropdown.options[resolutionDropdown.value].text;        
-        string[] selected_resolution = selected_resolution_string.Split(" x ");
-        bool window = false;
-        if (windowText.text == "창모드")
-            window = true;
-        else
-            window = false;
-        Screen.SetResolution(int.Parse(selected_resolution[0]), int.Parse(selected_resolution[1]), window);
-    }
-
-    public void setWindow()
-    {
-        if (windowText.text == "창모드")
-        {
-            Screen.fullScreen = false;
-            windowText.text = "전체화면";
-        }
-        else
-        {
-            Screen.fullScreen= true;
-            windowText.text = "창모드";
-        }
-    }
-
-    public void ClickQuitButton()
-    {
-        if (Application.isPlaying) 
-            Application.Quit();
-    }   
+    }       
 }
