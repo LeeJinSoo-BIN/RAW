@@ -20,6 +20,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public LayerMask groundLayer;
     public LayerMask playerLayer;
     public LayerMask monsterLayer;
+    public LayerMask itemLayer;
 
     public Vector3 goalPos;
     public float pointSpeed = 1.0f;
@@ -54,7 +55,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     private Dictionary<string, float> skillActivatedTime = new Dictionary<string, float>();
     private Dictionary<string, string> skillNameToKey = new Dictionary<string, string>();
     public InGameUI inGameUI;
-    private GameObject itemDropField;
+    public GameObject itemDropField;
 
     public TMP_InputField chatInput;
 
@@ -86,9 +87,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             chatInput = inGameUICanvas.Find("Game").Find("Chat").Find("chat Input").GetComponent<TMP_InputField>();
             inventoryUi = GameObject.Find("Panel Canvas").transform.Find("inventory Panel").gameObject;
             itemBox = inventoryUi.transform.GetChild(2).gameObject;
-            itemDropField = GameObject.Find("Item Field").gameObject;
-            
         }
+        itemDropField = GameObject.Find("Item Field").gameObject;
         transform.parent = playerGroup.transform;
     }
     public void loadData()
@@ -121,15 +121,20 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             if (Input.GetMouseButtonDown(0))
             {
                 Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                RaycastHit2D hit = Physics2D.Raycast(ray, Vector2.zero);
-                if (hit.collider == null || hit.transform.CompareTag("Not Ground"))
-                    return;
-                if (hit.collider.CompareTag("Item"))
+                RaycastHit2D hit_item = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, itemLayer);
+                if (hit_item.collider != null)
                 {
-                    if (hit.transform.GetChild(1).gameObject.activeSelf)
-                        getItem(hit.transform.gameObject);
+
+                    Debug.Log(hit_item.collider.name);
+                    if (hit_item.collider.CompareTag("Item"))
+                    {
+                        Debug.Log("click item");
+                        if (hit_item.transform.GetChild(1).gameObject.activeSelf)
+                            getItem(hit_item.transform.gameObject);                        
+                    }
+                    return;
                 }
-                else if (isActivingSkill && attackable)
+                if (isActivingSkill && attackable)
                 {
                     if (current_skill.castType == "circle" || current_skill.castType == "bar")
                     { // when cast type is circle or bar
@@ -621,6 +626,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     void itemDestroySync(string itemName)
     {
+        Debug.Log(itemName);
         Destroy(itemDropField.transform.Find(itemName).gameObject);
     }
 

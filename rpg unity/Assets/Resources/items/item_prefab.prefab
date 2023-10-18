@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1149583771488479179}
   - component: {fileID: 6291835567362471766}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: stone 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -96,7 +96,7 @@ GameObject:
   - component: {fileID: 4547648222527801625}
   - component: {fileID: -1945059610566983618}
   - component: {fileID: -1698338457587247853}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: item_prefab
   m_TagString: Item
   m_Icon: {fileID: 0}
@@ -215,7 +215,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3364088131794997427}
   - component: {fileID: 3691391138229686657}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: highligt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
