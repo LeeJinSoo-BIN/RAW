@@ -9,6 +9,7 @@ TagManager:
   - Monster
   - Not Ground
   - Panel
+  - Portal
   layers:
   - Default
   - TransparentFX

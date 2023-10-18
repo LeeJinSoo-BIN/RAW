@@ -29,8 +29,7 @@ public class StageManager : MonoBehaviourPunCallbacks//, IPunObservable
             stageTime += Time.deltaTime;
             if (LimitTime > 0 && stageTime >= LimitTime && PhotonNetwork.IsMasterClient)
                 PV.RPC("TimeLimitGame", RpcTarget.All);
-        }
-        Debug.Log(active);
+        }        
         timeText.text = string.Format("{0:00}:{1:00}:{2:00}", (int)stageTime / 3600, (int)stageTime / 60 % 60, (int)stageTime % 60);
     }
     [PunRPC]
@@ -47,7 +46,7 @@ public class StageManager : MonoBehaviourPunCallbacks//, IPunObservable
         {
             monster.GetComponent<MonsterControl>().attackable = false;
             if (monster.GetComponent<MonsterControl>().monsterSpec.monsterType.ToLower() == "boss")
-                timeLimitGameOver.transform.GetChild(2).GetComponent<TMP_Text>().text = "남은 체력\n" + monster.GetComponent<MonsterState>().health.value.ToString();
+                timeLimitGameOver.transform.GetChild(2).GetComponent<TMP_Text>().text = "소요 시간\n" + LimitTime.ToString() + "초\n" + "남은 체력\n" + monster.GetComponent<MonsterState>().health.value.ToString();
         }
         timeLimitGameOver.SetActive(true);
     }

@@ -31,8 +31,8 @@ public class MonsterControl : MonoBehaviour
     
     private void Awake()
     {
-        topLeft = GameObject.Find("ground").transform.Find("top left");
-        bottomRight = GameObject.Find("ground").transform.Find("bottom right");
+        topLeft = GameObject.Find("map").transform.Find("left top");
+        bottomRight = GameObject.Find("map").transform.Find("right bottom");
         characterGroup = GameObject.Find("Player Group");
         transform.parent = GameObject.Find("Enemy Group").transform;
         name += transform.parent.childCount;

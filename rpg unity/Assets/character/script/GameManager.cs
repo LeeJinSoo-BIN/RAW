@@ -6,6 +6,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using WebSocketSharp;
 
 public class GameManager : MonoBehaviour
 {   
@@ -13,6 +14,9 @@ public class GameManager : MonoBehaviour
     public TMP_Dropdown resolutionDropdown;
     public TMP_Text windowText;
     public GameObject PanelList;
+
+    public newNetworkManager networkManager;
+
     public bool oldVersion = false;
     void Awake()
     {        
@@ -43,27 +47,9 @@ public class GameManager : MonoBehaviour
         PanelList.GetComponent<UIManager>().myCharacter = player;
         PanelList.GetComponent<UIManager>().SetUP();
         Debug.Log("set up ingame ui");
+        if (DataBase.Instance.currentMapType == "dungeon" && PhotonNetwork.LocalPlayer.IsMasterClient)
+            StartCoroutine(SpawnBoss());
     }
-    /*CharacterSpec loadCharacterSpec(string roll)
-    {
-        CharacterSpec spec = new CharacterSpec();
-        CharacterSpec defaultSpec = characterSpecDict[roll];
-        spec.nickName = defaultSpec.nickName;
-        spec.maxHealth = defaultSpec.maxHealth;
-        spec.maxMana = defaultSpec.maxMana;
-        spec.recoverManaPerThreeSec = defaultSpec.recoverManaPerThreeSec;
-        spec.power = defaultSpec.power;
-        spec.criticalDamage = defaultSpec.criticalDamage;
-        spec.criticalPercent = defaultSpec.criticalPercent;
-        spec.healPercent = defaultSpec.healPercent;
-        spec.maxInventoryNum = defaultSpec.maxInventoryNum;
-        spec.characterLevel = defaultSpec.characterLevel;
-        spec.skillLevel = defaultSpec.skillLevel;
-        spec.inventory = defaultSpec.inventory;
-        spec.equipment = defaultSpec.equipment;
-        spec.colors = defaultSpec.colors;
-        return spec;
-    }*/
 
     void equipItem(GameObject player)
     {
@@ -79,6 +65,20 @@ public class GameManager : MonoBehaviour
         spriteList._hairAndEyeColor = spec.colors;        
         spriteList.setSprite();
     }
+
+    IEnumerator SpawnBoss()
+    {
+        float _timer = 0f;
+        while (_timer < 5f)
+        {
+            _timer += Time.deltaTime;
+            yield return null;
+        }
+        PhotonNetwork.Instantiate("Monster/Evil Wizard", Vector3.zero, Quaternion.identity);
+        //PhotonNetwork.CurrentRoom.IsOpen = false;
+        networkManager.PV.RPC("SpawnBoss", RpcTarget.All);
+    }
+
 
 
     public void setResolution()

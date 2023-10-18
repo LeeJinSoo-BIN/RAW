@@ -16,12 +16,15 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     public PhotonView PV;
 
     public UIManager UIManager;
+    public GameManager GameManager;
 
     public Dictionary<string, party> allPartys = new Dictionary<string, party>();
     public HashSet<string> usersInParty = new HashSet<string>();
     public string myPartyCaptainName;
 
     public TMP_Text disconnectButtonText;
+    private bool goToDungeon;
+    private string nextRoom;
     public struct party
     {
         public string partyName;
@@ -71,6 +74,40 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         inGameChatBox.text = chatLog;
     }
 
+
+    public override void OnJoinedRoom()
+    {
+        if(DataBase.Instance.currentMapType == "village")
+        {
+
+        }
+        else if(DataBase.Instance.currentMapType == "dungeon")
+        {
+            if (PhotonNetwork.IsMasterClient)
+                PhotonNetwork.LoadLevel(DataBase.Instance.currentMapName);
+        }
+    }
+    public override void OnConnectedToMaster()
+    {
+        if (goToDungeon)
+        {
+            PhotonNetwork.JoinOrCreateRoom(nextRoom, new RoomOptions { MaxPlayers = 3 }, null);
+        }
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        Debug.Log(otherPlayer.ActorNumber);
+        if (DataBase.Instance.currentMapType == "village")
+        {
+            allPartys.Remove(UIManager.idToNickName[otherPlayer.ActorNumber]);
+            usersInParty.Remove(UIManager.idToNickName[otherPlayer.ActorNumber]);
+            if (myPartyCaptainName == UIManager.idToNickName[otherPlayer.ActorNumber])
+                myPartyCaptainName = "";
+            UIManager.UpdatePartyPanel();
+        }
+    }
+    
     public void ClickDisconnectButton()
     {
         if (disconnectButtonText.text == "나가기")
@@ -81,6 +118,29 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
             PhotonNetwork.LeaveLobby();
         else if (disconnectButtonText.text == "게임 종료")
             Application.Quit();
+    }
+
+    public void movePortal(float timeLimit)
+    {
+        foreach(string mem in allPartys[DataBase.Instance.currentCharacterNickname].partyMembersNickName)
+        {
+            if (mem == DataBase.Instance.currentCharacterNickname)
+                continue;
+            PV.RPC("enterDungeon", UIManager.inGameUserList[mem], timeLimit);
+        }
+        enterDungeon(timeLimit);
+    }
+
+
+    [PunRPC]
+    void enterDungeon(float timeLimit)
+    {
+        DataBase.Instance.currentMapType = "dungeon";
+        DataBase.Instance.currentMapName = "Dungeon";
+        StageManager.LimitTime = timeLimit;
+        nextRoom = myPartyCaptainName;
+        goToDungeon = true;
+        PhotonNetwork.LeaveRoom();        
     }
 
     [PunRPC]
@@ -176,5 +236,16 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         if (myPartyCaptainName == captainName)
             myPartyCaptainName = "";
         UIManager.UpdatePartyPanel();
+    }
+
+
+
+    [PunRPC]
+    void SpawnBoss()
+    {
+        //spawnButton.SetActive(false);
+        //timeLimit.SetActive(false);
+        StageManager.active = true;
+        GameManager.inGameUI.GetComponent<InGameUI>().BossSetUp();
     }
 }

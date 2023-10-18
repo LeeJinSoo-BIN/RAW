@@ -32,8 +32,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public GameObject inGameUserPanel;
     public GameObject inGameUserBox;
     public GameObject inGameUserInfo;
-    private Dictionary<string, Player> inGameUserList = new Dictionary<string, Player>();
-
+    public Dictionary<string, Player> inGameUserList = new Dictionary<string, Player>();
+    public Dictionary<int, string> idToNickName = new Dictionary<int, string>();
     public GameObject partyMemberBox;
     public GameObject partyMemberInfo;
     public TMP_InputField partyMakeNameInput;
@@ -41,6 +41,10 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public GameObject partyListPanel;
     public GameObject partyListBox;
     public GameObject partyListInfo;
+
+
+    public GameObject enterDungeonPanel;
+    public TMP_InputField timeLimitInputfield;
 
     public TMP_InputField chatInput;
 
@@ -54,7 +58,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         optionPanel.SetActive(false);
         skillPanel.SetActive(false);
         if (!oldVersion)
-        {
+        {            
             partyPanel.SetActive(false);            
             invitePartyPanel.SetActive(false);
             joinPartyRequestPanel.SetActive(false);
@@ -62,7 +66,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             inGameUserInfo.SetActive(false);
             partyMemberInfo.SetActive(false);
             partyListInfo.SetActive(false);
-
+            enterDungeonPanel.SetActive(false);
         }
         chatInput = GameObject.Find("In Game UI Canvas").transform.Find("Game").Find("Chat").Find("chat Input").GetComponent<TMP_InputField>();
         //skillBox = skillPanel.transform.GetChild(2).gameObject;
@@ -302,6 +306,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             Destroy(inGameUserBox.transform.GetChild(k).gameObject);
         }
         inGameUserList.Clear();
+        idToNickName.Clear();
         foreach (Transform user in PlayerGroup.transform)
         {
             if (user.GetComponent<PhotonView>().IsMine)
@@ -312,6 +317,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             {
                 CharacterState currentUserState = user.GetComponent<CharacterState>();
                 inGameUserList.Add(user.name, currentUserState.PV.Owner);
+                idToNickName.Add(currentUserState.PV.Owner.ActorNumber, user.name);
                 if (networkManager.usersInParty.Contains(user.name))
                     continue;
 
@@ -489,6 +495,24 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         string captainRoll = captainInfo.roll;
         joinPartyRequestPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = string.Format("{0}님\r\n레벨: {1}\r\n직업: {2}\r\n이 파티 가입 요청을 보냈습니다.", captainNick, captainLevel, captainRoll);
         joinPartyRequestPanel.transform.GetChild(2).GetChild(1).name = fromWho;
+    }
+
+    public void EnterDungeonPop()
+    {
+        updateCurrentFocusWindow(enterDungeonPanel);
+    }
+
+    public void ClickEnterDungeonButton()
+    {
+        
+        if (!timeLimitInputfield.text.IsNullOrEmpty() && !int.TryParse(timeLimitInputfield.text, out _))
+            return;
+        float _timeLimit;
+        if (timeLimitInputfield.text.IsNullOrEmpty())
+            _timeLimit = 0;
+        else
+            _timeLimit = float.Parse(timeLimitInputfield.text);
+        networkManager.movePortal(_timeLimit);
     }
 
     public void CloseButtonClick()

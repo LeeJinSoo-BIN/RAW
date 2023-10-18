@@ -70,7 +70,7 @@ public class InGameUI : MonoBehaviour
         myCharacterState = myCharacter.GetComponentInChildren<CharacterState>();
         makeProfile();
         characterHealth = myCharacterState.health;
-        characterMana = myCharacterState.mana;        
+        characterMana = myCharacterState.mana;
         keyToItemName.Clear();
         for(int k = 0; k < quickSlotKeys.Count; k++)
         {
@@ -78,6 +78,17 @@ public class InGameUI : MonoBehaviour
         }
         setKeyMap();
         StartCoroutine(update_health());
+        if (DataBase.Instance.currentMapType == "dungeon")
+        {
+            BossStateUI.SetActive(true);
+            Debug.Log("set boss ui true");
+            StageUI.SetActive(true);
+        }
+        else if (DataBase.Instance.currentMapType == "village")
+        {
+            BossStateUI.SetActive(false);
+            StageUI.SetActive(false);
+        }
     }
 
     public void BossSetUp()
@@ -88,6 +99,7 @@ public class InGameUI : MonoBehaviour
         uiBossHealth.maxValue = bossHealth.maxValue;
         bossConnected = true;
         BossStateUI.SetActive(true);
+        Debug.Log("set boss ui true");
     }
     
     IEnumerator update_health()

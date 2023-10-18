@@ -26,7 +26,8 @@ public class CameraFollow : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        LimitCameraArea();
+        if (myCharacterTransform != null)
+            LimitCameraArea();
         
     }
 

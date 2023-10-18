@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Map/Pallet Town.unity
     guid: 500927154520d364a84cd34e4f2adfa2
+  - enabled: 1
+    path: Assets/Scenes/Map/Dungeon.unity
+    guid: 2677e3c7691be2e478ac2a7e09bf6a23
   m_configObjects: {}

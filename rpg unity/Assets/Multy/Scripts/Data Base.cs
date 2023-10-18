@@ -19,7 +19,10 @@ public class DataBase : MonoBehaviour
     public AccountInfo defaultAccountInfo;
     public CharacterSpec selectedCharacterSpec;
     public string currentMapName;
+    public string currentMapType;
     public string currentCharacterNickname;
+
+   
     private void Awake()
     {
         var obj = FindObjectsOfType<DataBase>();

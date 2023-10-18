@@ -98,6 +98,8 @@ MonoBehaviour:
   - kickPartyMember
   - sendAndReceiveInviteParty
   - sendAndReceiveJoinRequestParty
+  - enterDungeon
+  - LeaveRoom
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
