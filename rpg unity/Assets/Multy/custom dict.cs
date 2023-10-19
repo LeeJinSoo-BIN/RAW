@@ -83,7 +83,7 @@ namespace CustomDict
 
         public void OnAfterDeserialize()
         {
-            Debug.Log(this + string.Format("인스펙터 키 수 : {0} 값 수 : {1}", SD_Keys.Count, SD_Values.Count));
+            //Debug.Log(this + string.Format("인스펙터 키 수 : {0} 값 수 : {1}", SD_Keys.Count, SD_Values.Count));
 
             //인스펙터의 Key Value가 KeyValuePair 형태를 띌 경우
             if (SD_Keys.Count == SD_Values.Count)

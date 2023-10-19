@@ -22,7 +22,7 @@ public class StageManager : MonoBehaviourPunCallbacks//, IPunObservable
     private Color succesColor = new Color(0, (94f / 255f), 0);
     void Start()
     {
-        
+        timeLimitGameOver.SetActive(false);
     }
 
     void Update()

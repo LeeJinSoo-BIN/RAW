@@ -8,6 +8,8 @@ using Photon.Pun;
 using Photon.Realtime;
 using System.IO;
 using System.ComponentModel;
+using static UnityEngine.GraphicsBuffer;
+using Unity.VisualScripting;
 
 public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 {
@@ -46,10 +48,16 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     private string current_casting_skill_key;
     private Vector2 oriSkillRangeAreaBar;
     private IEnumerator castSkill;
+    public bool isCastingSkill;
     
     private List<string> skill_key = new List<string> { "Q", "W", "E", "R", "A" };    
     private Dictionary<string, SkillSpec> keyToSkillSpec = new Dictionary<string, SkillSpec>();
     private SkillSpec current_skill;
+    private bool isAttackingNormal;
+    
+    private GameObject normalAttackTarget;
+    private SkillSpec normalAttackSpec;
+
     public CharacterState characterState;
     private CharacterSpec characterSpec;
     private Dictionary<string, float> skillActivatedTime = new Dictionary<string, float>();
@@ -102,6 +110,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             keyToSkillSpec.Add(skill_key[i], DataBase.Instance.skillInfoDict[skill_name_list[i]]);
             skillActivatedTime.Add(skill_name_list[i], 0f);
             skillNameToKey.Add(skill_name_list[i], skill_key[i]);
+            if (skill_name_list[i].Contains("normal"))
+                normalAttackSpec = DataBase.Instance.skillInfoDict[skill_name_list[i]];
         }
         inGameUI.skillNameToKey = skillNameToKey;
 
@@ -160,7 +170,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                         if (hit_target.collider == null)
                             return;
                         if (skillRangeAreaTargeting.transform.GetChild(1).gameObject.activeSelf)
-                            CastingSkill(hit_target.point, hit_target.transform.gameObject);
+                            CastingSkill(hit_target.transform.Find("foot").position, hit_target.transform.gameObject);
                     }
                     else if (current_skill.castType == "target-both") // targeting both player and enemy
                     {
@@ -177,14 +187,14 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             {
                 if (Input.GetMouseButtonDown(1))
                 {
-
                     Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     RaycastHit2D hit = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
                     if (hit.collider == null || hit.transform.CompareTag("Not Ground"))
                         return;
                     goalPos = hit.point;
-                    if (castSkill != null)
-                        StopCoroutine(castSkill);
+                    isAttackingNormal = false;
+                    normalAttackTarget = null;
+                    stopCastingSkill();
                     StartCoroutine(pointingGoal(goalPos));
                     if (isActivingSkill)
                         deactivateSkill();
@@ -197,11 +207,9 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 if (Input.GetKeyDown(KeyCode.S))
                 {
                     goalPos = transform.position;
-                    try
-                    {
-                        StopCoroutine(castSkill);
-                    }
-                    catch { }
+                    isAttackingNormal = false;
+                    normalAttackTarget = null;
+                    stopCastingSkill();
                     deactivateSkill();
                 }
                 if (attackable)
@@ -216,6 +224,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                         else
                         {
                             deactivateSkill();
+                            isAttackingNormal = false;
                             activateSkill(now_input_key);
                         }
                     }
@@ -285,11 +294,19 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                         skillRangeAreaTargeting.transform.GetChild(1).gameObject.SetActive(false);
                 }
             }
-        }
+            if(attackable && isAttackingNormal && !isCastingSkill)
+            {
+                if (normalAttackTarget != null && !isCoolDown(normalAttackSpec))
+                {
+                    Debug.Log("평타!");
+                    CastingSkill(normalAttackTarget.transform.Find("foot").position, normalAttackTarget);
+                }
+            }
+        }        
         else if ((transform.position - curPos).sqrMagnitude >= 100 && !isDeath)
             transform.position = curPos;
         else if (!isDeath)
-            transform.position = Vector3.Lerp(transform.position, curPos, Time.deltaTime * 10);
+            transform.position = Vector3.Lerp(transform.position, curPos, Time.deltaTime * 10);        
     }
     void deactivateSkill()
     {
@@ -298,13 +315,23 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         skillRangeAreaBar.SetActive(false);
         skillRangeAreaTargeting.SetActive(false);
         current_casting_skill_key = "";
+        current_skill = null;
         isActivingSkill = false;        
     }
     void activateSkill(string now_skill_key)
     {
         current_casting_skill_key = now_skill_key;
         current_skill = keyToSkillSpec[now_skill_key];
-        
+        if (isCoolDown(current_skill) && !current_skill.skillName.Contains("normal"))
+        {
+            print("쿨타임");
+            return;
+        }
+        if (characterState.mana.value < current_skill.consumeMana)
+        {
+            print("마나 부족");
+            return;
+        }
         Vector2 range_area = current_skill.range;
 
         Vector2 radius_area = current_skill.radius;
@@ -341,17 +368,25 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 CastingSkill(transform.position, enemyGroup);
         }
     }
-    bool isCoolDown()
+    bool isCoolDown(SkillSpec skill)
     {
-        if (skillActivatedTime[current_skill.skillName] == 0)
-            return false;
-        if (Time.time - skillActivatedTime[current_skill.skillName] < current_skill.coolDown)
+        if (skill != null)
+        {
+            if (skillActivatedTime[skill.skillName] == 0)
+                return false;
+            if (Time.time - skillActivatedTime[skill.skillName] < skill.coolDown)
+                return true;
+        }
+        else
             return true;
         return false;
     }
     void CastingSkill(Vector2 skillPos, GameObject target = null)
-    {        
-        if (isCoolDown())
+    {
+        if (isAttackingNormal)
+            current_skill = normalAttackSpec;
+        
+        if (isCoolDown(current_skill))
         {
             print("쿨타임");
             return;
@@ -361,16 +396,26 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             print("마나 부족");
             return;
         }
-        if(castSkill != null)
-            StopCoroutine(castSkill);
+        stopCastingSkill();
+        if (current_skill.skillName.Contains("normal"))
+        {
+            isAttackingNormal = true;
+            normalAttackTarget = target;
+        }
+        else
+        {
+            isAttackingNormal = false;
+            normalAttackTarget = null;
+        }
         castSkill = CastSkill(skillPos, current_skill, target);
         StartCoroutine(castSkill);
-        if(!current_skill.skillName.Contains("normal"))
+        //if(!current_skill.skillName.Contains("normal"))
             deactivateSkill();
     }
 
     IEnumerator CastSkill(Vector2 skillPos, SkillSpec currentCastingSkill, GameObject targetObject = null)
     {
+        isCastingSkill = true;
         float skill_radius_len = Vector2.Distance(skillRadiusLengthPoint.transform.position, transform.position);
 
         /*
@@ -397,7 +442,9 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             Move_Character();
             while (true)
             {
-                float skill_casting_point_len = Vector2.Distance(skillPos, transform.position);
+                float skill_casting_point_len = Vector2.Distance(goalPos, transform.position);
+                if (currentCastingSkill.castType.Contains("target"))
+                    goalPos = targetObject.transform.Find("foot").position;
                 if (skill_radius_len >= skill_casting_point_len)
                 {
                     characterAnimator.SetBool("IsRunning", false);
@@ -492,9 +539,27 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         }
         movable = true;
         attackable = true;
+        isCastingSkill = false;
     }
 
+    void stopCastingSkill()
+    {
+        try
+        {
+            StopCoroutine(castSkill);
+        }
+        catch
+        {
 
+        }
+        if (isCastingSkill)
+        {
+            isCastingSkill = false;
+            movable = true;
+            attackable = true;
+        }
+        isAttackingNormal = false;
+    }
     void getItem(GameObject got_item)
     {
         string got_item_name = got_item.GetComponent<Item>().itemName;

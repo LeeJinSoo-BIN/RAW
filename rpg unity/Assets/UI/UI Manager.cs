@@ -93,8 +93,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             currentFocusWindow.transform.position = new Vector3(currentMousePos.x + distanceMosePos.x, currentMousePos.y + distanceMosePos.y);
         }
         if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            Debug.Log("Esc");
+        {            
             if (currentFocusWindow != null)
             {
                 currentFocusWindow.SetActive(false);
@@ -286,8 +285,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         if (!networkManager.myPartyCaptainName.IsNullOrEmpty())
         {
             foreach (string memberNickName in networkManager.allPartys[networkManager.myPartyCaptainName].partyMembersNickName)
-            {
-                Debug.Log(memberNickName);
+            {                
                 GameObject newMember = Instantiate(partyMemberInfo);
                 newMember.transform.GetChild(1).GetComponent<TMP_Text>().text = PlayerGroup.transform.Find(memberNickName).GetComponent<CharacterState>().nick;
                 if (memberNickName == networkManager.myPartyCaptainName)
