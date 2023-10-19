@@ -21,7 +21,7 @@ public class DataBase : MonoBehaviour
     public string currentMapName;
     public string currentMapType;
     public string currentCharacterNickname;
-
+    public bool isCurrentDungeonCaptain;
    
     private void Awake()
     {

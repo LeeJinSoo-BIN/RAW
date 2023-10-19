@@ -8,78 +8,41 @@ using UnityEngine;
 
 public class newNetworkManager : MonoBehaviourPunCallbacks
 {
-    public TMP_InputField inGameChatInputField;
-    public TMP_Text inGameChatBox;
-    private bool chatEnd = false;
-    private string chatLog = "";
 
     public PhotonView PV;
-
-    public UIManager UIManager;
-    public GameManager GameManager;
+    public GameManager gameManager;
 
     public Dictionary<string, party> allPartys = new Dictionary<string, party>();
     public HashSet<string> usersInParty = new HashSet<string>();
     public string myPartyCaptainName;
 
     public TMP_Text disconnectButtonText;
-    private bool goToDungeon;
     private string nextRoom;
     public struct party
     {
         public string partyName;
         public HashSet<string> partyMembersNickName;
-    }
+    }    
 
-
-    void Start()
+    void Awake()
     {
-        inGameChatInputField.onSubmit.AddListener(delegate { sendChat(); });
+        allPartys.Clear();
+        usersInParty.Clear();
+        myPartyCaptainName = "";
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (PhotonNetwork.InRoom)
-        {
-            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
-            {
-                if (!inGameChatInputField.isFocused && !chatEnd)
-                {
-                    inGameChatInputField.ActivateInputField();
-                }
-                chatEnd = false;
-            }
-        }
+        
     }
-
-    public void sendChat()
-    {
-        if (inGameChatInputField.text != "")
-        {
-            string chat = inGameChatInputField.text;
-            PV.RPC("sendChatLog", RpcTarget.All, PhotonNetwork.NickName + " : " + chat);
-            inGameChatInputField.text = "";
-            chatEnd = false;
-        }
-        else
-        {
-            inGameChatInputField.DeactivateInputField();
-            chatEnd = true;
-        }
-    }
-
-    void updateChatLog()
-    {
-        inGameChatBox.text = chatLog;
-    }
-
 
     public override void OnJoinedRoom()
     {
         if(DataBase.Instance.currentMapType == "village")
         {
-
+            if (PhotonNetwork.IsMasterClient)
+                PhotonNetwork.LoadLevel(DataBase.Instance.currentMapName);
         }
         else if(DataBase.Instance.currentMapType == "dungeon")
         {
@@ -89,9 +52,13 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     }
     public override void OnConnectedToMaster()
     {
-        if (goToDungeon)
+        if (DataBase.Instance.currentMapType == "dungeon")
         {
-            PhotonNetwork.JoinOrCreateRoom(nextRoom, new RoomOptions { MaxPlayers = 3 }, null);
+            PhotonNetwork.JoinOrCreateRoom(nextRoom, new RoomOptions { MaxPlayers = 3 }, null);            
+        }
+        else if(DataBase.Instance.currentMapType == "village")
+        {
+            PhotonNetwork.JoinOrCreateRoom("palletTown", new RoomOptions { MaxPlayers = 20 }, null);
         }
     }
 
@@ -100,11 +67,14 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         Debug.Log(otherPlayer.ActorNumber);
         if (DataBase.Instance.currentMapType == "village")
         {
-            allPartys.Remove(UIManager.idToNickName[otherPlayer.ActorNumber]);
-            usersInParty.Remove(UIManager.idToNickName[otherPlayer.ActorNumber]);
-            if (myPartyCaptainName == UIManager.idToNickName[otherPlayer.ActorNumber])
-                myPartyCaptainName = "";
-            UIManager.UpdatePartyPanel();
+            if (UIManager.Instance.idToNickName.ContainsKey(otherPlayer.ActorNumber))
+            {
+                allPartys.Remove(UIManager.Instance.idToNickName[otherPlayer.ActorNumber]);
+                usersInParty.Remove(UIManager.Instance.idToNickName[otherPlayer.ActorNumber]);
+                if (myPartyCaptainName == UIManager.Instance.idToNickName[otherPlayer.ActorNumber])
+                    myPartyCaptainName = "";
+                UIManager.Instance.UpdatePartyPanel();
+            }
         }
     }
     
@@ -126,42 +96,60 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         {
             if (mem == DataBase.Instance.currentCharacterNickname)
                 continue;
-            PV.RPC("enterDungeon", UIManager.inGameUserList[mem], timeLimit);
+            PV.RPC("enterDungeon", UIManager.Instance.inGameUserList[mem], timeLimit);
         }
         enterDungeon(timeLimit);
+        DataBase.Instance.isCurrentDungeonCaptain = true;
     }
 
 
     [PunRPC]
     void enterDungeon(float timeLimit)
     {
+        DataBase.Instance.isCurrentDungeonCaptain = false;
         DataBase.Instance.currentMapType = "dungeon";
         DataBase.Instance.currentMapName = "Dungeon";
-        StageManager.LimitTime = timeLimit;
+        UIManager.Instance.limitTime = timeLimit;
         nextRoom = myPartyCaptainName;
-        goToDungeon = true;
         PhotonNetwork.LeaveRoom();        
+    }
+
+    [PunRPC]
+    void ReGame()
+    {
+        UIManager.Instance.gameOverPanel.SetActive(false);
+        gameManager.ReGame();
+    }
+
+    [PunRPC]
+    void GoToVillage()
+    {
+        UIManager.Instance.gameOverPanel.SetActive(false);
+        DataBase.Instance.isCurrentDungeonCaptain = false;
+        DataBase.Instance.currentMapType = "village";
+        DataBase.Instance.currentMapName = "Pallet Town";
+        PhotonNetwork.LeaveRoom();
     }
 
     [PunRPC]
     void sendChatLog(string chat)
     {
-        chatLog += "\n" + chat;
-        updateChatLog();
+        UIManager.Instance.chatLog += "\n" + chat;
+        UIManager.Instance.updateChatLog();
     }
 
 
     [PunRPC]
     void sendAndReceiveInviteParty(string partyName, string fromWho)
     {
-        UIManager.receiveInvite(partyName, fromWho);
-        UIManager.UpdatePartyPanel();
+        UIManager.Instance.receiveInvite(partyName, fromWho);
+        UIManager.Instance.UpdatePartyPanel();
     }
     [PunRPC]
     void sendAndReceiveJoinRequestParty(string fromWho)
     {
-        UIManager.receiveJoinRequest(fromWho);
-        UIManager.UpdatePartyPanel();
+        UIManager.Instance.receiveJoinRequest(fromWho);
+        UIManager.Instance.UpdatePartyPanel();
     }
 
     [PunRPC]
@@ -173,7 +161,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
             myPartyCaptainName = "";
         }
         usersInParty.Remove(who);
-        UIManager.UpdatePartyPanel();
+        UIManager.Instance.UpdatePartyPanel();
     }
 
     [PunRPC]
@@ -187,7 +175,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
             allPartys.Add(captain, newParty);
             usersInParty.Add(captain);
         }
-        UIManager.UpdatePartyPanel();
+        UIManager.Instance.UpdatePartyPanel();
     }
 
     [PunRPC]
@@ -197,7 +185,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         if (member == DataBase.Instance.currentCharacterNickname)
             myPartyCaptainName = captainName;
         usersInParty.Add(member);
-        UIManager.UpdatePartyPanel();
+        UIManager.Instance.UpdatePartyPanel();
     }
 
     [PunRPC]
@@ -207,7 +195,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         if (leaveName == DataBase.Instance.currentCharacterNickname)
             myPartyCaptainName = "";
         usersInParty.Remove(leaveName);
-        UIManager.UpdatePartyPanel();
+        UIManager.Instance.UpdatePartyPanel();
     }
 
     [PunRPC]
@@ -225,7 +213,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
             allPartys[newCaptainName].partyMembersNickName.Remove(captainName);
             usersInParty.Remove(captainName);
         }
-        UIManager.UpdatePartyPanel();
+        UIManager.Instance.UpdatePartyPanel();
     }
 
     [PunRPC]
@@ -235,7 +223,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         usersInParty.Remove(captainName);
         if (myPartyCaptainName == captainName)
             myPartyCaptainName = "";
-        UIManager.UpdatePartyPanel();
+        UIManager.Instance.UpdatePartyPanel();
     }
 
 
@@ -246,6 +234,6 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         //spawnButton.SetActive(false);
         //timeLimit.SetActive(false);
         StageManager.active = true;
-        GameManager.inGameUI.GetComponent<InGameUI>().BossSetUp();
+        UIManager.Instance.BossSetUp();        
     }
 }

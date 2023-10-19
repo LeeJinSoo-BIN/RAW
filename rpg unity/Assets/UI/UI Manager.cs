@@ -10,30 +10,33 @@ using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
 using WebSocketSharp;
+using System.Linq;
+using System;
 
 public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
 {
-    // Start is called before the first frame update
-    //public static UIManager Instance;
-    public GameObject currentFocusWindow;
+    [Header("Panel")]
+    #region
     public GameObject inventoryPanel;
-    public GameObject skillPanel;
+    public GameObject enterDungeonPanel;
+    public GameObject gameOverPanel;
+    public TMP_InputField timeLimitInputfield;
+
+    [Header("Option Panel")]
     public GameObject optionPanel;
-    public GameObject partyPanel;
-    public GameObject invitePartyPanel;
-    public GameObject joinPartyRequestPanel;
-    public HashSet<GameObject> openedWindows = new HashSet<GameObject>();    
-    public GameObject myCharacter;    
-    Vector3 distanceMosePos = new Vector3(0f, 0f, 0f);
-    private bool draging = false;
+    public TMP_Dropdown resolutionDropdown;
+    public TMP_Text windowText;
+
+    [Header("Skill Panel")]
+    public GameObject skillPanel;
     public GameObject skillBox;
     public GameObject skillInfo;
 
+    [Header("Party Panel")]
+    public GameObject partyPanel;
     public GameObject inGameUserPanel;
     public GameObject inGameUserBox;
     public GameObject inGameUserInfo;
-    public Dictionary<string, Player> inGameUserList = new Dictionary<string, Player>();
-    public Dictionary<int, string> idToNickName = new Dictionary<int, string>();
     public GameObject partyMemberBox;
     public GameObject partyMemberInfo;
     public TMP_InputField partyMakeNameInput;
@@ -42,47 +45,110 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public GameObject partyListBox;
     public GameObject partyListInfo;
 
+    public GameObject invitePartyPanel;
+    public GameObject joinPartyRequestPanel;
 
-    public GameObject enterDungeonPanel;
-    public TMP_InputField timeLimitInputfield;
+    public GameObject currentFocusWindow;
+    #endregion
 
+
+    [Header("UI")]
+    #region
+    public Slider myCharacterHealthUi;
+    private Slider characterHealth;
+    public TMP_Text myCharacterCurrentHealthText;
+    public TMP_Text myCharacterMaxHealthText;
+
+
+    public Slider myCharacterManaUi;
+    private Slider characterMana;
+    public TMP_Text myCharacterCurrentManaText;
+    public TMP_Text myCharacterMaxManaText;
+
+
+    public GameObject BossUiGroup;
+    public Slider bossHealthUi;
+    private Slider bossHealth;
+    public TMP_Text bossCurrentHealthText;
+    public TMP_Text bossMaxHealthText;
+
+    public GameObject quiclSlotUI;
+    public GameObject myCharacterProfileUiGroup;
+
+    public GameObject StageUiGroup;
+    public TMP_Text stageText;
+    public TMP_Text timerText;
+
+    [Header("Chat")]
     public TMP_InputField chatInput;
+    public TMP_Text chatLogShow;
+    public RectTransform ChatBox;
+    public RectTransform ChatExpandButtonIcon;
+    public Button ChatExpandButton;
+    #endregion
 
+    [Header("Data ")]
+    #region
+    public static UIManager Instance;
     public GameObject PlayerGroup;
+    public GameObject EnemyGroup;
     public newNetworkManager networkManager;
-    public TMP_Dropdown resolutionDropdown;
-    public TMP_Text windowText;
-    public bool oldVersion = false;
+    public GameObject myCharacter;
+    public GameObject Boss;
+    private CharacterState myCharacterState;
+    private MonsterState bossState;
+    private bool isBossConnected;
+    public float limitTime;
+    public float stageTime;
+    private IEnumerator timer;
+
+    public Dictionary<string, string> skillNameToKey = new Dictionary<string, string>();
+    private List<string> quickSlotKeys = new List<string> { "1", "2", "3", "4" };
+    public Dictionary<string, string> keyToItemName = new Dictionary<string, string>();
+    public Dictionary<string, qucikInventoryInfo> quickInventory;
+    public Dictionary<string, Player> inGameUserList = new Dictionary<string, Player>();
+    public Dictionary<int, string> idToNickName = new Dictionary<int, string>();
+    public HashSet<GameObject> openedWindows = new HashSet<GameObject>();
+    private Color failColor = new Color((94f / 255f), 0, 0);
+    private Color succesColor = new Color(0, (94f / 255f), 0);
+    Vector3 distanceMosePos = new Vector3(0f, 0f, 0f);
+    private bool draging = false;
+    private bool chatEnd = false;
+    public string chatLog;
+    #endregion
+
     void Awake()
     {
-        //Instance = this;
+        var obj = FindObjectsOfType<UIManager>();
+        if (obj.Length == 1)
+        {
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+        if (Instance == null)
+            Instance = this;
+
         inventoryPanel.SetActive(false);
+        enterDungeonPanel.SetActive(false);
         optionPanel.SetActive(false);
         skillPanel.SetActive(false);
-        if (!oldVersion)
-        {            
-            partyPanel.SetActive(false);            
-            invitePartyPanel.SetActive(false);
-            joinPartyRequestPanel.SetActive(false);
+        partyPanel.SetActive(false);
+        BossUiGroup.SetActive(false);
+        StageUiGroup.SetActive(false);
+        gameOverPanel.SetActive(false);
 
-            inGameUserInfo.SetActive(false);
-            partyMemberInfo.SetActive(false);
-            partyListInfo.SetActive(false);
-            enterDungeonPanel.SetActive(false);
-        }
-        GetComponent<Canvas>().worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
-        GetComponent<Canvas>().sortingLayerName = "ui";
-        chatInput = GameObject.Find("In Game UI Canvas").transform.Find("Game").Find("Chat").Find("chat Input").GetComponent<TMP_InputField>();
-        networkManager = GameObject.Find("NetworkManager").GetComponent<newNetworkManager>();
-        PlayerGroup = GameObject.Find("Player Group");
-        //skillBox = skillPanel.transform.GetChild(2).gameObject;
-        //skillInfo = skillPanel.transform.GetChild(3).gameObject;
-    }
-    void Start()
-    {
-        if (!oldVersion)
-            UpdatePartyPanel();
+        invitePartyPanel.SetActive(false);
+        joinPartyRequestPanel.SetActive(false);
 
+        inGameUserInfo.SetActive(false);
+        partyMemberInfo.SetActive(false);
+        partyListInfo.SetActive(false);
+        skillInfo.SetActive(false);
+
+        chatInput.onSubmit.AddListener(delegate { sendChat(); });
     }
     // Update is called once per frame
     void Update()
@@ -93,7 +159,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             currentFocusWindow.transform.position = new Vector3(currentMousePos.x + distanceMosePos.x, currentMousePos.y + distanceMosePos.y);
         }
         if (Input.GetKeyDown(KeyCode.Escape))
-        {            
+        {
             if (currentFocusWindow != null)
             {
                 currentFocusWindow.SetActive(false);
@@ -116,11 +182,13 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 }
                 else if (Input.GetKeyDown(KeyCode.K))
                 {
-                    currentKeyDownPanel = skillPanel;                    
+                    currentKeyDownPanel = skillPanel;
                 }
                 else if (Input.GetKeyDown(KeyCode.P))
                 {
-                    currentKeyDownPanel = partyPanel;                    
+                    if (DataBase.Instance.currentMapType == "dungeon")
+                        return;
+                    currentKeyDownPanel = partyPanel;
                 }
                 if (currentKeyDownPanel == null)
                     return;
@@ -135,7 +203,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                     }
                     else
                     {
-                        if(currentFocusWindow != null)
+                        if (currentFocusWindow != null)
                             currentFocusWindow.GetComponent<Canvas>().sortingOrder -= 1;
                         currentKeyDownPanel.GetComponent<Canvas>().sortingOrder = openedWindows.Count + 5;
                         currentFocusWindow = currentKeyDownPanel;
@@ -147,7 +215,13 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 }
             }
 
-
+            if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                if (DataBase.Instance.currentMapType == "village")
+                    return;
+                string now_input_key = Input.inputString;
+                useQuickSlot(now_input_key);
+            }
         }
         if (Input.GetMouseButtonDown(0))
         {
@@ -156,24 +230,300 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 currentFocusWindow = null;
             }
         }
+        if (PhotonNetwork.InRoom)
+        {
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+            {
+                if (!chatInput.isFocused && !chatEnd)
+                {
+                    chatInput.ActivateInputField();
+                }
+                chatEnd = false;
+            }
+        }
     }
+
+    public void sendChat()
+    {
+        if (chatInput.text != "")
+        {
+            string chat = chatInput.text;
+            networkManager.PV.RPC("sendChatLog", RpcTarget.All, PhotonNetwork.NickName + " : " + chat);
+            chatInput.text = "";
+            chatEnd = false;
+        }
+        else
+        {
+            chatInput.DeactivateInputField();
+            chatEnd = true;
+        }
+    }
+
+    public void updateChatLog()
+    {
+        chatLogShow .text = chatLog;
+    }
+
+
     public void SetUP()
     {
+        networkManager = GameObject.Find("NetworkManager").GetComponent<newNetworkManager>();
+        PlayerGroup = GameObject.Find("Player Group");
+        EnemyGroup = GameObject.Find("Enemy Group");
+        GetComponent<Canvas>().worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
+        GetComponent<Canvas>().sortingLayerName = "ui";
+
+
         ResetSkillPanel();
         UpdateSkillPanel();
+        UpdatePartyPanel();
+
+        myCharacterState = myCharacter.GetComponentInChildren<CharacterState>();
+        makeProfile();
+        characterHealth = myCharacterState.health;
+        characterMana = myCharacterState.mana;
+        keyToItemName.Clear();
+        timerText.text = "00:00:00";
+        for (int k = 0; k < quickSlotKeys.Count; k++)
+        {
+            keyToItemName.Add(quickSlotKeys[k], "");
+        }
+        setKeyMap();
+        StartCoroutine(update_health());
+        if (DataBase.Instance.currentMapType == "dungeon")
+        {
+            StageUiGroup.SetActive(true);
+        }
+        else
+        {
+            StageUiGroup.SetActive(false);
+        }
+        BossUiGroup.SetActive(false);
+    }
+    public void BossSetUp()
+    {
+        foreach (Transform monster in EnemyGroup.transform)
+        {
+            if (monster.GetComponent<MonsterControl>().monsterSpec.monsterType.ToLower() == "boss")
+            {
+                Boss = monster.gameObject;
+                break;
+            }
+        }
+        bossState = Boss.GetComponentInChildren<MonsterState>();
+        bossHealth = bossState.health;
+        bossHealthUi.maxValue = bossHealth.maxValue;
+        isBossConnected = true;
+        BossUiGroup.SetActive(true);
+        if (limitTime <= 0)
+            limitTime = 6000;
+        timer = startTimer();
+        StartCoroutine(timer);
+    }
+    IEnumerator update_health()
+    {
+        while (true)
+        {
+            myCharacterHealthUi.value = characterHealth.value;
+            myCharacterHealthUi.maxValue = characterHealth.maxValue;
+            myCharacterCurrentHealthText.text = ((int)myCharacterHealthUi.value).ToString();
+            myCharacterMaxHealthText.text = ((int)myCharacterHealthUi.maxValue).ToString();
+
+            myCharacterManaUi.value = characterMana.value;
+            myCharacterManaUi.maxValue = characterMana.maxValue;
+            myCharacterCurrentManaText.text = ((int)myCharacterManaUi.value).ToString();
+            myCharacterMaxManaText.text = ((int)myCharacterManaUi.maxValue).ToString();
+
+            if (isBossConnected)
+            {
+                bossHealthUi.value = bossHealth.value;
+                bossHealthUi.maxValue = bossHealth.maxValue;
+                bossMaxHealthText.text = ((int)bossHealthUi.maxValue).ToString();
+                bossCurrentHealthText.text = ((int)bossHealthUi.value).ToString();
+            }
+            yield return null;
+        }
     }
 
-    public void setUI()
+    IEnumerator startTimer()
     {
+        stageTime = 0f;
+        while (true)
+        {
+            stageTime += Time.deltaTime;
+            timerText.text = string.Format("{0:00}:{1:00}:{2:00}", (int)stageTime / 3600, (int)stageTime / 60 % 60, (int)stageTime % 60);
+            if (stageTime >= limitTime)
+                break;
+            yield return null;
+        }
+        EndGame("time out");
+    }
 
+    public void CoolDown(string skillName, float coolingTime)
+    {
+        StartCoroutine(CoolDownCoroutine(skillName, coolingTime));
+    }
+    IEnumerator CoolDownCoroutine(string skill_name, float coolingTime)
+    {
+        string key = skillNameToKey[skill_name];
+        Transform currentKeyUI = quiclSlotUI.transform.Find(key.ToLower());
+        if (currentKeyUI == null) yield break;
+        Image skill_cool = currentKeyUI.GetChild(1).GetComponent<Image>();
+        skill_cool.fillAmount = 100;
+        float _time = coolingTime;
+        if (coolingTime == 0)
+            skill_cool.fillAmount = 0;
+        while (_time >= 0 && coolingTime > 0)
+        {
+            _time -= Time.deltaTime;
+            skill_cool.fillAmount = _time / coolingTime;
+            yield return null;
+        }
+
+    }
+    void makeNewHead(GameObject head)
+    {
+        SpriteRenderer spriteRenderer = head.GetComponent<SpriteRenderer>();
+        if (spriteRenderer != null)
+        {
+            head.transform.AddComponent<Image>();
+            Image imageComponent = head.GetComponent<Image>();
+            imageComponent.color = spriteRenderer.color;
+            imageComponent.sprite = spriteRenderer.sprite;
+            if (imageComponent.sprite == null)
+                imageComponent.gameObject.SetActive(false);
+            Destroy(spriteRenderer);
+        }
+        for (int k = 0; k < head.transform.childCount; k++)
+        {
+            makeNewHead(head.transform.GetChild(k).gameObject);
+        }
+    }
+    public void makeProfile()
+    {
+        GameObject myCharacterHead = Instantiate(myCharacter.transform.Find("Root").GetChild(0).GetChild(0).GetChild(2).GetChild(0).gameObject);
+        makeNewHead(myCharacterHead);
+
+        foreach (Transform child in myCharacterProfileUiGroup.transform.GetChild(0))
+            Destroy(child.gameObject);
+        myCharacterHead.transform.parent = myCharacterProfileUiGroup.transform.GetChild(0).transform;
+        myCharacterHead.transform.localPosition = new Vector3(0f, 1f, 0f);
+        myCharacterProfileUiGroup.transform.GetChild(1).GetComponent<TMP_Text>().text = "Lv. " + myCharacterState.characterSpec.characterLevel.ToString();
+    }
+
+    public void setKeyMap()
+    {
+        List<string> keys = skillNameToKey.Values.ToList();
+        List<string> skillNames = skillNameToKey.Keys.ToList();
+        for (int k = 0; k < skillNameToKey.Count; k++)
+        {
+            string key = keys[k].ToLower();
+            if (key == "q" || key == "w" || key == "e" || key == "r")
+            {
+                Transform currentSlot = quiclSlotUI.transform.Find(key);
+                currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(DataBase.Instance.skillThumbnailPath, skillNames[k]));
+                currentSlot.GetChild(2).GetComponent<TMP_Text>().text = keys[k];
+                currentSlot.GetChild(3).GetComponent<TMP_Text>().text = DataBase.Instance.skillInfoDict[skillNames[k]].consumeMana.ToString();
+                StartCoroutine(CoolDownCoroutine(skillNames[k], 0f));
+            }
+        }
+        setQuickSlot("1", "red potion small");
+        setQuickSlot("2", "blue potion small");
+    }
+
+    void useQuickSlot(string key)
+    {
+        if (quickInventory.ContainsKey(keyToItemName[key]))
+        {
+            if (quickInventory[keyToItemName[key]].count > 0)
+            {
+                quickInventory[keyToItemName[key]].count--;
+            }
+            consumePotion(keyToItemName[key]);
+            myCharacter.GetComponent<MultyPlayer>().updateInventory();
+            updateThisQuickSlot(key);
+        }
+        /*
+        for (int k = 0; k < inventory.Count; k++)
+        {
+            if(inventory[k].itemName == keyToItemName[key])
+            {
+                if (inventory[k].count > 0)
+                {
+                    inventory[k].count--;
+                    consumePotion(keyToItemName[key]);
+                    myCharacter.GetComponent<MultyPlayer>().updateInventory();
+                    updateThisQuickSlot(key);
+                }
+            }
+        }*/
+    }
+    public void updateAllQuickSlot(bool updateSprite = false)
+    {
+        for (int k = 0; k < quickSlotKeys.Count; k++)
+        {
+            Transform currentSlot = quiclSlotUI.transform.Find(quickSlotKeys[k].ToLower());
+            if (updateSprite)
+                currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[keyToItemName[quickSlotKeys[k]]].spriteDirectory);
+
+            if (quickInventory.ContainsKey(keyToItemName[quickSlotKeys[k]]))
+            {
+                currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;
+                currentSlot.GetChild(2).GetComponent<TMP_Text>().text = quickInventory[keyToItemName[quickSlotKeys[k]]].count.ToString();
+            }
+            else
+            {
+                currentSlot.GetChild(0).GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f);
+                currentSlot.GetChild(2).GetComponent<TMP_Text>().text = "0";
+            }
+        }
+    }
+    void updateThisQuickSlot(string key, bool updateSprtie = false)
+    {
+        Transform currentSlot = quiclSlotUI.transform.Find(key);
+        if (updateSprtie)
+            currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[keyToItemName[key]].spriteDirectory);
+        if (quickInventory.ContainsKey(keyToItemName[key]))
+        {
+            currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;
+            currentSlot.GetChild(2).GetComponent<TMP_Text>().text = quickInventory[keyToItemName[key]].count.ToString();
+        }
+        else
+        {
+            currentSlot.GetChild(0).GetComponent<Image>().color = Color.gray;
+            currentSlot.GetChild(2).GetComponent<TMP_Text>().text = "0";
+        }
+    }
+
+    void setQuickSlot(string key, string itemName)
+    {
+        keyToItemName[key] = itemName;
+        updateThisQuickSlot(key, true);
+    }
+
+
+    void consumePotion(string itemName)
+    {
+        myCharacterState.ProcessSkill(1, DataBase.Instance.itemInfoDict[itemName].recoveryHealth);
+        myCharacterState.ProcessSkill(5, DataBase.Instance.itemInfoDict[itemName].recoveryMana);
+    }
+
+    public void ClickExpandChatLog()
+    {
+        Debug.Log("clicked");
+        if (ChatBox.sizeDelta.y == 120)
+            ChatBox.sizeDelta = new Vector2(ChatBox.sizeDelta.x, 500);
+        else
+            ChatBox.sizeDelta = new Vector2(ChatBox.sizeDelta.x, 120);
+        ChatExpandButtonIcon.localScale = new Vector3(ChatExpandButtonIcon.localScale.x, -ChatExpandButtonIcon.localScale.y, 1);
     }
     public void ClickSkillLevelUpButton()
     {
 
-    }    
+    }
     public void updateCurrentFocusWindow(GameObject currentWindow = null)
-    {        
-        if(currentWindow != null)
+    {
+        if (currentWindow != null)
         {
             currentFocusWindow = currentWindow;
             openedWindows.Add(currentWindow);
@@ -192,7 +542,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             }
             else
                 currentFocusWindow = null;
-        }        
+        }
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -221,30 +571,30 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     public void ResetSkillPanel()
     {
-        for(int k = 0; k < skillBox.transform.childCount; k++)
+        for (int k = 0; k < skillBox.transform.childCount; k++)
         {
             Destroy(skillBox.transform.GetChild(k).gameObject);
         }
     }
     public void UpdateSkillPanel()
-    {        
+    {
         List<string> skillName = myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel.SD_Keys;
         foreach (string name in skillName)
         {
             if (name.Contains("normal"))
                 continue;
-            if(skillBox.transform.Find(name) == null)
+            if (skillBox.transform.Find(name) == null)
             {
                 GameObject newSkill = Instantiate(skillInfo);
-                newSkill.name = name;                
+                newSkill.name = name;
                 newSkill.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(DataBase.Instance.skillThumbnailPath, name));
                 newSkill.transform.GetChild(2).GetComponent<TMP_Text>().text = name;
                 string max_level = DataBase.Instance.skillInfoDict[name].maxLevel.ToString();
                 string current_level = myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel[name].ToString();
-                newSkill.transform.GetChild(3).GetComponent<TMP_Text>().text = current_level + " / " + max_level;                
+                newSkill.transform.GetChild(3).GetComponent<TMP_Text>().text = current_level + " / " + max_level;
                 newSkill.transform.SetParent(skillBox.transform, false);
                 newSkill.transform.localPosition = Vector3.zero;
-                newSkill.transform.localScale = Vector3.one;                
+                newSkill.transform.localScale = Vector3.one;
                 newSkill.gameObject.SetActive(true);
             }
             else
@@ -256,7 +606,69 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         }
     }
 
-    
+
+    public void EndGame(string condition)
+    {
+        string title = null;
+        string content = null;
+        StopCoroutine(timer);
+        if (condition == "time out")
+        {
+            title = "타임아웃";
+            gameOverPanel.transform.GetChild(0).GetComponent<Image>().color = failColor;
+            content = string.Format("남은 체력\n{0}\n\n소요시간\n{1}초\n\n인 원\n", bossCurrentHealthText.text, limitTime.ToString());
+        }
+        else if (condition == "clear")
+        {
+            title = "클리어";
+            gameOverPanel.transform.GetChild(0).GetComponent<Image>().color = succesColor;
+            content = string.Format("클리어 시간\n{0}초\n\n인 원\n", stageTime.ToString());
+
+        }
+        else if (condition == "all death")
+        {
+            title = "실패";
+            gameOverPanel.transform.GetChild(0).GetComponent<Image>().color = failColor;
+            content = string.Format("남은 체력\n{0}\n\n소요시간\n{1}초\n\n인 원\n", bossCurrentHealthText.text, stageTime.ToString());
+
+        }
+        foreach (Transform player in PlayerGroup.transform)
+        {
+            content += player.GetComponent<CharacterState>().nick + " ";
+            player.GetComponent<MultyPlayer>().isDeath = true;
+        }
+        foreach (Transform monster in EnemyGroup.transform)
+        {
+            monster.GetComponent<MonsterControl>().attackable = false;
+        }
+
+        gameOverPanel.transform.GetChild(1).GetComponent<TMP_Text>().text = title;
+        gameOverPanel.transform.GetChild(2).GetComponent<TMP_Text>().text = content;
+
+
+        if (DataBase.Instance.isCurrentDungeonCaptain)
+        {
+            gameOverPanel.transform.GetChild(3).GetComponent<Button>().interactable = true;
+            gameOverPanel.transform.GetChild(4).GetComponent<Button>().interactable = true;
+        }
+        else
+        {
+            gameOverPanel.transform.GetChild(3).GetComponent<Button>().interactable = false;
+            gameOverPanel.transform.GetChild(4).GetComponent<Button>().interactable = false;
+        }
+        gameOverPanel.SetActive(true);
+    }
+
+    public void ClickReGameButton()
+    {
+        networkManager.PV.RPC("ReGame", RpcTarget.All);
+    }
+    public void ClickGoToVillageButton()
+    {
+        networkManager.PV.RPC("GoToVillage", RpcTarget.All);
+    }
+
+    #region 파티
     public void UpdatePartyPanel()
     {
         if (!PhotonNetwork.InRoom)
@@ -264,16 +676,6 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         UpdatePartyMember();        
         UpdateInGameUser();
         UpdatePartyList();
-        /*if(networkManager.myPartyCaptainName == DataBase.Instance.currentCharacterNickname)
-        {
-            inGameUserPanel.SetActive(true);
-        }
-        else
-        {
-            inGameUserPanel.SetActive(false);
-        }*/
-
-
     }
     
     public void UpdatePartyMember()
@@ -501,7 +903,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         joinPartyRequestPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = string.Format("{0}님\r\n레벨: {1}\r\n직업: {2}\r\n이 파티 가입 요청을 보냈습니다.", captainNick, captainLevel, captainRoll);
         joinPartyRequestPanel.transform.GetChild(2).GetChild(1).name = fromWho;
     }
-
+    
     public void EnterDungeonPop()
     {
         updateCurrentFocusWindow(enterDungeonPanel);
@@ -518,7 +920,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         else
             _timeLimit = float.Parse(timeLimitInputfield.text);
         networkManager.movePortal(_timeLimit);
+        enterDungeonPanel.SetActive(false);
     }
+    #endregion
 
     public void setResolution()
     {

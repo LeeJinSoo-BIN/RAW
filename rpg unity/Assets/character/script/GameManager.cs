@@ -10,11 +10,8 @@ using WebSocketSharp;
 
 public class GameManager : MonoBehaviour
 {   
-    public Transform inGameUI;
-    public GameObject PanelList;
     public newNetworkManager networkManager;
-
-    public bool oldVersion = false;
+    private GameObject myCharacter;
     void Awake()
     {        
         //Screen.SetResolution(960, 540, false);
@@ -22,12 +19,10 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        if (!oldVersion)
-        {
-            GameObject player = PhotonNetwork.Instantiate("Character/Player", Vector3.zero, Quaternion.identity);
-            setup(player);
-            GameObject.Find("Main Camera").transform.GetComponent<CameraFollow>().myCharacterTransform = player.transform;
-        }
+        GameObject player = PhotonNetwork.Instantiate("Character/Player", Vector3.zero, Quaternion.identity);
+        myCharacter = player;
+        setup(player);
+        GameObject.Find("Main Camera").transform.GetComponent<CameraFollow>().myCharacterTransform = player.transform;
     }
 
     public void setup(GameObject player)
@@ -39,10 +34,8 @@ public class GameManager : MonoBehaviour
         Debug.Log("loaded player data");
         player.GetComponent<MultyPlayer>().characterState.setUp();
         Debug.Log("set up state");
-        inGameUI.GetComponent<InGameUI>().myCharacter = player;
-        inGameUI.GetComponent<InGameUI>().setUp();        
-        PanelList.GetComponent<UIManager>().myCharacter = player;
-        PanelList.GetComponent<UIManager>().SetUP();
+        UIManager.Instance.myCharacter = player;
+        UIManager.Instance.SetUP();        
         Debug.Log("set up ingame ui");
         if (DataBase.Instance.currentMapType == "dungeon" && PhotonNetwork.LocalPlayer.IsMasterClient)
             StartCoroutine(SpawnBoss());
@@ -63,6 +56,24 @@ public class GameManager : MonoBehaviour
         spriteList.setSprite();
     }
 
+
+    public void ReGame()
+    {
+        foreach (Transform player in GameObject.Find("Player Group").transform)
+        {
+            Destroy(player.gameObject);
+        }
+        foreach (Transform monster in GameObject.Find("Enemy Group").transform)
+        {
+            Destroy(monster.gameObject);
+        }
+        foreach(Transform item in GameObject.Find("Item Field").transform)
+        {
+            Destroy(item.gameObject);
+        }
+        Start();
+    }
+
     IEnumerator SpawnBoss()
     {
         float _timer = 0f;
@@ -71,8 +82,7 @@ public class GameManager : MonoBehaviour
             _timer += Time.deltaTime;
             yield return null;
         }
-        PhotonNetwork.Instantiate("Monster/Evil Wizard", Vector3.zero, Quaternion.identity);
-        //PhotonNetwork.CurrentRoom.IsOpen = false;
+        PhotonNetwork.Instantiate("Monster/Evil Wizard", Vector3.zero, Quaternion.identity);        
         networkManager.PV.RPC("SpawnBoss", RpcTarget.All);
     }       
 }

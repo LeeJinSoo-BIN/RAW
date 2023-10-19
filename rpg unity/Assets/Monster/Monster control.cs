@@ -271,6 +271,8 @@ public class MonsterControl : MonoBehaviour
                 spawnItem(itemName, monsterSpec.dropItems[itemName]);
             }
         }
+        if(monsterSpec.monsterType.ToLower() == "boss")
+            UIManager.Instance.EndGame("clear");
         Destroy(gameObject, 0.45f);
     }
 

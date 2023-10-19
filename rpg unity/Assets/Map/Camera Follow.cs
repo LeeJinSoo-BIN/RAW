@@ -22,6 +22,9 @@ public class CameraFollow : MonoBehaviour
         Debug.Log(mapSize);
         height = Camera.main.orthographicSize;
         width = height * Screen.width / Screen.height;
+        transform.GetChild(0).GetComponent<SpriteRenderer>().sortingLayerName = "ui";
+        transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder = -5;
+
     }
     // Update is called once per frame
     void Update()

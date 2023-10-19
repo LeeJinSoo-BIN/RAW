@@ -5,12 +5,11 @@ using UnityEngine;
 
 public class portal : MonoBehaviour
 {
-    newNetworkManager networkManager;
-    UIManager uiManager;
+    newNetworkManager networkManager;    
     private void Awake()
     {
         networkManager = GameObject.Find("NetworkManager").GetComponent<newNetworkManager>();
-        uiManager = GameObject.Find("Panel Canvas").GetComponent<UIManager>();
+        
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -22,7 +21,7 @@ public class portal : MonoBehaviour
             {
                 if (networkManager.myPartyCaptainName == DataBase.Instance.currentCharacterNickname)
                 {
-                    uiManager.EnterDungeonPop();
+                    UIManager.Instance.EnterDungeonPop();
                 }
             }
         }

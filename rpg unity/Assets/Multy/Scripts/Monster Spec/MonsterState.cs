@@ -59,8 +59,7 @@ public class MonsterState : MonoBehaviourPunCallbacks
     }
 
     void PopDamage(int type, float value, bool isCritical)
-    {
-        Debug.Log("pop");
+    {        
         GameObject damage = Instantiate(Resources.Load<GameObject>("Character/skills/damage"));
         damage.transform.position = damagePop.position;
         TMP_Text damageText = damage.GetComponentInChildren<TMP_Text>();

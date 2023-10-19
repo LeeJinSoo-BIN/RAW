@@ -21,7 +21,7 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
     public string nick;
     public Animator characterAnimator;
 
-    private bool isDeath = false;
+    public bool isDeath = false;
     public MultyPlayer playerControl;
     private float _timer = 0f;
     public PhotonView PV;
@@ -100,12 +100,8 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
                     health.value -= value;
                 if (health.value <= 0 && !isDeath)
                 {
-                    isDeath = true;
-                    characterAnimator.SetTrigger("Death");
-                    characterAnimator.SetBool("IsDeath", true);
-                    playerControl.movable = false;
-                    playerControl.attackable = false;
-                    playerControl.isDeath = true;
+                    PV.RPC("Death", RpcTarget.All);
+                    
                 }
                 if (type == 4)
                 {
@@ -130,9 +126,31 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
             }
         }
     }
+
+    [PunRPC]
+    void Death()
+    {
+        if (PV.IsMine)
+        {
+            characterAnimator.SetTrigger("Death");
+            characterAnimator.SetBool("IsDeath", true);
+            playerControl.movable = false;
+            playerControl.attackable = false;
+            playerControl.isDeath = true;
+        }
+        isDeath = true;
+        int death_count = 0;
+        foreach(Transform player in GameObject.Find("Player Group").transform)
+        {
+            if (player.GetComponent<CharacterState>().isDeath)
+                death_count++;
+        }
+        if (death_count == GameObject.Find("Player Group").transform.childCount)
+            UIManager.Instance.EndGame("all death");
+    }
+
     void PopDamage(int type, float value)
     {
-        Debug.Log("pop");
         GameObject damage = Instantiate(Resources.Load<GameObject>("Character/skills/damage"));
         damage.transform.position = new Vector3(transform.position.x, transform.position.y + 1.3f);
         TMP_Text damageText = damage.GetComponentInChildren<TMP_Text>();

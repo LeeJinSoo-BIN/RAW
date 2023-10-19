@@ -62,7 +62,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     private CharacterSpec characterSpec;
     private Dictionary<string, float> skillActivatedTime = new Dictionary<string, float>();
     private Dictionary<string, string> skillNameToKey = new Dictionary<string, string>();
-    public InGameUI inGameUI;
+    
     public GameObject itemDropField;
 
     public TMP_InputField chatInput;
@@ -85,18 +85,15 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         NickNameText.text = PV.IsMine ? PhotonNetwork.NickName : PV.Owner.NickName;
         NickNameText.color = PV.IsMine ? Color.green : Color.red;
         playerGroup = GameObject.Find("Player Group");
-        enemyGroup = GameObject.Find("Enemy Group");        
+        enemyGroup = GameObject.Find("Enemy Group");
+        itemDropField = GameObject.Find("Item Field").gameObject;
         //sortingGroup.sortingOrder = PV.IsMine ? 1 : 0;        
         if (PV.IsMine)
         {
-            
-            Transform inGameUICanvas = GameObject.Find("In Game UI Canvas").transform;
-            inGameUI = inGameUICanvas.GetComponent<InGameUI>();
-            chatInput = inGameUICanvas.Find("Game").Find("Chat").Find("chat Input").GetComponent<TMP_InputField>();
-            inventoryUi = GameObject.Find("Panel Canvas").transform.Find("inventory Panel").gameObject;
+            chatInput = UIManager.Instance.chatInput;
+            inventoryUi = UIManager.Instance.inventoryPanel;
             itemBox = inventoryUi.transform.GetChild(2).gameObject;
-        }
-        itemDropField = GameObject.Find("Item Field").gameObject;
+        }        
         transform.parent = playerGroup.transform;
     }
     public void loadData()
@@ -113,7 +110,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             if (skill_name_list[i].Contains("normal"))
                 normalAttackSpec = DataBase.Instance.skillInfoDict[skill_name_list[i]];
         }
-        inGameUI.skillNameToKey = skillNameToKey;
+        UIManager.Instance.skillNameToKey = skillNameToKey;
 
 
         inventory = characterSpec.inventory;
@@ -121,7 +118,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         {
             quickInventory.Add(item.itemName, new qucikInventoryInfo() { count = item.count, position = item.position});
         }        
-        inGameUI.quickInventory = quickInventory;        
+        UIManager.Instance.quickInventory = quickInventory;        
         updateInventory();        
     }
     void Update()
@@ -444,7 +441,16 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             {
                 float skill_casting_point_len = Vector2.Distance(goalPos, transform.position);
                 if (currentCastingSkill.castType.Contains("target"))
+                {
+                    if (targetObject == null)
+                    {
+                        characterAnimator.SetBool("IsRunning", false);
+                        goalPos = targetObject.transform.Find("foot").position;                        
+                        isCastingSkill = false;
+                        yield break;
+                    }
                     goalPos = targetObject.transform.Find("foot").position;
+                }
                 if (skill_radius_len >= skill_casting_point_len)
                 {
                     characterAnimator.SetBool("IsRunning", false);
@@ -528,7 +534,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, isCritical, currentCastingSkill.dealSync, currentCastingSkill.duration, current_skill_target_name, current_skill_target_pos);
         
         skillActivatedTime[currentCastingSkill.skillName] = Time.time;
-        inGameUI.CoolDown(currentCastingSkill.skillName, currentCastingSkill.coolDown);
+        UIManager.Instance.CoolDown(currentCastingSkill.skillName, currentCastingSkill.coolDown);
         characterState.mana.value -= currentCastingSkill.consumeMana;
 
         float delay = 0;
@@ -583,7 +589,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         {
             updateInventory();
             PV.RPC("itemDestroySync", RpcTarget.AllBuffered, got_item.name);
-            inGameUI.updateAllQuickSlot();
+            UIManager.Instance.updateAllQuickSlot();
         }
 
         /*
