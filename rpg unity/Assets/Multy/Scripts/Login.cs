@@ -3,10 +3,8 @@ using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using WebSocketSharp;
 using System;
@@ -19,18 +17,36 @@ public class Login : MonoBehaviourPunCallbacks
     public TMP_InputField pwCheckInputField;
     public TMP_InputField idInputField;
     private int maxNumServerPlayer = 20;
-    public TMP_Text currentNumOnlinePlayer;
+    //public TMP_Text currentNumOnlinePlayer;
     private string selectedCharacterName;
     public GameObject characterSelectList;
     public GameObject characterSelectButton;
-       
+
     public GameObject LoginPanel;
     public GameObject SelectCharacterPanel;
+    public GameObject CharacterCreatePanel;
     public Button LoginButton;
 
     public GameObject PopPanel;
     public TMP_Text popTitle;
     public TMP_Text popContent;
+
+    public List<string> rollList = new List<string>();
+    public List<InventoryItem> defaultHair = new List<InventoryItem>();
+    public List<InventoryItem> defaultCloth = new List<InventoryItem>();
+    public List<InventoryItem> defaultWeapon = new List<InventoryItem>();
+    public List<CharacterSpec> defaultCharacterSpec = new List<CharacterSpec>();
+
+    public SPUM_SpriteList CreateCharacterSample;
+    public TMP_Text CreateCharacterRollText;
+    public TMP_InputField CreatCharacterNickInput;
+    public int currentRollIdx = 0;
+    public int currentHairIdx = 0;
+    public int currentClothIdx = 0;
+    
+
+    private Color currentHairColor = new Color(113f / 255f, 38f / 255f, 38f / 255f);
+    private Color currentEyeColor = new Color(113f / 255f, 38f / 255f, 38f / 255f);
 
     private void Awake()
     {
@@ -44,20 +60,24 @@ public class Login : MonoBehaviourPunCallbacks
     {
         LoginPanel.SetActive(true);
         SelectCharacterPanel.SetActive(false);
+        CharacterCreatePanel.SetActive(false);
     }
 
     void Update()
     {
-        if (pwInputField.isFocused || pwCheckInputField.isFocused) // password ?? ???????? ??????????
+        if (LoginPanel.activeSelf)
         {
-            Input.imeCompositionMode = IMECompositionMode.Off;
+            if (pwInputField.isFocused || pwCheckInputField.isFocused) // password ?? ???????? ??????????
+            {
+                Input.imeCompositionMode = IMECompositionMode.Off;
+            }
+            else if (idInputField.isFocused)
+            {
+                //Input.imeCompositionMode = IMECompositionMode.On;
+            }
+            else
+                Input.imeCompositionMode = IMECompositionMode.Auto;
         }
-        else if (idInputField.isFocused)
-        {            
-            //Input.imeCompositionMode = IMECompositionMode.On;
-        }
-        else
-            Input.imeCompositionMode = IMECompositionMode.Auto;
     }
 
     public void Show_Hide_PassWordCheck(bool show)
@@ -129,13 +149,17 @@ public class Login : MonoBehaviourPunCallbacks
         }
     }
 
-    public void ConnectWithOutLogin()
+
+    public void CreateNewCharacter(CharacterSpec newSpec)
     {
-        LoginButton.enabled = false;
-        PopPanel.SetActive(true);
-        StartCoroutine(LoginMessageUpdate());
-        PhotonNetwork.ConnectUsingSettings();
+
     }
+
+    public void CheckDuplicateNickName()
+    {
+
+    }
+
     public void ClickLoginButton()
     {
         string loginId = idInputField.text;
@@ -192,6 +216,13 @@ public class Login : MonoBehaviourPunCallbacks
             }
         }
     }
+    public void ConnectWithOutLogin()
+    {
+        LoginButton.enabled = false;
+        PopPanel.SetActive(true);
+        StartCoroutine(LoginMessageUpdate());
+        PhotonNetwork.ConnectUsingSettings();
+    }
 
     public override void OnConnectedToMaster()
     {
@@ -235,10 +266,6 @@ public class Login : MonoBehaviourPunCallbacks
         Input.imeCompositionMode = IMECompositionMode.Auto;
     }
 
-    void updatePlayerCount()
-    {
-        currentNumOnlinePlayer.text = PhotonNetwork.CountOfPlayersInRooms.ToString() + " / " + maxNumServerPlayer.ToString();
-    }
 
     void updateCharacterList()
     {
@@ -265,7 +292,6 @@ public class Login : MonoBehaviourPunCallbacks
             characterButton.transform.localScale = Vector3.one;
         }
     }
-
     public override void OnJoinedRoom()
     {        
         if (PhotonNetwork.IsMasterClient)
@@ -280,6 +306,149 @@ public class Login : MonoBehaviourPunCallbacks
         DataBase.Instance.currentMapName = DataBase.Instance.defaultAccountInfo.characterList[whichCharacter].lastTown;
         DataBase.Instance.currentMapType = "village";
         PhotonNetwork.NickName = DataBase.Instance.selectedCharacterSpec.nickName;
+    }
+    public void ClickCreateNewCharacterButton()
+    {
+        CharacterCreatePanel.SetActive(true);       
+
+        UpdateSample("hair");
+        UpdateSample("cloth");
+        UpdateSample("roll");
+
+    }
+
+
+    void UpdateSample(string part)
+    {
+        string part_ = null;
+        string path = null;
+        if (part == "hair")
+        {
+            part_ = DataBase.Instance.itemInfoDict[defaultHair[currentHairIdx].itemName].itemType;
+            path = DataBase.Instance.itemInfoDict[defaultHair[currentHairIdx].itemName].spriteDirectory;
+        }
+        else if (part == "cloth")
+        {
+            part_ = DataBase.Instance.itemInfoDict[defaultCloth[currentClothIdx].itemName].itemType;
+            path = DataBase.Instance.itemInfoDict[defaultCloth[currentClothIdx].itemName].spriteDirectory;
+        }
+        else if (part == "roll")
+        {
+            part_ = DataBase.Instance.itemInfoDict[defaultWeapon[currentRollIdx].itemName].itemType;
+            path = DataBase.Instance.itemInfoDict[defaultWeapon[currentRollIdx].itemName].spriteDirectory;
+
+            CreateCharacterSample.changeSprite("weapon left", null);
+            CreateCharacterSample.changeSprite("weapon right", null);
+        }
+        CreateCharacterSample.changeSprite(part_, path);        
+    }
+
+
+    public void ClickCreateButton()
+    {
+        CharacterSpec spec = new CharacterSpec();
+        CharacterSpec defaultSpec = defaultCharacterSpec[currentRollIdx];
+        List<InventoryItem> equipment = new List<InventoryItem>();
+        List<Color> colors = new List<Color>();
+
+        equipment.Add(defaultWeapon[currentRollIdx]);
+        equipment.Add(defaultCloth[currentClothIdx]);
+        equipment.Add(defaultHair[currentHairIdx]);
+
+        colors.Add(currentHairColor);
+        colors.Add(currentEyeColor);
+        colors.Add(currentEyeColor);
+
+        spec.nickName = CreatCharacterNickInput.text;
+        spec.roll = rollList[currentRollIdx];
+        spec.characterLevel = 1;
+        spec.lastTown = "Pallet Town";
+
+        spec.maxHealth = defaultSpec.maxHealth;
+        spec.maxMana = defaultSpec.maxMana;
+        spec.recoverManaPerThreeSec = defaultSpec.recoverManaPerThreeSec;
+        spec.power = defaultSpec.power;
+        spec.criticalDamage = defaultSpec.criticalDamage;
+        spec.criticalPercent = defaultSpec.criticalPercent;
+        spec.healPercent = defaultSpec.healPercent;
+
+        spec.maxInventoryNum = defaultSpec.maxInventoryNum;
+        spec.skillLevel = defaultSpec.skillLevel;
+        spec.inventory = defaultSpec.inventory;
+        spec.equipment = equipment;
+        spec.colors = colors;
+
+        CreateNewCharacter(spec);
+    }
+
+
+    public void ClickNextButton(string part)
+    {
+        if (part == "roll")
+        {
+            currentRollIdx++;
+            if (currentRollIdx == rollList.Count)
+                currentRollIdx = 0;
+            CreateCharacterRollText.text = rollList[currentRollIdx];
+        }
+        else if (part == "hair")
+        {
+            currentHairIdx++;
+            if (currentHairIdx == defaultHair.Count)
+                currentHairIdx = 0;
+        }
+        else if (part == "cloth")
+        {
+            currentClothIdx++;
+            if (currentClothIdx == defaultCloth.Count)
+                currentClothIdx = 0;
+        }
+        UpdateSample(part);
+    }
+
+    public void ClickPrevButton(string part)
+    {
+        if (part == "roll")
+        {
+            currentRollIdx--;
+            if (currentRollIdx == -1)
+                currentRollIdx = rollList.Count - 1;
+            CreateCharacterRollText.text = rollList[currentRollIdx];
+        }
+        else if (part == "hair")
+        {
+            currentHairIdx--;
+            if (currentHairIdx == -1)
+                currentHairIdx = defaultHair.Count - 1;
+        }
+        else if (part == "cloth")
+        {
+            currentClothIdx--;
+            if (currentClothIdx == -1)
+                currentClothIdx = defaultCloth.Count - 1;
+        }
+        UpdateSample(part);
+    }
+
+    public void ClickColor(string part)
+    {
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        Color color = current_clicked_button.GetComponent<Image>().color;
+        if (part == "hair")
+        {
+            CreateCharacterSample.setColors(0, color.r, color.g, color.b);
+            currentHairColor = color;
+        }
+        else if (part == "eye")
+        {
+            CreateCharacterSample.setColors(1, color.r, color.g, color.b);
+            CreateCharacterSample.setColors(2, color.r, color.g, color.b);
+            currentEyeColor = color;
+        }
+    }
+    public void ClickCancleCreateButton()
+    {
+        CharacterCreatePanel.SetActive(false);
     }
 
     IEnumerator popMessage(string title, string content, float popTime = 2f)

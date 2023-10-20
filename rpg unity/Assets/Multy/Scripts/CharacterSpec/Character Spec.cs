@@ -12,8 +12,8 @@ public class CharacterSpec : ScriptableObject
     public string nickName;
     public string roll;
     public int characterLevel;
-
-    public string lastTown;    
+    public string lastTown;
+    
     public float maxHealth;
     public float maxMana;
     public float recoverManaPerThreeSec;

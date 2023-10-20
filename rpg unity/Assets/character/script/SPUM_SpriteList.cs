@@ -114,10 +114,28 @@ public class SPUM_SpriteList : MonoBehaviour
     {
         foreach (string part in PartsPath.Keys)
         {
-            if(PV != null)
-                PV.RPC("changeSprite", RpcTarget.AllBuffered, part, PartsPath[part]);
+            if (part.Contains("weapon"))
+            {
+                if (PV != null)
+                {
+                    PV.RPC("changeSprite", RpcTarget.AllBuffered, "weapon left", null);
+                    PV.RPC("changeSprite", RpcTarget.AllBuffered, "weapon right", null);                    
+                    PV.RPC("changeSprite", RpcTarget.AllBuffered, part, PartsPath[part]);
+                }
+                else
+                {
+                    changeSprite("weapon left", null);
+                    changeSprite("weapon right", null);                    
+                    changeSprite(part, PartsPath[part]);
+                }
+            }
             else
-                changeSprite(part, PartsPath[part]);
+            {
+                if (PV != null)
+                    PV.RPC("changeSprite", RpcTarget.AllBuffered, part, PartsPath[part]);
+                else
+                    changeSprite(part, PartsPath[part]);
+            }
         }
         for (int k = 0; k < 3; k++)
         {
@@ -175,7 +193,7 @@ public class SPUM_SpriteList : MonoBehaviour
     }
 
     [PunRPC]
-    void changeSprite(string part, string path)
+    public void changeSprite(string part, string path)
     {
         if (part == "cloth")
         {
@@ -196,11 +214,14 @@ public class SPUM_SpriteList : MonoBehaviour
         }
         else
         {
-            BodyParts[part].sprite = Resources.LoadAll<Sprite>(path)[0];
+            if (path == null)
+                BodyParts[part].sprite = null;
+            else
+                BodyParts[part].sprite = Resources.LoadAll<Sprite>(path)[0];
         }
     }
     [PunRPC]
-    void setColors(int which, float r, float g, float b)
+    public void setColors(int which, float r, float g, float b)
     {
         if (which == 0)
             _hairList[0].color = new Color(r, g, b);
