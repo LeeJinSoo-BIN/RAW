@@ -149,16 +149,22 @@ public class Login : MonoBehaviourPunCallbacks
         }
     }
 
+    private bool CheckDuplicateNickName(string nickName)
+    {
+        bool duplicated = true;
+
+        return duplicated;
+    }
 
     public void CreateNewCharacter(CharacterSpec newSpec)
     {
+        string ID = DataBase.Instance.defaultAccountInfo.accountId;
+        string newNickName = newSpec.nickName;
+
 
     }
 
-    public void CheckDuplicateNickName()
-    {
-
-    }
+ 
 
     public void ClickLoginButton()
     {
@@ -196,7 +202,7 @@ public class Login : MonoBehaviourPunCallbacks
                     if (loginStatus == 1)
                     {
                         Debug.Log("Success");
-
+                        DataBase.Instance.defaultAccountInfo.accountId = loginId;
                         LoginButton.enabled = false;
                         PopPanel.SetActive(true);
                         StartCoroutine(LoginMessageUpdate());
@@ -317,6 +323,15 @@ public class Login : MonoBehaviourPunCallbacks
 
     }
 
+    public void ClickCheckDuplicatedNickButton()
+    {
+        bool duplicated = CheckDuplicateNickName(CreatCharacterNickInput.text);
+        if (duplicated)
+        {
+            StartCoroutine(popMessage("중복", "중복된 닉네임 입니다."));
+        }
+    }
+
 
     void UpdateSample(string part)
     {
@@ -346,6 +361,13 @@ public class Login : MonoBehaviourPunCallbacks
 
     public void ClickCreateButton()
     {
+        if (CheckDuplicateNickName(CreatCharacterNickInput.text))
+        {
+            StartCoroutine(popMessage("오류", "중복된 닉네임 입니다."));
+            return;
+        }
+            
+
         CharacterSpec spec = new CharacterSpec();
         CharacterSpec defaultSpec = defaultCharacterSpec[currentRollIdx];
         List<InventoryItem> equipment = new List<InventoryItem>();

@@ -341,7 +341,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 45025803}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 373080855}
+        m_TargetAssemblyTypeName: Login, Assembly-CSharp
+        m_MethodName: ClickCreateButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &45025803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2112,8 +2124,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ec8848f748f02bd479a4e2ca80c57d7c, type: 2}
   - {fileID: 11400000, guid: 4a419a89cfc74c042a53d8d19b4af281, type: 2}
   defaultCloth:
-  - {fileID: 11400000, guid: d545b5f946badb54fbe446cbda3c4a8f, type: 2}
   - {fileID: 11400000, guid: f7de936b32d1b2547891139fb661380f, type: 2}
+  - {fileID: 11400000, guid: d545b5f946badb54fbe446cbda3c4a8f, type: 2}
   - {fileID: 11400000, guid: 6f1f402fe5f5e454a8b7244cfb532bf7, type: 2}
   defaultWeapon:
   - {fileID: 11400000, guid: 47d95b0d4f4a86b408a4f1dae78e077d, type: 2}
@@ -2122,7 +2134,7 @@ MonoBehaviour:
   defaultCharacterSpec: []
   CreateCharacterSample: {fileID: 1103846898}
   CreateCharacterRollText: {fileID: 1579787284}
-  CreatCharacterNickInput: {fileID: 0}
+  CreatCharacterNickInput: {fileID: 2137413803}
   currentRollIdx: 0
   currentHairIdx: 0
   currentClothIdx: 0
@@ -11668,7 +11680,7 @@ GameObject:
   - component: {fileID: 1908459824}
   - component: {fileID: 1908459823}
   m_Layer: 5
-  m_Name: Button
+  m_Name: dup check
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11738,7 +11750,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1908459824}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 373080855}
+        m_TargetAssemblyTypeName: Login, Assembly-CSharp
+        m_MethodName: ClickCheckDuplicatedNickButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1908459824
 MonoBehaviour:
   m_ObjectHideFlags: 0
