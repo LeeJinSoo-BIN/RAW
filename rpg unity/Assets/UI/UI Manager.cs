@@ -687,18 +687,24 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         if (!networkManager.myPartyCaptainName.IsNullOrEmpty())
         {
             foreach (string memberNickName in networkManager.allPartys[networkManager.myPartyCaptainName].partyMembersNickName)
-            {                
+            {
+                GameObject member = PlayerGroup.transform.Find(memberNickName).gameObject;
+                GameObject memberHead = Instantiate(member.transform.Find("Root").GetChild(0).GetChild(0).GetChild(2).GetChild(0).gameObject);
+                makeNewHead(memberHead);
                 GameObject newMember = Instantiate(partyMemberInfo);
-                newMember.transform.GetChild(1).GetComponent<TMP_Text>().text = PlayerGroup.transform.Find(memberNickName).GetComponent<CharacterState>().nick;
+                memberHead.transform.parent = newMember.transform.GetChild(1);
+                memberHead.transform.localPosition = new Vector3(0, -30, 0);
+                memberHead.transform.localScale = new Vector3(120, 120);
+                newMember.transform.GetChild(2).GetComponent<TMP_Text>().text = member.GetComponent<CharacterState>().nick;
                 if (memberNickName == networkManager.myPartyCaptainName)
-                    newMember.transform.GetChild(1).GetComponent<TMP_Text>().text = "*" + newMember.transform.GetChild(1).GetComponent<TMP_Text>().text;
-                newMember.transform.GetChild(2).GetComponent<TMP_Text>().text = "Lv. " + PlayerGroup.transform.Find(memberNickName).GetComponent<CharacterState>().level.ToString();
-                newMember.transform.GetChild(3).GetComponent<TMP_Text>().text = "직업: " + PlayerGroup.transform.Find(memberNickName).GetComponent<CharacterState>().roll;
-                newMember.transform.GetChild(4).name = memberNickName;
+                    newMember.transform.GetChild(2).GetComponent<TMP_Text>().text = "*" + newMember.transform.GetChild(2).GetComponent<TMP_Text>().text;
+                newMember.transform.GetChild(3).GetComponent<TMP_Text>().text = "Lv. " + member.GetComponent<CharacterState>().level.ToString();
+                newMember.transform.GetChild(4).GetComponent<TMP_Text>().text = "직업: " + member.GetComponent<CharacterState>().roll;
+                newMember.transform.GetChild(5).name = memberNickName;
                 if (networkManager.myPartyCaptainName != DataBase.Instance.currentCharacterNickname)
-                    newMember.transform.GetChild(4).GetComponent<Button>().interactable = false;
+                    newMember.transform.GetChild(5).GetComponent<Button>().interactable = false;
                 else if (memberNickName == DataBase.Instance.currentCharacterNickname)
-                    newMember.transform.GetChild(4).GetComponent<Button>().interactable= false;
+                    newMember.transform.GetChild(5).GetComponent<Button>().interactable= false;
                 newMember.transform.parent = partyMemberBox.transform;
                 
                 newMember.SetActive(true);
