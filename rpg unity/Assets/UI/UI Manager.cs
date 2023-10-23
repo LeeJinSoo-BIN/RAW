@@ -17,6 +17,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 {
     [Header("Panel")]
     #region
+    public GameObject currentFocusWindow;
     public GameObject inventoryPanel;
     public GameObject enterDungeonPanel;
     public GameObject gameOverPanel;
@@ -48,7 +49,10 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public GameObject invitePartyPanel;
     public GameObject joinPartyRequestPanel;
 
-    public GameObject currentFocusWindow;
+    [Header("Store Panel")]
+    public GameObject storePanel;
+
+    
     #endregion
 
 
@@ -136,6 +140,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         optionPanel.SetActive(false);
         skillPanel.SetActive(false);
         partyPanel.SetActive(false);
+        storePanel.SetActive(false);
         BossUiGroup.SetActive(false);
         StageUiGroup.SetActive(false);
         gameOverPanel.SetActive(false);
@@ -634,7 +639,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         }
         foreach (Transform player in PlayerGroup.transform)
         {
-            content += player.GetComponent<CharacterState>().nick + " ";
+            content += player.GetComponent<CharacterState>().nick + "(" + player.GetComponent<CharacterState>().roll + ") ";
             player.GetComponent<MultyPlayer>().isDeath = true;
         }
         foreach (Transform monster in EnemyGroup.transform)

@@ -10,6 +10,7 @@ using WebSocketSharp;
 using System;
 using System.Data;
 using MySql.Data.MySqlClient;
+using Unity.VisualScripting;
 
 public class Login : MonoBehaviourPunCallbacks
 {
@@ -26,6 +27,7 @@ public class Login : MonoBehaviourPunCallbacks
     public GameObject SelectCharacterPanel;
     public GameObject CharacterCreatePanel;
     public Button LoginButton;
+    public Button RegisterButton;
 
     public GameObject PopPanel;
     public TMP_Text popTitle;
@@ -47,6 +49,7 @@ public class Login : MonoBehaviourPunCallbacks
 
     private Color currentHairColor = new Color(113f / 255f, 38f / 255f, 38f / 255f);
     private Color currentEyeColor = new Color(113f / 255f, 38f / 255f, 38f / 255f);
+    public bool useLocal;
 
     private void Awake()
     {
@@ -55,6 +58,10 @@ public class Login : MonoBehaviourPunCallbacks
         PhotonNetwork.SerializationRate = 30;
         Application.targetFrameRate = 60;
         PhotonNetwork.AutomaticallySyncScene = true;
+        if(useLocal)
+        {
+            RegisterButton.interactable = false;
+        }
     }
     void Start()
     {
@@ -151,6 +158,8 @@ public class Login : MonoBehaviourPunCallbacks
 
     private bool CheckDuplicateNickName(string nickName)
     {
+        if (useLocal)
+            return false;
         bool duplicated = true;
 
         return duplicated;
@@ -164,67 +173,92 @@ public class Login : MonoBehaviourPunCallbacks
 
     }
 
- 
+    void ClearSample()
+    {
+        CreatCharacterNickInput.text = "";
+        currentClothIdx = 0;
+        currentHairIdx = 0;
+        currentRollIdx = 0;
+        UpdateSample("cloth");
+        UpdateSample("hair");
+        UpdateSample("roll");
+        CharacterCreatePanel.SetActive(false);
+    }
+
+    public void CreateNewCharacterInLocal(CharacterSpec newSpec)
+    {
+        DataBase.Instance.defaultAccountInfo.characterList.Add(newSpec);
+        updateCharacterList();
+        ClearSample();
+    }
+
 
     public void ClickLoginButton()
     {
-        string loginId = idInputField.text;
-        string loginPw = pwInputField.text;
-
-        if (!pwCheckInputField.gameObject.activeSelf)
+        if (useLocal)
         {
-            if (!loginId.IsNullOrEmpty() && !loginPw.IsNullOrEmpty())
+            ConnectWithOutLogin();
+        }
+        else
+        {
+            string loginId = idInputField.text;
+            string loginPw = pwInputField.text;
+
+            if (!pwCheckInputField.gameObject.activeSelf)
             {
-                try
+                if (!loginId.IsNullOrEmpty() && !loginPw.IsNullOrEmpty())
                 {
-                    MySqlConnection conn = DBControl.SqlConn;
-                    if (conn.State != ConnectionState.Open)
-                        conn.Open();
-
-                    int loginStatus = 0;
-
-                    string selectQuery = "SELECT * FROM account WHERE name = \'" + loginId + "\' ";
-
-                    MySqlCommand selectCommand = new MySqlCommand(selectQuery, conn);
-                    MySqlDataReader userAccount = selectCommand.ExecuteReader();
-
-                    while (userAccount.Read())
+                    try
                     {
-                        if (loginId == (string)userAccount["name"] && loginPw == (string)userAccount["password"])
+                        MySqlConnection conn = DBControl.SqlConn;
+                        if (conn.State != ConnectionState.Open)
+                            conn.Open();
+
+                        int loginStatus = 0;
+
+                        string selectQuery = "SELECT * FROM account WHERE name = \'" + loginId + "\' ";
+
+                        MySqlCommand selectCommand = new MySqlCommand(selectQuery, conn);
+                        MySqlDataReader userAccount = selectCommand.ExecuteReader();
+
+                        while (userAccount.Read())
                         {
-                            loginStatus = 1;
-                            break;
+                            if (loginId == (string)userAccount["name"] && loginPw == (string)userAccount["password"])
+                            {
+                                loginStatus = 1;
+                                break;
+                            }
+                        }
+                        if (conn.State == ConnectionState.Open)
+                            conn.Close();
+
+                        if (loginStatus == 1)
+                        {
+                            Debug.Log("Success");
+                            DataBase.Instance.defaultAccountInfo.accountId = loginId;
+                            LoginButton.enabled = false;
+                            PopPanel.SetActive(true);
+                            StartCoroutine(LoginMessageUpdate());
+                            PhotonNetwork.ConnectUsingSettings();
+                        }
+                        else
+                        {
+                            Debug.Log("Fail");
+                            StartCoroutine(popMessage("로그인 실패", "아이디와 비밀번호를 확인해주세요."));
                         }
                     }
-                    if(conn.State == ConnectionState.Open)
-                        conn.Close();
-
-                    if (loginStatus == 1)
+                    catch (Exception e)
                     {
-                        Debug.Log("Success");
-                        DataBase.Instance.defaultAccountInfo.accountId = loginId;
-                        LoginButton.enabled = false;
-                        PopPanel.SetActive(true);
-                        StartCoroutine(LoginMessageUpdate());
-                        PhotonNetwork.ConnectUsingSettings();
+                        Debug.LogError(e.Message);
+                        StartCoroutine(popMessage("서버 오류", e.Message));
                     }
-                    else
-                    {
-                        Debug.Log("Fail");
-                        StartCoroutine(popMessage("로그인 실패", "아이디와 비밀번호를 확인해주세요."));
-                    }
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError(e.Message);
-                    StartCoroutine(popMessage("서버 오류", e.Message));
                 }
             }
         }
     }
     public void ConnectWithOutLogin()
     {
-        LoginButton.enabled = false;
+        LoginButton.interactable = false;
         PopPanel.SetActive(true);
         StartCoroutine(LoginMessageUpdate());
         PhotonNetwork.ConnectUsingSettings();
@@ -238,7 +272,7 @@ public class Login : MonoBehaviourPunCallbacks
 
     public override void OnDisconnected(DisconnectCause cause)
     {
-        LoginButton.enabled = true;
+        LoginButton.interactable = true;
     }
 
     public override void OnJoinedLobby()
@@ -275,6 +309,11 @@ public class Login : MonoBehaviourPunCallbacks
 
     void updateCharacterList()
     {
+        foreach(Transform character in characterSelectList.transform)
+        {
+            Destroy(character.gameObject);
+        }
+
         for(int k = 0; k < DataBase.Instance.defaultAccountInfo.characterList.Count; k++)
         {
             GameObject characterButton = Instantiate(characterSelectButton);
@@ -361,14 +400,21 @@ public class Login : MonoBehaviourPunCallbacks
 
     public void ClickCreateButton()
     {
+
+        if (CreatCharacterNickInput.text.IsNullOrEmpty())
+        {
+            StartCoroutine(popMessage("오류", "닉네임을 입력해주세요."));
+            return;
+        }
+
         if (CheckDuplicateNickName(CreatCharacterNickInput.text))
         {
             StartCoroutine(popMessage("오류", "중복된 닉네임 입니다."));
             return;
         }
-            
 
-        CharacterSpec spec = new CharacterSpec();
+
+        CharacterSpec spec = ScriptableObject.CreateInstance<CharacterSpec>();
         CharacterSpec defaultSpec = defaultCharacterSpec[currentRollIdx];
         List<InventoryItem> equipment = new List<InventoryItem>();
         List<Color> colors = new List<Color>();
@@ -400,7 +446,14 @@ public class Login : MonoBehaviourPunCallbacks
         spec.equipment = equipment;
         spec.colors = colors;
 
-        CreateNewCharacter(spec);
+        if (useLocal)
+        {
+            CreateNewCharacterInLocal(spec);
+        }
+        else
+        {
+            CreateNewCharacter(spec);
+        }
     }
 
 
@@ -470,7 +523,8 @@ public class Login : MonoBehaviourPunCallbacks
     }
     public void ClickCancleCreateButton()
     {
-        CharacterCreatePanel.SetActive(false);
+        ClearSample();
+        //CharacterCreatePanel.SetActive(false);
     }
 
     IEnumerator popMessage(string title, string content, float popTime = 2f)

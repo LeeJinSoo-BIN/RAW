@@ -2112,6 +2112,7 @@ MonoBehaviour:
   SelectCharacterPanel: {fileID: 1362998425}
   CharacterCreatePanel: {fileID: 87044787}
   LoginButton: {fileID: 793463875}
+  RegisterButton: {fileID: 226846721}
   PopPanel: {fileID: 1526018537}
   popTitle: {fileID: 2017155023}
   popContent: {fileID: 410688581}
@@ -2131,13 +2132,17 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 47d95b0d4f4a86b408a4f1dae78e077d, type: 2}
   - {fileID: 11400000, guid: 5108b4843e52e9640bbc6dcb37f194bf, type: 2}
   - {fileID: 11400000, guid: 85234da9a1aa8ec4f8824e3ed0eda15b, type: 2}
-  defaultCharacterSpec: []
+  defaultCharacterSpec:
+  - {fileID: 11400000, guid: c8180382a12288244a173ec36286d26f, type: 2}
+  - {fileID: 11400000, guid: d59c5f6d0be9f8b4585a069725ac6fba, type: 2}
+  - {fileID: 11400000, guid: b25ca8162f1f01940bb8830fe1e1124f, type: 2}
   CreateCharacterSample: {fileID: 1103846898}
   CreateCharacterRollText: {fileID: 1579787284}
   CreatCharacterNickInput: {fileID: 2137413803}
   currentRollIdx: 0
   currentHairIdx: 0
   currentClothIdx: 0
+  useLocal: 1
 --- !u!4 &373080856
 Transform:
   m_ObjectHideFlags: 0
@@ -5270,7 +5275,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 373080855}
         m_TargetAssemblyTypeName: Login, Assembly-CSharp
-        m_MethodName: ConnectWithOutLogin
+        m_MethodName: ClickLoginButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8090,7 +8095,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1221797689
 RectTransform:
   m_ObjectHideFlags: 0
