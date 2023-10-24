@@ -25,6 +25,7 @@ public class DataBase : MonoBehaviour
    
     private void Awake()
     {
+        defaultAccountInfo.characterList.Clear();
         var obj = FindObjectsOfType<DataBase>();
         if (obj.Length == 1)
         {
@@ -36,5 +37,5 @@ public class DataBase : MonoBehaviour
         }
         if(Instance == null)
             Instance = this;
-    }    
+    }
 }

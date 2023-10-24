@@ -39,6 +39,12 @@ public class MonsterControl : MonoBehaviour
         patternCycle = monsterSpec.patternCycle;
     }
 
+    private void Start()
+    {
+        if (monsterSpec.monsterType.ToLower() == "boss")
+            patternCycle -= characterGroup.transform.childCount;
+    }
+
     void Update()
     {
         if (PhotonNetwork.IsMasterClient && attackable && !isDeath)

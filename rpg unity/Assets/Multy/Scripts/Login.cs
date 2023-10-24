@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using WebSocketSharp;
+using Unity.VisualScripting;
 
 public class Login : MonoBehaviourPunCallbacks
 {
@@ -23,6 +24,7 @@ public class Login : MonoBehaviourPunCallbacks
     public GameObject SelectCharacterPanel;
     public GameObject CharacterCreatePanel;
     public Button LoginButton;
+    public Button RegisterButton;
 
     public GameObject PopPanel;
     public TMP_Text popTitle;
@@ -44,6 +46,7 @@ public class Login : MonoBehaviourPunCallbacks
 
     private Color currentHairColor = new Color(113f / 255f, 38f / 255f, 38f / 255f);
     private Color currentEyeColor = new Color(113f / 255f, 38f / 255f, 38f / 255f);
+    public bool useLocal;
 
     private void Awake()
     {
@@ -52,6 +55,10 @@ public class Login : MonoBehaviourPunCallbacks
         PhotonNetwork.SerializationRate = 30;
         Application.targetFrameRate = 60;
         PhotonNetwork.AutomaticallySyncScene = true;
+        if(useLocal)
+        {
+            RegisterButton.interactable = false;
+        }
     }
     void Start()
     {
@@ -124,6 +131,8 @@ public class Login : MonoBehaviourPunCallbacks
 
     private bool CheckDuplicateNickName(string nickName)
     {
+        if (useLocal)
+            return false;
         bool duplicated = true;
 
         return duplicated;
@@ -137,14 +146,38 @@ public class Login : MonoBehaviourPunCallbacks
 
     }
 
+    void ClearSample()
+    {
+        CreatCharacterNickInput.text = "";
+        currentClothIdx = 0;
+        currentHairIdx = 0;
+        currentRollIdx = 0;
+        UpdateSample("cloth");
+        UpdateSample("hair");
+        UpdateSample("roll");
+        CharacterCreatePanel.SetActive(false);
+    }
+
+    public void CreateNewCharacterInLocal(CharacterSpec newSpec)
+    {
+        DataBase.Instance.defaultAccountInfo.characterList.Add(newSpec);
+        updateCharacterList();
+        ClearSample();
+    }
+
+
     public void ClickLoginButton()
     {
-        string loginId = idInputField.text;
-        string loginPw = pwInputField.text;
-
-        if (!pwCheckInputField.gameObject.activeSelf)
+        if (useLocal)
         {
-            if (!loginId.IsNullOrEmpty() && !loginPw.IsNullOrEmpty())
+            ConnectWithOutLogin();
+        }
+        else
+        {
+            string loginId = idInputField.text;
+            string loginPw = pwInputField.text;
+
+            if (!pwCheckInputField.gameObject.activeSelf)
             {
                 int loginStatus = AccountDB.Login(loginId, loginPw);
 
@@ -168,7 +201,7 @@ public class Login : MonoBehaviourPunCallbacks
 
     public void ConnectWithOutLogin()
     {
-        LoginButton.enabled = false;
+        LoginButton.interactable = false;
         PopPanel.SetActive(true);
         StartCoroutine(LoginMessageUpdate());
         PhotonNetwork.ConnectUsingSettings();
@@ -182,7 +215,7 @@ public class Login : MonoBehaviourPunCallbacks
 
     public override void OnDisconnected(DisconnectCause cause)
     {
-        LoginButton.enabled = true;
+        LoginButton.interactable = true;
     }
 
     public override void OnJoinedLobby()
@@ -219,6 +252,11 @@ public class Login : MonoBehaviourPunCallbacks
 
     void updateCharacterList()
     {
+        foreach(Transform character in characterSelectList.transform)
+        {
+            Destroy(character.gameObject);
+        }
+
         for(int k = 0; k < DataBase.Instance.defaultAccountInfo.characterList.Count; k++)
         {
             GameObject characterButton = Instantiate(characterSelectButton);
@@ -305,14 +343,21 @@ public class Login : MonoBehaviourPunCallbacks
 
     public void ClickCreateButton()
     {
+
+        if (CreatCharacterNickInput.text.IsNullOrEmpty())
+        {
+            StartCoroutine(popMessage("����", "�г����� �Է����ּ���."));
+            return;
+        }
+
         if (CheckDuplicateNickName(CreatCharacterNickInput.text))
         {
             StartCoroutine(popMessage("????", "?????? ?????? ??????."));
             return;
         }
-            
 
-        CharacterSpec spec = new CharacterSpec();
+
+        CharacterSpec spec = ScriptableObject.CreateInstance<CharacterSpec>();
         CharacterSpec defaultSpec = defaultCharacterSpec[currentRollIdx];
         List<InventoryItem> equipment = new List<InventoryItem>();
         List<Color> colors = new List<Color>();
@@ -344,7 +389,14 @@ public class Login : MonoBehaviourPunCallbacks
         spec.equipment = equipment;
         spec.colors = colors;
 
-        CreateNewCharacter(spec);
+        if (useLocal)
+        {
+            CreateNewCharacterInLocal(spec);
+        }
+        else
+        {
+            CreateNewCharacter(spec);
+        }
     }
 
 
@@ -414,7 +466,8 @@ public class Login : MonoBehaviourPunCallbacks
     }
     public void ClickCancleCreateButton()
     {
-        CharacterCreatePanel.SetActive(false);
+        ClearSample();
+        //CharacterCreatePanel.SetActive(false);
     }
 
     IEnumerator popMessage(string title, string content, float popTime = 2f)
