@@ -21,11 +21,8 @@ public class AccountDB : MonoBehaviour
     {
         using (MySqlConnection conn = new MySqlConnection(builder.ConnectionString))
         {
-            int loginStatus = 0;
-
             try
             {
-                Debug.Log("DB Connect");
                 conn.Open();
 
                 using (MySqlCommand command = conn.CreateCommand())
@@ -38,13 +35,10 @@ public class AccountDB : MonoBehaviour
                         while (userAccount.Read())
                         {
                             if (loginId == (string)userAccount["user_id"] && loginPw == (string)userAccount["password"])
-                            {
-                                loginStatus = 1;
-                                break;
-                            }
+                                return 1;
                         }
 
-                        return loginStatus;
+                        return 0;
                     }
                 }
             }
@@ -75,6 +69,49 @@ public class AccountDB : MonoBehaviour
             {
                 Debug.Log(e.Message);
                 return -1;
+            }
+        }
+    }
+
+    public static List<CharacterSpec> selectCharacter(string userId)
+    {
+        using (MySqlConnection conn = new MySqlConnection(builder.ConnectionString))
+        {
+            try
+            {
+                conn.Open();
+
+                using (MySqlCommand command = conn.CreateCommand())
+                {
+                    command.CommandText = string.Format("SELECT * FROM user_character WHERE user_id = '{0}';", userId);
+
+                    using (MySqlDataReader userCharacter = command.ExecuteReader())
+                    {
+                        List<CharacterSpec> characterSpec = new List<CharacterSpec>();
+
+                        while(userCharacter.Read())
+                        {
+                            CharacterSpec spec = new CharacterSpec
+                            {
+                                nickName        = Convert.ToString(userCharacter["nickname"]),
+                                characterLevel  = Convert.ToInt32(userCharacter["level"]),
+                                lastTown        = Convert.ToString(userCharacter["last_town"]),
+                                maxInventoryNum = Convert.ToInt32(userCharacter["max_inventory"]),
+                                exp             = Convert.ToInt32(userCharacter["exp"])
+                                
+                            };
+
+                            characterSpec.Add(spec);
+                        }
+
+                        return (characterSpec);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+                return new List<CharacterSpec>();
             }
         }
     }

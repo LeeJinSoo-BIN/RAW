@@ -185,6 +185,7 @@ public class Login : MonoBehaviourPunCallbacks
                 {
                     Debug.Log("Success");
                     DataBase.Instance.defaultAccountInfo.accountId = loginId;
+                    DataBase.Instance.defaultAccountInfo.characterList = AccountDB.selectCharacter(loginId);
                     LoginButton.enabled = false;
                     PopPanel.SetActive(true);
                     StartCoroutine(LoginMessageUpdate());
@@ -252,12 +253,12 @@ public class Login : MonoBehaviourPunCallbacks
 
     void updateCharacterList()
     {
-        foreach(Transform character in characterSelectList.transform)
+        foreach (Transform character in characterSelectList.transform)
         {
             Destroy(character.gameObject);
         }
 
-        for(int k = 0; k < DataBase.Instance.defaultAccountInfo.characterList.Count; k++)
+        for (int k = 0; k < DataBase.Instance.defaultAccountInfo.characterList.Count; k++)
         {
             GameObject characterButton = Instantiate(characterSelectButton);
             List<InventoryItem> equipment = DataBase.Instance.defaultAccountInfo.characterList[k].equipment;
@@ -280,6 +281,7 @@ public class Login : MonoBehaviourPunCallbacks
             characterButton.transform.localScale = Vector3.one;
         }
     }
+
     public override void OnJoinedRoom()
     {        
         if (PhotonNetwork.IsMasterClient)
