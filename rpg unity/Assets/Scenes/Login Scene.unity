@@ -5270,7 +5270,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 373080855}
         m_TargetAssemblyTypeName: Login, Assembly-CSharp
-        m_MethodName: ConnectWithOutLogin
+        m_MethodName: ClickLoginButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

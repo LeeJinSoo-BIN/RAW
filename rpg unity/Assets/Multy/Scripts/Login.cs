@@ -7,9 +7,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using WebSocketSharp;
-using System;
-using System.Data;
-using MySql.Data.MySqlClient;
 
 public class Login : MonoBehaviourPunCallbacks
 {
@@ -104,47 +101,23 @@ public class Login : MonoBehaviourPunCallbacks
         {
             if (pwCheckInputField.text == pwInputField.text)
             {
-                try
+                int registerStatus = AccountDB.Register(idInputField.text, pwInputField.text);
+
+                if (registerStatus == 1)
                 {
-                    MySqlConnection conn = DBControl.SqlConn;
-                    if (conn.State != ConnectionState.Open)
-                        conn.Open();
-
-                    string loginId = idInputField.text;
-                    string loginPw = pwInputField.text;
-
-                    string insertQuery = "INSERT INTO account (name, password) VALUES (\'" + loginId + "\', \'" + loginPw + "\'); ";
-
-                    MySqlCommand command = new MySqlCommand(insertQuery, conn);
-
-                    if (command.ExecuteNonQuery() == 1)
-                    {
-                        Debug.Log("register success");
-                        StartCoroutine(popMessage("계정 생성 성공", "로그인 해주세요."));
-                    }
-                    else
-                    {
-                        Debug.Log("fail");
-                        StartCoroutine(popMessage("계정 생성 실패", "서버 오류"));
-                    }
-                    if (conn.State == ConnectionState.Open)
-                        conn.Close();
+                    Debug.Log("register success");
+                    StartCoroutine(popMessage("???? ???? ????", "?????? ????????."));
                 }
-                catch (Exception e)
+                else
                 {
-                    Debug.LogError(e.Message);
-                    if (e.Message.Contains("Duplicate"))
-                    {
-                        StartCoroutine(popMessage("계정 생성 실패", "이미 등록된 아이디 입니다."));
-                    }
-                    else
-                        StartCoroutine(popMessage("서버 오류", e.Message));
+                    Debug.Log("fail");
+                    StartCoroutine(popMessage("???? ???? ????", "???? ????"));
                 }
             }
             else
             {
                 Debug.Log("wrong");
-                StartCoroutine(popMessage("오류", "비밀번호가 일치하지 않습니다."));
+                StartCoroutine(popMessage("????", "?????????? ???????? ????????."));
             }
         }
     }
@@ -164,8 +137,6 @@ public class Login : MonoBehaviourPunCallbacks
 
     }
 
- 
-
     public void ClickLoginButton()
     {
         string loginId = idInputField.text;
@@ -175,53 +146,26 @@ public class Login : MonoBehaviourPunCallbacks
         {
             if (!loginId.IsNullOrEmpty() && !loginPw.IsNullOrEmpty())
             {
-                try
+                int loginStatus = AccountDB.Login(loginId, loginPw);
+
+                if (loginStatus == 1)
                 {
-                    MySqlConnection conn = DBControl.SqlConn;
-                    if (conn.State != ConnectionState.Open)
-                        conn.Open();
-
-                    int loginStatus = 0;
-
-                    string selectQuery = "SELECT * FROM account WHERE name = \'" + loginId + "\' ";
-
-                    MySqlCommand selectCommand = new MySqlCommand(selectQuery, conn);
-                    MySqlDataReader userAccount = selectCommand.ExecuteReader();
-
-                    while (userAccount.Read())
-                    {
-                        if (loginId == (string)userAccount["name"] && loginPw == (string)userAccount["password"])
-                        {
-                            loginStatus = 1;
-                            break;
-                        }
-                    }
-                    if(conn.State == ConnectionState.Open)
-                        conn.Close();
-
-                    if (loginStatus == 1)
-                    {
-                        Debug.Log("Success");
-                        DataBase.Instance.defaultAccountInfo.accountId = loginId;
-                        LoginButton.enabled = false;
-                        PopPanel.SetActive(true);
-                        StartCoroutine(LoginMessageUpdate());
-                        PhotonNetwork.ConnectUsingSettings();
-                    }
-                    else
-                    {
-                        Debug.Log("Fail");
-                        StartCoroutine(popMessage("로그인 실패", "아이디와 비밀번호를 확인해주세요."));
-                    }
+                    Debug.Log("Success");
+                    DataBase.Instance.defaultAccountInfo.accountId = loginId;
+                    LoginButton.enabled = false;
+                    PopPanel.SetActive(true);
+                    StartCoroutine(LoginMessageUpdate());
+                    PhotonNetwork.ConnectUsingSettings();
                 }
-                catch (Exception e)
+                else
                 {
-                    Debug.LogError(e.Message);
-                    StartCoroutine(popMessage("서버 오류", e.Message));
+                    Debug.Log("Fail");
+                    StartCoroutine(popMessage("?????? ????", "???????? ?????????? ????????????."));
                 }
             }
         }
     }
+
     public void ConnectWithOutLogin()
     {
         LoginButton.enabled = false;
@@ -328,7 +272,7 @@ public class Login : MonoBehaviourPunCallbacks
         bool duplicated = CheckDuplicateNickName(CreatCharacterNickInput.text);
         if (duplicated)
         {
-            StartCoroutine(popMessage("중복", "중복된 닉네임 입니다."));
+            StartCoroutine(popMessage("????", "?????? ?????? ??????."));
         }
     }
 
@@ -363,7 +307,7 @@ public class Login : MonoBehaviourPunCallbacks
     {
         if (CheckDuplicateNickName(CreatCharacterNickInput.text))
         {
-            StartCoroutine(popMessage("오류", "중복된 닉네임 입니다."));
+            StartCoroutine(popMessage("????", "?????? ?????? ??????."));
             return;
         }
             
@@ -488,7 +432,7 @@ public class Login : MonoBehaviourPunCallbacks
     }
     IEnumerator LoginMessageUpdate()
     {
-        popTitle.text = "접속중";
+        popTitle.text = "??????";
         while (true)
         {
             popContent.text = PhotonNetwork.NetworkClientState.ToString();
