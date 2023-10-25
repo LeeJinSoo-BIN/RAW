@@ -113,18 +113,18 @@ public class Login : MonoBehaviourPunCallbacks
                 if (registerStatus == 1)
                 {
                     Debug.Log("register success");
-                    StartCoroutine(popMessage("???? ???? ????", "?????? ????????."));
+                    StartCoroutine(popMessage("가입 완료", "로그인해주세요."));
                 }
                 else
                 {
                     Debug.Log("fail");
-                    StartCoroutine(popMessage("???? ???? ????", "???? ????"));
+                    StartCoroutine(popMessage("가입 실패", "중복된 아이디 입니다."));
                 }
             }
             else
             {
                 Debug.Log("wrong");
-                StartCoroutine(popMessage("????", "?????????? ???????? ????????."));
+                StartCoroutine(popMessage("오류", "비밀번호가 일치하지 않습니다."));
             }
         }
     }
@@ -191,10 +191,14 @@ public class Login : MonoBehaviourPunCallbacks
                     StartCoroutine(LoginMessageUpdate());
                     PhotonNetwork.ConnectUsingSettings();
                 }
-                else
+                else if (loginStatus == 2) 
                 {
                     Debug.Log("Fail");
-                    StartCoroutine(popMessage("?????? ????", "???????? ?????????? ????????????."));
+                    StartCoroutine(popMessage("로그인 실패", "아이디 혹은 비밀번호가 일치하지 않습니다."));
+                }
+                else
+                {
+                    StartCoroutine(popMessage("로그인 실패", "서버에 문제가 있습니다."));
                 }
             }
         }
@@ -312,7 +316,7 @@ public class Login : MonoBehaviourPunCallbacks
         bool duplicated = CheckDuplicateNickName(CreatCharacterNickInput.text);
         if (duplicated)
         {
-            StartCoroutine(popMessage("????", "?????? ?????? ??????."));
+            StartCoroutine(popMessage("중복", "중복된 닉네임 입니다."));
         }
     }
 
@@ -348,13 +352,13 @@ public class Login : MonoBehaviourPunCallbacks
 
         if (CreatCharacterNickInput.text.IsNullOrEmpty())
         {
-            StartCoroutine(popMessage("����", "�г����� �Է����ּ���."));
+            StartCoroutine(popMessage("오류", "닉네임을 입력해주세요."));
             return;
         }
 
         if (CheckDuplicateNickName(CreatCharacterNickInput.text))
         {
-            StartCoroutine(popMessage("????", "?????? ?????? ??????."));
+            StartCoroutine(popMessage("중복", "중복된 닉네임 입니다."));
             return;
         }
 
@@ -487,7 +491,7 @@ public class Login : MonoBehaviourPunCallbacks
     }
     IEnumerator LoginMessageUpdate()
     {
-        popTitle.text = "??????";
+        popTitle.text = "로그인 중";
         while (true)
         {
             popContent.text = PhotonNetwork.NetworkClientState.ToString();

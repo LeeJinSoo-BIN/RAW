@@ -36,6 +36,8 @@ public class AccountDB : MonoBehaviour
                         {
                             if (loginId == (string)userAccount["user_id"] && loginPw == (string)userAccount["password"])
                                 return 1;
+                            else
+                                return 2;
                         }
 
                         return 0;

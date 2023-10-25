@@ -176,7 +176,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 updateCurrentFocusWindow(optionPanel);
             }
         }
-        if (!chatInput.isFocused)
+        if (!chatInput.isFocused && !partyMakeNameInput.isFocused)
         {
             if (Input.GetKeyDown(KeyCode.I) || Input.GetKeyDown(KeyCode.K) || Input.GetKeyDown(KeyCode.P))
             {
