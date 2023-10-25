@@ -111,7 +111,7 @@ public class AccountDB : MonoBehaviour
             catch (Exception e)
             {
                 Debug.Log(e.Message);
-                return new List<CharacterSpec>();
+                return null;
             }
         }
     }
