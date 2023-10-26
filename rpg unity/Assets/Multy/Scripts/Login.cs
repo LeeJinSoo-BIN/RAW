@@ -129,14 +129,7 @@ public class Login : MonoBehaviourPunCallbacks
         }
     }
 
-    private bool CheckDuplicateNickName(string nickName)
-    {
-        if (useLocal)
-            return false;
-        bool duplicated = true;
-
-        return duplicated;
-    }
+    
 
     public void CreateNewCharacter(CharacterSpec newSpec)
     {
@@ -185,13 +178,13 @@ public class Login : MonoBehaviourPunCallbacks
                 {
                     Debug.Log("Success");
                     DataBase.Instance.defaultAccountInfo.accountId = loginId;
-                    DataBase.Instance.defaultAccountInfo.characterList = AccountDB.selectCharacter(loginId);
+                    DataBase.Instance.defaultAccountInfo.characterList = AccountDB.SelectCharacter(loginId);
                     LoginButton.enabled = false;
                     PopPanel.SetActive(true);
                     StartCoroutine(LoginMessageUpdate());
                     PhotonNetwork.ConnectUsingSettings();
                 }
-                else if (loginStatus == 2) 
+                else if (loginStatus == 0) 
                 {
                     Debug.Log("Fail");
                     StartCoroutine(popMessage("로그인 실패", "아이디 혹은 비밀번호가 일치하지 않습니다."));
@@ -313,10 +306,13 @@ public class Login : MonoBehaviourPunCallbacks
 
     public void ClickCheckDuplicatedNickButton()
     {
-        bool duplicated = CheckDuplicateNickName(CreatCharacterNickInput.text);
-        if (duplicated)
+        if (AccountDB.CheckDuplicateNickName(CreatCharacterNickInput.text))
         {
             StartCoroutine(popMessage("중복", "중복된 닉네임 입니다."));
+        }
+        else
+        {
+            StartCoroutine(popMessage("사용 가능", "사용 가능한 닉네임 입니다."));
         }
     }
 
@@ -356,7 +352,7 @@ public class Login : MonoBehaviourPunCallbacks
             return;
         }
 
-        if (CheckDuplicateNickName(CreatCharacterNickInput.text))
+        if (AccountDB.CheckDuplicateNickName(CreatCharacterNickInput.text))
         {
             StartCoroutine(popMessage("중복", "중복된 닉네임 입니다."));
             return;

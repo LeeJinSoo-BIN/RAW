@@ -28,16 +28,14 @@ public class AccountDB : MonoBehaviour
                 using (MySqlCommand command = conn.CreateCommand())
                 {
 
-                    command.CommandText = string.Format("SELECT * FROM user WHERE user_id = '{0}';", loginId);
+                    command.CommandText = string.Format("SELECT password FROM user WHERE user_id = '{0}';", loginId);
 
                     using (MySqlDataReader userAccount = command.ExecuteReader())
                     {
-                        while (userAccount.Read())
+                        if (userAccount.Read())
                         {
-                            if (loginId == (string)userAccount["user_id"] && loginPw == (string)userAccount["password"])
+                            if (loginPw == Convert.ToString(userAccount["password"]))
                                 return 1;
-                            else
-                                return 2;
                         }
 
                         return 0;
@@ -75,7 +73,7 @@ public class AccountDB : MonoBehaviour
         }
     }
 
-    public static List<CharacterSpec> selectCharacter(string userId)
+    public static List<CharacterSpec> SelectCharacter(string userId)
     {
         using (MySqlConnection conn = new MySqlConnection(builder.ConnectionString))
         {
@@ -114,6 +112,36 @@ public class AccountDB : MonoBehaviour
             {
                 Debug.Log(e.Message);
                 return null;
+            }
+        }
+    }
+
+    public static bool CheckDuplicateNickName(string nickName)
+    {
+        using (MySqlConnection conn = new MySqlConnection(builder.ConnectionString))
+        {
+            try
+            {
+                conn.Open();
+
+                using (MySqlCommand command = conn.CreateCommand())
+                {
+                    command.CommandText = string.Format("SELECT EXISTS (SELECT * FROM user_character WHERE nickname = '{0}' LIMIT 1) AS success", nickName);
+
+                    using (MySqlDataReader user_character = command.ExecuteReader())
+                    {
+                        user_character.Read();
+                        if (Convert.ToInt32(user_character[0]) == 1)
+                            return true;
+
+                        return false;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+                return true;
             }
         }
     }
