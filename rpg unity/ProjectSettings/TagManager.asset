@@ -10,6 +10,7 @@ TagManager:
   - Not Ground
   - Panel
   - Portal
+  - Tool Tip
   layers:
   - Default
   - TransparentFX

@@ -19,10 +19,13 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        GameObject player = PhotonNetwork.Instantiate("Character/Player", Vector3.zero, Quaternion.identity);
-        myCharacter = player;
-        setup(player);
-        GameObject.Find("Main Camera").transform.GetComponent<CameraFollow>().myCharacterTransform = player.transform;
+        if (PhotonNetwork.InRoom)
+        {
+            GameObject player = PhotonNetwork.Instantiate("Character/Player", Vector3.zero, Quaternion.identity);
+            myCharacter = player;
+            setup(player);
+            GameObject.Find("Main Camera").transform.GetComponent<CameraFollow>().myCharacterTransform = player.transform;
+        }
     }
 
     public void setup(GameObject player)

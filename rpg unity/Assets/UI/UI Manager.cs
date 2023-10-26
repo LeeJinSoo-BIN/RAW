@@ -12,8 +12,9 @@ using Photon.Realtime;
 using WebSocketSharp;
 using System.Linq;
 using System;
+using static UnityEditor.Progress;
 
-public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
+public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("Panel")]
     #region
@@ -22,6 +23,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public GameObject enterDungeonPanel;
     public GameObject gameOverPanel;
     public TMP_InputField timeLimitInputfield;
+    public GameObject toolTipPanel;
 
     [Header("Option Panel")]
     public GameObject optionPanel;
@@ -83,6 +85,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public TMP_Text stageText;
     public TMP_Text timerText;
 
+    
+
     [Header("Chat")]
     public TMP_InputField chatInput;
     public TMP_Text chatLogShow;
@@ -119,6 +123,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     private bool draging = false;
     private bool chatEnd = false;
     public string chatLog;
+
+    private bool isShowingToolTip = false;
     #endregion
 
     void Awake()
@@ -144,7 +150,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         BossUiGroup.SetActive(false);
         StageUiGroup.SetActive(false);
         gameOverPanel.SetActive(false);
-
+        toolTipPanel.SetActive(false);
+        
         invitePartyPanel.SetActive(false);
         joinPartyRequestPanel.SetActive(false);
 
@@ -152,7 +159,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         partyMemberInfo.SetActive(false);
         partyListInfo.SetActive(false);
         skillInfo.SetActive(false);
-
+        
         chatInput.onSubmit.AddListener(delegate { sendChat(); });
     }
     // Update is called once per frame
@@ -427,6 +434,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             {
                 Transform currentSlot = quiclSlotUI.transform.Find(key);
                 currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(DataBase.Instance.skillThumbnailPath, skillNames[k]));
+                currentSlot.GetChild(0).name = skillNames[k];
                 currentSlot.GetChild(2).GetComponent<TMP_Text>().text = keys[k];
                 currentSlot.GetChild(3).GetComponent<TMP_Text>().text = DataBase.Instance.skillInfoDict[skillNames[k]].consumeMana.ToString();
                 StartCoroutine(CoolDownCoroutine(skillNames[k], 0f));
@@ -469,16 +477,20 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             Transform currentSlot = quiclSlotUI.transform.Find(quickSlotKeys[k].ToLower());
             if (updateSprite)
+            {
                 currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[keyToItemName[quickSlotKeys[k]]].spriteDirectory);
+                currentSlot.GetChild(0).name = keyToItemName[quickSlotKeys[k]];
+            }
 
             if (quickInventory.ContainsKey(keyToItemName[quickSlotKeys[k]]))
             {
                 currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;
+                currentSlot.GetChild(0).name = keyToItemName[quickSlotKeys[k]];
                 currentSlot.GetChild(2).GetComponent<TMP_Text>().text = quickInventory[keyToItemName[quickSlotKeys[k]]].count.ToString();
             }
             else
             {
-                currentSlot.GetChild(0).GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f);
+                currentSlot.GetChild(0).GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f);                
                 currentSlot.GetChild(2).GetComponent<TMP_Text>().text = "0";
             }
         }
@@ -487,15 +499,19 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     {
         Transform currentSlot = quiclSlotUI.transform.Find(key);
         if (updateSprtie)
+        {
             currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[keyToItemName[key]].spriteDirectory);
+            currentSlot.GetChild(0).name = keyToItemName[key];
+        }
         if (quickInventory.ContainsKey(keyToItemName[key]))
         {
             currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;
+            currentSlot.GetChild(0).name = keyToItemName[key];
             currentSlot.GetChild(2).GetComponent<TMP_Text>().text = quickInventory[keyToItemName[key]].count.ToString();
         }
         else
         {
-            currentSlot.GetChild(0).GetComponent<Image>().color = Color.gray;
+            currentSlot.GetChild(0).GetComponent<Image>().color = Color.gray;            
             currentSlot.GetChild(2).GetComponent<TMP_Text>().text = "0";
         }
     }
@@ -514,8 +530,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     }
 
     public void ClickExpandChatLog()
-    {
-        Debug.Log("clicked");
+    {        
         if (ChatBox.sizeDelta.y == 120)
             ChatBox.sizeDelta = new Vector2(ChatBox.sizeDelta.x, 500);
         else
@@ -574,6 +589,26 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         draging = false;
     }
 
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        GameObject currentObject = eventData.pointerCurrentRaycast.gameObject;
+        if (currentObject.CompareTag("Tool Tip"))
+        {
+            Debug.Log("in " + currentObject.name);
+            isShowingToolTip = true;
+        }
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if(isShowingToolTip)
+        {
+            Debug.Log("out");
+            isShowingToolTip = false;
+        }
+    }
+
+
     public void ResetSkillPanel()
     {
         for (int k = 0; k < skillBox.transform.childCount; k++)
@@ -593,6 +628,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 GameObject newSkill = Instantiate(skillInfo);
                 newSkill.name = name;
                 newSkill.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(DataBase.Instance.skillThumbnailPath, name));
+                newSkill.transform.GetChild(1).name = name;
                 newSkill.transform.GetChild(2).GetComponent<TMP_Text>().text = name;
                 string max_level = DataBase.Instance.skillInfoDict[name].maxLevel.ToString();
                 string current_level = myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel[name].ToString();
@@ -619,22 +655,22 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         StopCoroutine(timer);
         if (condition == "time out")
         {
-            title = "Å¸ÀÓ¾Æ¿ô";
+            title = "íƒ€ì„ì•„ì›ƒ";
             gameOverPanel.transform.GetChild(0).GetComponent<Image>().color = failColor;
-            content = string.Format("³²Àº Ã¼·Â\n{0}\n\n¼Ò¿ä½Ã°£\n{1}ÃÊ\n\nÀÎ ¿ø\n", bossCurrentHealthText.text, limitTime.ToString());
+            content = string.Format("ë‚¨ì€ ì²´ë ¥\n{0}\n\nì†Œìš”ì‹œê°„\n{1}ì´ˆ\n\nì¸ ì›\n", bossCurrentHealthText.text, limitTime.ToString());
         }
         else if (condition == "clear")
         {
-            title = "Å¬¸®¾î";
+            title = "í´ë¦¬ì–´";
             gameOverPanel.transform.GetChild(0).GetComponent<Image>().color = succesColor;
-            content = string.Format("Å¬¸®¾î ½Ã°£\n{0}ÃÊ\n\nÀÎ ¿ø\n", stageTime.ToString());
+            content = string.Format("í´ë¦¬ì–´ ì‹œê°„\n{0}ì´ˆ\n\nì¸ ì›\n", stageTime.ToString());
 
         }
         else if (condition == "all death")
         {
-            title = "½ÇÆĞ";
+            title = "ì‹¤íŒ¨";
             gameOverPanel.transform.GetChild(0).GetComponent<Image>().color = failColor;
-            content = string.Format("³²Àº Ã¼·Â\n{0}\n\n¼Ò¿ä½Ã°£\n{1}ÃÊ\n\nÀÎ ¿ø\n", bossCurrentHealthText.text, stageTime.ToString());
+            content = string.Format("ë‚¨ì€ ì²´ë ¥\n{0}\n\nì†Œìš”ì‹œê°„\n{1}ì´ˆ\n\nì¸ ì›\n", bossCurrentHealthText.text, stageTime.ToString());
 
         }
         foreach (Transform player in PlayerGroup.transform)
@@ -673,7 +709,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         networkManager.PV.RPC("GoToVillage", RpcTarget.All);
     }
 
-    #region ÆÄÆ¼
+    #region íŒŒí‹°
     public void UpdatePartyPanel()
     {
         if (!PhotonNetwork.InRoom)
@@ -704,7 +740,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 if (memberNickName == networkManager.myPartyCaptainName)
                     newMember.transform.GetChild(2).GetComponent<TMP_Text>().text = "*" + newMember.transform.GetChild(2).GetComponent<TMP_Text>().text;
                 newMember.transform.GetChild(3).GetComponent<TMP_Text>().text = "Lv. " + member.GetComponent<CharacterState>().level.ToString();
-                newMember.transform.GetChild(4).GetComponent<TMP_Text>().text = "Á÷¾÷: " + member.GetComponent<CharacterState>().roll;
+                newMember.transform.GetChild(4).GetComponent<TMP_Text>().text = "ì§ì—…: " + member.GetComponent<CharacterState>().roll;
                 newMember.transform.GetChild(5).name = memberNickName;
                 if (networkManager.myPartyCaptainName != DataBase.Instance.currentCharacterNickname)
                     newMember.transform.GetChild(5).GetComponent<Button>().interactable = false;
@@ -740,9 +776,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                     continue;
 
                 GameObject userInfo = Instantiate(inGameUserInfo);
-                userInfo.transform.GetChild(0).GetComponent<TMP_Text>().text = "´Ğ³×ÀÓ: " + currentUserState.nick;
+                userInfo.transform.GetChild(0).GetComponent<TMP_Text>().text = "ë‹‰ë„¤ì„: " + currentUserState.nick;
                 userInfo.transform.GetChild(1).GetComponent<TMP_Text>().text = "Lv. " + currentUserState.level.ToString();
-                userInfo.transform.GetChild(2).GetComponent<TMP_Text>().text = "Á÷¾÷: " + currentUserState.roll;
+                userInfo.transform.GetChild(2).GetComponent<TMP_Text>().text = "ì§ì—…: " + currentUserState.roll;
                 userInfo.transform.GetChild(3).name = user.name;
                 if (networkManager.myPartyCaptainName != DataBase.Instance.currentCharacterNickname)
                     userInfo.transform.GetChild(3).GetComponent<Button>().interactable = false;
@@ -768,9 +804,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             string partyName = networkManager.allPartys[captain].partyName;
             int currentMemNum = networkManager.allPartys[captain].partyMembersNickName.Count;
 
-            newParty.transform.GetChild(0).GetComponent<TMP_Text>().text = "ÆÄÆ¼Àå: " + PlayerGroup.transform.Find(captain).GetComponent<CharacterState>().nick;
-            newParty.transform.GetChild(1).GetComponent<TMP_Text>().text = "ÆÄÆ¼¸í: " + partyName;
-            newParty.transform.GetChild(2).GetComponent<TMP_Text>().text = "ÀÎ¿ø: " + currentMemNum.ToString() + "/3";
+            newParty.transform.GetChild(0).GetComponent<TMP_Text>().text = "íŒŒí‹°ì¥: " + PlayerGroup.transform.Find(captain).GetComponent<CharacterState>().nick;
+            newParty.transform.GetChild(1).GetComponent<TMP_Text>().text = "íŒŒí‹°ëª…: " + partyName;
+            newParty.transform.GetChild(2).GetComponent<TMP_Text>().text = "ì¸ì›: " + currentMemNum.ToString() + "/3";
             newParty.transform.GetChild(3).name = captain;
             if (networkManager.usersInParty.Contains(DataBase.Instance.currentCharacterNickname) || currentMemNum == 3)
             {
@@ -790,7 +826,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             return;
         string partyName = partyMakeNameInput.text;
         if (partyMakeNameInput.text.IsNullOrEmpty())
-            partyName = "ÆÄÆ¼ °í°í";
+            partyName = "íŒŒí‹° ê³ ê³ ";
         networkManager.myPartyCaptainName = DataBase.Instance.currentCharacterNickname;
         networkManager.PV.RPC("registParty", RpcTarget.AllBuffered, partyName, DataBase.Instance.currentCharacterNickname);
         
@@ -901,7 +937,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         string captainNick = captainInfo.nick;
         string captainLevel = captainInfo.level.ToString();
         string captainRoll = captainInfo.roll;
-        invitePartyPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = string.Format("{0}´Ô\r\n·¹º§: {1}\r\nÁ÷¾÷: {2}\r\nÀÌ ÆÄÆ¼ ÃÊ´ë¸¦ º¸³Â½À´Ï´Ù.\r\n\r\nÆÄÆ¼¸í: {3}", captainNick, captainLevel, captainRoll, partyName);
+        invitePartyPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = string.Format("{0}ë‹˜\r\në ˆë²¨: {1}\r\nì§ì—…: {2}\r\nì´ íŒŒí‹° ì´ˆëŒ€ë¥¼ ë³´ëƒˆìŠµë‹ˆë‹¤.\r\n\r\níŒŒí‹°ëª…: {3}", captainNick, captainLevel, captainRoll, partyName);
         invitePartyPanel.transform.GetChild(2).GetChild(1).name = captain;
     }
     public void receiveJoinRequest(string fromWho)
@@ -911,7 +947,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         string captainNick = captainInfo.nick;
         string captainLevel = captainInfo.level.ToString();
         string captainRoll = captainInfo.roll;
-        joinPartyRequestPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = string.Format("{0}´Ô\r\n·¹º§: {1}\r\nÁ÷¾÷: {2}\r\nÀÌ ÆÄÆ¼ °¡ÀÔ ¿äÃ»À» º¸³Â½À´Ï´Ù.", captainNick, captainLevel, captainRoll);
+        joinPartyRequestPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = string.Format("{0}ë‹˜\r\në ˆë²¨: {1}\r\nì§ì—…: {2}\r\nì´ íŒŒí‹° ê°€ì… ìš”ì²­ì„ ë³´ëƒˆìŠµë‹ˆë‹¤.", captainNick, captainLevel, captainRoll);
         joinPartyRequestPanel.transform.GetChild(2).GetChild(1).name = fromWho;
     }
     
@@ -940,7 +976,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         string selected_resolution_string = resolutionDropdown.options[resolutionDropdown.value].text;
         string[] selected_resolution = selected_resolution_string.Split(" x ");
         bool window = false;
-        if (windowText.text == "Ã¢¸ğµå")
+        if (windowText.text == "ì°½ëª¨ë“œ")
             window = true;
         else
             window = false;
@@ -949,15 +985,15 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     public void setWindow()
     {
-        if (windowText.text == "Ã¢¸ğµå")
+        if (windowText.text == "ì°½ëª¨ë“œ")
         {
             Screen.fullScreen = false;
-            windowText.text = "ÀüÃ¼È­¸é";
+            windowText.text = "ì „ì²´í™”ë©´";
         }
         else
         {
             Screen.fullScreen = true;
-            windowText.text = "Ã¢¸ğµå";
+            windowText.text = "ì°½ëª¨ë“œ";
         }
     }
 
