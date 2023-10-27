@@ -306,9 +306,16 @@ public class Login : MonoBehaviourPunCallbacks
 
     public void ClickCheckDuplicatedNickButton()
     {
-        if (AccountDB.CheckDuplicateNickName(CreatCharacterNickInput.text))
+        if (!useLocal)
         {
-            StartCoroutine(popMessage("중복", "중복된 닉네임 입니다."));
+            if (AccountDB.CheckDuplicateNickName(CreatCharacterNickInput.text))
+            {
+                StartCoroutine(popMessage("중복", "중복된 닉네임 입니다."));
+            }
+            else
+            {
+                StartCoroutine(popMessage("사용 가능", "사용 가능한 닉네임 입니다."));
+            }
         }
         else
         {
@@ -351,11 +358,13 @@ public class Login : MonoBehaviourPunCallbacks
             StartCoroutine(popMessage("오류", "닉네임을 입력해주세요."));
             return;
         }
-
-        if (AccountDB.CheckDuplicateNickName(CreatCharacterNickInput.text))
+        if (!useLocal)
         {
-            StartCoroutine(popMessage("중복", "중복된 닉네임 입니다."));
-            return;
+            if (AccountDB.CheckDuplicateNickName(CreatCharacterNickInput.text))
+            {
+                StartCoroutine(popMessage("중복", "중복된 닉네임 입니다."));
+                return;
+            }
         }
 
 

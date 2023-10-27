@@ -14,7 +14,7 @@ using System.Linq;
 using System;
 using static UnityEditor.Progress;
 
-public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
+public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
 {
     [Header("Panel")]
     #region
@@ -124,7 +124,10 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     private bool chatEnd = false;
     public string chatLog;
 
-    private bool isShowingToolTip = false;
+    public float stayTime = 1f;
+    private bool isHoverToolTip = false;
+    private GameObject hoverObject;
+    private float hoverTime = 0f;
     #endregion
 
     void Awake()
@@ -240,6 +243,14 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             if (EventSystem.current.IsPointerOverGameObject() == false)
             {
                 currentFocusWindow = null;
+            }
+        }
+        if (isHoverToolTip)
+        {
+            hoverTime += Time.deltaTime;
+            if(hoverTime > stayTime)
+            {
+                ShowToolTip();
             }
         }
         if (PhotonNetwork.InRoom)
@@ -589,26 +600,43 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         draging = false;
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
+
+
+    public void EnterToolTip()
     {
-        GameObject currentObject = eventData.pointerCurrentRaycast.gameObject;
-        if (currentObject.CompareTag("Tool Tip"))
-        {
-            Debug.Log("in " + currentObject.name);
-            isShowingToolTip = true;
+        Debug.Log("In");
+        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);        
+        eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+        if(results.Count > 0)
+        {            
+            isHoverToolTip = true;
+            hoverObject = results[0].gameObject;
         }
     }
 
-    public void OnPointerExit(PointerEventData eventData)
+    public void ExitToolTip()
     {
-        if(isShowingToolTip)
-        {
-            Debug.Log("out");
-            isShowingToolTip = false;
-        }
+        Debug.Log("out");
+        isHoverToolTip = false;
+        hoverObject = null;
+        hoverTime = 0f;
+        toolTipPanel.SetActive(false);
     }
 
-
+    void ShowToolTip()
+    {
+        if (!hoverObject.activeInHierarchy)
+        {
+            hoverTime = 0;
+            toolTipPanel.SetActive(false);
+            return;
+        }
+        toolTipPanel.transform.GetChild(1).GetChild(0).GetComponent<TMP_Text>().text = hoverObject.name;
+        toolTipPanel.transform.position = hoverObject.transform.position;
+        toolTipPanel.SetActive(true);
+    }
     public void ResetSkillPanel()
     {
         for (int k = 0; k < skillBox.transform.childCount; k++)
