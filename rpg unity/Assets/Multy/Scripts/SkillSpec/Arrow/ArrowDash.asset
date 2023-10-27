@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: ArrowDash
   m_EditorClassIdentifier: 
   skillName: arrow dash
+  description: "\uC804\uBC29\uC73C\uB85C \uBE60\uB974\uAC8C \uAD6C\uB978\uB2E4."
   castType: bar
   dealType: buff
   maxLevel: 5

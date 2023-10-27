@@ -445,7 +445,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             {
                 Transform currentSlot = quiclSlotUI.transform.Find(key);
                 currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(DataBase.Instance.skillThumbnailPath, skillNames[k]));
-                currentSlot.GetChild(0).name = skillNames[k];
+                currentSlot.GetChild(0).name = "skill " + skillNames[k];
                 currentSlot.GetChild(2).GetComponent<TMP_Text>().text = keys[k];
                 currentSlot.GetChild(3).GetComponent<TMP_Text>().text = DataBase.Instance.skillInfoDict[skillNames[k]].consumeMana.ToString();
                 StartCoroutine(CoolDownCoroutine(skillNames[k], 0f));
@@ -490,13 +490,13 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             if (updateSprite)
             {
                 currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[keyToItemName[quickSlotKeys[k]]].spriteDirectory);
-                currentSlot.GetChild(0).name = keyToItemName[quickSlotKeys[k]];
+                currentSlot.GetChild(0).name = "item " + keyToItemName[quickSlotKeys[k]];
             }
 
             if (quickInventory.ContainsKey(keyToItemName[quickSlotKeys[k]]))
             {
                 currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;
-                currentSlot.GetChild(0).name = keyToItemName[quickSlotKeys[k]];
+                currentSlot.GetChild(0).name = "item " + keyToItemName[quickSlotKeys[k]];
                 currentSlot.GetChild(2).GetComponent<TMP_Text>().text = quickInventory[keyToItemName[quickSlotKeys[k]]].count.ToString();
             }
             else
@@ -512,12 +512,12 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         if (updateSprtie)
         {
             currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[keyToItemName[key]].spriteDirectory);
-            currentSlot.GetChild(0).name = keyToItemName[key];
+            currentSlot.GetChild(0).name = "item " + keyToItemName[key];
         }
         if (quickInventory.ContainsKey(keyToItemName[key]))
         {
             currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;
-            currentSlot.GetChild(0).name = keyToItemName[key];
+            currentSlot.GetChild(0).name = "item " + keyToItemName[key];
             currentSlot.GetChild(2).GetComponent<TMP_Text>().text = quickInventory[keyToItemName[key]].count.ToString();
         }
         else
@@ -633,7 +633,48 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             toolTipPanel.SetActive(false);
             return;
         }
-        toolTipPanel.transform.GetChild(1).GetChild(0).GetComponent<TMP_Text>().text = hoverObject.name;
+        string toolTipName;
+        string toolTipContent;
+        if (hoverObject.name.Contains("skill"))
+        {
+            toolTipName = hoverObject.name.Substring(6);
+            toolTipContent = DataBase.Instance.skillInfoDict[toolTipName].description;
+
+            toolTipContent = toolTipContent.Replace("(sumDeal)",
+                (DataBase.Instance.skillInfoDict[toolTipName].flatDeal +
+                DataBase.Instance.skillInfoDict[toolTipName].dealIncreasePerSkillLevel * myCharacterState.characterSpec.skillLevel[toolTipName] +
+                DataBase.Instance.skillInfoDict[toolTipName].dealIncreasePerPower * myCharacterState.power).ToString());
+
+            toolTipContent = toolTipContent.Replace("(flatDeal)", DataBase.Instance.skillInfoDict[toolTipName].flatDeal.ToString());
+            toolTipContent = toolTipContent.Replace("(dealIncreasePerSkillLevel)", (DataBase.Instance.skillInfoDict[toolTipName].dealIncreasePerSkillLevel * myCharacterState.characterSpec.skillLevel[toolTipName]).ToString());
+            toolTipContent = toolTipContent.Replace("(dealIncreasePerPower)", (DataBase.Instance.skillInfoDict[toolTipName].dealIncreasePerPower * myCharacterState.power).ToString());
+
+            toolTipContent = toolTipContent.Replace("(flatHeal)", DataBase.Instance.skillInfoDict[toolTipName].flatHeal.ToString());
+            toolTipContent = toolTipContent.Replace("(healIncreasePerSkillLevel)", DataBase.Instance.skillInfoDict[toolTipName].healIncreasePerSkillLevel.ToString());
+            toolTipContent = toolTipContent.Replace("(healIncreasePerPower)", DataBase.Instance.skillInfoDict[toolTipName].healIncreasePerPower.ToString());
+
+            toolTipContent = toolTipContent.Replace("(flatShield)", DataBase.Instance.skillInfoDict[toolTipName].flatShield.ToString());
+            toolTipContent = toolTipContent.Replace("(shieldIncreasePerSkillLevel)", DataBase.Instance.skillInfoDict[toolTipName].shieldIncreasePerSkillLevel.ToString());
+            toolTipContent = toolTipContent.Replace("(shieldIncreasePerPower)", DataBase.Instance.skillInfoDict[toolTipName].shieldIncreasePerPower.ToString());
+
+            toolTipContent = toolTipContent.Replace("(flatPower)", DataBase.Instance.skillInfoDict[toolTipName].flatPower.ToString());
+            toolTipContent = toolTipContent.Replace("(powerIncreasePerSkillLevel)", DataBase.Instance.skillInfoDict[toolTipName].powerIncreasePerSkillLevel.ToString());
+            toolTipContent = toolTipContent.Replace("(powerIncreasePerPower)", DataBase.Instance.skillInfoDict[toolTipName].powerIncreasePerPower.ToString());
+
+            toolTipContent = toolTipContent.Replace("(coolDown)", DataBase.Instance.skillInfoDict[toolTipName].coolDown.ToString());
+            toolTipContent = toolTipContent.Replace("(consumeMana)", DataBase.Instance.skillInfoDict[toolTipName].consumeMana.ToString());
+
+        }
+        else if (hoverObject.name.Contains("item"))
+        {
+            toolTipName = hoverObject.name.Substring(5);
+            toolTipContent = DataBase.Instance.itemInfoDict[toolTipName].description;
+        }
+        else
+            return;
+        
+        toolTipPanel.transform.GetChild(1).GetChild(0).GetComponent<TMP_Text>().text = toolTipName;
+        toolTipPanel.transform.GetChild(1).GetChild(1).GetComponent<TMP_Text>().text = toolTipContent;
         toolTipPanel.transform.position = hoverObject.transform.position;
         toolTipPanel.SetActive(true);
     }
@@ -654,9 +695,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             if (skillBox.transform.Find(name) == null)
             {
                 GameObject newSkill = Instantiate(skillInfo);
-                newSkill.name = name;
+                newSkill.name = "skill " + name;
                 newSkill.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(DataBase.Instance.skillThumbnailPath, name));
-                newSkill.transform.GetChild(1).name = name;
+                newSkill.transform.GetChild(1).name = "skill " + name;
                 newSkill.transform.GetChild(2).GetComponent<TMP_Text>().text = name;
                 string max_level = DataBase.Instance.skillInfoDict[name].maxLevel.ToString();
                 string current_level = myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel[name].ToString();
