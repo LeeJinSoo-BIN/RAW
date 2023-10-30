@@ -13,6 +13,10 @@ MonoBehaviour:
   m_Name: MagicGlobalHeal
   m_EditorClassIdentifier: 
   skillName: magic global heal
+  description: "\uCE58\uC720 \uC8FC\uBB38\uC744 \uD1B5\uD574 \uBAA8\uB4E0 \uC544\uAD70\uC758
+    \uCCB4\uB825\uC744 \uD68C\uBCF5\uC2DC\uD0A8\uB2E4. \uC8FC\uBB38\uC744 \uBC1B\uC740
+    \uC544\uAD70\uC740 (sumHeal)((flatHeal) + \uC2A4\uD0AC \uB808\uBCA8 \uB2F9 (healIncreasePerSkillLevel)
+    + \uD30C\uC6CC \uB2F9 (healIncreasePerPower))\uC758 \uCCB4\uB825\uC744 \uD68C\uBCF5\uD55C\uB2E4."
   castType: buff-player
   dealType: buff
   maxLevel: 5

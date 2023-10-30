@@ -17,11 +17,13 @@ public class DataBase : MonoBehaviour
 
     public string skillThumbnailPath = "Character/skills/thumbnails";
     public AccountInfo defaultAccountInfo;
+    public AccountInfo loadFromServerAccountInfo;
     public CharacterSpec selectedCharacterSpec;
     public string currentMapName;
     public string currentMapType;
     public string currentCharacterNickname;
     public bool isCurrentDungeonCaptain;
+
     public bool usingCheat = false;
     public bool isPromotioned = false;
     private void Awake()

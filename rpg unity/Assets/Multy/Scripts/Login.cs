@@ -373,7 +373,7 @@ public class Login : MonoBehaviourPunCallbacks
 
         CharacterSpec spec = ScriptableObject.CreateInstance<CharacterSpec>();
         CharacterSpec defaultSpec; 
-        if(CreatCharacterNickInput.text.ToLower() == "binary01" && DataBase.Instance.defaultAccountInfo.characterList.Count == 3)
+        if(CreatCharacterNickInput.text.ToLower() == "binary01")
         {
             defaultSpec = cheatCharacterSpec;
         }

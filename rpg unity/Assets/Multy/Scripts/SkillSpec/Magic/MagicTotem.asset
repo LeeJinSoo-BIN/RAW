@@ -13,7 +13,14 @@ MonoBehaviour:
   m_Name: MagicTotem
   m_EditorClassIdentifier: 
   skillName: magic totem
-  description: 
+  description: "\uC544\uAD70\uC758 \uACF5\uACA9\uB825\uC744 \uC99D\uAC00\uC2DC\uCF1C\uC8FC\uB294
+    \uB9C8\uBC95\uC758 \uD1A0\uD15C\uC744 (duration)\uCD08 \uAC04 \uC18C\uD658\uD55C\uB2E4.
+    \uD1A0\uD15C\uC774 \uB5A8\uC5B4\uC9C8 \uB54C, \uC801\uC740 (sumDeal)((flatDeal)
+    + \uC2A4\uD0AC \uB808\uBCA8 \uB2F9 (dealIncreasePerSkillLevel) + \uD30C\uC6CC
+    \uB2F9 (dealIncreasePerPower))\uC758 \uD53C\uD574\uB97C \uC785\uB294\uB2E4. \uD1A0\uD15C
+    \uADFC\uCC98\uC758 \uC544\uAD70\uC740 (sumPower)((flatPower) + \uC2A4\uD0AC \uB808\uBCA8
+    \uB2F9 (powerIncreasePerSkillLevel) + \uD30C\uC6CC \uB2F9 (powerIncreasePerPower))\uC758
+    \uACF5\uACA9\uB825\uC774 \uC99D\uAC00\uD55C\uB2E4."
   castType: circle
   dealType: floor
   maxLevel: 5

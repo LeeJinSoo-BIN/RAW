@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: SwordShield
   m_EditorClassIdentifier: 
   skillName: sword shield
-  description: 
+  description: "\uC815\uC2E0\uC744 \uC9D1\uC911\uD558\uC5EC \uC790\uC2E0\uC5D0\uAC8C
+    \uBC29\uC5B4\uB9C9\uC744 \uAC74\uB2E4. (sumShield)((flatShield) + \uC2A4\uD0AC
+    \uB808\uBCA8 \uB2F9 (shieldIncreasePerSkillLevel) + \uD30C\uC6CC \uB2F9 (shieldIncreasePerPower))\uC758
+    \uD53C\uD574\uB97C \uB9C9\uC544\uC8FC\uB294 \uBC29\uC5B4\uB9C9\uC744 \uAC16\uB294\uB2E4."
   castType: buff-self
   dealType: buff
   maxLevel: 5

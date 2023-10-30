@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: red potion small
   description: "\uCCB4\uB825\uC744 \uD68C\uBCF5\uC2DC\uD0A4\uB294 \uC791\uC740 \uBE68\uAC04\uC0C9
-    \uBB3C\uC57D\uC774\uB2E4. (heal)\uC758 \uCCB4\uB825\uC744 \uD68C\uBCF5\uC2DC\uD0A8\uB2E4."
+    \uBB3C\uC57D\uC774\uB2E4. (health)\uC758 \uCCB4\uB825\uC744 \uD68C\uBCF5\uC2DC\uCF1C\uC900\uB2E4."
   itemType: potion
   spriteDirectory: items/sprite/red potion small
   sellPrice: 0

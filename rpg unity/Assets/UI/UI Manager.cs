@@ -670,38 +670,54 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 (DataBase.Instance.skillInfoDict[toolTipName].flatDeal +
                 DataBase.Instance.skillInfoDict[toolTipName].dealIncreasePerSkillLevel * myCharacterState.characterSpec.skillLevel[toolTipName] +
                 DataBase.Instance.skillInfoDict[toolTipName].dealIncreasePerPower * myCharacterState.power).ToString());
-
             toolTipContent = toolTipContent.Replace("(flatDeal)", DataBase.Instance.skillInfoDict[toolTipName].flatDeal.ToString());
-            toolTipContent = toolTipContent.Replace("(dealIncreasePerSkillLevel)", (DataBase.Instance.skillInfoDict[toolTipName].dealIncreasePerSkillLevel * myCharacterState.characterSpec.skillLevel[toolTipName]).ToString());
-            toolTipContent = toolTipContent.Replace("(dealIncreasePerPower)", (DataBase.Instance.skillInfoDict[toolTipName].dealIncreasePerPower * myCharacterState.power).ToString());
+            toolTipContent = toolTipContent.Replace("(dealIncreasePerSkillLevel)", DataBase.Instance.skillInfoDict[toolTipName].dealIncreasePerSkillLevel.ToString());
+            toolTipContent = toolTipContent.Replace("(dealIncreasePerPower)", DataBase.Instance.skillInfoDict[toolTipName].dealIncreasePerPower.ToString());
 
+            toolTipContent = toolTipContent.Replace("(sumHeal)",
+                (DataBase.Instance.skillInfoDict[toolTipName].flatHeal +
+                DataBase.Instance.skillInfoDict[toolTipName].healIncreasePerSkillLevel * myCharacterState.characterSpec.skillLevel[toolTipName] +
+                DataBase.Instance.skillInfoDict[toolTipName].healIncreasePerPower * myCharacterState.power).ToString());
             toolTipContent = toolTipContent.Replace("(flatHeal)", DataBase.Instance.skillInfoDict[toolTipName].flatHeal.ToString());
             toolTipContent = toolTipContent.Replace("(healIncreasePerSkillLevel)", DataBase.Instance.skillInfoDict[toolTipName].healIncreasePerSkillLevel.ToString());
             toolTipContent = toolTipContent.Replace("(healIncreasePerPower)", DataBase.Instance.skillInfoDict[toolTipName].healIncreasePerPower.ToString());
 
+            toolTipContent = toolTipContent.Replace("(sumShield)",
+                (DataBase.Instance.skillInfoDict[toolTipName].flatShield +
+                DataBase.Instance.skillInfoDict[toolTipName].shieldIncreasePerSkillLevel * myCharacterState.characterSpec.skillLevel[toolTipName] +
+                DataBase.Instance.skillInfoDict[toolTipName].shieldIncreasePerPower * myCharacterState.power).ToString());
             toolTipContent = toolTipContent.Replace("(flatShield)", DataBase.Instance.skillInfoDict[toolTipName].flatShield.ToString());
             toolTipContent = toolTipContent.Replace("(shieldIncreasePerSkillLevel)", DataBase.Instance.skillInfoDict[toolTipName].shieldIncreasePerSkillLevel.ToString());
             toolTipContent = toolTipContent.Replace("(shieldIncreasePerPower)", DataBase.Instance.skillInfoDict[toolTipName].shieldIncreasePerPower.ToString());
 
+            toolTipContent = toolTipContent.Replace("(sumPower)",
+                (DataBase.Instance.skillInfoDict[toolTipName].flatPower +
+                DataBase.Instance.skillInfoDict[toolTipName].powerIncreasePerSkillLevel * myCharacterState.characterSpec.skillLevel[toolTipName] +
+                DataBase.Instance.skillInfoDict[toolTipName].powerIncreasePerPower * myCharacterState.power).ToString());
             toolTipContent = toolTipContent.Replace("(flatPower)", DataBase.Instance.skillInfoDict[toolTipName].flatPower.ToString());
             toolTipContent = toolTipContent.Replace("(powerIncreasePerSkillLevel)", DataBase.Instance.skillInfoDict[toolTipName].powerIncreasePerSkillLevel.ToString());
             toolTipContent = toolTipContent.Replace("(powerIncreasePerPower)", DataBase.Instance.skillInfoDict[toolTipName].powerIncreasePerPower.ToString());
 
             toolTipContent = toolTipContent.Replace("(coolDown)", DataBase.Instance.skillInfoDict[toolTipName].coolDown.ToString());
             toolTipContent = toolTipContent.Replace("(consumeMana)", DataBase.Instance.skillInfoDict[toolTipName].consumeMana.ToString());
-
+            toolTipContent = toolTipContent.Replace("(duration)", DataBase.Instance.skillInfoDict[toolTipName].duration.ToString());
         }
         else if (hoverObject.name.Contains("item"))
         {
             toolTipName = hoverObject.name.Substring(5);
             toolTipContent = DataBase.Instance.itemInfoDict[toolTipName].description;
+
+            toolTipContent = toolTipContent.Replace("(health)", DataBase.Instance.itemInfoDict[toolTipName].recoveryHealth.ToString());
+            toolTipContent = toolTipContent.Replace("(mana)", DataBase.Instance.itemInfoDict[toolTipName].recoveryMana.ToString());
+
         }
         else
             return;
         
         toolTipPanel.transform.GetChild(1).GetChild(0).GetComponent<TMP_Text>().text = toolTipName;
-        toolTipPanel.transform.GetChild(1).GetChild(1).GetComponent<TMP_Text>().text = toolTipContent;
-        toolTipPanel.transform.position = hoverObject.transform.position;
+        toolTipPanel.transform.GetChild(1).GetChild(1).GetComponent<TMP_Text>().text = toolTipContent;        
+        toolTipPanel.GetComponent<RectTransform>().sizeDelta = new Vector2(250, 70 + toolTipPanel.transform.GetChild(1).GetChild(1).GetComponent<RectTransform>().sizeDelta.y);
+        toolTipPanel.transform.position = hoverObject.transform.position;        
         toolTipPanel.SetActive(true);
     }
     public void ResetSkillPanel()
