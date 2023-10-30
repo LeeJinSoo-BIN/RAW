@@ -23,7 +23,10 @@ public class GameManager : MonoBehaviour
         {
             GameObject player = PhotonNetwork.Instantiate("Character/Player", Vector3.zero, Quaternion.identity);
             myCharacter = player;
-            GameObject.Find("EasterEgg").GetComponent<EasterEgg>().myCharacter = player;            
+            if (GameObject.Find("EasterEgg") != null)
+            {
+                GameObject.Find("EasterEgg").GetComponent<EasterEgg>().myCharacter = player;
+            }
             setup(player);
             GameObject.Find("Main Camera").transform.GetComponent<CameraFollow>().myCharacterTransform = player.transform;
         }
