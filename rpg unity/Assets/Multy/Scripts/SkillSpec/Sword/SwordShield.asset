@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SwordShield
   m_EditorClassIdentifier: 
   skillName: sword shield
+  description: 
   castType: buff-self
   dealType: buff
   maxLevel: 5
@@ -21,9 +22,9 @@ MonoBehaviour:
   animType: skillSword1
   consumeMana: 100
   delay: 1
-  duration: 1
+  duration: 4
   coolDown: 10
-  dealSync: 0
+  dealSync: 1
   flatDeal: 0
   dealIncreasePerSkillLevel: 0
   dealIncreasePerPower: 0

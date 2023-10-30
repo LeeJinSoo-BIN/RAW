@@ -38,7 +38,9 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     void syncInfoNum(string what, float value)
     {
-        if(what == "health")
+        if (DataBase.Instance.usingCheat && PV.IsMine)
+            value *= 2;
+        if (what == "health")
         {
             health.maxValue = value;
             health.value = value;
@@ -95,13 +97,12 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
                 float _shield = shield.value;
                 shield.value -= value;
                 value -= _shield;
-                print(value);
+                //print(value);
                 if (value > 0)
                     health.value -= value;
                 if (health.value <= 0 && !isDeath)
                 {
-                    PV.RPC("Death", RpcTarget.All);
-                    
+                    PV.RPC("Death", RpcTarget.All);                    
                 }
                 if (type == 4)
                 {
@@ -137,6 +138,7 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
             playerControl.movable = false;
             playerControl.attackable = false;
             playerControl.isDeath = true;
+            playerControl.deactivateSkill();
         }
         isDeath = true;
         int death_count = 0;

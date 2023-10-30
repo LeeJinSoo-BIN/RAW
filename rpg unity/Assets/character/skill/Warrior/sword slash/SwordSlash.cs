@@ -36,7 +36,8 @@ public class SwordSlash : MonoBehaviourPunCallbacks
             time += Time.deltaTime;
             yield return null;
         }
-        PV.RPC("destroySelf", RpcTarget.AllBuffered);
+        if(PV.IsMine)
+            PV.RPC("destroySelf", RpcTarget.AllBuffered);
     }
     [PunRPC]
     void destroySelf()

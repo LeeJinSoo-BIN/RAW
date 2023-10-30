@@ -37,14 +37,14 @@ public class MonsterState : MonoBehaviourPunCallbacks
     [PunRPC]
     void MonsterDamage(int type, float value, float duration, bool isCritical)
     {
-        if (type == 5 && monsterSpec.monsterType.ToLower() == "normal") // ±âº»°ø°Ý
+        if (type == 5 && monsterSpec.monsterType.ToLower() == "normal") // ê¸°ë³¸ê³µê²©
             value *= 5;
-        else if (type == 0 && monsterSpec.monsterType.ToLower() == "normal") // °ø°Ý
+        else if (type == 0 && monsterSpec.monsterType.ToLower() == "normal") // ê³µê²©
             value *= 2;
         float _shield = shield.value;
         shield.value -= value;
         value -= _shield;
-        Debug.Log(value);
+        //Debug.Log(value);
         PopDamage(type, value, isCritical);
         if (value > 0)
             health.value -= value;

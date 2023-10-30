@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,7 +22,8 @@ public class DataBase : MonoBehaviour
     public string currentMapType;
     public string currentCharacterNickname;
     public bool isCurrentDungeonCaptain;
-   
+    public bool usingCheat = false;
+    public bool isPromotioned = false;
     private void Awake()
     {
         defaultAccountInfo.characterList.Clear();

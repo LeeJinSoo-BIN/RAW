@@ -16,7 +16,7 @@ public class EvilWizardSkill1 : MonoBehaviourPunCallbacks
     private BoxCollider2D skillCollider;
 
     private float Deal;
-    
+    private bool dealOnce = true;
     private void Start()
     {
         animator = gameObject.GetComponentInChildren<Animator>();
@@ -87,12 +87,13 @@ public class EvilWizardSkill1 : MonoBehaviourPunCallbacks
     {
         if (collision == null)
             return;
-        if (collision.CompareTag("Player") && collision.name == "foot")
+        if (collision.CompareTag("Player") && collision.name == "foot" && dealOnce)
         {
             if (collision.transform.parent.GetComponent<PhotonView>().IsMine)
             {
                 CharacterState state = collision.transform.parent.GetComponentInChildren<CharacterState>();
                 state.ProcessSkill(0, Deal);
+                dealOnce = false;
             }
         }
     }

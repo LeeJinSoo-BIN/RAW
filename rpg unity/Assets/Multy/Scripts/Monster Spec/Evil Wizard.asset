@@ -24,6 +24,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f69e98a25a0985740bb154951a40ac43, type: 2}
   - {fileID: 11400000, guid: bdfa651a8d76224489baee6a5af6bd55, type: 2}
   defaultMovement: stop
+  defaultMoveSpeed: 1
   defaultScale: {x: 3, y: 3, z: 1}
   dropItems:
     SD_Keys: []

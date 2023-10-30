@@ -18,6 +18,7 @@ public class skill2animationEvent : MonoBehaviour
     public void Handing()
     {        
         transform.parent.GetComponent<EvilWizardSkill2>().hand = true;
+        handBox.enabled = true;
     }
     public void explose()
     {        

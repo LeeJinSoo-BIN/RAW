@@ -2136,6 +2136,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c8180382a12288244a173ec36286d26f, type: 2}
   - {fileID: 11400000, guid: d59c5f6d0be9f8b4585a069725ac6fba, type: 2}
   - {fileID: 11400000, guid: b25ca8162f1f01940bb8830fe1e1124f, type: 2}
+  cheatCharacterSpec: {fileID: 11400000, guid: f2e62f1b2dd550945966496a958e4df9, type: 2}
   CreateCharacterSample: {fileID: 1103846898}
   CreateCharacterRollText: {fileID: 1579787284}
   CreatCharacterNickInput: {fileID: 2137413803}
@@ -2143,6 +2144,7 @@ MonoBehaviour:
   currentHairIdx: 0
   currentClothIdx: 0
   useLocal: 1
+  isDebugMode: 1
 --- !u!4 &373080856
 Transform:
   m_ObjectHideFlags: 0
@@ -12932,6 +12934,7 @@ MonoBehaviour:
     - sword
     - bow
     - wand
+    - axe
     - cloth1
     - cloth2
     - cloth3
@@ -12946,6 +12949,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 3e086745d9522d1479fd59c27449d880, type: 2}
     - {fileID: 11400000, guid: 4c2c84e5f37cb7341a2c58d4ecadfd12, type: 2}
     - {fileID: 11400000, guid: 13981d9ee4602d24e93a78dd347d635d, type: 2}
+    - {fileID: 11400000, guid: 187e6368d9c74024c8a18a61ef862101, type: 2}
     - {fileID: 11400000, guid: 7fe8643da32a97645ab9508b383d8a92, type: 2}
     - {fileID: 11400000, guid: 463ce00a2ae59e64da69f8a1937d446d, type: 2}
     - {fileID: 11400000, guid: efee474192e7bdd4c8da7074cf06012f, type: 2}
@@ -12994,6 +12998,7 @@ MonoBehaviour:
   currentMapType: 
   currentCharacterNickname: 
   isCurrentDungeonCaptain: 0
+  usingCheat: 0
 --- !u!4 &2140010868
 Transform:
   m_ObjectHideFlags: 0

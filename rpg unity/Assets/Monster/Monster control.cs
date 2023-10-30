@@ -20,6 +20,9 @@ public class MonsterControl : MonoBehaviour
     private bool isMoving = false;
     private bool isCastingSkill = false;
     private float patternCycle;
+    private bool isAggro = false;
+    private IEnumerator currentCastingSkillCoroutine;
+    private IEnumerator runWhileCastingSkillCoroutine;
     private MonsterSkillSpec currentCastingSkill;
 
     private GameObject target;
@@ -37,6 +40,7 @@ public class MonsterControl : MonoBehaviour
         transform.parent = GameObject.Find("Enemy Group").transform;
         name += transform.parent.childCount;
         patternCycle = monsterSpec.patternCycle;
+        currentCastingSkill = new MonsterSkillSpec();
     }
 
     private void Start()
@@ -49,8 +53,12 @@ public class MonsterControl : MonoBehaviour
     {
         if (PhotonNetwork.IsMasterClient && attackable && !isDeath)
         {
+            if (isAggro)
+            {
+                MoveToTarget(0.01f, 0.1f);
+                return;
+            }
             time += Time.deltaTime;
-
             if (time >= patternCycle && !isCastingSkill) // 30???? ???? ?? ???? ????
             {
                 randomPattern();
@@ -59,7 +67,7 @@ public class MonsterControl : MonoBehaviour
             else if (!isCastingSkill)
             {
                 if (target != null && monsterSpec.defaultMovement == "following")
-                    MoveToTarget();
+                    MoveToTarget(2, 5);
             }
             if (isCastingSkill)
                 time = 0;
@@ -71,20 +79,23 @@ public class MonsterControl : MonoBehaviour
         int rnd = Random.Range(0, monsterSpec.skillList.Count);
         currentCastingSkill = monsterSpec.skillList[rnd];
         if (currentCastingSkill.type == "MoveRandom")
-            StartCoroutine(moveRandom());
+            currentCastingSkillCoroutine = moveRandom();
         else if (currentCastingSkill.type == "Follow")
-            StartCoroutine(follow());
+            currentCastingSkillCoroutine = follow();
         else if (currentCastingSkill.type == "FindTarget")
             findTarget();
         else
-            StartCoroutine(castSKill());
+            currentCastingSkillCoroutine = castSKill();
+
+        StartCoroutine(currentCastingSkillCoroutine);
     }
 
     IEnumerator moveRandom()
     {
         isCastingSkill = true;
         findRandomPosition();
-        yield return StartCoroutine(MoveToTargetCoroutine(transform.position, targetPos, currentCastingSkill.speed, currentCastingSkill.run));
+        runWhileCastingSkillCoroutine = MoveToTargetCoroutine(transform.position, targetPos, currentCastingSkill.speed, currentCastingSkill.run);
+        yield return StartCoroutine(runWhileCastingSkillCoroutine);
         isCastingSkill = false;
     }
     IEnumerator follow()
@@ -95,7 +106,7 @@ public class MonsterControl : MonoBehaviour
         while (_time < currentCastingSkill.skillDuration)
         {
             _time += Time.deltaTime;
-            MoveToTarget();
+            MoveToTarget(2, 5);
             yield return null;
         }
         isCastingSkill = false;
@@ -118,7 +129,8 @@ public class MonsterControl : MonoBehaviour
             currentTargetPos = transform.position;
         currentMoveSpeed = currentCastingSkill.speed;
 
-        yield return StartCoroutine(MoveToTargetCoroutine(transform.position, currentTargetPos, currentMoveSpeed, currentCastingSkill.run, currentCastingSkill.distance));
+        runWhileCastingSkillCoroutine = MoveToTargetCoroutine(transform.position, currentTargetPos, currentMoveSpeed, currentCastingSkill.run, currentCastingSkill.distance);
+        yield return StartCoroutine(runWhileCastingSkillCoroutine);
         float _time = 0f;
         try
         {
@@ -197,6 +209,40 @@ public class MonsterControl : MonoBehaviour
         name = newName;
     }
 
+    [PunRPC]
+    public void aggro(string targetName, float aggroTime)
+    {
+        if (PV.IsMine)
+        {
+            target = characterGroup.transform.Find(targetName).gameObject;
+            targetPos = target.transform.position;
+            isCastingSkill = false;
+            try
+            {
+                StopCoroutine(currentCastingSkillCoroutine);                
+            }
+            catch { }
+            try
+            {
+                StopCoroutine(runWhileCastingSkillCoroutine);
+            }
+            catch { }
+            StartCoroutine(aggroTimer(aggroTime));
+        }
+    }
+
+    IEnumerator aggroTimer(float time)
+    {
+        isAggro = true;
+        float _time = 0f;
+        while(_time < time)
+        {
+            _time += Time.deltaTime;
+            yield return null;
+        }
+        isAggro = false;
+    }
+
 
     private void findTarget()
     {
@@ -242,17 +288,17 @@ public class MonsterControl : MonoBehaviour
             animator.SetBool("run", false);
     }
 
-    void MoveToTarget()
+    void MoveToTarget(float minDistance, float maxDistance)
     {
         Vector3 _dirVec = target.transform.position - transform.position;
         Vector3 _disVec = (Vector2)target.transform.position - (Vector2)transform.position;
-        if (_disVec.sqrMagnitude < 2f && isMoving == true)
+        if (_disVec.sqrMagnitude < minDistance && isMoving == true)
         {
             isMoving = false;
             //animator.SetBool("run", false);
             return;
         }
-        else if (_disVec.sqrMagnitude > 5f && isMoving == false)
+        else if (_disVec.sqrMagnitude > maxDistance && isMoving == false)
         {
             isMoving = true;
         }
@@ -260,7 +306,7 @@ public class MonsterControl : MonoBehaviour
         {
             Vector3 _dirMVec = _dirVec.normalized;
             PV.RPC("direction", RpcTarget.AllBuffered, _dirMVec);
-            transform.position += (_dirMVec * 1f * Time.deltaTime);
+            transform.position += (_dirMVec * monsterSpec.defaultMoveSpeed * Time.deltaTime);
         }
     }
 

@@ -92,6 +92,7 @@ public class MagicFloor : MonoBehaviourPunCallbacks
         {
             //targetPos = target_pos;
         }
-        StartCoroutine(Vanish(duration));
+        if (PV.IsMine)
+            StartCoroutine(Vanish(duration));
     }
 }

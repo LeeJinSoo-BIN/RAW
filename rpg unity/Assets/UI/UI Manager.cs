@@ -12,7 +12,6 @@ using Photon.Realtime;
 using WebSocketSharp;
 using System.Linq;
 using System;
-using static UnityEditor.Progress;
 
 public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
 {
@@ -24,6 +23,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public GameObject gameOverPanel;
     public TMP_InputField timeLimitInputfield;
     public GameObject toolTipPanel;
+    public GameObject conversationPanel;
 
     [Header("Option Panel")]
     public GameObject optionPanel;
@@ -128,6 +128,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     private bool isHoverToolTip = false;
     private GameObject hoverObject;
     private float hoverTime = 0f;
+
+
+    public LayerMask npcLayer;
     #endregion
 
     void Awake()
@@ -154,7 +157,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         StageUiGroup.SetActive(false);
         gameOverPanel.SetActive(false);
         toolTipPanel.SetActive(false);
-        
+        conversationPanel.SetActive(false);
+
         invitePartyPanel.SetActive(false);
         joinPartyRequestPanel.SetActive(false);
 
@@ -243,6 +247,15 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             if (EventSystem.current.IsPointerOverGameObject() == false)
             {
                 currentFocusWindow = null;
+                Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                RaycastHit2D hit_npc = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, npcLayer);
+                if (hit_npc.collider != null)
+                {
+                    if (hit_npc.collider.CompareTag("NPC"))
+                    {
+                        ShowConversationPanel(hit_npc.transform.gameObject);
+                    }
+                }
             }
         }
         if (isHoverToolTip)
@@ -538,6 +551,19 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     {
         myCharacterState.ProcessSkill(1, DataBase.Instance.itemInfoDict[itemName].recoveryHealth);
         myCharacterState.ProcessSkill(5, DataBase.Instance.itemInfoDict[itemName].recoveryMana);
+    }
+
+
+    public void ShowConversationPanel(GameObject NPC)
+    {        
+        updateCurrentFocusWindow(conversationPanel);
+        GameObject npcHead = Instantiate(NPC.transform.Find("Root").GetChild(0).GetChild(0).GetChild(2).GetChild(0).gameObject);
+        makeNewHead(npcHead);
+
+        npcHead.transform.parent = conversationPanel.transform.GetChild(2).GetChild(0);
+        npcHead.transform.localPosition = new Vector3(0, -30, 0);
+        npcHead.transform.localScale = new Vector3(120, 120);
+
     }
 
     public void ClickExpandChatLog()
