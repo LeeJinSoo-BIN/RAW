@@ -5,9 +5,9 @@ using System;
 using System.Data;
 using MySql.Data.MySqlClient;
 
-public class AccountDB : MonoBehaviour
+public class DB : MonoBehaviour
 {
-    static MySqlConnectionStringBuilder builder = new MySqlConnectionStringBuilder
+    public static MySqlConnectionStringBuilder builder = new MySqlConnectionStringBuilder
     {
         Server = "svc.sel4.cloudtype.app",
         Port = 30541,
@@ -16,10 +16,14 @@ public class AccountDB : MonoBehaviour
         Password = "binary01!",
         CharacterSet = "utf8",
     };
+}
+
+public class AccountDB : MonoBehaviour
+{
 
     public static int Login(string loginId, string loginPw)
     {
-        using (MySqlConnection conn = new MySqlConnection(builder.ConnectionString))
+        using (MySqlConnection conn = new MySqlConnection(DB.builder.ConnectionString))
         {
             try
             {
@@ -52,7 +56,7 @@ public class AccountDB : MonoBehaviour
 
     public static int Register(string loginId, string loginPw)
     {
-        using (MySqlConnection conn = new MySqlConnection(builder.ConnectionString))
+        using (MySqlConnection conn = new MySqlConnection(DB.builder.ConnectionString))
         {
             try
             {
@@ -75,7 +79,7 @@ public class AccountDB : MonoBehaviour
 
     public static List<CharacterSpec> SelectCharacter(string userId)
     {
-        using (MySqlConnection conn = new MySqlConnection(builder.ConnectionString))
+        using (MySqlConnection conn = new MySqlConnection(DB.builder.ConnectionString))
         {
             try
             {
@@ -118,7 +122,7 @@ public class AccountDB : MonoBehaviour
 
     public static bool CheckDuplicateNickName(string nickName)
     {
-        using (MySqlConnection conn = new MySqlConnection(builder.ConnectionString))
+        using (MySqlConnection conn = new MySqlConnection(DB.builder.ConnectionString))
         {
             try
             {
@@ -126,12 +130,12 @@ public class AccountDB : MonoBehaviour
 
                 using (MySqlCommand command = conn.CreateCommand())
                 {
-                    command.CommandText = string.Format("SELECT EXISTS (SELECT * FROM user_character WHERE nickname = '{0}' LIMIT 1) AS success", nickName);
+                    command.CommandText = string.Format("SELECT EXISTS (SELECT * FROM user_character WHERE nickname = '{0}' LIMIT 1) AS chk", nickName);
 
-                    using (MySqlDataReader user_character = command.ExecuteReader())
+                    using (MySqlDataReader userCharacter = command.ExecuteReader())
                     {
-                        user_character.Read();
-                        if (Convert.ToInt32(user_character[0]) == 1)
+                        userCharacter.Read();
+                        if (Convert.ToInt32(userCharacter[0]) == 1)
                             return true;
 
                         return false;
@@ -144,5 +148,113 @@ public class AccountDB : MonoBehaviour
                 return true;
             }
         }
+    }
+
+    public static CharacterSpec CreateCharacter(string nickname, string roll)
+    {
+        CharacterSpec spec = new();
+
+        spec.nickName = nickname;
+        spec.roll = roll;
+        spec.characterLevel = 1;
+        spec.lastTown = "Pallet Town";
+
+        using (MySqlConnection conn = new MySqlConnection(DB.builder.ConnectionString))
+        {
+            try
+            {
+                conn.Open();
+
+                using (MySqlCommand command = conn.CreateCommand())
+                {
+
+                    command.CommandText = string.Format("SELECT * FROM character_std WHERE roll = '{0}'", roll);
+
+                    int characterId;
+
+                    using (MySqlDataReader characterStd = command.ExecuteReader())
+                    {
+                        characterStd.Read();
+
+                        characterId = Convert.ToInt32(characterStd["id"]);
+                        spec.maxInventoryNum = Convert.ToInt32(characterStd["max_inventory"]);
+
+                        characterStd.Close();
+                    }
+
+                    spec.maxHealth                  = (float) StatDB.getStat("character_std_stat", "hp");
+                    spec.maxMana                    = (float) StatDB.getStat("character_std_stat", "mp");
+                    spec.recoverManaPerThreeSec     = (float) StatDB.getStat("character_std_stat", "recover_mp");
+                    spec.power                      = (float) StatDB.getStat("character_std_stat", "power");
+                    spec.criticalDamage             = (float) StatDB.getStat("character_std_stat", "critical_dmg");
+                    spec.criticalPercent            = (float) StatDB.getStat("character_std_stat", "critical_percent");
+                    spec.healPercent                = (float) StatDB.getStat("character_std_stat", "heal_percent");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+                spec = null;
+            }
+
+            conn.Close();
+        }
+
+        return spec;
+    }
+}
+
+
+public class StatDB : MonoBehaviour
+{
+    public static double getStat(string statType, string statName)
+    {
+        double stat = 0;
+
+        using (MySqlConnection conn = new MySqlConnection(DB.builder.ConnectionString))
+        {
+            try
+            {
+
+                conn.Open();
+
+                using (MySqlCommand command = conn.CreateCommand())
+                {
+                    command.CommandText = string.Format("SELECT stat_code FROM stat WHERE stat_name = '{0}'", statName);
+
+                    int code;
+
+                    using (MySqlDataReader statCodeReader = command.ExecuteReader())
+                    {
+                        statCodeReader.Read();
+
+                        code = Convert.ToInt32(statCodeReader["stat_code"]);
+
+                        statCodeReader.Close();
+                    }
+
+                    command.CommandText = string.Format("SELECT stat FROM {0} WHERE stat_code = {1}", statType, code);
+
+
+                    using (MySqlDataReader statReader = command.ExecuteReader())
+                    {
+                        statReader.Read();
+
+                        stat = Convert.ToDouble(statReader["stat"]);
+
+                        statReader.Close();
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+            }
+
+            conn.Close();
+        }
+
+        return stat;
     }
 }
