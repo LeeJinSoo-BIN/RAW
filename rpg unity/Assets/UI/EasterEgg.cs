@@ -20,7 +20,7 @@ public class EasterEgg : MonoBehaviour
     void Update()
     {
         timer += Time.deltaTime;
-        if (timer > 0.5f)
+        if (timer > 1f)
         {
             if (commandInput.Length > 0)
                 commandInput = commandInput.Remove(0, 1);
@@ -69,7 +69,8 @@ public class EasterEgg : MonoBehaviour
     public void actiaveCheat()
     {
         DataBase.Instance.usingCheat = true;
-        Destroy(gameObject);
+        myCharacter.GetComponent<MultyPlayer>().characterState.setUp();
+        konamiCommand.SetActive(false);
     }
 
     public void closePromotion()

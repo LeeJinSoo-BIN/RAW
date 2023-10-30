@@ -19,7 +19,7 @@ MonoBehaviour:
   maxHealth: 999
   maxMana: 999
   recoverManaPerThreeSec: 9
-  power: 10
+  power: 20
   criticalDamage: 1.5
   criticalPercent: 90
   healPercent: 1

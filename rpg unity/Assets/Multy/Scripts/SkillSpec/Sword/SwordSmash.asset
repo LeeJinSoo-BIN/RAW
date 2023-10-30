@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SwordSmash
   m_EditorClassIdentifier: 
   skillName: sword smash
+  description: 
   castType: target-enemy
   dealType: instant
   maxLevel: 5
@@ -24,8 +25,8 @@ MonoBehaviour:
   duration: 1
   coolDown: 5
   dealSync: 0.5
-  flatDeal: 5
-  dealIncreasePerSkillLevel: 1
+  flatDeal: 3
+  dealIncreasePerSkillLevel: 3
   dealIncreasePerPower: 1
   flatHeal: 0
   healIncreasePerSkillLevel: 0

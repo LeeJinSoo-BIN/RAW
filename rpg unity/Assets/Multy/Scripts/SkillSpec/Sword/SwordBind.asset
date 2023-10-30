@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SwordBind
   m_EditorClassIdentifier: 
   skillName: sword bind
+  description: 
   castType: target-enemy
   dealType: instant
   maxLevel: 5
@@ -24,8 +25,8 @@ MonoBehaviour:
   duration: 7
   coolDown: 20
   dealSync: 0.8
-  flatDeal: 20
-  dealIncreasePerSkillLevel: 1
+  flatDeal: 15
+  dealIncreasePerSkillLevel: 5
   dealIncreasePerPower: 1
   flatHeal: 0
   healIncreasePerSkillLevel: 0

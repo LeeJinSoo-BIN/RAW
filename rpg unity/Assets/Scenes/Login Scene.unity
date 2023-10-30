@@ -12999,6 +12999,7 @@ MonoBehaviour:
   currentCharacterNickname: 
   isCurrentDungeonCaptain: 0
   usingCheat: 0
+  isPromotioned: 0
 --- !u!4 &2140010868
 Transform:
   m_ObjectHideFlags: 0

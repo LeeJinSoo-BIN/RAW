@@ -9138,6 +9138,7 @@ MonoBehaviour:
   rejectPromotionButton: {fileID: 548167977}
   conversationPanel: {fileID: 326783735}
   masterMent: {fileID: 1875642665}
+  myCharacter: {fileID: 0}
 --- !u!4 &1630771241
 Transform:
   m_ObjectHideFlags: 0
@@ -10083,8 +10084,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 29, y: 51}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 52.8, y: 0}
+  m_SizeDelta: {x: 310.3, y: 170.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1875642665
 MonoBehaviour:
