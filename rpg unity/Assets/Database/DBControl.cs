@@ -5,7 +5,7 @@ using System;
 using System.Data;
 using MySql.Data.MySqlClient;
 
-public class DB : MonoBehaviour
+public class DBSetting : MonoBehaviour
 {
     public static MySqlConnectionStringBuilder builder = new MySqlConnectionStringBuilder
     {
@@ -20,10 +20,11 @@ public class DB : MonoBehaviour
 
 public class AccountDB : MonoBehaviour
 {
-
     public static int Login(string loginId, string loginPw)
     {
-        using (MySqlConnection conn = new MySqlConnection(DB.builder.ConnectionString))
+        int status = 0;
+
+        using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
         {
             try
             {
@@ -39,24 +40,32 @@ public class AccountDB : MonoBehaviour
                         if (userAccount.Read())
                         {
                             if (loginPw == Convert.ToString(userAccount["password"]))
-                                return 1;
+                                status = 1;
                         }
 
-                        return 0;
+                        userAccount.Close();
                     }
                 }
             }
             catch (Exception e)
             {
                 Debug.Log(e.Message);
-                return -1;
+                status = -1;
+            }
+            finally
+            {
+                conn.Close();
             }
         }
+
+        return status;
     }
 
     public static int Register(string loginId, string loginPw)
     {
-        using (MySqlConnection conn = new MySqlConnection(DB.builder.ConnectionString))
+        int status;
+
+        using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
         {
             try
             {
@@ -66,20 +75,28 @@ public class AccountDB : MonoBehaviour
                 {
                     command.CommandText = string.Format("INSERT INTO user (user_id, password) VALUES ('{0}', '{1}');", loginId, loginPw);
 
-                    return (command.ExecuteNonQuery());
+                    status = command.ExecuteNonQuery();
                 }
             }
             catch (Exception e)
             {
                 Debug.Log(e.Message);
-                return -1;
+                status = -1;
+            }
+            finally
+            {
+                conn.Close();
             }
         }
+
+        return status;
     }
 
     public static List<CharacterSpec> SelectCharacter(string userId)
     {
-        using (MySqlConnection conn = new MySqlConnection(DB.builder.ConnectionString))
+        List<CharacterSpec> characterSpec = new List<CharacterSpec>();
+
+        using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
         {
             try
             {
@@ -91,8 +108,6 @@ public class AccountDB : MonoBehaviour
 
                     using (MySqlDataReader userCharacter = command.ExecuteReader())
                     {
-                        List<CharacterSpec> characterSpec = new List<CharacterSpec>();
-
                         while(userCharacter.Read())
                         {
                             CharacterSpec spec = new CharacterSpec
@@ -108,21 +123,29 @@ public class AccountDB : MonoBehaviour
                             characterSpec.Add(spec);
                         }
 
-                        return (characterSpec);
+                        userCharacter.Close();
                     }
                 }
             }
             catch (Exception e)
             {
                 Debug.Log(e.Message);
-                return null;
+                characterSpec = null;
+            }
+            finally
+            {
+                conn.Close();
             }
         }
+
+        return characterSpec;
     }
 
     public static bool CheckDuplicateNickName(string nickName)
     {
-        using (MySqlConnection conn = new MySqlConnection(DB.builder.ConnectionString))
+        bool chk = false;
+
+        using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
         {
             try
             {
@@ -130,26 +153,35 @@ public class AccountDB : MonoBehaviour
 
                 using (MySqlCommand command = conn.CreateCommand())
                 {
-                    command.CommandText = string.Format("SELECT EXISTS (SELECT * FROM user_character WHERE nickname = '{0}' LIMIT 1) AS chk", nickName);
+                    command.CommandText = string.Format("SELECT EXISTS (SELECT * FROM user_character WHERE nickname = '{0}' LIMIT 1) AS chk;", nickName);
 
                     using (MySqlDataReader userCharacter = command.ExecuteReader())
                     {
                         userCharacter.Read();
-                        if (Convert.ToInt32(userCharacter[0]) == 1)
-                            return true;
 
-                        return false;
+                        chk = Convert.ToInt32(userCharacter[0]) >= 1;
+
+                        userCharacter.Close();
                     }
                 }
             }
             catch (Exception e)
             {
                 Debug.Log(e.Message);
-                return true;
+                chk = true;
+            }
+            finally
+            {
+                conn.Close();
             }
         }
-    }
 
+        return chk;
+    }
+}
+
+public class CharacterDB : MonoBehaviour
+{
     public static CharacterSpec CreateCharacter(string nickname, string roll)
     {
         CharacterSpec spec = new();
@@ -157,9 +189,10 @@ public class AccountDB : MonoBehaviour
         spec.nickName = nickname;
         spec.roll = roll;
         spec.characterLevel = 1;
+        spec.exp = 0;
         spec.lastTown = "Pallet Town";
 
-        using (MySqlConnection conn = new MySqlConnection(DB.builder.ConnectionString))
+        using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
         {
             try
             {
@@ -168,7 +201,7 @@ public class AccountDB : MonoBehaviour
                 using (MySqlCommand command = conn.CreateCommand())
                 {
 
-                    command.CommandText = string.Format("SELECT * FROM character_std WHERE roll = '{0}'", roll);
+                    command.CommandText = string.Format("SELECT * FROM character_std WHERE roll = '{0}';", roll);
 
                     int characterId;
 
@@ -176,65 +209,90 @@ public class AccountDB : MonoBehaviour
                     {
                         characterStd.Read();
 
-                        characterId = Convert.ToInt32(characterStd["id"]);
-                        spec.maxInventoryNum = Convert.ToInt32(characterStd["max_inventory"]);
+                        characterId             = Convert.ToInt32(characterStd["character_id"]);
+                        spec.maxInventoryNum    = Convert.ToInt32(characterStd["max_inventory"]);
 
                         characterStd.Close();
                     }
 
-                    spec.maxHealth                  = (float) StatDB.getStat("character_std_stat", "hp");
-                    spec.maxMana                    = (float) StatDB.getStat("character_std_stat", "mp");
-                    spec.recoverManaPerThreeSec     = (float) StatDB.getStat("character_std_stat", "recover_mp");
-                    spec.power                      = (float) StatDB.getStat("character_std_stat", "power");
-                    spec.criticalDamage             = (float) StatDB.getStat("character_std_stat", "critical_dmg");
-                    spec.criticalPercent            = (float) StatDB.getStat("character_std_stat", "critical_percent");
-                    spec.healPercent                = (float) StatDB.getStat("character_std_stat", "heal_percent");
+                    spec.maxHealth              = (float)StatDB.GetCharacterStdStat(characterId, "hp");
+                    spec.maxMana                = (float)StatDB.GetCharacterStdStat(characterId, "mp");
+                    spec.recoverManaPerThreeSec = (float)StatDB.GetCharacterStdStat(characterId, "recover_mp");
+                    spec.power                  = (float)StatDB.GetCharacterStdStat(characterId, "power");
+                    spec.criticalDamage         = (float)StatDB.GetCharacterStdStat(characterId, "critical_dmg");
+                    spec.criticalPercent        = (float)StatDB.GetCharacterStdStat(characterId, "critical_percent");
+                    spec.healPercent            = (float)StatDB.GetCharacterStdStat(characterId, "heal_percent");
                 }
+
+                InsertCharacter(spec);
             }
             catch (Exception e)
             {
                 Debug.Log(e.Message);
                 spec = null;
             }
-
-            conn.Close();
+            finally
+            {
+                conn.Close();
+            }
         }
 
         return spec;
     }
-}
 
-
-public class StatDB : MonoBehaviour
-{
-    public static double getStat(string statType, string statName)
+    public static int InsertCharacter(CharacterSpec spec)
     {
-        double stat = 0;
+        int res;
 
-        using (MySqlConnection conn = new MySqlConnection(DB.builder.ConnectionString))
+        using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
         {
             try
             {
-
                 conn.Open();
 
                 using (MySqlCommand command = conn.CreateCommand())
                 {
-                    command.CommandText = string.Format("SELECT stat_code FROM stat WHERE stat_name = '{0}'", statName);
+                    command.CommandText = string.Format(
+                        "INSERT INTO user_character (user_id, character_num, character_id, nickname, level, exp, last_town, max_inventory) " +
+                        "VALUES ('{0}', '{1}', '{2}', '{3}', {4}, {5}, '{6}', {7})",
+                        DataBase.Instance.defaultAccountInfo.accountId, 0, 1, spec.nickName, spec.characterLevel, spec.exp, spec.lastTown, spec.maxInventoryNum
+                    );
 
-                    int code;
+                    res = command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+                res = -1;
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
 
-                    using (MySqlDataReader statCodeReader = command.ExecuteReader())
-                    {
-                        statCodeReader.Read();
+        return res;
+    }
+}
 
-                        code = Convert.ToInt32(statCodeReader["stat_code"]);
+public class StatDB : MonoBehaviour
+{
+    public static double GetCharacterStdStat(int characterId, string statName)
+    {
+        double stat = 0;
 
-                        statCodeReader.Close();
-                    }
+        using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
+        {
+            try
+            {
+                conn.Open();
 
-                    command.CommandText = string.Format("SELECT stat FROM {0} WHERE stat_code = {1}", statType, code);
+                using (MySqlCommand command = conn.CreateCommand())
+                {
+                    int statCode = GetStatCode(statName);
 
+                    command.CommandText = string.Format("SELECT stat FROM character_std_stat WHERE character_id = {0} AND stat_code = {1};", characterId, statCode);
 
                     using (MySqlDataReader statReader = command.ExecuteReader())
                     {
@@ -251,10 +309,82 @@ public class StatDB : MonoBehaviour
             {
                 Debug.Log(e.Message);
             }
-
-            conn.Close();
+            finally
+            {
+                conn.Close();
+            }
         }
 
         return stat;
+    }
+
+    public static int InsertCharacterStat(string statType, string statName, double stat)
+    {
+        int res;
+        using (MySqlConnection conn = new(DBSetting.builder.ConnectionString))
+        {
+            try
+            {
+                conn.Open();
+
+                using (MySqlCommand command = conn.CreateCommand())
+                {
+                    int statCode = StatDB.GetStatCode(statName);
+
+                    command.CommandText = string.Format("INSERT INTO '{0}' (user_id, character_num, stat_code, stat) VALUES ({1}, {2});", statType, statCode, stat);
+
+                    res = command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+                res = -1;
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        return res;
+    }
+
+    public static int GetStatCode(string statName)
+    {
+        int statCode = 0;
+
+        using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
+        {
+            try
+            {
+                conn.Open();
+
+                using (MySqlCommand command = conn.CreateCommand())
+                {
+                    command.CommandText = string.Format("SELECT stat_code FROM stat WHERE stat_name = '{0}';", statName);
+
+                    using (MySqlDataReader statCodeReader = command.ExecuteReader())
+                    {
+                        statCodeReader.Read();
+
+                        statCode = Convert.ToInt32(statCodeReader["stat_code"]);
+
+                        statCodeReader.Close();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+                statCode = -1;
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        return statCode;
     }
 }

@@ -367,6 +367,7 @@ public class Login : MonoBehaviourPunCallbacks
             }
         }
 
+        CharacterDB.CreateCharacter(CreatCharacterNickInput.text, "warrior");
 
         CharacterSpec spec = ScriptableObject.CreateInstance<CharacterSpec>();
         CharacterSpec defaultSpec = defaultCharacterSpec[currentRollIdx];
