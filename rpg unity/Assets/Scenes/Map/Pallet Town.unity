@@ -9024,8 +9024,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PV: {fileID: 1858341588}
   gameManager: {fileID: 0}
-  myPartyCaptainName: 
-  disconnectButtonText: {fileID: 0}
+  disconnectButtonText: {fileID: 447628939934017779}
 --- !u!114 &1875642665 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8359906455012956598, guid: 4ca36fbd3a9ea7242829319b7ad89adf, type: 3}
@@ -9278,6 +9277,10 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 519420031}
+    - target: {fileID: 5744952680533538650, guid: 4ca36fbd3a9ea7242829319b7ad89adf, type: 3}
+      propertyPath: m_text
+      value: test
+      objectReference: {fileID: 0}
     - target: {fileID: 5852610557021355047, guid: 4ca36fbd3a9ea7242829319b7ad89adf, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -9387,3 +9390,14 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ca36fbd3a9ea7242829319b7ad89adf, type: 3}
+--- !u!114 &447628939934017779 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5744952680533538650, guid: 4ca36fbd3a9ea7242829319b7ad89adf, type: 3}
+  m_PrefabInstance: {fileID: 447628939934017778}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

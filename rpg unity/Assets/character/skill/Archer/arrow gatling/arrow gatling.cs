@@ -31,12 +31,12 @@ public class ArrowGatling : MonoBehaviourPunCallbacks
                     transform.GetChild(1).gameObject.SetActive(true);
                     transform.GetChild(0).gameObject.SetActive(false);
                     //PV.RPC("destroySelf", RpcTarget.AllBuffered, 0.3f);
-                    destroySelf(0.3f);
+                    Destroy(gameObject, 0.3f);
                 }
                 else
                 {
                     //PV.RPC("destroySelf", RpcTarget.AllBuffered, 0f);
-                    destroySelf(0);
+                    Destroy(gameObject);
                     break;
                 }
             }
@@ -69,15 +69,6 @@ public class ArrowGatling : MonoBehaviourPunCallbacks
                 MonsterPV.RPC("MonsterDamage", RpcTarget.All, 0, Deal, 0f, IsCritical);
             }
         }
-    }
-    void destroySelf(float time = 0.45f)
-    {
-        /*try
-        {
-            GetComponent<Animator>().SetTrigger("vanish");
-        }
-        catch { }*/
-        Destroy(gameObject, time);
     }
     public void initSkill(float deal, bool isCritical, Vector2 target_pos, bool _isMine)
     {

@@ -24,7 +24,7 @@ public class SwordShield : MonoBehaviourPunCallbacks
             yield return null;
         }
         if(PV.IsMine)
-            PV.RPC("destroySelf", RpcTarget.AllBuffered);
+            PhotonNetwork.Destroy(PV);
     }
     [PunRPC]
     void destroySelf()
@@ -70,7 +70,8 @@ public class SwordShield : MonoBehaviourPunCallbacks
             target = GameObject.Find(target_name);
             if (target == null)
             {
-                PV.RPC("destroySelf", RpcTarget.AllBuffered, 0f);
+                if (PV.IsMine)
+                    PhotonNetwork.Destroy(PV);
                 return;
             }
             transform.parent = target.transform;
@@ -79,7 +80,7 @@ public class SwordShield : MonoBehaviourPunCallbacks
         {
             //targetPos = target_pos;
         }
-        Sync = sync;
+        Sync = sync;        
         StartCoroutine(Vanish(sync));
         StartCoroutine(gainShield());
         if(PV.IsMine)

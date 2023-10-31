@@ -26,7 +26,7 @@ public class SwordBind : MonoBehaviourPunCallbacks
             yield return null;
         }
         if(PV.IsMine)
-            PV.RPC("destroySelf", RpcTarget.AllBuffered);
+            PhotonNetwork.Destroy(PV);
     }
     [PunRPC]
     void destroySelf()

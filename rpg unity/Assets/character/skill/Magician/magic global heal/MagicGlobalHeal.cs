@@ -34,8 +34,8 @@ public class MagicGlobalHeal : MonoBehaviourPunCallbacks
             time += Time.deltaTime;
             yield return null;
         }
-        if(PV.IsMine)
-            PV.RPC("destroySelf", RpcTarget.AllBuffered);
+        if (PV.IsMine)
+            PhotonNetwork.Destroy(PV);
     }
     [PunRPC]
     void destroySelf()

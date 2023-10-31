@@ -35,17 +35,7 @@ public class SwordSmash : MonoBehaviourPunCallbacks
             yield return null;
         }
         if(PV.IsMine)
-            PV.RPC("destroySelf", RpcTarget.AllBuffered);
-    }
-    [PunRPC]
-    void destroySelf()
-    {
-        try
-        {
-            GetComponent<Animator>().SetTrigger("vanish");
-        }
-        catch { }
-        Destroy(gameObject, 0.45f);
+            PhotonNetwork.Destroy(PV);
     }
     public void giveDeal()
     {

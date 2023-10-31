@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -164,7 +165,7 @@ public class MonsterControl : MonoBehaviour
             spawnPos = target.transform.position;
         else
             spawnPos = transform.Find(currentCastingSkill.spawnPos).position;
-        GameObject spawnObject = PhotonNetwork.Instantiate(currentCastingSkill.skillDirectory, spawnPos, Quaternion.identity);        
+        GameObject spawnObject = PhotonNetwork.InstantiateRoomObject(currentCastingSkill.skillDirectory, spawnPos, Quaternion.identity);        
         int numDeal = currentCastingSkill.flatDeal.Length;
         float[] deal = new float[numDeal];
         for(int k = 0; k < currentCastingSkill.flatDeal.Length; k++)
@@ -336,7 +337,7 @@ public class MonsterControl : MonoBehaviour
         float rnd = Random.Range(0, 100f);        
         if (rnd < prob)
         {
-            GameObject new_item = PhotonNetwork.Instantiate("items/item_prefab", spawn_pos, Quaternion.identity);
+            GameObject new_item = PhotonNetwork.InstantiateRoomObject("items/item_prefab", spawn_pos, Quaternion.identity);
             new_item.GetComponent<PhotonView>().RPC("initItem", RpcTarget.All, itemName, 1);
         }
     }
@@ -380,4 +381,5 @@ public class MonsterControl : MonoBehaviour
             canvas.transform.localScale = new Vector3(-1, 1, 1);
         }
     }
+
 }

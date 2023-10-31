@@ -2143,8 +2143,8 @@ MonoBehaviour:
   currentRollIdx: 0
   currentHairIdx: 0
   currentClothIdx: 0
-  useLocal: 0
-  isDebugMode: 1
+  useLocal: 1
+  isDebugMode: 0
 --- !u!4 &373080856
 Transform:
   m_ObjectHideFlags: 0
@@ -12992,13 +12992,17 @@ MonoBehaviour:
     - {fileID: 11400000, guid: eb3513dee167d4b0ab8053bf20b70fa8, type: 2}
     - {fileID: 11400000, guid: 317b5649f99af4a08b01a3d35ac4d227, type: 2}
   skillThumbnailPath: Character/skills/thumbnails
+  isLogined: 0
   defaultAccountInfo: {fileID: 11400000, guid: 4a3cc700ec8a89a46a987e7e2013b049, type: 2}
-  loadFromServerAccountInfo: {fileID: 0}
+  accountInfo: {fileID: 0}
   selectedCharacterSpec: {fileID: 0}
   currentMapName: 
   currentMapType: 
   currentCharacterNickname: 
   isCurrentDungeonCaptain: 0
+  myPartyCaptainName: 
+  myPartyName: 
+  isCaptain: 0
   usingCheat: 0
   isPromotioned: 0
 --- !u!4 &2140010868

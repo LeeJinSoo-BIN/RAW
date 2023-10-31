@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour
         player.GetComponent<MultyPlayer>().characterState.setUp();
         Debug.Log("set up state");
         UIManager.Instance.myCharacter = player;
-        UIManager.Instance.SetUP();        
+        UIManager.Instance.SetUP();
         Debug.Log("set up ingame ui");
         if (DataBase.Instance.currentMapType == "dungeon" && PhotonNetwork.LocalPlayer.IsMasterClient)
             StartCoroutine(SpawnBoss());
@@ -89,7 +89,8 @@ public class GameManager : MonoBehaviour
             _timer += Time.deltaTime;
             yield return null;
         }
-        PhotonNetwork.Instantiate("Monster/Evil Wizard", Vector3.zero, Quaternion.identity);        
+        //PhotonNetwork.Instantiate("Monster/Evil Wizard", Vector3.zero, Quaternion.identity);
+        PhotonNetwork.InstantiateRoomObject("Monster/Evil Wizard", Vector3.zero, Quaternion.identity);
         networkManager.PV.RPC("SpawnBoss", RpcTarget.All);
     }       
 }

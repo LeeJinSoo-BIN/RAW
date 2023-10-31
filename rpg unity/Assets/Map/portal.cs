@@ -19,7 +19,7 @@ public class portal : MonoBehaviour
         {
             if (collision.transform.parent.GetComponent<PhotonView>().IsMine)
             {
-                if (networkManager.myPartyCaptainName == DataBase.Instance.currentCharacterNickname)
+                if (DataBase.Instance.myPartyCaptainName == DataBase.Instance.currentCharacterNickname)
                 {
                     UIManager.Instance.EnterDungeonPop();
                 }

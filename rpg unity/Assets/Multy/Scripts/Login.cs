@@ -62,9 +62,19 @@ public class Login : MonoBehaviourPunCallbacks
     }
     void Start()
     {
-        LoginPanel.SetActive(true);
-        SelectCharacterPanel.SetActive(false);
-        CharacterCreatePanel.SetActive(false);
+        if (!DataBase.Instance.isLogined)
+        {
+            LoginPanel.SetActive(true);
+            SelectCharacterPanel.SetActive(false);
+            CharacterCreatePanel.SetActive(false);
+        }
+        else
+        {
+            LoginPanel.SetActive(false);
+            SelectCharacterPanel.SetActive(true);
+            CharacterCreatePanel.SetActive(false);
+            updateCharacterList();
+        }
     }
 
     void Update()
@@ -208,12 +218,17 @@ public class Login : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         PhotonNetwork.JoinLobby();
+        DataBase.Instance.isLogined = true;
         PopPanel.SetActive(false);
     }
 
     public override void OnDisconnected(DisconnectCause cause)
     {
         LoginButton.interactable = true;
+        LoginPanel.SetActive(true);
+        CharacterCreatePanel.SetActive(false);
+        SelectCharacterPanel.SetActive(false);
+        DataBase.Instance.isLogined = false;
     }
 
     public override void OnJoinedLobby()
@@ -221,6 +236,11 @@ public class Login : MonoBehaviourPunCallbacks
         LoginPanel.SetActive(false);
         updateCharacterList();
         SelectCharacterPanel.SetActive(true);        
+    }
+    public override void OnJoinedRoom()
+    {
+        if (PhotonNetwork.IsMasterClient)
+            PhotonNetwork.LoadLevel(DataBase.Instance.currentMapName);
     }
 
     public void ClickChannel()
@@ -279,23 +299,22 @@ public class Login : MonoBehaviourPunCallbacks
         }
     }
 
-    public override void OnJoinedRoom()
-    {        
-        if (PhotonNetwork.IsMasterClient)
-            PhotonNetwork.LoadLevel(DataBase.Instance.currentMapName);
-    }
+
 
     public void ClickCharacterSelectButton()
     {
-        int whichCharacter = int.Parse(EventSystem.current.currentSelectedGameObject.name);
-        if(isDebugMode)
-            PhotonNetwork.JoinOrCreateRoom("Debug Room", new RoomOptions { MaxPlayers = maxNumServerPlayer }, null);
-        else
-            PhotonNetwork.JoinOrCreateRoom("palletTown", new RoomOptions { MaxPlayers = maxNumServerPlayer }, null);
-        DataBase.Instance.selectedCharacterSpec = DataBase.Instance.defaultAccountInfo.characterList[whichCharacter];
-        DataBase.Instance.currentMapName = DataBase.Instance.defaultAccountInfo.characterList[whichCharacter].lastTown;
-        DataBase.Instance.currentMapType = "village";
-        PhotonNetwork.NickName = DataBase.Instance.selectedCharacterSpec.nickName;
+        if (PhotonNetwork.InLobby)
+        {
+            int whichCharacter = int.Parse(EventSystem.current.currentSelectedGameObject.name);
+            if (isDebugMode)
+                PhotonNetwork.JoinOrCreateRoom("Debug Room", new RoomOptions { MaxPlayers = maxNumServerPlayer }, null);
+            else
+                PhotonNetwork.JoinOrCreateRoom("palletTown", new RoomOptions { MaxPlayers = maxNumServerPlayer }, null);
+            DataBase.Instance.selectedCharacterSpec = DataBase.Instance.defaultAccountInfo.characterList[whichCharacter];
+            DataBase.Instance.currentMapName = DataBase.Instance.defaultAccountInfo.characterList[whichCharacter].lastTown;
+            DataBase.Instance.currentMapType = "village";
+            PhotonNetwork.NickName = DataBase.Instance.selectedCharacterSpec.nickName;
+        }
     }
     public void ClickCreateNewCharacterButton()
     {
@@ -496,6 +515,11 @@ public class Login : MonoBehaviourPunCallbacks
     {
         ClearSample();
         //CharacterCreatePanel.SetActive(false);
+    }
+
+    public void ClickLogOutButton()
+    {
+        PhotonNetwork.Disconnect();
     }
 
     IEnumerator popMessage(string title, string content, float popTime = 2f)

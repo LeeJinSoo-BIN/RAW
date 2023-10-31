@@ -39,8 +39,8 @@ public class ArrowGatlingShooter : MonoBehaviour
             GameObject skill = Instantiate(tmp, (Vector2)transform.position + new Vector2(rand_x, rand_y), Quaternion.identity);
             skill.GetComponent<ArrowGatling>().initSkill(Deal, IsCritical, desPos + new Vector2(rand_x, rand_y), PV.IsMine);
         }
-        if(PV.IsMine)
-            PV.RPC("destroySelf", RpcTarget.AllBuffered);
+        if (PV.IsMine)
+            PhotonNetwork.Destroy(PV);
     }
     
     [PunRPC]
