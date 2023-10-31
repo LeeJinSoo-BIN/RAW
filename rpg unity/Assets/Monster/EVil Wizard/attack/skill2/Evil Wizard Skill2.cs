@@ -6,14 +6,15 @@ using UnityEngine.TextCore.Text;
 
 public class EvilWizardSkill2 : MonoBehaviour
 {
-    //public GameObject character; // Ä³¸¯ÅÍÀÇ À§Ä¡
-    //private Animator animator; // ¾Ö´Ï¸ŞÀÌÅÍ ÄÄÆ÷³ÍÆ®
+    //public GameObject character; // ìºë¦­í„°ì˜ ìœ„ì¹˜
+    //private Animator animator; // ì• ë‹ˆë©”ì´í„° ì»´í¬ë„ŒíŠ¸
 
     private float handDeal;
     private float bombDeal;   
     public bool hand = false;
     public bool bomb = false;
-    
+    private bool dealOnce1 = true;
+    private bool dealOnce2 = true;
     public void ExecuteSkill()
     {
         StartCoroutine(Fire());
@@ -21,7 +22,7 @@ public class EvilWizardSkill2 : MonoBehaviour
 
     private IEnumerator Fire()
     {
-        // Ä³¸¯ÅÍÀÇ À§Ä¡·Î ºÒ »ı¼º
+        // ìºë¦­í„°ì˜ ìœ„ì¹˜ë¡œ ë¶ˆ ìƒì„±
 
         while (true)
         {
@@ -53,15 +54,17 @@ public class EvilWizardSkill2 : MonoBehaviour
         {
             if (collision.transform.parent.GetComponent<PhotonView>().IsMine )
             {
-                if (hand)
+                if (hand && dealOnce1)
                 {
                     CharacterState state = collision.transform.parent.GetComponentInChildren<CharacterState>();
                     state.ProcessSkill(0, handDeal);
+                    dealOnce1 = false;
                 }
-                if (bomb)
+                if (bomb && dealOnce2)
                 {
                     CharacterState state = collision.transform.parent.GetComponentInChildren<CharacterState>();
                     state.ProcessSkill(0, bombDeal);
+                    dealOnce2 = false;
                 }
             }
         }
@@ -77,4 +80,3 @@ public class EvilWizardSkill2 : MonoBehaviour
         ExecuteSkill();
     }
 }
-

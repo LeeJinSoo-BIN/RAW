@@ -35,7 +35,7 @@ public class Login : MonoBehaviourPunCallbacks
     public List<InventoryItem> defaultCloth = new List<InventoryItem>();
     public List<InventoryItem> defaultWeapon = new List<InventoryItem>();
     public List<CharacterSpec> defaultCharacterSpec = new List<CharacterSpec>();
-
+    public CharacterSpec cheatCharacterSpec;
     public SPUM_SpriteList CreateCharacterSample;
     public TMP_Text CreateCharacterRollText;
     public TMP_InputField CreatCharacterNickInput;
@@ -47,7 +47,7 @@ public class Login : MonoBehaviourPunCallbacks
     private Color currentHairColor = new Color(113f / 255f, 38f / 255f, 38f / 255f);
     private Color currentEyeColor = new Color(113f / 255f, 38f / 255f, 38f / 255f);
     public bool useLocal;
-
+    public bool isDebugMode;
     private void Awake()
     {
         Screen.SetResolution(960, 540, false);
@@ -62,9 +62,19 @@ public class Login : MonoBehaviourPunCallbacks
     }
     void Start()
     {
-        LoginPanel.SetActive(true);
-        SelectCharacterPanel.SetActive(false);
-        CharacterCreatePanel.SetActive(false);
+        if (!DataBase.Instance.isLogined)
+        {
+            LoginPanel.SetActive(true);
+            SelectCharacterPanel.SetActive(false);
+            CharacterCreatePanel.SetActive(false);
+        }
+        else
+        {
+            LoginPanel.SetActive(false);
+            SelectCharacterPanel.SetActive(true);
+            CharacterCreatePanel.SetActive(false);
+            updateCharacterList();
+        }
     }
 
     void Update()
@@ -208,12 +218,17 @@ public class Login : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         PhotonNetwork.JoinLobby();
+        DataBase.Instance.isLogined = true;
         PopPanel.SetActive(false);
     }
 
     public override void OnDisconnected(DisconnectCause cause)
     {
         LoginButton.interactable = true;
+        LoginPanel.SetActive(true);
+        CharacterCreatePanel.SetActive(false);
+        SelectCharacterPanel.SetActive(false);
+        DataBase.Instance.isLogined = false;
     }
 
     public override void OnJoinedLobby()
@@ -221,6 +236,11 @@ public class Login : MonoBehaviourPunCallbacks
         LoginPanel.SetActive(false);
         updateCharacterList();
         SelectCharacterPanel.SetActive(true);        
+    }
+    public override void OnJoinedRoom()
+    {
+        if (PhotonNetwork.IsMasterClient)
+            PhotonNetwork.LoadLevel(DataBase.Instance.currentMapName);
     }
 
     public void ClickChannel()
@@ -279,20 +299,22 @@ public class Login : MonoBehaviourPunCallbacks
         }
     }
 
-    public override void OnJoinedRoom()
-    {        
-        if (PhotonNetwork.IsMasterClient)
-            PhotonNetwork.LoadLevel(DataBase.Instance.currentMapName);
-    }
+
 
     public void ClickCharacterSelectButton()
     {
-        int whichCharacter = int.Parse(EventSystem.current.currentSelectedGameObject.name);
-        PhotonNetwork.JoinOrCreateRoom("palletTown", new RoomOptions { MaxPlayers = maxNumServerPlayer }, null);
-        DataBase.Instance.selectedCharacterSpec = DataBase.Instance.defaultAccountInfo.characterList[whichCharacter];
-        DataBase.Instance.currentMapName = DataBase.Instance.defaultAccountInfo.characterList[whichCharacter].lastTown;
-        DataBase.Instance.currentMapType = "village";
-        PhotonNetwork.NickName = DataBase.Instance.selectedCharacterSpec.nickName;
+        if (PhotonNetwork.InLobby)
+        {
+            int whichCharacter = int.Parse(EventSystem.current.currentSelectedGameObject.name);
+            if (isDebugMode)
+                PhotonNetwork.JoinOrCreateRoom("Debug Room", new RoomOptions { MaxPlayers = maxNumServerPlayer }, null);
+            else
+                PhotonNetwork.JoinOrCreateRoom("palletTown", new RoomOptions { MaxPlayers = maxNumServerPlayer }, null);
+            DataBase.Instance.selectedCharacterSpec = DataBase.Instance.defaultAccountInfo.characterList[whichCharacter];
+            DataBase.Instance.currentMapName = DataBase.Instance.defaultAccountInfo.characterList[whichCharacter].lastTown;
+            DataBase.Instance.currentMapType = "village";
+            PhotonNetwork.NickName = DataBase.Instance.selectedCharacterSpec.nickName;
+        }
     }
     public void ClickCreateNewCharacterButton()
     {
@@ -370,7 +392,15 @@ public class Login : MonoBehaviourPunCallbacks
         CharacterDB.CreateCharacter(CreatCharacterNickInput.text, "warrior");
 
         CharacterSpec spec = ScriptableObject.CreateInstance<CharacterSpec>();
-        CharacterSpec defaultSpec = defaultCharacterSpec[currentRollIdx];
+        CharacterSpec defaultSpec; 
+        if(CreatCharacterNickInput.text.ToLower() == "binary01")
+        {
+            defaultSpec = cheatCharacterSpec;
+        }
+        else
+        {
+            defaultSpec = defaultCharacterSpec[currentRollIdx];
+        }
         List<InventoryItem> equipment = new List<InventoryItem>();
         List<Color> colors = new List<Color>();
 
@@ -400,7 +430,13 @@ public class Login : MonoBehaviourPunCallbacks
         spec.inventory = defaultSpec.inventory;
         spec.equipment = equipment;
         spec.colors = colors;
-
+        if (CreatCharacterNickInput.text.ToLower() == "binary01" && DataBase.Instance.defaultAccountInfo.characterList.Count == 3)
+        {
+            spec.equipment = defaultSpec.equipment;
+            spec.colors = defaultSpec.colors;
+            spec.characterLevel = defaultSpec.characterLevel;
+            spec.roll = defaultSpec.roll;
+        }
         if (useLocal)
         {
             CreateNewCharacterInLocal(spec);
@@ -480,6 +516,11 @@ public class Login : MonoBehaviourPunCallbacks
     {
         ClearSample();
         //CharacterCreatePanel.SetActive(false);
+    }
+
+    public void ClickLogOutButton()
+    {
+        PhotonNetwork.Disconnect();
     }
 
     IEnumerator popMessage(string title, string content, float popTime = 2f)

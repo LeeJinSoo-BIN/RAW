@@ -14,10 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillName: arrow charge
   description: "\uD654\uC0B4\uC5D0 \uAE30\uB97C \uBAA8\uC544 \uC804\uBC29\uC73C\uB85C
-    \uBC1C\uC0AC\uD55C\uB2E4. (sumDeal)((flatDeal) + (dealIncreasePerSkillLevel)
-    + (dealIncreasePerPower)) \uC758 \uD53C\uD574\uB97C \uC785\uD78C\uB2E4. \uAE30\uB97C
-    \uBAA8\uC73C\uB294 \uC911 \uC801\uC5D0\uAC8C \uB2FF\uC73C\uBA74 \uD53C\uD574\uAC00
-    \uB4E4\uC5B4\uAC00\uC9C0 \uC54A\uB294\uB2E4."
+    \uBC1C\uC0AC\uD55C\uB2E4. (sumDeal)((flatDeal) + \uC2A4\uD0AC \uB808\uBCA8 \uB2F9
+    (dealIncreasePerSkillLevel) + \uD30C\uC6CC \uB2F9 (dealIncreasePerPower)) \uC758
+    \uD53C\uD574\uB97C \uC785\uD78C\uB2E4. \uAE30\uB97C \uBAA8\uC73C\uB294 \uC911
+    \uC801\uC5D0\uAC8C \uB2FF\uC73C\uBA74 \uD53C\uD574\uAC00 \uB4E4\uC5B4\uAC00\uC9C0
+    \uC54A\uB294\uB2E4. \uCFE8\uD0C0\uC784 (coolDown)\uCD08"
   castType: bar
   dealType: throw
   maxLevel: 5

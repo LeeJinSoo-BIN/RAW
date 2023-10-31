@@ -26,7 +26,8 @@ public class MagicFloor : MonoBehaviourPunCallbacks
             time += Time.deltaTime;
             yield return null;
         }
-        PV.RPC("destroySelf", RpcTarget.AllBuffered);
+        if (PV.IsMine)
+            PhotonNetwork.Destroy(PV);
     }
     [PunRPC]
     void destroySelf()
@@ -92,6 +93,7 @@ public class MagicFloor : MonoBehaviourPunCallbacks
         {
             //targetPos = target_pos;
         }
-        StartCoroutine(Vanish(duration));
+        if (PV.IsMine)
+            StartCoroutine(Vanish(duration));
     }
 }

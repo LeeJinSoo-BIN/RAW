@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using WebSocketSharp;
 
 public class newNetworkManager : MonoBehaviourPunCallbacks
 {
@@ -14,7 +16,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
 
     public Dictionary<string, party> allPartys = new Dictionary<string, party>();
     public HashSet<string> usersInParty = new HashSet<string>();
-    public string myPartyCaptainName;
+    
 
     public TMP_Text disconnectButtonText;
     private string nextRoom;
@@ -28,26 +30,35 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     {
         allPartys.Clear();
         usersInParty.Clear();
-        myPartyCaptainName = "";
+        disconnectButtonText = UIManager.Instance.exitButtonText;
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public override void OnJoinedRoom()
     {
         if(DataBase.Instance.currentMapType == "village")
-        {
+        {            
             if (PhotonNetwork.IsMasterClient)
                 PhotonNetwork.LoadLevel(DataBase.Instance.currentMapName);
+            disconnectButtonText.text = "Í≤åÏûÑ ÎÇòÍ∞ÄÍ∏∞";
+           /*if (!DataBase.Instance.myPartyCaptainName.IsNullOrEmpty())
+            {
+                if (DataBase.Instance.isCaptain)
+                {
+                    PV.RPC("registParty", RpcTarget.AllBuffered, DataBase.Instance.myPartyName, DataBase.Instance.currentCharacterNickname);
+                }
+                else
+                {
+                    PV.RPC("joinParty", RpcTarget.AllBuffered, DataBase.Instance.myPartyCaptainName, DataBase.Instance.currentCharacterNickname);
+                }
+            }*/
         }
         else if(DataBase.Instance.currentMapType == "dungeon")
-        {
+        {            
             if (PhotonNetwork.IsMasterClient)
                 PhotonNetwork.LoadLevel(DataBase.Instance.currentMapName);
+            disconnectButtonText.text = "ÎçòÏ†Ñ ÎÇòÍ∞ÄÍ∏∞";
+            DataBase.Instance.isCaptain = false;
+            DataBase.Instance.myPartyCaptainName = "";
+            DataBase.Instance.myPartyName = "";
         }
     }
     public override void OnConnectedToMaster()
@@ -60,19 +71,28 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.JoinOrCreateRoom("palletTown", new RoomOptions { MaxPlayers = 20 }, null);
         }
+        else if(DataBase.Instance.currentMapType == "characterSelect")
+        {
+            DataBase.Instance.currentMapName = "Login Scene";
+            PhotonNetwork.JoinLobby();
+        }
+    }
+
+    public override void OnJoinedLobby()
+    {
+        SceneManager.LoadScene(DataBase.Instance.currentMapName);
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        Debug.Log(otherPlayer.ActorNumber);
         if (DataBase.Instance.currentMapType == "village")
         {
             if (UIManager.Instance.idToNickName.ContainsKey(otherPlayer.ActorNumber))
             {
                 allPartys.Remove(UIManager.Instance.idToNickName[otherPlayer.ActorNumber]);
                 usersInParty.Remove(UIManager.Instance.idToNickName[otherPlayer.ActorNumber]);
-                if (myPartyCaptainName == UIManager.Instance.idToNickName[otherPlayer.ActorNumber])
-                    myPartyCaptainName = "";
+                if (DataBase.Instance.myPartyCaptainName == UIManager.Instance.idToNickName[otherPlayer.ActorNumber])
+                    DataBase.Instance.myPartyCaptainName = "";
                 UIManager.Instance.UpdatePartyPanel();
             }
         }
@@ -80,13 +100,24 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     
     public void ClickDisconnectButton()
     {
-        if (disconnectButtonText.text == "≥™∞°±‚")
+        if (disconnectButtonText.text == "ÎçòÏ†Ñ ÎÇòÍ∞ÄÍ∏∞")
+        {
+            DataBase.Instance.currentMapType = "village";
+            DataBase.Instance.currentMapName = "Pallet Town";
+            /*DataBase.Instance.myPartyCaptainName = "";
+            DataBase.Instance.myPartyName = "";
+            DataBase.Instance.isCaptain = false;*/
             PhotonNetwork.LeaveRoom();
-        else if (disconnectButtonText.text == "∑Œ±◊æ∆øÙ")
-            PhotonNetwork.Disconnect();
-        else if (disconnectButtonText.text == "¡¢º” ≤˜±‚")
-            PhotonNetwork.LeaveLobby();
-        else if (disconnectButtonText.text == "∞‘¿” ¡æ∑·")
+        }
+        else if (disconnectButtonText.text == "Í≤åÏûÑ ÎÇòÍ∞ÄÍ∏∞")
+        {
+            DataBase.Instance.currentMapType = "character Select";
+            DataBase.Instance.currentMapName = "Login Scene";
+            /*if (!DataBase.Instance.myPartyCaptainName.IsNullOrEmpty())
+                PV.RPC("LeaveParty", RpcTarget.AllBuffered, DataBase.Instance.myPartyCaptainName, DataBase.Instance.currentCharacterNickname);*/
+            PhotonNetwork.LeaveRoom();
+        }
+        else if (disconnectButtonText.text == "RAW Ï¢ÖÎ£å")
             Application.Quit();
     }
 
@@ -110,7 +141,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         DataBase.Instance.currentMapType = "dungeon";
         DataBase.Instance.currentMapName = "Dungeon";
         UIManager.Instance.limitTime = timeLimit;
-        nextRoom = myPartyCaptainName;
+        nextRoom = DataBase.Instance.myPartyCaptainName;
         PhotonNetwork.LeaveRoom();        
     }
 
@@ -139,6 +170,8 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     }
 
 
+    #region ÌååÌã∞
+
     [PunRPC]
     void sendAndReceiveInviteParty(string partyName, string fromWho)
     {
@@ -158,7 +191,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         allPartys[captain].partyMembersNickName.Remove(who);
         if(who == DataBase.Instance.currentCharacterNickname)
         {
-            myPartyCaptainName = "";
+            DataBase.Instance.myPartyCaptainName = "";
         }
         usersInParty.Remove(who);
         UIManager.Instance.UpdatePartyPanel();
@@ -183,7 +216,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     {
         allPartys[captainName].partyMembersNickName.Add(member);
         if (member == DataBase.Instance.currentCharacterNickname)
-            myPartyCaptainName = captainName;
+            DataBase.Instance.myPartyCaptainName = captainName;
         usersInParty.Add(member);
         UIManager.Instance.UpdatePartyPanel();
     }
@@ -193,7 +226,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     {
         allPartys[captainName].partyMembersNickName.Remove(leaveName);
         if (leaveName == DataBase.Instance.currentCharacterNickname)
-            myPartyCaptainName = "";
+            DataBase.Instance.myPartyCaptainName = "";
         usersInParty.Remove(leaveName);
         UIManager.Instance.UpdatePartyPanel();
     }
@@ -204,10 +237,10 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         party newParty = allPartys[captainName];
         allPartys.Add(newCaptainName, newParty);
         allPartys.Remove(captainName);
-        if (myPartyCaptainName == captainName)
-            myPartyCaptainName = newCaptainName;
+        if (DataBase.Instance.myPartyCaptainName == captainName)
+            DataBase.Instance.myPartyCaptainName = newCaptainName;
         if (captainName == DataBase.Instance.currentCharacterNickname)
-            myPartyCaptainName = "";
+            DataBase.Instance.myPartyCaptainName = "";
         if (exit)
         {
             allPartys[newCaptainName].partyMembersNickName.Remove(captainName);
@@ -221,11 +254,11 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     {
         allPartys.Remove(captainName);
         usersInParty.Remove(captainName);
-        if (myPartyCaptainName == captainName)
-            myPartyCaptainName = "";
+        if (DataBase.Instance.myPartyCaptainName == captainName)
+            DataBase.Instance.myPartyCaptainName = "";
         UIManager.Instance.UpdatePartyPanel();
     }
-
+    #endregion
 
 
     [PunRPC]

@@ -12,7 +12,7 @@ public class ArrowGatling : MonoBehaviourPunCallbacks
     private bool IsCritical;
     //public GameObject target;
     private Vector2 targetPos;
-    public PhotonView PV;
+    bool isMine = false;
 
     private float speed = 8f;
     private bool explosion = false;
@@ -30,11 +30,13 @@ public class ArrowGatling : MonoBehaviourPunCallbacks
                 {
                     transform.GetChild(1).gameObject.SetActive(true);
                     transform.GetChild(0).gameObject.SetActive(false);
-                    PV.RPC("destroySelf", RpcTarget.AllBuffered, 0.3f);
+                    //PV.RPC("destroySelf", RpcTarget.AllBuffered, 0.3f);
+                    Destroy(gameObject, 0.3f);
                 }
                 else
                 {
-                    PV.RPC("destroySelf", RpcTarget.AllBuffered, 0f);
+                    //PV.RPC("destroySelf", RpcTarget.AllBuffered, 0f);
+                    Destroy(gameObject);
                     break;
                 }
             }
@@ -61,41 +63,19 @@ public class ArrowGatling : MonoBehaviourPunCallbacks
         {
             targetPos = transform.position;
             explosion = true;
-            if (PV.IsMine)
+            if (isMine)
             {
                 PhotonView MonsterPV = collision.transform.GetComponent<PhotonView>();
                 MonsterPV.RPC("MonsterDamage", RpcTarget.All, 0, Deal, 0f, IsCritical);
             }
         }
     }
-    [PunRPC]
-    void destroySelf(float time = 0.45f)
-    {
-        /*try
-        {
-            GetComponent<Animator>().SetTrigger("vanish");
-        }
-        catch { }*/
-        Destroy(gameObject, time);
-    }
-
-    [PunRPC]
-    void initSkill(float deal, float heal, float sheild, float power, bool isCritical, float sync, float duration, string target_name, Vector2 target_pos)
+    public void initSkill(float deal, bool isCritical, Vector2 target_pos, bool _isMine)
     {
         Deal = deal;
-        //Heal = heal;
-        //Shield = sheild;
-        //Power = power;
         IsCritical = isCritical;
-        if (target_name != "")
-        {
-            //target = GameObject.Find(target_name);
-            //transform.parent = target.transform;
-        }
-        if (target_pos != default(Vector2))
-        {
-            targetPos = target_pos;
-        }        
+        isMine = _isMine;
+        targetPos = target_pos;
         StartCoroutine(Excute());
     }
 }

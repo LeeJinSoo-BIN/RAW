@@ -23,7 +23,8 @@ public class SwordShield : MonoBehaviourPunCallbacks
             time += Time.deltaTime;
             yield return null;
         }
-        PV.RPC("destroySelf", RpcTarget.AllBuffered);
+        if(PV.IsMine)
+            PhotonNetwork.Destroy(PV);
     }
     [PunRPC]
     void destroySelf()
@@ -49,6 +50,14 @@ public class SwordShield : MonoBehaviourPunCallbacks
         target.transform.GetComponentInChildren<CharacterState>().ProcessSkill(2, Shield);
     }
 
+    void aggro(string target_name, float duration)
+    {
+        foreach(Transform monster in GameObject.Find("Enemy Group").transform)
+        {
+            monster.GetComponent<MonsterControl>().PV.RPC("aggro", RpcTarget.All, target_name, duration);
+        }
+    }
+
     [PunRPC]
     void initSkill(float deal, float heal, float sheild, float power, bool isCritical, float sync, float duration, string target_name, Vector2 target_pos)
     {
@@ -61,7 +70,8 @@ public class SwordShield : MonoBehaviourPunCallbacks
             target = GameObject.Find(target_name);
             if (target == null)
             {
-                PV.RPC("destroySelf", RpcTarget.AllBuffered, 0f);
+                if (PV.IsMine)
+                    PhotonNetwork.Destroy(PV);
                 return;
             }
             transform.parent = target.transform;
@@ -70,9 +80,11 @@ public class SwordShield : MonoBehaviourPunCallbacks
         {
             //targetPos = target_pos;
         }
-        Sync = sync;
-        StartCoroutine(Vanish(duration));
+        Sync = sync;        
+        StartCoroutine(Vanish(sync));
         StartCoroutine(gainShield());
+        if(PV.IsMine)
+            aggro(target_name, duration);
     }
 
 }

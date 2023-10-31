@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: blue potion small
   m_EditorClassIdentifier: 
   itemName: blue potion small
-  itemDescription: "\uC791\uC740 \uD30C\uB780\uD3EC\uC158\\n\uB9C8\uB098\uB97C 100
-    \uD68C\uBCF5\uC2DC\uD0A8\uB2E4."
+  description: "\uB9C8\uB098\uB97C \uD68C\uBCF5\uC2DC\uD0A4\uB294 \uC791\uC740 \uD30C\uB780\uC0C9
+    \uBB3C\uC57D\uC774\uB2E4. (mana)\uC758 \uB9C8\uB098\uB97C \uD68C\uBCF5\uC2DC\uCF1C\uC900\uB2E4."
   itemType: potion
   spriteDirectory: items/sprite/blue potion small
   sellPrice: 0
@@ -27,4 +27,5 @@ MonoBehaviour:
   increaseMaxHealth: 0
   increaseMaxMana: 0
   increaseCriticalPercent: 0
-  incraserCriticalDamage: 0
+  increaseCriticalDamage: 0
+  increasePerReinforce: 0

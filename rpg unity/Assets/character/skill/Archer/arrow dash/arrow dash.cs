@@ -26,7 +26,8 @@ public class ArrowDash : MonoBehaviour
             target.transform.position += _dirVec.normalized * speed * Time.deltaTime;
             yield return null;
         }
-        PV.RPC("destroySelf", RpcTarget.AllBuffered);
+        if(PV.IsMine)
+            PhotonNetwork.Destroy(PV);
     }
     [PunRPC]
     void destroySelf()

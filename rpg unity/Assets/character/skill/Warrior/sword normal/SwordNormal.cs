@@ -20,7 +20,7 @@ public class SwordNormal : MonoBehaviourPunCallbacks
         {
             PhotonView MonsterPV = target.transform.GetComponent<PhotonView>();
             MonsterPV.RPC("MonsterDamage", RpcTarget.All, 5, Deal, 0f, IsCritical);
-            PV.RPC("destroySelf", RpcTarget.AllBuffered);
+            PhotonNetwork.Destroy(PV);
         }        
     }
     IEnumerator Excute()

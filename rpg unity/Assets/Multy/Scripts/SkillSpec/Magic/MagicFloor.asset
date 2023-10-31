@@ -13,6 +13,12 @@ MonoBehaviour:
   m_Name: MagicFloor
   m_EditorClassIdentifier: 
   skillName: magic floor
+  description: "\uCE58\uC720\uC640 \uACE0\uD1B5\uC758 \uB9C8\uBC95 \uC7A5\uD310\uC744
+    \uAE50\uB2E4. \uC801\uC5D0\uAC8C (sumDeal)((flatDeal) + \uC2A4\uD0AC \uB808\uBCA8
+    \uB2F9 (dealIncreasePerSkillLevel) + \uD30C\uC6CC \uB2F9 (dealIncreasePerPower))\uC758
+    \uD53C\uD574\uB97C \uC8FC\uACE0, \uC544\uAD70\uC5D0\uAC90 (sumHeal)((flatHeal)
+    + \uC2A4\uD0AC \uB808\uBCA8 \uB2F9 (healIncreasePerSkillLevel) + \uD30C\uC6CC
+    \uB2F9 (healIncreasePerPower))\uC758 \uCCB4\uB825\uC744 \uD68C\uBCF5 "
   castType: circle
   dealType: floor
   maxLevel: 5

@@ -32,8 +32,9 @@ public class ArrowRain : MonoBehaviourPunCallbacks
         {
             time += Time.deltaTime;
             yield return null;
-        }        
-        PV.RPC("destroySelf", RpcTarget.AllBuffered);
+        }
+        if (PV.IsMine)
+            PhotonNetwork.Destroy(PV);
     }
     [PunRPC]
     void destroySelf()

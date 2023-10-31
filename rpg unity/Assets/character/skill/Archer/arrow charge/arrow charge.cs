@@ -35,7 +35,8 @@ public class ArrowCharge : MonoBehaviourPunCallbacks
                 Vector2 dir = targetPos - (Vector2)transform.position;
                 if (dir.magnitude < 0.01f)
                 {
-                    PV.RPC("destroySelf", RpcTarget.AllBuffered);
+                    if(PV.IsMine)
+                        PhotonNetwork.Destroy(PV);
                     break;
                 }
 

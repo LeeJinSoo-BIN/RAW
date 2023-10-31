@@ -13,6 +13,10 @@ MonoBehaviour:
   m_Name: MagicHeal
   m_EditorClassIdentifier: 
   skillName: magic heal
+  description: "\uCE58\uC720\uC758 \uC8FC\uBB38\uC744 \uAC74\uB2E4. \uC8FC\uBB38\uC744
+    \uBC1B\uC740 \uC544\uAD70\uC740 (sumHeal)((flatHeal) + \uC2A4\uD0AC \uB808\uBCA8
+    \uB2F9 (healIncreasePerSkillLevel) + \uD30C\uC6CC \uB2F9 (healIncreasePerPower))\uC758
+    \uCCB4\uB825\uC744 \uD68C\uBCF5\uD55C\uB2E4."
   castType: target-player
   dealType: floor
   maxLevel: 5

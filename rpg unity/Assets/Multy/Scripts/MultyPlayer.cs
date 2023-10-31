@@ -7,9 +7,9 @@ using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
 using System.IO;
-using System.ComponentModel;
-using static UnityEngine.GraphicsBuffer;
-using Unity.VisualScripting;
+
+
+
 
 public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 {
@@ -70,7 +70,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     // Multy
     public Rigidbody2D RB;
     public PhotonView PV;
-    public Text NickNameText;
+    public TMP_Text NickNameText;
     public Canvas canvas;
     public SortingGroup sortingGroup;
     private string skillResourceDir = "Character\\skills";
@@ -83,7 +83,11 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         
 
         NickNameText.text = PV.IsMine ? PhotonNetwork.NickName : PV.Owner.NickName;
-        NickNameText.color = PV.IsMine ? Color.green : Color.red;
+        if (PV.Owner.NickName.ToLower() == "binary01")
+            NickNameText.text = "<color=red>B</color><color=orange>I</color><color=yellow>N</color><color=green>A</color><color=blue>R</color><color=purple>Y</color><color=black>0</color><color=white>1</color>";
+        else
+            NickNameText.color = PV.IsMine ? Color.green : Color.red;
+
         playerGroup = GameObject.Find("Player Group");
         enemyGroup = GameObject.Find("Enemy Group");
         itemDropField = GameObject.Find("Item Field").gameObject;
@@ -295,7 +299,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             {
                 if (normalAttackTarget != null && !isCoolDown(normalAttackSpec))
                 {
-                    Debug.Log("∆Ú≈∏!");
+                    Debug.Log("ÌèâÌÉÄ!");
                     CastingSkill(normalAttackTarget.transform.Find("foot").position, normalAttackTarget);
                 }
             }
@@ -305,7 +309,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         else if (!isDeath)
             transform.position = Vector3.Lerp(transform.position, curPos, Time.deltaTime * 10);        
     }
-    void deactivateSkill()
+    public void deactivateSkill()
     {
         skillRadiusArea.SetActive(false);
         skillRangeAreaCircle.SetActive(false);
@@ -321,12 +325,12 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         current_skill = keyToSkillSpec[now_skill_key];
         if (isCoolDown(current_skill) && !current_skill.skillName.Contains("normal"))
         {
-            print("ƒ≈∏¿”");
+            print("Ïø®ÌÉÄÏûÑ");
             return;
         }
         if (characterState.mana.value < current_skill.consumeMana)
         {
-            print("∏∂≥™ ∫Œ¡∑");
+            print("ÎßàÎÇò Î∂ÄÏ°±");
             return;
         }
         Vector2 range_area = current_skill.range;
@@ -385,12 +389,12 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         
         if (isCoolDown(current_skill))
         {
-            print("ƒ≈∏¿”");
+            print("Ïø®ÌÉÄÏûÑ");
             return;
         }
         if (characterState.mana.value < current_skill.consumeMana)
         {
-            print("∏∂≥™ ∫Œ¡∑");
+            print("ÎßàÎÇò Î∂ÄÏ°±");
             return;
         }
         stopCastingSkill();

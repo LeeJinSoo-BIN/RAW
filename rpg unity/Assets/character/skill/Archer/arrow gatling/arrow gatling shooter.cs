@@ -14,7 +14,12 @@ public class ArrowGatlingShooter : MonoBehaviour
     //public GameObject target;   
     private Vector2 targetPos;
     public PhotonView PV;
+    private GameObject tmp;
 
+    private void Awake()
+    {
+        tmp = Resources.Load("Character/skills/arrow gatling arrow") as GameObject;
+    }
     IEnumerator Excute(Vector2 desPos)
     {
         for (int k = 0; k < 20; k++)
@@ -30,11 +35,12 @@ public class ArrowGatlingShooter : MonoBehaviour
                 yield return null;
             }
             float rand_x = Random.Range(-0.1f, 0.1f);
-            float rand_y = Random.Range(-0.1f, 0.1f);
-            GameObject skill = PhotonNetwork.Instantiate("Character/skills/arrow gatling arrow", (Vector2)transform.position + new Vector2(rand_x, rand_y), Quaternion.identity);
-            skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.AllBuffered, Deal, 0f, 0f, 0f, IsCritical, 0f, 1f, "", desPos + new Vector2(rand_x, rand_y));
+            float rand_y = Random.Range(-0.1f, 0.1f);            
+            GameObject skill = Instantiate(tmp, (Vector2)transform.position + new Vector2(rand_x, rand_y), Quaternion.identity);
+            skill.GetComponent<ArrowGatling>().initSkill(Deal, IsCritical, desPos + new Vector2(rand_x, rand_y), PV.IsMine);
         }
-        PV.RPC("destroySelf", RpcTarget.AllBuffered);
+        if (PV.IsMine)
+            PhotonNetwork.Destroy(PV);
     }
     
     [PunRPC]

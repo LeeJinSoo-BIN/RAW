@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,15 +14,24 @@ public class DataBase : MonoBehaviour
 
     public SerializeDictItem itemInfoDict;
     public SerializeDictSkill skillInfoDict;
-
     public string skillThumbnailPath = "Character/skills/thumbnails";
+
+    public bool isLogined = false;
+
     public AccountInfo defaultAccountInfo;
+    public AccountInfo accountInfo;
     public CharacterSpec selectedCharacterSpec;
     public string currentMapName;
     public string currentMapType;
     public string currentCharacterNickname;
     public bool isCurrentDungeonCaptain;
-   
+
+    public string myPartyCaptainName;
+    public string myPartyName;
+    public bool isCaptain;
+
+    public bool usingCheat = false;
+    public bool isPromotioned = false;
     private void Awake()
     {
         defaultAccountInfo.characterList.Clear();

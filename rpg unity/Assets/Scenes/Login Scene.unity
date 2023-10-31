@@ -2136,13 +2136,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c8180382a12288244a173ec36286d26f, type: 2}
   - {fileID: 11400000, guid: d59c5f6d0be9f8b4585a069725ac6fba, type: 2}
   - {fileID: 11400000, guid: b25ca8162f1f01940bb8830fe1e1124f, type: 2}
+  cheatCharacterSpec: {fileID: 11400000, guid: f2e62f1b2dd550945966496a958e4df9, type: 2}
   CreateCharacterSample: {fileID: 1103846898}
   CreateCharacterRollText: {fileID: 1579787284}
   CreatCharacterNickInput: {fileID: 2137413803}
   currentRollIdx: 0
   currentHairIdx: 0
   currentClothIdx: 0
-  useLocal: 0
+  useLocal: 1
+  isDebugMode: 0
 --- !u!4 &373080856
 Transform:
   m_ObjectHideFlags: 0
@@ -2387,7 +2389,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -60}
-  m_SizeDelta: {x: 250, y: 50}
+  m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &410688581
 MonoBehaviour:
@@ -7918,7 +7920,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1197068840
 Transform:
   m_ObjectHideFlags: 0
@@ -12275,8 +12277,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 50}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchoredPosition: {x: 0, y: 35}
+  m_SizeDelta: {x: 350, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2017155023
 MonoBehaviour:
@@ -12325,15 +12327,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 61.69
+  m_fontSize: 72
   m_fontSizeBase: 61.69
   m_fontWeight: 400
-  m_enableAutoSizing: 0
+  m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -12932,6 +12934,7 @@ MonoBehaviour:
     - sword
     - bow
     - wand
+    - axe
     - cloth1
     - cloth2
     - cloth3
@@ -12946,6 +12949,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 3e086745d9522d1479fd59c27449d880, type: 2}
     - {fileID: 11400000, guid: 4c2c84e5f37cb7341a2c58d4ecadfd12, type: 2}
     - {fileID: 11400000, guid: 13981d9ee4602d24e93a78dd347d635d, type: 2}
+    - {fileID: 11400000, guid: 187e6368d9c74024c8a18a61ef862101, type: 2}
     - {fileID: 11400000, guid: 7fe8643da32a97645ab9508b383d8a92, type: 2}
     - {fileID: 11400000, guid: 463ce00a2ae59e64da69f8a1937d446d, type: 2}
     - {fileID: 11400000, guid: efee474192e7bdd4c8da7074cf06012f, type: 2}
@@ -12988,12 +12992,19 @@ MonoBehaviour:
     - {fileID: 11400000, guid: eb3513dee167d4b0ab8053bf20b70fa8, type: 2}
     - {fileID: 11400000, guid: 317b5649f99af4a08b01a3d35ac4d227, type: 2}
   skillThumbnailPath: Character/skills/thumbnails
+  isLogined: 0
   defaultAccountInfo: {fileID: 11400000, guid: 4a3cc700ec8a89a46a987e7e2013b049, type: 2}
+  accountInfo: {fileID: 0}
   selectedCharacterSpec: {fileID: 0}
   currentMapName: 
   currentMapType: 
   currentCharacterNickname: 
   isCurrentDungeonCaptain: 0
+  myPartyCaptainName: 
+  myPartyName: 
+  isCaptain: 0
+  usingCheat: 0
+  isPromotioned: 0
 --- !u!4 &2140010868
 Transform:
   m_ObjectHideFlags: 0

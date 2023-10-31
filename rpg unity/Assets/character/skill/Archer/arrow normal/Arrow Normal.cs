@@ -28,11 +28,13 @@ public class ArrowNormal : MonoBehaviourPunCallbacks
                 {
                     transform.GetChild(1).gameObject.SetActive(true);
                     transform.GetChild(0).gameObject.SetActive(false);
-                    PV.RPC("destroySelf", RpcTarget.AllBuffered, 0.3f);
+                    if (PV.IsMine)                        
+                        PV.RPC("destroySelf", RpcTarget.AllBuffered, 0.3f);
                 }
                 else
                 {
-                    PV.RPC("destroySelf", RpcTarget.AllBuffered, 0f);
+                    if(PV.IsMine)
+                        PV.RPC("destroySelf", RpcTarget.AllBuffered, 0f);
                     break;
                 }
             }
