@@ -23,8 +23,11 @@ public class DataBase : MonoBehaviour
     public CharacterSpec selectedCharacterSpec;
     public string currentMapName;
     public string currentMapType;
-    public string currentCharacterNickname;
     public bool isCurrentDungeonCaptain;
+
+    public GameObject myCharacter;
+    public MultyPlayer myCharacterControl;
+    public CharacterState myCharacterState;
 
     public string myPartyCaptainName;
     public string myPartyName;

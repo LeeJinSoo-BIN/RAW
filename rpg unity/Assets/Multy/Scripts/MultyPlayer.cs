@@ -104,7 +104,6 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     {
         characterSpec = characterState.characterSpec;
         PV.RPC("setName", RpcTarget.AllBuffered, characterSpec.nickName + PV.ViewID.ToString());
-        DataBase.Instance.currentCharacterNickname = characterSpec.nickName + PV.ViewID.ToString();
         List<string> skill_name_list = characterSpec.skillLevel.SD_Keys;        
         for (int i = 0; i < characterSpec.skillLevel.Count; i++)
         {

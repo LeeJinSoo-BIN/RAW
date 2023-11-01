@@ -95,15 +95,13 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public Button ChatExpandButton;
     #endregion
 
-    [Header("Data ")]
+    [Header("Data")]
     #region
     public static UIManager Instance;
     public GameObject PlayerGroup;
     public GameObject EnemyGroup;
     public newNetworkManager networkManager;
-    public GameObject myCharacter;
     public GameObject Boss;
-    private CharacterState myCharacterState;
     private MonsterState bossState;
     private bool isBossConnected;
     public float limitTime;
@@ -116,7 +114,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     private List<string> quickSlotKeys = new List<string> { "1", "2", "3", "4" };
     public Dictionary<string, string> keyToItemName = new Dictionary<string, string>();
     public Dictionary<string, qucikInventoryInfo> quickInventory;
-    public Dictionary<string, Player> inGameUserList = new Dictionary<string, Player>();
+    public Dictionary<string, CharacterState> inGameUserList = new Dictionary<string, CharacterState>();
     public Dictionary<int, string> idToNickName = new Dictionary<int, string>();
     public HashSet<GameObject> openedWindows = new HashSet<GameObject>();
     private Color failColor = new Color((94f / 255f), 0, 0);
@@ -131,6 +129,13 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     private GameObject hoverObject;
     private float hoverTime = 0f;
 
+    public Dictionary<string, party> allPartys = new Dictionary<string, party>();
+    public struct party
+    {
+        public string captainName;
+        public string partyName;
+        public HashSet<string> partyMembersNickName;
+    }
 
     public LayerMask npcLayer;
     #endregion
@@ -295,13 +300,12 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         ResetSkillPanel();
         UpdateSkillPanel();
 
-        if(DataBase.Instance.currentMapType == "village")
-            UpdatePartyPanel();
 
-        myCharacterState = myCharacter.GetComponentInChildren<CharacterState>();
+        UpdatePartyPanel();
+
         makeProfile();
-        characterHealth = myCharacterState.health;
-        characterMana = myCharacterState.mana;
+        characterHealth = DataBase.Instance.myCharacterState.health;
+        characterMana = DataBase.Instance.myCharacterState.mana;
         keyToItemName.Clear();
         timerText.text = "00:00:00";
         for (int k = 0; k < quickSlotKeys.Count; k++)
@@ -385,14 +389,14 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     }
     public void makeProfile()
     {
-        GameObject myCharacterHead = Instantiate(myCharacter.transform.Find("Root").GetChild(0).GetChild(0).GetChild(2).GetChild(0).gameObject);
+        GameObject myCharacterHead = Instantiate(DataBase.Instance.myCharacter.transform.Find("Root").GetChild(0).GetChild(0).GetChild(2).GetChild(0).gameObject);
         makeNewHead(myCharacterHead);
 
         foreach (Transform child in myCharacterProfileUiGroup.transform.GetChild(0))
             Destroy(child.gameObject);
         myCharacterHead.transform.parent = myCharacterProfileUiGroup.transform.GetChild(0).transform;
         myCharacterHead.transform.localPosition = new Vector3(0f, 1f, 0f);
-        myCharacterProfileUiGroup.transform.GetChild(1).GetComponent<TMP_Text>().text = "Lv. " + myCharacterState.characterSpec.characterLevel.ToString();
+        myCharacterProfileUiGroup.transform.GetChild(1).GetComponent<TMP_Text>().text = "Lv. " + DataBase.Instance.myCharacterState.characterSpec.characterLevel.ToString();
     }
 
     #endregion
@@ -485,7 +489,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 quickInventory[keyToItemName[key]].count--;
             }
             consumePotion(keyToItemName[key]);
-            myCharacter.GetComponent<MultyPlayer>().updateInventory();
+            DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().updateInventory();
             updateThisQuickSlot(key);
         }
     }
@@ -543,8 +547,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     void consumePotion(string itemName)
     {
-        myCharacterState.ProcessSkill(1, DataBase.Instance.itemInfoDict[itemName].recoveryHealth);
-        myCharacterState.ProcessSkill(5, DataBase.Instance.itemInfoDict[itemName].recoveryMana);
+        DataBase.Instance.myCharacterState.ProcessSkill(1, DataBase.Instance.itemInfoDict[itemName].recoveryHealth);
+        DataBase.Instance.myCharacterState.ProcessSkill(5, DataBase.Instance.itemInfoDict[itemName].recoveryMana);
     }
 
     #endregion
@@ -641,32 +645,32 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
             toolTipContent = toolTipContent.Replace("(sumDeal)",
                 (DataBase.Instance.skillInfoDict[toolTipName].flatDeal +
-                DataBase.Instance.skillInfoDict[toolTipName].dealIncreasePerSkillLevel * myCharacterState.characterSpec.skillLevel[toolTipName] +
-                DataBase.Instance.skillInfoDict[toolTipName].dealIncreasePerPower * myCharacterState.power).ToString());
+                DataBase.Instance.skillInfoDict[toolTipName].dealIncreasePerSkillLevel * DataBase.Instance.myCharacterState.characterSpec.skillLevel[toolTipName] +
+                DataBase.Instance.skillInfoDict[toolTipName].dealIncreasePerPower * DataBase.Instance.myCharacterState.power).ToString());
             toolTipContent = toolTipContent.Replace("(flatDeal)", DataBase.Instance.skillInfoDict[toolTipName].flatDeal.ToString());
             toolTipContent = toolTipContent.Replace("(dealIncreasePerSkillLevel)", DataBase.Instance.skillInfoDict[toolTipName].dealIncreasePerSkillLevel.ToString());
             toolTipContent = toolTipContent.Replace("(dealIncreasePerPower)", DataBase.Instance.skillInfoDict[toolTipName].dealIncreasePerPower.ToString());
 
             toolTipContent = toolTipContent.Replace("(sumHeal)",
                 (DataBase.Instance.skillInfoDict[toolTipName].flatHeal +
-                DataBase.Instance.skillInfoDict[toolTipName].healIncreasePerSkillLevel * myCharacterState.characterSpec.skillLevel[toolTipName] +
-                DataBase.Instance.skillInfoDict[toolTipName].healIncreasePerPower * myCharacterState.power).ToString());
+                DataBase.Instance.skillInfoDict[toolTipName].healIncreasePerSkillLevel * DataBase.Instance.myCharacterState.characterSpec.skillLevel[toolTipName] +
+                DataBase.Instance.skillInfoDict[toolTipName].healIncreasePerPower * DataBase.Instance.myCharacterState.power).ToString());
             toolTipContent = toolTipContent.Replace("(flatHeal)", DataBase.Instance.skillInfoDict[toolTipName].flatHeal.ToString());
             toolTipContent = toolTipContent.Replace("(healIncreasePerSkillLevel)", DataBase.Instance.skillInfoDict[toolTipName].healIncreasePerSkillLevel.ToString());
             toolTipContent = toolTipContent.Replace("(healIncreasePerPower)", DataBase.Instance.skillInfoDict[toolTipName].healIncreasePerPower.ToString());
 
             toolTipContent = toolTipContent.Replace("(sumShield)",
                 (DataBase.Instance.skillInfoDict[toolTipName].flatShield +
-                DataBase.Instance.skillInfoDict[toolTipName].shieldIncreasePerSkillLevel * myCharacterState.characterSpec.skillLevel[toolTipName] +
-                DataBase.Instance.skillInfoDict[toolTipName].shieldIncreasePerPower * myCharacterState.power).ToString());
+                DataBase.Instance.skillInfoDict[toolTipName].shieldIncreasePerSkillLevel * DataBase.Instance.myCharacterState.characterSpec.skillLevel[toolTipName] +
+                DataBase.Instance.skillInfoDict[toolTipName].shieldIncreasePerPower * DataBase.Instance.myCharacterState.power).ToString());
             toolTipContent = toolTipContent.Replace("(flatShield)", DataBase.Instance.skillInfoDict[toolTipName].flatShield.ToString());
             toolTipContent = toolTipContent.Replace("(shieldIncreasePerSkillLevel)", DataBase.Instance.skillInfoDict[toolTipName].shieldIncreasePerSkillLevel.ToString());
             toolTipContent = toolTipContent.Replace("(shieldIncreasePerPower)", DataBase.Instance.skillInfoDict[toolTipName].shieldIncreasePerPower.ToString());
 
             toolTipContent = toolTipContent.Replace("(sumPower)",
                 (DataBase.Instance.skillInfoDict[toolTipName].flatPower +
-                DataBase.Instance.skillInfoDict[toolTipName].powerIncreasePerSkillLevel * myCharacterState.characterSpec.skillLevel[toolTipName] +
-                DataBase.Instance.skillInfoDict[toolTipName].powerIncreasePerPower * myCharacterState.power).ToString());
+                DataBase.Instance.skillInfoDict[toolTipName].powerIncreasePerSkillLevel * DataBase.Instance.myCharacterState.characterSpec.skillLevel[toolTipName] +
+                DataBase.Instance.skillInfoDict[toolTipName].powerIncreasePerPower * DataBase.Instance.myCharacterState.power).ToString());
             toolTipContent = toolTipContent.Replace("(flatPower)", DataBase.Instance.skillInfoDict[toolTipName].flatPower.ToString());
             toolTipContent = toolTipContent.Replace("(powerIncreasePerSkillLevel)", DataBase.Instance.skillInfoDict[toolTipName].powerIncreasePerSkillLevel.ToString());
             toolTipContent = toolTipContent.Replace("(powerIncreasePerPower)", DataBase.Instance.skillInfoDict[toolTipName].powerIncreasePerPower.ToString());
@@ -706,7 +710,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     }
     public void UpdateSkillPanel()
     {
-        List<string> skillName = myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel.SD_Keys;
+        List<string> skillName = DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel.SD_Keys;
         foreach (string name in skillName)
         {
             if (name.Contains("normal"))
@@ -719,7 +723,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 newSkill.transform.GetChild(1).name = "skill " + name;
                 newSkill.transform.GetChild(2).GetComponent<TMP_Text>().text = name;
                 string max_level = DataBase.Instance.skillInfoDict[name].maxLevel.ToString();
-                string current_level = myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel[name].ToString();
+                string current_level = DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel[name].ToString();
                 newSkill.transform.GetChild(3).GetComponent<TMP_Text>().text = current_level + " / " + max_level;
                 newSkill.transform.SetParent(skillBox.transform, false);
                 newSkill.transform.localPosition = Vector3.zero;
@@ -729,7 +733,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             else
             {
                 string max_level = DataBase.Instance.skillInfoDict[name].maxLevel.ToString();
-                string current_level = myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel[name].ToString();
+                string current_level = DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel[name].ToString();
                 skillBox.transform.Find(name).transform.GetChild(3).GetComponent<TMP_Text>().text = current_level + " / " + max_level;
             }
         }
@@ -825,106 +829,120 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public void UpdatePartyPanel()
     {
         if (!PhotonNetwork.InRoom)
-            return;
-        UpdatePartyMember();
+            return;        
         UpdateInGameUser();
+        UpdatePartyMember();        
         UpdatePartyList();
-    }
+    }   
     
+    public void UpdateInGameUser()
+    {        
+        for (int k = 0; k < inGameUserBox.transform.childCount; k++)
+        {
+            Destroy(inGameUserBox.transform.GetChild(k).gameObject);
+        }
+        allPartys.Clear();
+        inGameUserList.Clear();
+        foreach (Transform user in PlayerGroup.transform)
+        {
+            CharacterState currentUserState = user.GetComponent<CharacterState>();
+            inGameUserList.Add(user.name, currentUserState);
+            if (!currentUserState.partyCaptainName.IsNullOrEmpty())
+            {
+                if (allPartys.ContainsKey(currentUserState.partyCaptainName))
+                {
+                    allPartys[currentUserState.partyCaptainName].partyMembersNickName.Add(user.name);
+                }
+                else
+                {
+                    party newParty;
+                    newParty.captainName = currentUserState.partyCaptainName;
+                    newParty.partyName = currentUserState.partyName;
+                    newParty.partyMembersNickName = new HashSet<string> { user.name };
+                    allPartys.Add(currentUserState.partyCaptainName, newParty);
+                }
+            }
+        }
+        foreach (Transform user in PlayerGroup.transform)
+        {
+            CharacterState currentUserState = inGameUserList[user.name];
+            if (user.GetComponent<PhotonView>().IsMine || !currentUserState.partyCaptainName.IsNullOrEmpty())
+                continue;
+            GameObject userInfo = Instantiate(inGameUserInfo);
+            userInfo.transform.GetChild(0).GetComponent<TMP_Text>().text = "닉네임: " + currentUserState.nick;
+            userInfo.transform.GetChild(1).GetComponent<TMP_Text>().text = "Lv. " + currentUserState.level.ToString();
+            userInfo.transform.GetChild(2).GetComponent<TMP_Text>().text = "직업: " + currentUserState.roll;
+            userInfo.transform.GetChild(3).name = user.name;
+            if (!DataBase.Instance.isCaptain)
+                userInfo.transform.GetChild(3).GetComponent<Button>().interactable = false;
+            else if (allPartys[DataBase.Instance.myPartyCaptainName].partyMembersNickName.Count >= 3)
+                userInfo.transform.GetChild(3).GetComponent<Button>().interactable = false;
+
+            userInfo.transform.parent = inGameUserBox.transform;
+            userInfo.transform.localScale = Vector3.one;
+            userInfo.SetActive(true);
+        }
+    }
+
     public void UpdatePartyMember()
     {
         for (int k = 0; k < partyMemberBox.transform.childCount; k++)
         {
             Destroy(partyMemberBox.transform.GetChild(k).gameObject);
         }
+
         if (!DataBase.Instance.myPartyCaptainName.IsNullOrEmpty())
         {
-            foreach (string memberNickName in networkManager.allPartys[DataBase.Instance.myPartyCaptainName].partyMembersNickName)
+            foreach (string memberName in allPartys[DataBase.Instance.myPartyCaptainName].partyMembersNickName)
             {
-                GameObject member = PlayerGroup.transform.Find(memberNickName).gameObject;
-                GameObject memberHead = Instantiate(member.transform.Find("Root").GetChild(0).GetChild(0).GetChild(2).GetChild(0).gameObject);
-                makeNewHead(memberHead);
-                GameObject newMember = Instantiate(partyMemberInfo);
-                memberHead.transform.parent = newMember.transform.GetChild(1);
-                memberHead.transform.localPosition = new Vector3(0, -30, 0);
-                memberHead.transform.localScale = new Vector3(120, 120);
-                newMember.transform.GetChild(2).GetComponent<TMP_Text>().text = member.GetComponent<CharacterState>().nick;
-                if (memberNickName == DataBase.Instance.myPartyCaptainName)
-                    newMember.transform.GetChild(2).GetComponent<TMP_Text>().text = "*" + newMember.transform.GetChild(2).GetComponent<TMP_Text>().text;
-                newMember.transform.GetChild(3).GetComponent<TMP_Text>().text = "Lv. " + member.GetComponent<CharacterState>().level.ToString();
-                newMember.transform.GetChild(4).GetComponent<TMP_Text>().text = "직업: " + member.GetComponent<CharacterState>().roll;
-                newMember.transform.GetChild(5).name = memberNickName;
-                if (!DataBase.Instance.isCaptain)
-                    newMember.transform.GetChild(5).GetComponent<Button>().interactable = false;
-                else if (memberNickName == DataBase.Instance.currentCharacterNickname)
-                    newMember.transform.GetChild(5).GetComponent<Button>().interactable= false;
-                newMember.transform.parent = partyMemberBox.transform;
-                
-                newMember.SetActive(true);
-                newMember.transform.localScale = Vector3.one;
-            }        
-        }
-    }
-    public void UpdateInGameUser()
-    {
-        for (int k = 0; k < inGameUserBox.transform.childCount; k++)
-        {
-            Destroy(inGameUserBox.transform.GetChild(k).gameObject);
-        }
-        inGameUserList.Clear();
-        idToNickName.Clear();
-        foreach (Transform user in PlayerGroup.transform)
-        {
-            if (user.GetComponent<PhotonView>().IsMine)
-            {
-                continue;
-            }
-            else
-            {
-                CharacterState currentUserState = user.GetComponent<CharacterState>();
-                inGameUserList.Add(user.name, currentUserState.PV.Owner);
-                idToNickName.Add(currentUserState.PV.Owner.ActorNumber, user.name);
-                if (networkManager.usersInParty.Contains(user.name))
-                    continue;
+                CharacterState playerInfo = inGameUserList[memberName];
+                if (playerInfo.partyCaptainName == DataBase.Instance.myPartyCaptainName)
+                {
+                    GameObject newMember = Instantiate(partyMemberInfo);
 
-                GameObject userInfo = Instantiate(inGameUserInfo);
-                userInfo.transform.GetChild(0).GetComponent<TMP_Text>().text = "닉네임: " + currentUserState.nick;
-                userInfo.transform.GetChild(1).GetComponent<TMP_Text>().text = "Lv. " + currentUserState.level.ToString();
-                userInfo.transform.GetChild(2).GetComponent<TMP_Text>().text = "직업: " + currentUserState.roll;
-                userInfo.transform.GetChild(3).name = user.name;
-                if (!DataBase.Instance.isCaptain)
-                    userInfo.transform.GetChild(3).GetComponent<Button>().interactable = false;
-                else if (networkManager.allPartys[DataBase.Instance.currentCharacterNickname].partyMembersNickName.Count >= 3)
-                    userInfo.transform.GetChild(3).GetComponent<Button>().interactable = false;
+                    GameObject memberHead = Instantiate(playerInfo.transform.Find("Root").GetChild(0).GetChild(0).GetChild(2).GetChild(0).gameObject);
+                    makeNewHead(memberHead);
+                    memberHead.transform.parent = newMember.transform.GetChild(1);
+                    memberHead.transform.localPosition = new Vector3(0, -30, 0);
+                    memberHead.transform.localScale = new Vector3(120, 120);
 
-                userInfo.transform.parent = inGameUserBox.transform;
-                userInfo.transform.localScale = Vector3.one;
-                userInfo.SetActive(true);
+                    newMember.transform.GetChild(2).GetComponent<TMP_Text>().text = playerInfo.nick;
+                    if (memberName == DataBase.Instance.myPartyCaptainName)
+                        newMember.transform.GetChild(2).GetComponent<TMP_Text>().text = "*" + newMember.transform.GetChild(2).GetComponent<TMP_Text>().text;
+                    newMember.transform.GetChild(3).GetComponent<TMP_Text>().text = "Lv. " + playerInfo.level.ToString();
+                    newMember.transform.GetChild(4).GetComponent<TMP_Text>().text = "직업: " + playerInfo.roll;
+                    newMember.transform.GetChild(5).name = memberName;
+                    if (!DataBase.Instance.isCaptain)
+                        newMember.transform.GetChild(5).GetComponent<Button>().interactable = false;
+                    else if (memberName == DataBase.Instance.myCharacter.name)
+                        newMember.transform.GetChild(5).GetComponent<Button>().interactable = false;
+                    newMember.transform.parent = partyMemberBox.transform;
+
+                    newMember.SetActive(true);
+                    newMember.transform.localScale = Vector3.one;
+                }
             }
         }
-
     }
+
     void UpdatePartyList()
     {
         for (int k = 0; k < partyListBox.transform.childCount; k++)
         {
             Destroy(partyListBox.transform.GetChild(k).gameObject);
         }
-        foreach (string captain in networkManager.allPartys.Keys)
+        foreach (party partyInfo in allPartys.Values)
         {
-            GameObject newParty = Instantiate(partyListInfo);
-            string partyName = networkManager.allPartys[captain].partyName;
-            int currentMemNum = networkManager.allPartys[captain].partyMembersNickName.Count;
 
-            newParty.transform.GetChild(0).GetComponent<TMP_Text>().text = "파티장: " + PlayerGroup.transform.Find(captain).GetComponent<CharacterState>().nick;
-            newParty.transform.GetChild(1).GetComponent<TMP_Text>().text = "파티명: " + partyName;
-            newParty.transform.GetChild(2).GetComponent<TMP_Text>().text = "인원: " + currentMemNum.ToString() + "/3";
-            newParty.transform.GetChild(3).name = captain;
-            if (networkManager.usersInParty.Contains(DataBase.Instance.currentCharacterNickname) || currentMemNum == 3)
+            GameObject newParty = Instantiate(partyListInfo);
+            newParty.transform.GetChild(0).GetComponent<TMP_Text>().text = "파티장: " + partyInfo.captainName;
+            newParty.transform.GetChild(1).GetComponent<TMP_Text>().text = "파티명: " + partyInfo.partyName;
+            newParty.transform.GetChild(2).GetComponent<TMP_Text>().text = "인원: " + partyInfo.partyMembersNickName.Count + "/3";
+            newParty.transform.GetChild(3).name = partyInfo.captainName;
+            if (!DataBase.Instance.myPartyCaptainName.IsNullOrEmpty() || partyInfo.partyMembersNickName.Count == 3)
             {
                 newParty.transform.GetChild(3).GetComponent<Button>().interactable = false;
             }
-
             newParty.transform.parent = partyListBox.transform;
             newParty.SetActive(true);
             newParty.transform.localScale = Vector3.one;
@@ -934,71 +952,34 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     public void ClickMakePartyButton()
     {
-        if (networkManager.usersInParty.Contains(DataBase.Instance.currentCharacterNickname))
-            return;
+        if (!DataBase.Instance.myPartyCaptainName.IsNullOrEmpty())
+            return;        
         string partyName = partyMakeNameInput.text;
         if (partyMakeNameInput.text.IsNullOrEmpty())
             partyName = "파티 고고";
-        DataBase.Instance.myPartyCaptainName = DataBase.Instance.currentCharacterNickname;
+        DataBase.Instance.isCaptain = true;
+        DataBase.Instance.myPartyCaptainName = DataBase.Instance.myCharacter.name;
         DataBase.Instance.myPartyName = partyName;
-        networkManager.PV.RPC("registParty", RpcTarget.AllBuffered, partyName, DataBase.Instance.currentCharacterNickname);
-        
-    }
-
-
-    public void ClickLeavePartyButton()
-    {
-        if (DataBase.Instance.myPartyCaptainName.IsNullOrEmpty())
-            return;
-        if(DataBase.Instance.myPartyCaptainName == DataBase.Instance.currentCharacterNickname)
-        {
-            if (networkManager.allPartys[DataBase.Instance.myPartyCaptainName].partyMembersNickName.Count == 1)
-            {
-                networkManager.PV.RPC("BoomParty", RpcTarget.AllBuffered, DataBase.Instance.currentCharacterNickname);
-            }
-            else
-            {
-                foreach(string memName in networkManager.allPartys[DataBase.Instance.currentCharacterNickname].partyMembersNickName)
-                {
-                    if (memName == DataBase.Instance.currentCharacterNickname)
-                        continue;
-                    networkManager.PV.RPC("ChangeCaptain", RpcTarget.AllBuffered, DataBase.Instance.currentCharacterNickname, memName, true);
-                    break;
-                }
-            }
-        }
-        else
-        {
-            networkManager.PV.RPC("LeaveParty", RpcTarget.AllBuffered, DataBase.Instance.myPartyCaptainName, DataBase.Instance.currentCharacterNickname);
-        }
-    }
-
-    public void ClickKickPartyMemberButton()
-    {
-        if (DataBase.Instance.myPartyCaptainName != DataBase.Instance.currentCharacterNickname)
-            return;
-        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
-        networkManager.PV.RPC("kickPartyMember", RpcTarget.AllBuffered, DataBase.Instance.currentCharacterNickname, current_clicked_button.name);
+        DataBase.Instance.myCharacterState.updateParty();
+        networkManager.PV.RPC("UpdateParty", RpcTarget.All);
     }
 
     public void ClickAcceptPartyInviteButton()
     {
+        UpdateInGameUser();
         GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
-        if (networkManager.allPartys[current_clicked_button.name].partyMembersNickName.Count < 3)
+        if (allPartys[current_clicked_button.name].partyMembersNickName.Count < 3)
         {
-            networkManager.PV.RPC("joinParty", RpcTarget.AllBuffered, current_clicked_button.name, DataBase.Instance.currentCharacterNickname);
+            DataBase.Instance.isCaptain = false;
+            DataBase.Instance.myPartyCaptainName = current_clicked_button.name;
+            DataBase.Instance.myPartyName = allPartys[current_clicked_button.name].partyName;
+            DataBase.Instance.myCharacterState.updateParty();
+            networkManager.PV.RPC("UpdateParty", RpcTarget.All);
         }
         else
         {
 
         }
-        invitePartyPanel.SetActive(false);
-        openedWindows.Remove(invitePartyPanel);
-        updateCurrentFocusWindow();
-    }
-
-    public void ClickRejectPartyInviteButton()
-    {
         invitePartyPanel.SetActive(false);
         openedWindows.Remove(invitePartyPanel);
         updateCurrentFocusWindow();
@@ -1007,18 +988,65 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public void ClickAcceptJoinPartyRequestButton()
     {
         GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
-        if (networkManager.allPartys[DataBase.Instance.currentCharacterNickname].partyMembersNickName.Count < 3)
+        UpdateInGameUser();
+        if (allPartys[DataBase.Instance.myCharacter.name].partyMembersNickName.Count < 3)
         {
-            networkManager.PV.RPC("joinParty", RpcTarget.AllBuffered, DataBase.Instance.currentCharacterNickname, current_clicked_button.name);
+            networkManager.PV.RPC("acceptJoinParty", inGameUserList[current_clicked_button.name].PV.Owner, DataBase.Instance.myCharacter.name, DataBase.Instance.myPartyName);
         }
         else
         {
 
         }
-        joinPartyRequestPanel.SetActive(false);        
+        joinPartyRequestPanel.SetActive(false);
         openedWindows.Remove(joinPartyRequestPanel);
         updateCurrentFocusWindow();
     }
+
+
+    public void ClickLeavePartyButton()
+    {
+        if (DataBase.Instance.myPartyCaptainName.IsNullOrEmpty())
+            return;
+        if (DataBase.Instance.isCaptain)
+        {
+            if (allPartys[DataBase.Instance.myPartyCaptainName].partyMembersNickName.Count > 1)
+            {
+                string newCaptainName = "";
+                foreach (string memberName in allPartys[DataBase.Instance.myPartyCaptainName].partyMembersNickName)
+                {
+                    if (memberName == DataBase.Instance.myCharacter.name)
+                        continue;
+                    if (newCaptainName == "")
+                        newCaptainName = memberName;
+                    networkManager.PV.RPC("ChangeCaptain", inGameUserList[memberName].PV.Owner, newCaptainName);                    
+                }
+            }
+        }
+        DataBase.Instance.isCaptain = false;
+        DataBase.Instance.myPartyCaptainName = "";
+        DataBase.Instance.myPartyName = "";
+        DataBase.Instance.myCharacterState.updateParty();
+        networkManager.PV.RPC("UpdateParty", RpcTarget.All);
+    }
+
+    public void ClickKickPartyMemberButton()
+    {
+        if (DataBase.Instance.myPartyCaptainName != DataBase.Instance.myCharacter.name)
+            return;
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        networkManager.PV.RPC("kickPartyMember", inGameUserList[current_clicked_button.name].PV.Owner);
+    }
+
+    
+
+    public void ClickRejectPartyInviteButton()
+    {
+        invitePartyPanel.SetActive(false);
+        openedWindows.Remove(invitePartyPanel);
+        updateCurrentFocusWindow();
+    }
+
+
 
     public void ClickRejectJoinPartyRequestButton()
     {
@@ -1032,20 +1060,22 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     {
         GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
         networkManager.PV.RPC("sendAndReceiveInviteParty",
-            inGameUserList[current_clicked_button.name],
-            networkManager.allPartys[DataBase.Instance.myPartyCaptainName].partyName,
-            DataBase.Instance.currentCharacterNickname);
+            inGameUserList[current_clicked_button.name].PV.Owner,
+            allPartys[DataBase.Instance.myPartyCaptainName].partyName,
+            DataBase.Instance.myCharacter.name);
     }
 
     public void ClickPartyJoinRequsetButton()
     {
         GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
-        networkManager.PV.RPC("sendAndReceiveJoinRequestParty", inGameUserList[current_clicked_button.name], DataBase.Instance.currentCharacterNickname);
+        networkManager.PV.RPC("sendAndReceiveJoinRequestParty",
+            inGameUserList[current_clicked_button.name].PV.Owner,
+            DataBase.Instance.myCharacter.name);
     }
     public void receiveInvite(string partyName, string captain)
     {        
         updateCurrentFocusWindow(invitePartyPanel);
-        CharacterState captainInfo = PlayerGroup.transform.Find(captain).GetComponent<CharacterState>();
+        CharacterState captainInfo = inGameUserList[captain];
         string captainNick = captainInfo.nick;
         string captainLevel = captainInfo.level.ToString();
         string captainRoll = captainInfo.roll;
@@ -1055,14 +1085,15 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public void receiveJoinRequest(string fromWho)
     {
         updateCurrentFocusWindow(joinPartyRequestPanel);
-        CharacterState captainInfo = PlayerGroup.transform.Find(fromWho).GetComponent<CharacterState>();
+        CharacterState captainInfo = inGameUserList[fromWho];
         string captainNick = captainInfo.nick;
         string captainLevel = captainInfo.level.ToString();
         string captainRoll = captainInfo.roll;
         joinPartyRequestPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = string.Format("{0}님\r\n레벨: {1}\r\n직업: {2}\r\n이 파티 가입 요청을 보냈습니다.", captainNick, captainLevel, captainRoll);
         joinPartyRequestPanel.transform.GetChild(2).GetChild(1).name = fromWho;
     }
-    
+    #endregion
+
     public void EnterDungeonPop()
     {
         updateCurrentFocusWindow(enterDungeonPanel);
@@ -1070,7 +1101,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     public void ClickEnterDungeonButton()
     {
-        
+
         if (!timeLimitInputfield.text.IsNullOrEmpty() && !int.TryParse(timeLimitInputfield.text, out _))
             return;
         float _timeLimit;
@@ -1081,7 +1112,6 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         networkManager.movePortal(_timeLimit);
         enterDungeonPanel.SetActive(false);
     }
-    #endregion
 
     public void ShowConversationPanel(GameObject NPC)
     {
@@ -1127,7 +1157,10 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         if (Application.isPlaying)
             Application.Quit();
     }
-
+    public void ClickDisconnectButton()
+    {
+        networkManager.ClickDisconnectButton();
+    }
     public void CloseButtonClick()
     {
         GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;

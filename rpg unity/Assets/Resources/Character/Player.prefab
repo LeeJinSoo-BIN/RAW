@@ -1092,6 +1092,9 @@ MonoBehaviour:
   level: 0
   nick: 
   characterAnimator: {fileID: 7434412550298693470}
+  isCaptain: 0
+  partyCaptainName: 
+  partyName: 
   isDeath: 0
   playerControl: {fileID: 1021405336507247962}
   PV: {fileID: 2889512801467157385}

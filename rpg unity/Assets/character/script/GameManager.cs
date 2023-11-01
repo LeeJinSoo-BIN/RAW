@@ -11,7 +11,6 @@ using WebSocketSharp;
 public class GameManager : MonoBehaviour
 {   
     public newNetworkManager networkManager;
-    private GameObject myCharacter;
     void Awake()
     {        
         //Screen.SetResolution(960, 540, false);
@@ -22,7 +21,10 @@ public class GameManager : MonoBehaviour
         if (PhotonNetwork.InRoom)
         {
             GameObject player = PhotonNetwork.Instantiate("Character/Player", Vector3.zero, Quaternion.identity);
-            myCharacter = player;
+            DataBase.Instance.myCharacter = player;
+            DataBase.Instance.myCharacterControl = player.GetComponent<MultyPlayer>();
+            DataBase.Instance.myCharacterState = player.GetComponent<CharacterState>();
+
             if (GameObject.Find("EasterEgg") != null)
             {
                 GameObject.Find("EasterEgg").GetComponent<EasterEgg>().myCharacter = player;
@@ -41,7 +43,6 @@ public class GameManager : MonoBehaviour
         Debug.Log("loaded player data");
         player.GetComponent<MultyPlayer>().characterState.setUp();
         Debug.Log("set up state");
-        UIManager.Instance.myCharacter = player;
         UIManager.Instance.SetUP();
         Debug.Log("set up ingame ui");
         if (DataBase.Instance.currentMapType == "dungeon" && PhotonNetwork.LocalPlayer.IsMasterClient)
