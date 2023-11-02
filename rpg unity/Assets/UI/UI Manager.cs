@@ -136,8 +136,6 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         public string partyName;
         public HashSet<string> partyMembersNickName;
     }
-
-    public LayerMask npcLayer;
     #endregion
 
     void Awake()
@@ -253,16 +251,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             if (EventSystem.current.IsPointerOverGameObject() == false)
             {
-                currentFocusWindow = null;
-                Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                RaycastHit2D hit_npc = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, npcLayer);
-                if (hit_npc.collider != null)
-                {
-                    if (hit_npc.collider.CompareTag("NPC"))
-                    {
-                        ShowConversationPanel(hit_npc.transform.gameObject);
-                    }
-                }
+                currentFocusWindow = null;                
             }
         }
         if (isHoverToolTip)

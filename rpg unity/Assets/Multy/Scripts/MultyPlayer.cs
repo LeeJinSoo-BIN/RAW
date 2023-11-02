@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Rendering;
+using UnityEngine.EventSystems;
 using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
@@ -23,6 +24,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public LayerMask playerLayer;
     public LayerMask monsterLayer;
     public LayerMask itemLayer;
+    public LayerMask npcLayer;
 
     public Vector3 goalPos;
     public float pointSpeed = 1.0f;
@@ -130,58 +132,71 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         {
             if (Input.GetMouseButtonDown(0))
             {
-                Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                RaycastHit2D hit_item = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, itemLayer);
-                if (hit_item.collider != null)
+                if (EventSystem.current.IsPointerOverGameObject() == false)
                 {
+                    Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    RaycastHit2D hit_item = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, itemLayer);
+                    if (hit_item.collider != null)
+                    {
 
-                    Debug.Log(hit_item.collider.name);
-                    if (hit_item.collider.CompareTag("Item"))
+                        Debug.Log(hit_item.collider.name);
+                        if (hit_item.collider.CompareTag("Item"))
+                        {
+                            Debug.Log("click item");
+                            if (hit_item.transform.GetChild(1).gameObject.activeSelf)
+                                getItem(hit_item.transform.gameObject);
+                        }
+                        return;
+                    }
+                    if (isActivingSkill && attackable)
                     {
-                        Debug.Log("click item");
-                        if (hit_item.transform.GetChild(1).gameObject.activeSelf)
-                            getItem(hit_item.transform.gameObject);                        
+                        if (current_skill.castType == "circle" || current_skill.castType == "bar")
+                        { // when cast type is circle or bar
+                            RaycastHit2D hit_ground = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
+                            if (hit_ground.transform.CompareTag("Not Ground") || hit_ground.collider == null)
+                                return;
+                            if (current_skill.castType == "circle")
+                                CastingSkill(hit_ground.point);
+                            else if (current_skill.castType == "bar")
+                                CastingSkill(skillRangeAreaBar.transform.GetChild(1).transform.position);
+                        }
+                        else if (current_skill.castType == "target-player") // targeting only character 
+                        {
+                            RaycastHit2D hit_target = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, playerLayer);
+                            if (hit_target.collider == null)
+                                return;
+                            if (skillRangeAreaTargeting.transform.GetChild(1).gameObject.activeSelf)
+                                CastingSkill(hit_target.point, hit_target.transform.gameObject);
+                        }
+                        else if (current_skill.castType == "target-enemy") // targeting only monster
+                        {
+                            RaycastHit2D hit_target = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, monsterLayer);
+                            if (hit_target.collider == null)
+                                return;
+                            if (skillRangeAreaTargeting.transform.GetChild(1).gameObject.activeSelf)
+                                CastingSkill(hit_target.transform.Find("foot").position, hit_target.transform.gameObject);
+                        }
+                        else if (current_skill.castType == "target-both") // targeting both player and enemy
+                        {
+                            LayerMask player_or_monster = (playerLayer | monsterLayer);
+                            RaycastHit2D hit_target = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, player_or_monster);
+                            if (hit_target.collider == null)
+                                return;
+                            if (skillRangeAreaTargeting.transform.GetChild(1).gameObject.activeSelf)
+                                CastingSkill(hit_target.point, hit_target.transform.gameObject);
+                        }
+                        return;
                     }
-                    return;
-                }
-                if (isActivingSkill && attackable)
-                {
-                    if (current_skill.castType == "circle" || current_skill.castType == "bar")
-                    { // when cast type is circle or bar
-                        RaycastHit2D hit_ground = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
-                        if (hit_ground.transform.CompareTag("Not Ground") || hit_ground.collider == null)
-                            return;
-                        if (current_skill.castType == "circle")
-                            CastingSkill(hit_ground.point);
-                        else if (current_skill.castType == "bar")
-                            CastingSkill(skillRangeAreaBar.transform.GetChild(1).transform.position);
-                    }
-                    else if (current_skill.castType == "target-player") // targeting only character 
+
+                    RaycastHit2D hit_npc = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, npcLayer);
+                    if (hit_npc.collider != null)
                     {
-                        RaycastHit2D hit_target = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, playerLayer);
-                        if (hit_target.collider == null)
-                            return;
-                        if (skillRangeAreaTargeting.transform.GetChild(1).gameObject.activeSelf)
-                            CastingSkill(hit_target.point, hit_target.transform.gameObject);
+                        if (hit_npc.collider.CompareTag("NPC"))
+                        {
+                            hit_npc.transform.GetComponent<NPC>().ClickNPC();
+                        }
                     }
-                    else if (current_skill.castType == "target-enemy") // targeting only monster
-                    {
-                        RaycastHit2D hit_target = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, monsterLayer);
-                        if (hit_target.collider == null)
-                            return;
-                        if (skillRangeAreaTargeting.transform.GetChild(1).gameObject.activeSelf)
-                            CastingSkill(hit_target.transform.Find("foot").position, hit_target.transform.gameObject);
-                    }
-                    else if (current_skill.castType == "target-both") // targeting both player and enemy
-                    {
-                        LayerMask player_or_monster = (playerLayer | monsterLayer);
-                        RaycastHit2D hit_target = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, player_or_monster);
-                        if (hit_target.collider == null)
-                            return;
-                        if (skillRangeAreaTargeting.transform.GetChild(1).gameObject.activeSelf)
-                            CastingSkill(hit_target.point, hit_target.transform.gameObject);
-                    }
-                }
+                }            
             }
             if (movable)
             {

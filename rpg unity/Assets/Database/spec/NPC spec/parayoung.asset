@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4871128e4c2a3b84aa5379941accb972, type: 3}
+  m_Name: parayoung
+  m_EditorClassIdentifier: 
+  NpcName: "\uD30C\uB77C\uC6A9"
+  NpcType: store
+  equipments:
+  - {fileID: 11400000, guid: ec8848f748f02bd479a4e2ca80c57d7c, type: 2}
+  - {fileID: 11400000, guid: d545b5f946badb54fbe446cbda3c4a8f, type: 2}
+  - {fileID: 11400000, guid: 35eea2c49014f2841927fa35efad02e8, type: 2}
+  colors:
+  - {r: 0.2830189, g: 0.2830189, b: 0.2830189, a: 1}
+  - {r: 0.46226418, g: 0.46226418, b: 0.46226418, a: 1}
+  - {r: 0.46274513, g: 0.46274513, b: 0.46274513, a: 1}
+  ments: []
+  sellingItems: []
+  questList: []

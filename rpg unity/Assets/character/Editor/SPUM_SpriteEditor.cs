@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -42,5 +42,26 @@ public class SPUM_SpriteEditor : Editor
             
         }
        
+    }
+}
+
+[CustomEditor(typeof(NPC))]
+//[CanEditMultipleObjects]
+public class SPUM_SpriteEditor_scriptable : Editor
+{
+    // Start is called before the first frame update
+    public override void OnInspectorGUI()
+    {
+
+        NPC NPCB = (NPC)target;
+
+
+        if (GUILayout.Button("setUp"))
+        {
+            NPCB.setup();
+        }
+        base.OnInspectorGUI();
+         
+
     }
 }
