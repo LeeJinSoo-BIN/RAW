@@ -1133,7 +1133,7 @@ SpriteRenderer:
   m_Size: {x: 0.03125, y: 0.09375}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &2600601964006623780
@@ -2254,7 +2254,7 @@ SpriteRenderer:
   m_Size: {x: 0.03125, y: 0.09375}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &7079500616659229604
@@ -2815,8 +2815,8 @@ MonoBehaviour:
   _hairAndEyeColor: []
   BodyParts:
     SD_Keys:
-    - left eye
-    - right eye
+    - eye left
+    - eye right
     - hair
     - helmet1
     - helmet2
@@ -2834,6 +2834,8 @@ MonoBehaviour:
     - shield left
     - shield right
     - back
+    - shoulder left
+    - shoulder right
     SD_Values:
     - {fileID: 277675188466998402}
     - {fileID: 8434706499909570126}
@@ -2854,6 +2856,8 @@ MonoBehaviour:
     - {fileID: 4361720563138841762}
     - {fileID: 7259312186833819506}
     - {fileID: 8309505638586730321}
+    - {fileID: 7491156665294136043}
+    - {fileID: 7116540521613057158}
   PartsPath:
     SD_Keys: []
     SD_Values: []
@@ -3390,8 +3394,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4279631616
-  m_fontColor: {r: 0, g: 1, b: 0.08247161, a: 1}
+    rgba: 4278255615
+  m_fontColor: {r: 1, g: 1, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -3420,7 +3424,7 @@ MonoBehaviour:
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: -30
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0

@@ -23,6 +23,7 @@ MonoBehaviour:
   criticalDamage: 1.2
   criticalPercent: 50
   healPercent: 1
+  exp: 0
   skillLevel:
     SD_Keys:
     - arrow rain
@@ -37,6 +38,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5108b4843e52e9640bbc6dcb37f194bf, type: 2}
   - {fileID: 11400000, guid: f7de936b32d1b2547891139fb661380f, type: 2}
   - {fileID: 11400000, guid: bf1a78a6d9ed6524bbc955423ae86787, type: 2}
+  - {fileID: 11400000, guid: c79d94a3987ecdb4ca8fb1a7f301665e, type: 2}
   colors:
   - {r: 0.4431373, g: 0.14901961, b: 0.14901961, a: 1}
   - {r: 0.4431373, g: 0.14901961, b: 0.14901961, a: 1}

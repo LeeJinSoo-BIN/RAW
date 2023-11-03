@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: facehair2
   description: "\uCF67\uC218\uC5FC"
-  itemType: FaceHair
+  itemType: face hair
   spriteDirectory: SPUM_Sprites/Items/1_FaceHair/FaceHair_2
   sellPrice: 0
   buyPrice: 0

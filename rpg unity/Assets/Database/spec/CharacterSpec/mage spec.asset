@@ -23,6 +23,7 @@ MonoBehaviour:
   criticalDamage: 1.2
   criticalPercent: 50
   healPercent: 1
+  exp: 0
   skillLevel:
     SD_Keys:
     - magic floor
@@ -37,6 +38,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 85234da9a1aa8ec4f8824e3ed0eda15b, type: 2}
   - {fileID: 11400000, guid: 4a419a89cfc74c042a53d8d19b4af281, type: 2}
   - {fileID: 11400000, guid: 6f1f402fe5f5e454a8b7244cfb532bf7, type: 2}
+  - {fileID: 11400000, guid: c79d94a3987ecdb4ca8fb1a7f301665e, type: 2}
   colors:
   - {r: 1, g: 0.854902, b: 0.28627452, a: 1}
   - {r: 0.25882354, g: 0.4784314, b: 1, a: 1}

@@ -16,12 +16,12 @@ MonoBehaviour:
   NpcType: store
   equipments:
   - {fileID: 11400000, guid: ec8848f748f02bd479a4e2ca80c57d7c, type: 2}
-  - {fileID: 11400000, guid: d545b5f946badb54fbe446cbda3c4a8f, type: 2}
-  - {fileID: 11400000, guid: 35eea2c49014f2841927fa35efad02e8, type: 2}
+  - {fileID: 11400000, guid: f7de936b32d1b2547891139fb661380f, type: 2}
+  - {fileID: 11400000, guid: c79d94a3987ecdb4ca8fb1a7f301665e, type: 2}
   colors:
-  - {r: 0.2830189, g: 0.2830189, b: 0.2830189, a: 1}
-  - {r: 0.46226418, g: 0.46226418, b: 0.46226418, a: 1}
-  - {r: 0.46274513, g: 0.46274513, b: 0.46274513, a: 1}
+  - {r: 0.31132078, g: 0.1873663, b: 0.1042631, a: 1}
+  - {r: 0.246707, g: 0.5283019, b: 0.38750446, a: 1}
+  - {r: 0.24705884, g: 0.5294118, b: 0.38823533, a: 1}
   ments: []
   sellingItems: []
   questList: []

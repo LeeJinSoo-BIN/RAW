@@ -485,7 +485,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &87044788
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2342,7 +2342,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 6
-  m_Sprite: {fileID: 21300000, guid: ef6749089a7ac4165bc681b66be655c4, type: 3}
+  m_Sprite: {fileID: 1959303079, guid: d24f7f1293c4aea4faf9f950d882575d, type: 3}
   m_Color: {r: 0.4433962, g: 0.14849591, b: 0.14849591, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -7085,14 +7085,14 @@ MonoBehaviour:
   _backList:
   - {fileID: 733853148}
   _hairListString:
-  - Assets/character/SPUM_Sprites/Items/0_Hair/Hair_1.png
+  - 
   - 
   - 
   - 
   _clothListString:
-  - Assets/character/SPUM_Sprites/Items/2_Cloth/Cloth_3.png
-  - Assets/character/SPUM_Sprites/Items/2_Cloth/Cloth_3.png
-  - Assets/character/SPUM_Sprites/Items/2_Cloth/Cloth_3.png
+  - 
+  - 
+  - 
   _armorListString:
   - 
   - 
@@ -7101,7 +7101,7 @@ MonoBehaviour:
   - 
   - 
   _weaponListString:
-  - Assets/character/SPUM_Sprites/Items/6_Weapons/Bow_1.png
+  - 
   - 
   - 
   - 
@@ -7113,8 +7113,8 @@ MonoBehaviour:
   - {r: 0.4431373, g: 0.14901961, b: 0.14901961, a: 1}
   BodyParts:
     SD_Keys:
-    - left eye
-    - right eye
+    - eye left
+    - eye right
     - hair
     - helmet1
     - helmet2
@@ -7822,7 +7822,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 2}
+  m_Size: {x: 0.40625, y: 0.53125}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0
@@ -10774,7 +10774,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 6
-  m_Sprite: {fileID: 21300000, guid: ef6749089a7ac4165bc681b66be655c4, type: 3}
+  m_Sprite: {fileID: -1531293799, guid: d24f7f1293c4aea4faf9f950d882575d, type: 3}
   m_Color: {r: 0.4433962, g: 0.14849591, b: 0.14849591, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -14218,8 +14218,8 @@ MonoBehaviour:
   _hairAndEyeColor: []
   BodyParts:
     SD_Keys:
-    - left eye
-    - right eye
+    - eye left
+    - eye right
     - hair
     - helmet1
     - helmet2
@@ -15407,7 +15407,7 @@ SpriteRenderer:
   m_Size: {x: 0.03125, y: 0.09375}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &7474555105790936444
@@ -15838,7 +15838,7 @@ SpriteRenderer:
   m_Size: {x: 0.03125, y: 0.09375}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &8767132532862273792

@@ -406,6 +406,7 @@ public class Login : MonoBehaviourPunCallbacks
         equipment.Add(defaultWeapon[currentRollIdx]);
         equipment.Add(defaultCloth[currentClothIdx]);
         equipment.Add(defaultHair[currentHairIdx]);
+        equipment.Add(defaultSpec.equipment[3]);
 
         colors.Add(currentHairColor);
         colors.Add(currentEyeColor);

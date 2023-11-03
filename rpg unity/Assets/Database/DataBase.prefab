@@ -30,7 +30,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9189976013231314351
 MonoBehaviour:
@@ -79,6 +79,9 @@ MonoBehaviour:
     - shoulder4
     - shoulder5
     - shoulder6
+    - eye1
+    - bowback
+    - cape
     SD_Values:
     - {fileID: 11400000, guid: 8760b4b84ee35ec43a5a476be35bbda4, type: 2}
     - {fileID: 11400000, guid: 3ece3f9a1781eae40ab2cbeb09d073ac, type: 2}
@@ -113,6 +116,9 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 3e8cd2f62793ef84782ec29122b4bcba, type: 2}
     - {fileID: 11400000, guid: 69a4a2678aa982b4488e42b8e24da081, type: 2}
     - {fileID: 11400000, guid: ce608fb7a0c5b1f47b154e495f77aedc, type: 2}
+    - {fileID: 11400000, guid: ec1518df44832f141ae2ad37ad18b2aa, type: 2}
+    - {fileID: 11400000, guid: 5a3b11a2322296c44a40003df1ea8d20, type: 2}
+    - {fileID: 11400000, guid: f518fdef5687138459bd1e461b942301, type: 2}
   skillInfoDict:
     SD_Keys:
     - sword normal

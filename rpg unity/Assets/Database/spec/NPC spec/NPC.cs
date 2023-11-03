@@ -19,7 +19,15 @@ public class NPC : MonoBehaviour
     }
     public void setup()
     {
-        npcName.text = spec.NpcName;
+        if(spec.NpcType == "store")
+        {
+            npcName.text = "[상인]\n";            
+        }
+        else
+        {
+            npcName.text = "";
+        }
+        npcName.text += spec.NpcName;
         equipItem();
     }
 
@@ -27,11 +35,12 @@ public class NPC : MonoBehaviour
     {
         List<InventoryItem> equipment = spec.equipments;
         SPUM_SpriteList spriteList = gameObject.GetComponentInChildren<SPUM_SpriteList>();
+        spriteList.resetSprite();
         foreach (InventoryItem item in equipment)
         {
             string current_item_sprite = DataBase.Instance.itemInfoDict[item.itemName].spriteDirectory;
             spriteList.PartsPath[DataBase.Instance.itemInfoDict[item.itemName].itemType] = current_item_sprite;
-            Debug.Log(spriteList.PartsPath[DataBase.Instance.itemInfoDict[item.itemName].itemType]);
+            //Debug.Log(spriteList.PartsPath[DataBase.Instance.itemInfoDict[item.itemName].itemType]);
         }
         spriteList._hairAndEyeColor = spec.colors;
         spriteList.setSprite();
