@@ -182,15 +182,11 @@ public class AccountDB : MonoBehaviour
 
 public class CharacterDB : MonoBehaviour
 {
-    public static CharacterSpec CreateCharacter(string nickname, string roll)
-    {
-        CharacterSpec spec = new();
+    private static string userId = DataBase.Instance.defaultAccountInfo.accountId;
 
-        spec.nickName = nickname;
-        spec.roll = roll;
-        spec.characterLevel = 1;
-        spec.exp = 0;
-        spec.lastTown = "Pallet Town";
+    public static int CreateCharacter(string nickname, string roll)
+    {
+        int status = 0;
 
         using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
         {
@@ -204,67 +200,42 @@ public class CharacterDB : MonoBehaviour
                     command.CommandText = string.Format("SELECT * FROM character_std WHERE roll = '{0}';", roll);
 
                     int characterId;
+                    int maxInventoryNum;
+                    int characterNum;
 
                     using (MySqlDataReader characterStd = command.ExecuteReader())
                     {
                         characterStd.Read();
 
-                        characterId             = Convert.ToInt32(characterStd["character_id"]);
-                        spec.maxInventoryNum    = Convert.ToInt32(characterStd["max_inventory"]);
+                        characterId = Convert.ToInt32(characterStd["character_id"]);
+                        maxInventoryNum = Convert.ToInt32(characterStd["max_inventory"]);
 
                         characterStd.Close();
                     }
 
-                    spec.maxHealth              = (float)StatDB.GetCharacterStdStat(characterId, "hp");
-                    spec.maxMana                = (float)StatDB.GetCharacterStdStat(characterId, "mp");
-                    spec.recoverManaPerThreeSec = (float)StatDB.GetCharacterStdStat(characterId, "recover_mp");
-                    spec.power                  = (float)StatDB.GetCharacterStdStat(characterId, "power");
-                    spec.criticalDamage         = (float)StatDB.GetCharacterStdStat(characterId, "critical_dmg");
-                    spec.criticalPercent        = (float)StatDB.GetCharacterStdStat(characterId, "critical_percent");
-                    spec.healPercent            = (float)StatDB.GetCharacterStdStat(characterId, "heal_percent");
-                }
-
-                InsertCharacter(spec);
-            }
-            catch (Exception e)
-            {
-                Debug.Log(e.Message);
-                spec = null;
-            }
-            finally
-            {
-                conn.Close();
-            }
-        }
-
-        return spec;
-    }
-
-    public static int InsertCharacter(CharacterSpec spec)
-    {
-        int res;
-
-        using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
-        {
-            try
-            {
-                conn.Open();
-
-                using (MySqlCommand command = conn.CreateCommand())
-                {
                     command.CommandText = string.Format(
                         "INSERT INTO user_character (user_id, character_num, character_id, nickname, level, exp, last_town, max_inventory) " +
-                        "VALUES ('{0}', '{1}', '{2}', '{3}', {4}, {5}, '{6}', {7})",
-                        DataBase.Instance.defaultAccountInfo.accountId, 0, 1, spec.nickName, spec.characterLevel, spec.exp, spec.lastTown, spec.maxInventoryNum
+                        "VALUES ('{0}', {1}, {2}, '{3}', {4}, {5}, '{6}', {7})",
+                        userId, 0, characterId, nickname, 1, 0, "Pallet Town", maxInventoryNum
                     );
 
-                    res = command.ExecuteNonQuery();
+                    command.ExecuteNonQuery();
+
+                    StatDB.InsertCharacterStat(userId, 1, "hp", StatDB.GetCharacterStdStat(characterId, "hp"));
+                    StatDB.InsertCharacterStat(userId, 1, "mp", StatDB.GetCharacterStdStat(characterId, "mp"));
+                    StatDB.InsertCharacterStat(userId, 1, "recover_mp", StatDB.GetCharacterStdStat(characterId, "recover_mp"));
+                    StatDB.InsertCharacterStat(userId, 1, "power", StatDB.GetCharacterStdStat(characterId, "power"));
+                    StatDB.InsertCharacterStat(userId, 1, "critical_dmg", StatDB.GetCharacterStdStat(characterId, "critical_dmg"));
+                    StatDB.InsertCharacterStat(userId, 1, "critical_percent", StatDB.GetCharacterStdStat(characterId, "critical_percent"));
+                    StatDB.InsertCharacterStat(userId, 1, "heal_percent", StatDB.GetCharacterStdStat(characterId, "heal_percent"));
+
+                    status = 1;
                 }
             }
             catch (Exception e)
             {
                 Debug.Log(e.Message);
-                res = -1;
+                status = -1;
             }
             finally
             {
@@ -272,7 +243,7 @@ public class CharacterDB : MonoBehaviour
             }
         }
 
-        return res;
+        return status;
     }
 }
 
@@ -318,7 +289,7 @@ public class StatDB : MonoBehaviour
         return stat;
     }
 
-    public static int InsertCharacterStat(string statType, string statName, double stat)
+    public static int InsertCharacterStat(string user_id, int character_num, string statName, double stat)
     {
         int res;
         using (MySqlConnection conn = new(DBSetting.builder.ConnectionString))
@@ -329,9 +300,9 @@ public class StatDB : MonoBehaviour
 
                 using (MySqlCommand command = conn.CreateCommand())
                 {
-                    int statCode = StatDB.GetStatCode(statName);
+                    int statCode = GetStatCode(statName);
 
-                    command.CommandText = string.Format("INSERT INTO '{0}' (user_id, character_num, stat_code, stat) VALUES ({1}, {2});", statType, statCode, stat);
+                    command.CommandText = string.Format("INSERT INTO character_stat (user_id, character_num, stat_code, stat) VALUES ('{0}', {1}, {2}, {3});", user_id, character_num, statCode, stat);
 
                     res = command.ExecuteNonQuery();
                 }
