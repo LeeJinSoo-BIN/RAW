@@ -485,7 +485,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &87044788
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2342,7 +2342,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 6
-  m_Sprite: {fileID: 21300000, guid: ef6749089a7ac4165bc681b66be655c4, type: 3}
+  m_Sprite: {fileID: 1959303079, guid: d24f7f1293c4aea4faf9f950d882575d, type: 3}
   m_Color: {r: 0.4433962, g: 0.14849591, b: 0.14849591, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -7085,14 +7085,14 @@ MonoBehaviour:
   _backList:
   - {fileID: 733853148}
   _hairListString:
-  - Assets/character/SPUM_Sprites/Items/0_Hair/Hair_1.png
+  - 
   - 
   - 
   - 
   _clothListString:
-  - Assets/character/SPUM_Sprites/Items/2_Cloth/Cloth_3.png
-  - Assets/character/SPUM_Sprites/Items/2_Cloth/Cloth_3.png
-  - Assets/character/SPUM_Sprites/Items/2_Cloth/Cloth_3.png
+  - 
+  - 
+  - 
   _armorListString:
   - 
   - 
@@ -7101,7 +7101,7 @@ MonoBehaviour:
   - 
   - 
   _weaponListString:
-  - Assets/character/SPUM_Sprites/Items/6_Weapons/Bow_1.png
+  - 
   - 
   - 
   - 
@@ -7113,8 +7113,8 @@ MonoBehaviour:
   - {r: 0.4431373, g: 0.14901961, b: 0.14901961, a: 1}
   BodyParts:
     SD_Keys:
-    - left eye
-    - right eye
+    - eye left
+    - eye right
     - hair
     - helmet1
     - helmet2
@@ -7822,7 +7822,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 2}
+  m_Size: {x: 0.40625, y: 0.53125}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0
@@ -10774,7 +10774,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 6
-  m_Sprite: {fileID: 21300000, guid: ef6749089a7ac4165bc681b66be655c4, type: 3}
+  m_Sprite: {fileID: -1531293799, guid: d24f7f1293c4aea4faf9f950d882575d, type: 3}
   m_Color: {r: 0.4433962, g: 0.14849591, b: 0.14849591, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -12898,128 +12898,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2137413801}
   m_CullTransparentMesh: 1
---- !u!1 &2140010866
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2140010868}
-  - component: {fileID: 2140010867}
-  m_Layer: 0
-  m_Name: DataBase
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &2140010867
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2140010866}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fff095fac2f062e48acf37619d838f09, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemInfoDict:
-    SD_Keys:
-    - red potion small
-    - blue potion small
-    - sword
-    - bow
-    - wand
-    - axe
-    - cloth1
-    - cloth2
-    - cloth3
-    - cloth4
-    - hair1
-    - hair2
-    - hair3
-    - stone
-    SD_Values:
-    - {fileID: 11400000, guid: 8760b4b84ee35ec43a5a476be35bbda4, type: 2}
-    - {fileID: 11400000, guid: 3ece3f9a1781eae40ab2cbeb09d073ac, type: 2}
-    - {fileID: 11400000, guid: 3e086745d9522d1479fd59c27449d880, type: 2}
-    - {fileID: 11400000, guid: 4c2c84e5f37cb7341a2c58d4ecadfd12, type: 2}
-    - {fileID: 11400000, guid: 13981d9ee4602d24e93a78dd347d635d, type: 2}
-    - {fileID: 11400000, guid: 187e6368d9c74024c8a18a61ef862101, type: 2}
-    - {fileID: 11400000, guid: 7fe8643da32a97645ab9508b383d8a92, type: 2}
-    - {fileID: 11400000, guid: 463ce00a2ae59e64da69f8a1937d446d, type: 2}
-    - {fileID: 11400000, guid: efee474192e7bdd4c8da7074cf06012f, type: 2}
-    - {fileID: 11400000, guid: becd804a79a47fc48b9e5035a6d76f96, type: 2}
-    - {fileID: 11400000, guid: 5cdef554669f17444a0c0e3b63a9f9ee, type: 2}
-    - {fileID: 11400000, guid: 3bb18db51afa82441a08100f3261addd, type: 2}
-    - {fileID: 11400000, guid: 42f6cfbe8cde2a540a94eb84cc47bc7b, type: 2}
-    - {fileID: 11400000, guid: e1d5a33c704003d4588d26866ebe62cd, type: 2}
-  skillInfoDict:
-    SD_Keys:
-    - sword normal
-    - sword smash
-    - sword shield
-    - sword slash
-    - sword bind
-    - arrow normal
-    - arrow rain
-    - arrow dash
-    - arrow gatling
-    - arrow charge
-    - magic normal
-    - magic floor
-    - magic heal
-    - magic totem
-    - magic global heal
-    SD_Values:
-    - {fileID: 11400000, guid: eed92bd1b6671a446bc059a48b1393ae, type: 2}
-    - {fileID: 11400000, guid: 94e747944616f4e9498ef9817c71b9eb, type: 2}
-    - {fileID: 11400000, guid: 9b1833944efb84ad99551e9a1c3cc98f, type: 2}
-    - {fileID: 11400000, guid: 8530da1cbc2344789b5b95938d50177c, type: 2}
-    - {fileID: 11400000, guid: 93d9c842df8f44cb19b2068d05bf134e, type: 2}
-    - {fileID: 11400000, guid: b11c2aeb8d9f62242a9eff81ddd929f6, type: 2}
-    - {fileID: 11400000, guid: 3729857baa3544af0a696b4f857eadd0, type: 2}
-    - {fileID: 11400000, guid: dde8564a1eb914cbe9e92aac738df0ad, type: 2}
-    - {fileID: 11400000, guid: 5d6e3d38a901a4c4a8068aab1b6d1074, type: 2}
-    - {fileID: 11400000, guid: 910a8cd9525d2426c9f5239907878503, type: 2}
-    - {fileID: 11400000, guid: f888cf136ebf7aa41b3e9f99cccc509d, type: 2}
-    - {fileID: 11400000, guid: b394f70740cc64b6ba54fb5c26a54da3, type: 2}
-    - {fileID: 11400000, guid: c6cc5dae398f04dd9aad9e92a1b53314, type: 2}
-    - {fileID: 11400000, guid: eb3513dee167d4b0ab8053bf20b70fa8, type: 2}
-    - {fileID: 11400000, guid: 317b5649f99af4a08b01a3d35ac4d227, type: 2}
-  skillThumbnailPath: Character/skills/thumbnails
-  isLogined: 0
-  defaultAccountInfo: {fileID: 11400000, guid: 4a3cc700ec8a89a46a987e7e2013b049, type: 2}
-  accountInfo: {fileID: 0}
-  selectedCharacterSpec: {fileID: 0}
-  currentMapName: 
-  currentMapType: 
-  currentCharacterNickname: 
-  isCurrentDungeonCaptain: 0
-  myPartyCaptainName: 
-  myPartyName: 
-  isCaptain: 0
-  usingCheat: 0
-  isPromotioned: 0
---- !u!4 &2140010868
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2140010866}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &110805913456621235
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -14340,8 +14218,8 @@ MonoBehaviour:
   _hairAndEyeColor: []
   BodyParts:
     SD_Keys:
-    - left eye
-    - right eye
+    - eye left
+    - eye right
     - hair
     - helmet1
     - helmet2
@@ -15035,6 +14913,67 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1001 &6116711374139495794
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2529346988765551258, guid: dacd0ecd0f0d8ca47a37cc9092f3b8aa, type: 3}
+      propertyPath: m_Name
+      value: DataBase
+      objectReference: {fileID: 0}
+    - target: {fileID: 7175309866269639957, guid: dacd0ecd0f0d8ca47a37cc9092f3b8aa, type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7175309866269639957, guid: dacd0ecd0f0d8ca47a37cc9092f3b8aa, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7175309866269639957, guid: dacd0ecd0f0d8ca47a37cc9092f3b8aa, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7175309866269639957, guid: dacd0ecd0f0d8ca47a37cc9092f3b8aa, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7175309866269639957, guid: dacd0ecd0f0d8ca47a37cc9092f3b8aa, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7175309866269639957, guid: dacd0ecd0f0d8ca47a37cc9092f3b8aa, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7175309866269639957, guid: dacd0ecd0f0d8ca47a37cc9092f3b8aa, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7175309866269639957, guid: dacd0ecd0f0d8ca47a37cc9092f3b8aa, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7175309866269639957, guid: dacd0ecd0f0d8ca47a37cc9092f3b8aa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7175309866269639957, guid: dacd0ecd0f0d8ca47a37cc9092f3b8aa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7175309866269639957, guid: dacd0ecd0f0d8ca47a37cc9092f3b8aa, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: dacd0ecd0f0d8ca47a37cc9092f3b8aa, type: 3}
 --- !u!4 &6220274512311028364
 Transform:
   m_ObjectHideFlags: 0
@@ -15468,7 +15407,7 @@ SpriteRenderer:
   m_Size: {x: 0.03125, y: 0.09375}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &7474555105790936444
@@ -15899,7 +15838,7 @@ SpriteRenderer:
   m_Size: {x: 0.03125, y: 0.09375}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &8767132532862273792

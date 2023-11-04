@@ -1,10 +1,11 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using Photon.Pun;
 using CustomDict;
 using System;
+using Unity.VisualScripting;
 
 public class SPUM_SpriteList : MonoBehaviour
 {
@@ -146,6 +147,36 @@ public class SPUM_SpriteList : MonoBehaviour
         }
     }
 
+    public void resetSprite()
+    {
+        PartsPath.Clear();
+        foreach (string part in BodyParts.SD_Keys)
+        {
+            if (part.Contains("weapon"))
+            {
+                if (PV != null)
+                {
+                    PV.RPC("changeSprite", RpcTarget.AllBuffered, "weapon left", null);
+                    PV.RPC("changeSprite", RpcTarget.AllBuffered, "weapon right", null);
+                    PV.RPC("changeSprite", RpcTarget.AllBuffered, part, null);
+                }
+                else
+                {
+                    changeSprite("weapon left", null);
+                    changeSprite("weapon right", null);
+                    changeSprite(part, null);
+                }
+            }
+            else
+            {
+                if (PV != null)
+                    PV.RPC("changeSprite", RpcTarget.AllBuffered, part, null);
+                else
+                    changeSprite(part, null);
+            }
+        }
+    }
+
 
     public void ResyncData()
     {
@@ -195,29 +226,71 @@ public class SPUM_SpriteList : MonoBehaviour
     [PunRPC]
     public void changeSprite(string part, string path)
     {
+        if (path == null) {
+            if (part == "cloth")
+            {
+                BodyParts["cloth body"].sprite = null;
+                BodyParts["cloth left arm"].sprite = null;
+                BodyParts["cloth right arm"].sprite = null;
+            }
+            else if (part == "armor")
+            {
+                BodyParts["armor body"].sprite = null;
+                BodyParts["armor left shoulder"].sprite = null;
+                BodyParts["armor right shoulder"].sprite = null;
+            }
+            else if (part == "pant")
+            {
+                BodyParts["pant left"].sprite = null;
+                BodyParts["pant right"].sprite = null;
+            }
+            else if (part == "shoulder")
+            {
+                BodyParts["shoulder left"].sprite = null;
+                BodyParts["shoulder right"].sprite = null;
+            }
+            else if(part == "eye")
+            {
+                BodyParts["eye left"].sprite = null;
+                BodyParts["eye right"].sprite = null;
+            }
+            else
+            {
+                BodyParts[part].sprite = null;
+            }
+            return;
+        }
+        Sprite[] sprites = Resources.LoadAll<Sprite>(path);
         if (part == "cloth")
         {
-            BodyParts["cloth body"].sprite = Resources.LoadAll<Sprite>(path)[0];
-            BodyParts["cloth left arm"].sprite = Resources.LoadAll<Sprite>(path)[1];
-            BodyParts["cloth right arm"].sprite = Resources.LoadAll<Sprite>(path)[2];
+            BodyParts["cloth body"].sprite = sprites[0];
+            BodyParts["cloth left arm"].sprite = sprites[1];
+            BodyParts["cloth right arm"].sprite = sprites[2];
         }
         else if (part == "armor")
         {
-            BodyParts["armor body"].sprite = Resources.LoadAll<Sprite>(path)[0];
-            BodyParts["armor left shoulder"].sprite = Resources.LoadAll<Sprite>(path)[1];
-            BodyParts["armor right shoulder"].sprite = Resources.LoadAll<Sprite>(path)[2];
+            BodyParts["armor body"].sprite = sprites[0];
+            BodyParts["armor left shoulder"].sprite = sprites[1];
+            BodyParts["armor right shoulder"].sprite = sprites[2];
         }
         else if (part == "pant")
         {
-            BodyParts["pant left"].sprite = Resources.LoadAll<Sprite>(path)[0];
-            BodyParts["pant right"].sprite = Resources.LoadAll<Sprite>(path)[1];
+            BodyParts["pant left"].sprite = sprites[0];
+            BodyParts["pant right"].sprite = sprites[1];
+        }
+        else if(part == "shoulder")
+        {
+            BodyParts["shoulder left"].sprite = sprites[0];
+            BodyParts["shoulder right"].sprite = sprites[1];
+        }
+        else if (part == "eye")
+        {
+            BodyParts["eye left"].sprite = sprites[0];
+            BodyParts["eye right"].sprite = sprites[1];
         }
         else
         {
-            if (path == null)
-                BodyParts[part].sprite = null;
-            else
-                BodyParts[part].sprite = Resources.LoadAll<Sprite>(path)[0];
+            BodyParts[part].sprite = sprites[0];
         }
     }
     [PunRPC]

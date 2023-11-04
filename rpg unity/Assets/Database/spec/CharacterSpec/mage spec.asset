@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e4cf6686a9431a4bb8fc303909883b0, type: 3}
+  m_Name: mage spec
+  m_EditorClassIdentifier: 
+  nickName: mage
+  roll: "\uB9C8\uBC95\uC0AC"
+  characterLevel: 1
+  lastTown: Pallet Town
+  maxHealth: 700
+  maxMana: 1000
+  recoverManaPerThreeSec: 5
+  power: 10
+  criticalDamage: 1.2
+  criticalPercent: 50
+  healPercent: 1
+  exp: 0
+  skillLevel:
+    SD_Keys:
+    - magic floor
+    - magic heal
+    - magic totem
+    - magic global heal
+    - magic normal
+    SD_Values: 0100000001000000010000000100000001000000
+  maxInventoryNum: 24
+  inventory: []
+  equipment:
+  - {fileID: 11400000, guid: 85234da9a1aa8ec4f8824e3ed0eda15b, type: 2}
+  - {fileID: 11400000, guid: 4a419a89cfc74c042a53d8d19b4af281, type: 2}
+  - {fileID: 11400000, guid: 6f1f402fe5f5e454a8b7244cfb532bf7, type: 2}
+  - {fileID: 11400000, guid: c79d94a3987ecdb4ca8fb1a7f301665e, type: 2}
+  colors:
+  - {r: 1, g: 0.854902, b: 0.28627452, a: 1}
+  - {r: 0.25882354, g: 0.4784314, b: 1, a: 1}
+  - {r: 0.25882354, g: 0.4784314, b: 1, a: 1}

@@ -14,8 +14,8 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     public PhotonView PV;
     public GameManager gameManager;
 
-    public Dictionary<string, party> allPartys = new Dictionary<string, party>();
-    public HashSet<string> usersInParty = new HashSet<string>();
+    //public Dictionary<string, party> allPartys = new Dictionary<string, party>();
+    //public HashSet<string> usersInParty = new HashSet<string>();
     
 
     public TMP_Text disconnectButtonText;
@@ -26,39 +26,23 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         public HashSet<string> partyMembersNickName;
     }    
 
-    void Awake()
+    void Start()
     {
-        allPartys.Clear();
-        usersInParty.Clear();
         disconnectButtonText = UIManager.Instance.exitButtonText;
     }
     public override void OnJoinedRoom()
     {
-        if(DataBase.Instance.currentMapType == "village")
-        {            
+        if (DataBase.Instance.currentMapType == "village")
+        {
             if (PhotonNetwork.IsMasterClient)
                 PhotonNetwork.LoadLevel(DataBase.Instance.currentMapName);
             disconnectButtonText.text = "게임 나가기";
-           /*if (!DataBase.Instance.myPartyCaptainName.IsNullOrEmpty())
-            {
-                if (DataBase.Instance.isCaptain)
-                {
-                    PV.RPC("registParty", RpcTarget.AllBuffered, DataBase.Instance.myPartyName, DataBase.Instance.currentCharacterNickname);
-                }
-                else
-                {
-                    PV.RPC("joinParty", RpcTarget.AllBuffered, DataBase.Instance.myPartyCaptainName, DataBase.Instance.currentCharacterNickname);
-                }
-            }*/
         }
-        else if(DataBase.Instance.currentMapType == "dungeon")
-        {            
+        else if (DataBase.Instance.currentMapType == "dungeon")
+        {
             if (PhotonNetwork.IsMasterClient)
                 PhotonNetwork.LoadLevel(DataBase.Instance.currentMapName);
             disconnectButtonText.text = "던전 나가기";
-            DataBase.Instance.isCaptain = false;
-            DataBase.Instance.myPartyCaptainName = "";
-            DataBase.Instance.myPartyName = "";
         }
     }
     public override void OnConnectedToMaster()
@@ -83,7 +67,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         SceneManager.LoadScene(DataBase.Instance.currentMapName);
     }
 
-    public override void OnPlayerLeftRoom(Player otherPlayer)
+    /*public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         if (DataBase.Instance.currentMapType == "village")
         {
@@ -96,7 +80,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
                 UIManager.Instance.UpdatePartyPanel();
             }
         }
-    }
+    }*/
     
     public void ClickDisconnectButton()
     {
@@ -104,17 +88,16 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         {
             DataBase.Instance.currentMapType = "village";
             DataBase.Instance.currentMapName = "Pallet Town";
-            /*DataBase.Instance.myPartyCaptainName = "";
+            DataBase.Instance.myPartyCaptainName = "";
             DataBase.Instance.myPartyName = "";
-            DataBase.Instance.isCaptain = false;*/
+            DataBase.Instance.isCaptain = false;
             PhotonNetwork.LeaveRoom();
         }
         else if (disconnectButtonText.text == "게임 나가기")
         {
             DataBase.Instance.currentMapType = "character Select";
             DataBase.Instance.currentMapName = "Login Scene";
-            /*if (!DataBase.Instance.myPartyCaptainName.IsNullOrEmpty())
-                PV.RPC("LeaveParty", RpcTarget.AllBuffered, DataBase.Instance.myPartyCaptainName, DataBase.Instance.currentCharacterNickname);*/
+            UIManager.Instance.ClickLeavePartyButton();
             PhotonNetwork.LeaveRoom();
         }
         else if (disconnectButtonText.text == "RAW 종료")
@@ -123,11 +106,11 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
 
     public void movePortal(float timeLimit)
     {
-        foreach(string mem in allPartys[DataBase.Instance.currentCharacterNickname].partyMembersNickName)
+        foreach(string mem in UIManager.Instance.allPartys[DataBase.Instance.myCharacter.name].partyMembersNickName)
         {
-            if (mem == DataBase.Instance.currentCharacterNickname)
+            if (mem == DataBase.Instance.myCharacter.name)
                 continue;
-            PV.RPC("enterDungeon", UIManager.Instance.inGameUserList[mem], timeLimit);
+            PV.RPC("enterDungeon", UIManager.Instance.inGameUserList[mem].PV.Owner, timeLimit);
         }
         enterDungeon(timeLimit);
         DataBase.Instance.isCurrentDungeonCaptain = true;
@@ -175,28 +158,50 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void sendAndReceiveInviteParty(string partyName, string fromWho)
     {
-        UIManager.Instance.receiveInvite(partyName, fromWho);
         UIManager.Instance.UpdatePartyPanel();
+        UIManager.Instance.receiveInvite(partyName, fromWho);        
     }
     [PunRPC]
     void sendAndReceiveJoinRequestParty(string fromWho)
     {
-        UIManager.Instance.receiveJoinRequest(fromWho);
         UIManager.Instance.UpdatePartyPanel();
+        UIManager.Instance.receiveJoinRequest(fromWho);        
+    }
+    [PunRPC]
+    void acceptJoinParty(string captain_name, string party_name)
+    {
+        DataBase.Instance.isCaptain = false;
+        DataBase.Instance.myPartyCaptainName = captain_name;
+        DataBase.Instance.myPartyName = party_name;
+        DataBase.Instance.myCharacterState.updateParty();
+        PV.RPC("UpdateParty", RpcTarget.All);
+    }    
+
+    [PunRPC]
+    void kickPartyMember()
+    {
+        DataBase.Instance.isCaptain = false;
+        DataBase.Instance.myPartyCaptainName = "";
+        DataBase.Instance.myPartyName = "";
+        DataBase.Instance.myCharacterState.updateParty();
+        PV.RPC("UpdateParty", RpcTarget.All);
     }
 
     [PunRPC]
-    void kickPartyMember(string captain, string who)
+    void ChangeCaptain(string newCaptainName)
     {
-        allPartys[captain].partyMembersNickName.Remove(who);
-        if(who == DataBase.Instance.currentCharacterNickname)
-        {
-            DataBase.Instance.myPartyCaptainName = "";
-        }
-        usersInParty.Remove(who);
-        UIManager.Instance.UpdatePartyPanel();
+        if(newCaptainName == DataBase.Instance.myCharacter.name)
+            DataBase.Instance.isCaptain = true;
+        DataBase.Instance.myPartyCaptainName = newCaptainName;
+        DataBase.Instance.myCharacterState.updateParty();        
     }
 
+    [PunRPC]
+    public void UpdateParty()
+    {
+        UIManager.Instance.UpdatePartyPanel();
+    }
+    /*
     [PunRPC]
     void registParty(string partyName, string captain)
     {
@@ -231,23 +236,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         UIManager.Instance.UpdatePartyPanel();
     }
 
-    [PunRPC]
-    void ChangeCaptain(string captainName, string newCaptainName, bool exit)
-    {
-        party newParty = allPartys[captainName];
-        allPartys.Add(newCaptainName, newParty);
-        allPartys.Remove(captainName);
-        if (DataBase.Instance.myPartyCaptainName == captainName)
-            DataBase.Instance.myPartyCaptainName = newCaptainName;
-        if (captainName == DataBase.Instance.currentCharacterNickname)
-            DataBase.Instance.myPartyCaptainName = "";
-        if (exit)
-        {
-            allPartys[newCaptainName].partyMembersNickName.Remove(captainName);
-            usersInParty.Remove(captainName);
-        }
-        UIManager.Instance.UpdatePartyPanel();
-    }
+    
 
     [PunRPC]
     void BoomParty(string captainName)
@@ -257,7 +246,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         if (DataBase.Instance.myPartyCaptainName == captainName)
             DataBase.Instance.myPartyCaptainName = "";
         UIManager.Instance.UpdatePartyPanel();
-    }
+    }*/
     #endregion
 
 

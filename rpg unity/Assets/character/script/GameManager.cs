@@ -11,25 +11,30 @@ using WebSocketSharp;
 public class GameManager : MonoBehaviour
 {   
     public newNetworkManager networkManager;
-    private GameObject myCharacter;
+    public bool offLine = false;
     void Awake()
-    {        
-        //Screen.SetResolution(960, 540, false);
-    }
-
-    private void Start()
     {
-        if (PhotonNetwork.InRoom)
+        if (offLine)
         {
-            GameObject player = PhotonNetwork.Instantiate("Character/Player", Vector3.zero, Quaternion.identity);
-            myCharacter = player;
-            if (GameObject.Find("EasterEgg") != null)
-            {
-                GameObject.Find("EasterEgg").GetComponent<EasterEgg>().myCharacter = player;
-            }
-            setup(player);
-            GameObject.Find("Main Camera").transform.GetComponent<CameraFollow>().myCharacterTransform = player.transform;
+            PhotonNetwork.OfflineMode = offLine;
+            PhotonNetwork.CreateRoom("offline");
+            //Screen.SetResolution(960, 540, false);
         }
+    }
+        private void Start()
+    {
+        GameObject player = PhotonNetwork.Instantiate("Character/Player", Vector3.zero, Quaternion.identity);
+        DataBase.Instance.myCharacter = player;
+        DataBase.Instance.myCharacterControl = player.GetComponent<MultyPlayer>();
+        DataBase.Instance.myCharacterState = player.GetComponent<CharacterState>();
+
+        if (GameObject.Find("EasterEgg") != null)
+        {
+            GameObject.Find("EasterEgg").GetComponent<EasterEgg>().myCharacter = player;
+        }
+        setup(player);
+        GameObject.Find("Main Camera").transform.GetComponent<CameraFollow>().myCharacterTransform = player.transform;
+
     }
 
     public void setup(GameObject player)
@@ -41,7 +46,6 @@ public class GameManager : MonoBehaviour
         Debug.Log("loaded player data");
         player.GetComponent<MultyPlayer>().characterState.setUp();
         Debug.Log("set up state");
-        UIManager.Instance.myCharacter = player;
         UIManager.Instance.SetUP();
         Debug.Log("set up ingame ui");
         if (DataBase.Instance.currentMapType == "dungeon" && PhotonNetwork.LocalPlayer.IsMasterClient)
@@ -53,6 +57,7 @@ public class GameManager : MonoBehaviour
         CharacterSpec spec = player.transform.GetComponent<MultyPlayer>().characterState.characterSpec;
         List<InventoryItem> equipment = spec.equipment;
         SPUM_SpriteList spriteList = player.GetComponentInChildren<SPUM_SpriteList>();
+        spriteList.resetSprite();
         foreach (InventoryItem item in equipment)
         {
             string current_item_sprite = DataBase.Instance.itemInfoDict[item.itemName].spriteDirectory;

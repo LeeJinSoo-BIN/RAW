@@ -80,7 +80,7 @@ MonoBehaviour:
     m_DisabledTrigger: Disabled
   m_Interactable: 0
   m_TargetGraphic: {fileID: 0}
-  m_FillRect: {fileID: 1339447640778279814}
+  m_FillRect: {fileID: 416780842408019052}
   m_HandleRect: {fileID: 0}
   m_Direction: 1
   m_MinValue: 0
@@ -102,7 +102,7 @@ GameObject:
   - component: {fileID: 6167080970787055375}
   - component: {fileID: 4827970886508267820}
   m_Layer: 5
-  m_Name: Fill
+  m_Name: health Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -641,7 +641,7 @@ GameObject:
   - component: {fileID: 468112583814789875}
   - component: {fileID: 8159643099730035205}
   m_Layer: 5
-  m_Name: Fill
+  m_Name: shield Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1052,6 +1052,9 @@ MonoBehaviour:
   itemLayer:
     serializedVersion: 2
     m_Bits: 4096
+  npcLayer:
+    serializedVersion: 2
+    m_Bits: 8192
   goalPos: {x: 0, y: 0, z: 0}
   pointSpeed: 5
   characterMoveSpeed: 1.2
@@ -1092,6 +1095,9 @@ MonoBehaviour:
   level: 0
   nick: 
   characterAnimator: {fileID: 7434412550298693470}
+  isCaptain: 0
+  partyCaptainName: 
+  partyName: 
   isDeath: 0
   playerControl: {fileID: 1021405336507247962}
   PV: {fileID: 2889512801467157385}
@@ -2267,7 +2273,7 @@ SpriteRenderer:
   m_Size: {x: 0.03125, y: 0.09375}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &2600601964006623780
@@ -3545,7 +3551,7 @@ SpriteRenderer:
   m_Size: {x: 0.03125, y: 0.09375}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &6966506323332037705
@@ -4305,8 +4311,8 @@ MonoBehaviour:
   _hairAndEyeColor: []
   BodyParts:
     SD_Keys:
-    - left eye
-    - right eye
+    - eye left
+    - eye right
     - hair
     - helmet1
     - helmet2
@@ -4324,6 +4330,8 @@ MonoBehaviour:
     - shield left
     - shield right
     - back
+    - shoulder left
+    - shoudler right
     SD_Values:
     - {fileID: 277675188466998402}
     - {fileID: 8434706499909570126}
@@ -4344,6 +4352,8 @@ MonoBehaviour:
     - {fileID: 4361720563138841762}
     - {fileID: 7259312186833819506}
     - {fileID: 8309505638586730321}
+    - {fileID: 7491156665294136043}
+    - {fileID: 7116540521613057158}
   PartsPath:
     SD_Keys: []
     SD_Values: []
@@ -5070,7 +5080,7 @@ MonoBehaviour:
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_lineSpacing: -30
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
