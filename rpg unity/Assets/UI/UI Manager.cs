@@ -106,7 +106,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     private bool isBossConnected;
     public float limitTime;
     public float stageTime;
-    private IEnumerator timer;
+    public IEnumerator timer;
 
     public TMP_Text exitButtonText;
 
@@ -328,10 +328,6 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         bossHealthUi.maxValue = bossHealth.maxValue;
         isBossConnected = true;
         BossUiGroup.SetActive(true);
-        if (limitTime <= 0)
-            limitTime = 6000;
-        timer = startTimer();
-        StartCoroutine(timer);
     }
     IEnumerator update_health()
     {
@@ -736,7 +732,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
 
     #region 던전
-    IEnumerator startTimer()
+    public IEnumerator startTimer()
     {
         stageTime = 0f;
         while (true)

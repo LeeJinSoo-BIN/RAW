@@ -13,5 +13,4 @@ MonoBehaviour:
   m_Name: Account Info
   m_EditorClassIdentifier: 
   accountId: default
-  characterList:
-  - {fileID: 0}
+  characterList: []

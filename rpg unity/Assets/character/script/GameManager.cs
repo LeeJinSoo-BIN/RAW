@@ -11,6 +11,7 @@ using WebSocketSharp;
 public class GameManager : MonoBehaviour
 {   
     public newNetworkManager networkManager;
+    public portal portalObject;
     public bool offLine = false;
     void Awake()
     {
@@ -28,6 +29,7 @@ public class GameManager : MonoBehaviour
         DataBase.Instance.myCharacterControl = player.GetComponent<MultyPlayer>();
         DataBase.Instance.myCharacterState = player.GetComponent<CharacterState>();
 
+        
         if (GameObject.Find("EasterEgg") != null)
         {
             GameObject.Find("EasterEgg").GetComponent<EasterEgg>().myCharacter = player;
@@ -43,13 +45,24 @@ public class GameManager : MonoBehaviour
         player.GetComponent<MultyPlayer>().characterState.characterSpec = loadedSpec;
         player.GetComponent<MultyPlayer>().loadData();
         equipItem(player);
-        Debug.Log("loaded player data");
+        //Debug.Log("loaded player data");
         player.GetComponent<MultyPlayer>().characterState.setUp();
-        Debug.Log("set up state");
+        //Debug.Log("set up state");
         UIManager.Instance.SetUP();
-        Debug.Log("set up ingame ui");
-        if (DataBase.Instance.currentMapType == "dungeon" && PhotonNetwork.LocalPlayer.IsMasterClient)
-            StartCoroutine(SpawnBoss());
+        //Debug.Log("set up ingame ui");
+        if (DataBase.Instance.currentMapType == "dungeon")
+        {
+            portalObject.ActivatePortal(false);
+            if (PhotonNetwork.LocalPlayer.IsMasterClient)
+            {
+                StartCoroutine(SpawnMonster());
+                if(DataBase.Instance.currentStage == 1)
+                {
+                    networkManager.PV.RPC("startTimer", RpcTarget.AllBuffered);
+                }
+            }
+
+        }
     }
 
     void equipItem(GameObject player)
@@ -68,7 +81,10 @@ public class GameManager : MonoBehaviour
         spriteList.setSprite();
     }
 
-
+    public void StageClear()
+    {
+        portalObject.ActivatePortal(true);
+    }
     public void ReGame()
     {
         foreach (Transform player in GameObject.Find("Player Group").transform)
@@ -86,16 +102,21 @@ public class GameManager : MonoBehaviour
         Start();
     }
 
-    IEnumerator SpawnBoss()
+    IEnumerator SpawnMonster()
     {
         float _timer = 0f;
-        while (_timer < 5f)
+        while (_timer < (DataBase.Instance.currentStage == 1 ? 3 : 0.1))
         {
             _timer += Time.deltaTime;
             yield return null;
         }
-        //PhotonNetwork.Instantiate("Monster/Evil Wizard", Vector3.zero, Quaternion.identity);
-        PhotonNetwork.InstantiateRoomObject("Monster/Evil Wizard", Vector3.zero, Quaternion.identity);
-        networkManager.PV.RPC("SpawnBoss", RpcTarget.All);
-    }       
+        foreach (DungeonSpec.monsterInfo monster in DataBase.Instance.dungeonInfoDict[DataBase.Instance.currentMapName].monsterInfoList[DataBase.Instance.currentStage - 1].monsterList)
+        {
+            string monsterName = monster.monsterName;
+            Vector2 montserPos = monster.monsterPos;
+            GameObject spawnedMonster =  PhotonNetwork.InstantiateRoomObject("Monster/" + monsterName, montserPos, Quaternion.identity);
+            if(spawnedMonster.GetComponent<MonsterControl>().monsterSpec.monsterType.ToLower() == "boss")
+                networkManager.PV.RPC("SpawnBoss", RpcTarget.All);
+        }
+    }
 }

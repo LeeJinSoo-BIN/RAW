@@ -402,7 +402,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7708254577562241268}
   - component: {fileID: 6401860272212785329}
-  - component: {fileID: 8326609429108058253}
+  - component: {fileID: 7841144537112070388}
   m_Layer: 9
   m_Name: attack
   m_TagString: Untagged
@@ -470,7 +470,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.8308608, y: 0.4013268}
   m_EdgeRadius: 0
---- !u!114 &8326609429108058253
+--- !u!114 &7841144537112070388
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -479,9 +479,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1684322100134748871}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d346d1876958f241b6cf2069109a0d2, type: 3}
+  m_Script: {fileID: 11500000, guid: 7b94366508ccd694faa792a31c9c458a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dealOnce: 1
+  Deal: 0
+  foot: 1
 --- !u!1 &2366535755548915862
 GameObject:
   m_ObjectHideFlags: 0

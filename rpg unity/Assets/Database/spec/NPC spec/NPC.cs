@@ -53,12 +53,12 @@ public class NPC : MonoBehaviour
         if(spec.NpcType == "store")
         {
             //set up store
-            UIManager.Instance.storePanel.SetActive(true);
+            UIManager.Instance.updateCurrentFocusWindow(UIManager.Instance.storePanel);
         }
         else if(spec.NpcType == "normal")
         {
             //set up conversation
-            UIManager.Instance.conversationPanel.SetActive(true);
+            UIManager.Instance.ShowConversationPanel(gameObject);
         }        
     }
 }

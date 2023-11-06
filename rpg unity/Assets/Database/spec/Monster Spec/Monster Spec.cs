@@ -15,6 +15,7 @@ public class MonsterSpec : ScriptableObject
 
     public string defaultMovement;
     public float defaultMoveSpeed;
+    public bool haveWalkMotion;
     public Vector3 defaultScale;
     [System.Serializable]
     public class SerializeDictDropItems : CustomDict.SerializableDictionary<string, float>

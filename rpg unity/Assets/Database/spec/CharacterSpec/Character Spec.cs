@@ -29,4 +29,7 @@ public class CharacterSpec : ScriptableObject
     public List<InventoryItem> inventory = new List<InventoryItem>();
     public List<InventoryItem> equipment = new List<InventoryItem>();
     public List<Color> colors = new List<Color> { Color.black, Color.black, Color.black };
+
+    public int money;
+
 }

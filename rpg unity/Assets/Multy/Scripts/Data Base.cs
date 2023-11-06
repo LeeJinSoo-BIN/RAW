@@ -10,10 +10,14 @@ public class DataBase : MonoBehaviour
 
     [System.Serializable]
     public class SerializeDictSkill : CustomDict.SerializableDictionary<string, SkillSpec> { }
-    
+
+
+    [System.Serializable]
+    public class SerializeDictDungeonInfo : CustomDict.SerializableDictionary<string, DungeonSpec> { }
 
     public SerializeDictItem itemInfoDict;
     public SerializeDictSkill skillInfoDict;
+    public SerializeDictDungeonInfo dungeonInfoDict;
     public string skillThumbnailPath = "Character/skills/thumbnails";
 
     public bool isLogined = false;
@@ -21,8 +25,9 @@ public class DataBase : MonoBehaviour
     public AccountInfo defaultAccountInfo;
     public AccountInfo accountInfo;
     public CharacterSpec selectedCharacterSpec;
-    public string currentMapName;
+    public string currentMapName;    
     public string currentMapType;
+    public int currentStage;
     public bool isCurrentDungeonCaptain;
 
     public GameObject myCharacter;
@@ -37,11 +42,13 @@ public class DataBase : MonoBehaviour
     public bool isPromotioned = false;
     private void Awake()
     {
-        defaultAccountInfo.characterList.Clear();
         var obj = FindObjectsOfType<DataBase>();
         if (obj.Length == 1)
         {
             DontDestroyOnLoad(gameObject);
+            defaultAccountInfo = new AccountInfo();
+            defaultAccountInfo.accountId = "default";
+            defaultAccountInfo.characterList = new List<CharacterSpec>();            
         }
         else
         {

@@ -125,10 +125,15 @@ public class Login : MonoBehaviourPunCallbacks
                     Debug.Log("register success");
                     StartCoroutine(popMessage("가입 완료", "로그인해주세요."));
                 }
-                else
+                else if(registerStatus == 0)
                 {
                     Debug.Log("fail");
                     StartCoroutine(popMessage("가입 실패", "중복된 아이디 입니다."));
+                }
+                else
+                {
+                    Debug.Log("error");
+                    StartCoroutine(popMessage("오류", "서버에 문제가 있습니다."));
                 }
             }
             else
@@ -220,6 +225,11 @@ public class Login : MonoBehaviourPunCallbacks
         PhotonNetwork.JoinLobby();
         DataBase.Instance.isLogined = true;
         PopPanel.SetActive(false);
+    }
+
+    public void ClickLogoutButton()
+    {
+        PhotonNetwork.Disconnect();
     }
 
     public override void OnDisconnected(DisconnectCause cause)
@@ -387,9 +397,9 @@ public class Login : MonoBehaviourPunCallbacks
                 StartCoroutine(popMessage("중복", "중복된 닉네임 입니다."));
                 return;
             }
+            CharacterDB.CreateCharacter(CreatCharacterNickInput.text, "warrior");
         }
-
-        CharacterDB.CreateCharacter(CreatCharacterNickInput.text, "warrior");
+        
 
         CharacterSpec spec = ScriptableObject.CreateInstance<CharacterSpec>();
         CharacterSpec defaultSpec; 
@@ -519,10 +529,6 @@ public class Login : MonoBehaviourPunCallbacks
         //CharacterCreatePanel.SetActive(false);
     }
 
-    public void ClickLogOutButton()
-    {
-        PhotonNetwork.Disconnect();
-    }
 
     IEnumerator popMessage(string title, string content, float popTime = 2f)
     {

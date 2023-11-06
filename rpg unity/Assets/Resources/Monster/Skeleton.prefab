@@ -299,7 +299,7 @@ Transform:
   m_GameObject: {fileID: 3886391812648439690}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.05, y: 0.015, z: 1}
+  m_LocalScale: {x: 0.055, y: 0.015, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3234771748339331811}
@@ -472,10 +472,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3981259422856224586}
-  - component: {fileID: 8548732690494451539}
-  - component: {fileID: 6916847102819598641}
+  - component: {fileID: 2612224034217000990}
+  - component: {fileID: 7907279703577940483}
   m_Layer: 9
-  m_Name: attack2
+  m_Name: smash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -489,15 +489,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4154202892772460518}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.15, z: 0}
+  m_LocalPosition: {x: 0.571, y: 0.15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 747632104195863466}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!58 &8548732690494451539
-CircleCollider2D:
+--- !u!70 &2612224034217000990
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -528,10 +528,10 @@ CircleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.17939931, y: 0.3028463}
-  serializedVersion: 2
-  m_Radius: 0.17624491
---- !u!114 &6916847102819598641
+  m_Offset: {x: 0.017951958, y: 0.41747594}
+  m_Size: {x: 1.5995559, y: 0.9763849}
+  m_Direction: 1
+--- !u!114 &7907279703577940483
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -631,7 +631,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 747632104195863466}
-  - component: {fileID: 2075375362394840460}
+  - component: {fileID: 5814530969769978431}
   - component: {fileID: 3579689265428412503}
   - component: {fileID: 3867682407519172524}
   - component: {fileID: 2259383325488950679}
@@ -640,7 +640,7 @@ GameObject:
   - component: {fileID: 3738683713220002454}
   - component: {fileID: 6239393549072258040}
   m_Layer: 9
-  m_Name: Flying Eye
+  m_Name: Skeleton
   m_TagString: Monster
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -669,8 +669,8 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!58 &2075375362394840460
-CircleCollider2D:
+--- !u!70 &5814530969769978431
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -701,9 +701,9 @@ CircleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.0245139, y: 0.43370238}
-  serializedVersion: 2
-  m_Radius: 0.28934035
+  m_Offset: {x: 0.012726188, y: 0.5154111}
+  m_Size: {x: 0.6272621, y: 1.1399881}
+  m_Direction: 0
 --- !u!50 &3579689265428412503
 Rigidbody2D:
   serializedVersion: 4
@@ -741,7 +741,7 @@ Animator:
   m_GameObject: {fileID: 5241684330125276703}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: d9558074b475c314f9237b3af41a937d, type: 2}
+  m_Controller: {fileID: 9100000, guid: 919aebc5d1cc4774795f62eb6c8012f1, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -764,7 +764,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d3f0ff480f9257439895a31d8028613, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  monsterSpec: {fileID: 11400000, guid: 2c329d4229b0fcc43bd102fc26842fe0, type: 2}
+  monsterSpec: {fileID: 11400000, guid: 43e0af56553082e4c8c1d02e01820b88, type: 2}
   canvas: {fileID: 4005057331862599659}
   level: 1
   attackable: 1
@@ -842,19 +842,25 @@ MonoBehaviour:
   m_SynchronizeParameters:
   - Type: 9
     SynchronizeType: 1
+    Name: SK Slash
+  - Type: 9
+    SynchronizeType: 1
+    Name: SK Smash
+  - Type: 9
+    SynchronizeType: 1
+    Name: SK Shield
+  - Type: 9
+    SynchronizeType: 1
     Name: hit
   - Type: 4
     SynchronizeType: 1
     Name: run
+  - Type: 4
+    SynchronizeType: 1
+    Name: walk
   - Type: 9
     SynchronizeType: 1
     Name: Death
-  - Type: 9
-    SynchronizeType: 1
-    Name: FE Bite
-  - Type: 9
-    SynchronizeType: 1
-    Name: FE Spin
   m_SynchronizeLayers:
   - SynchronizeType: 0
     LayerIndex: 0
@@ -958,7 +964,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6380151135753408440}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.1, z: 0}
+  m_LocalPosition: {x: 0, y: 1.418, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -999,7 +1005,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0.15}
+  m_AnchoredPosition: {x: 0, y: 0.4}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &6707284680964075906
@@ -1027,7 +1033,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6707284680964075906}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.08, y: 0.6, z: 0}
+  m_LocalPosition: {x: -0.08, y: 0.52, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1075,7 +1081,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: -4795363162621231457, guid: 6d7cd4f7505dc674c891ca8946cfd98b, type: 3}
+  m_Sprite: {fileID: 4723107735738678597, guid: 1018b0ba13578bf459bd254ae1a2be99, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1638,9 +1644,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5515389224075341298}
   - component: {fileID: 5107394906956008067}
-  - component: {fileID: 4500122559577859040}
+  - component: {fileID: 3106098993455860650}
   m_Layer: 9
-  m_Name: attack3
+  m_Name: slash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1693,10 +1699,10 @@ CircleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.07527441, y: 0.53711677}
+  m_Offset: {x: 0.42294145, y: 0.6397269}
   serializedVersion: 2
-  m_Radius: 0.48723388
---- !u!114 &4500122559577859040
+  m_Radius: 1.049031
+--- !u!114 &3106098993455860650
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

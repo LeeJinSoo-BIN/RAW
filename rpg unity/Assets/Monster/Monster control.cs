@@ -55,13 +55,16 @@ public class MonsterControl : MonoBehaviour
         if (PhotonNetwork.IsMasterClient && attackable && !isDeath)
         {
             if (isAggro)
-            {
+            {                
                 MoveToTarget(0.01f, 0.1f);
                 return;
             }
             time += Time.deltaTime;
             if (time >= patternCycle && !isCastingSkill) // 30???? ???? ?? ???? ????
             {
+                isMoving = false;
+                if (monsterSpec.haveWalkMotion)
+                    animator.SetBool("walk", false);
                 randomPattern();
                 time = 0;
             }
@@ -132,6 +135,10 @@ public class MonsterControl : MonoBehaviour
 
         runWhileCastingSkillCoroutine = MoveToTargetCoroutine(transform.position, currentTargetPos, currentMoveSpeed, currentCastingSkill.run, currentCastingSkill.distance);
         yield return StartCoroutine(runWhileCastingSkillCoroutine);
+
+        Vector3 _dirMVec = (target.transform.position - transform.position).normalized;
+        PV.RPC("direction", RpcTarget.AllBuffered, _dirMVec);
+
         float _time = 0f;
         try
         {
@@ -147,9 +154,7 @@ public class MonsterControl : MonoBehaviour
                 break;
             _time += Time.deltaTime;
             yield return null;
-        }
-        Vector3 _dirMVec = (target.transform.position - transform.position).normalized;
-        PV.RPC("direction", RpcTarget.AllBuffered, _dirMVec);
+        }        
         if (currentCastingSkill.type == "spawn" || currentCastingSkill.type == "spawn creature")
             yield return StartCoroutine(spawnAttack());
         else if (currentCastingSkill.type == "direct")
@@ -200,8 +205,9 @@ public class MonsterControl : MonoBehaviour
     void setActiveCollider(int childNum, bool onOff, int deal)
     {
         GameObject area = transform.GetChild(childNum).gameObject;
-        area.name = deal.ToString();
-        area.SetActive(onOff);
+        area.GetComponent<MonsterDirectAttack>().dealOnce = true;
+        area.GetComponent<MonsterDirectAttack>().Deal = deal;        
+        area.SetActive(onOff);        
     }
 
     [PunRPC]
@@ -295,16 +301,19 @@ public class MonsterControl : MonoBehaviour
         Vector3 _disVec = (Vector2)target.transform.position - (Vector2)transform.position;
         if (_disVec.sqrMagnitude < minDistance && isMoving == true)
         {
-            isMoving = false;
-            //animator.SetBool("run", false);
+            if (monsterSpec.haveWalkMotion)
+                animator.SetBool("walk", false);
+            isMoving = false;            
             return;
         }
         else if (_disVec.sqrMagnitude > maxDistance && isMoving == false)
-        {
+        {            
             isMoving = true;
+            if (monsterSpec.haveWalkMotion)
+                animator.SetBool("walk", true);
         }
         if (isMoving == true)
-        {
+        {            
             Vector3 _dirMVec = _dirVec.normalized;
             PV.RPC("direction", RpcTarget.AllBuffered, _dirMVec);
             transform.position += (_dirMVec * monsterSpec.defaultMoveSpeed * Time.deltaTime);
@@ -322,10 +331,8 @@ public class MonsterControl : MonoBehaviour
             foreach (string itemName in monsterSpec.dropItems.Keys)
             {
                 spawnItem(itemName, monsterSpec.dropItems[itemName]);
-            }
+            }            
         }
-        if(monsterSpec.monsterType.ToLower() == "boss")
-            UIManager.Instance.EndGame("clear");
         Destroy(gameObject, 0.45f);
     }
 
@@ -382,4 +389,16 @@ public class MonsterControl : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            if (monsterSpec.monsterType.ToLower() == "boss")
+                UIManager.Instance.EndGame("clear");
+            else if (transform.parent.childCount == 1)
+            {
+                GameObject.Find("GameManager").GetComponent<GameManager>().StageClear();
+            }
+        }
+    }
 }

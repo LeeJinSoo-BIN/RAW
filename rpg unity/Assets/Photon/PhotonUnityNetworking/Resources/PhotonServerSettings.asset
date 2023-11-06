@@ -108,6 +108,7 @@ MonoBehaviour:
   - syncParty
   - acceptJoinParty
   - UpdateParty
+  - startTimer
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

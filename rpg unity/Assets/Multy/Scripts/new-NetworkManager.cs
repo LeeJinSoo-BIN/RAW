@@ -49,13 +49,13 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     {
         if (DataBase.Instance.currentMapType == "dungeon")
         {
-            PhotonNetwork.JoinOrCreateRoom(nextRoom, new RoomOptions { MaxPlayers = 3 }, null);            
+            PhotonNetwork.JoinOrCreateRoom(nextRoom, new RoomOptions { MaxPlayers = 3 }, null);
         }
         else if(DataBase.Instance.currentMapType == "village")
         {
             PhotonNetwork.JoinOrCreateRoom("palletTown", new RoomOptions { MaxPlayers = 20 }, null);
         }
-        else if(DataBase.Instance.currentMapType == "characterSelect")
+        else if(DataBase.Instance.currentMapType == "character Select")
         {
             DataBase.Instance.currentMapName = "Login Scene";
             PhotonNetwork.JoinLobby();
@@ -64,6 +64,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinedLobby()
     {
+        Destroy(UIManager.Instance.gameObject);        
         SceneManager.LoadScene(DataBase.Instance.currentMapName);
     }
 
@@ -123,6 +124,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         DataBase.Instance.isCurrentDungeonCaptain = false;
         DataBase.Instance.currentMapType = "dungeon";
         DataBase.Instance.currentMapName = "Dungeon";
+        DataBase.Instance.currentStage = 1;
         UIManager.Instance.limitTime = timeLimit;
         nextRoom = DataBase.Instance.myPartyCaptainName;
         PhotonNetwork.LeaveRoom();        
@@ -249,13 +251,21 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     }*/
     #endregion
 
+    [PunRPC]
+    void startTimer()
+    {
+        if (UIManager.Instance.limitTime <= 0)
+            UIManager.Instance.limitTime = 6000;
+        UIManager.Instance.timer = UIManager.Instance.startTimer();
+        UIManager.Instance.StartCoroutine(UIManager.Instance.timer);
+    }
 
     [PunRPC]
     void SpawnBoss()
     {
         //spawnButton.SetActive(false);
         //timeLimit.SetActive(false);
-        StageManager.active = true;
+        //StageManager.active = true;
         UIManager.Instance.BossSetUp();        
     }
 }
