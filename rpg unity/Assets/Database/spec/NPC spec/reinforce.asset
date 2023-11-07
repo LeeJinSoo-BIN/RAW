@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4871128e4c2a3b84aa5379941accb972, type: 3}
+  m_Name: reinforce
+  m_EditorClassIdentifier: 
+  NpcName: "\uD30C\uB77C\uC6A9"
+  NpcType: reinforce
+  equipments:
+  - {fileID: 11400000, guid: ec8848f748f02bd479a4e2ca80c57d7c, type: 2}
+  - {fileID: 11400000, guid: f7de936b32d1b2547891139fb661380f, type: 2}
+  - {fileID: 11400000, guid: c79d94a3987ecdb4ca8fb1a7f301665e, type: 2}
+  - {fileID: 11400000, guid: 6da7b061541bde345bac7c88c2c2c719, type: 2}
+  colors:
+  - {r: 0.2830189, g: 0.23765475, b: 0.20692419, a: 1}
+  - {r: 0.246707, g: 0.5283019, b: 0.38750446, a: 1}
+  - {r: 0.24705884, g: 0.5294118, b: 0.38823533, a: 1}
+  ments: []
+  sellingItems:
+  - {fileID: 11400000, guid: b1098ecdb9eb2614b834bbd178d71ca5, type: 2}
+  - {fileID: 11400000, guid: 6f3c3ada41ab30742b2c6dc779b708d7, type: 2}
+  questList: []

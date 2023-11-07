@@ -1866,7 +1866,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c8180382a12288244a173ec36286d26f, type: 2}
   - {fileID: 11400000, guid: d59c5f6d0be9f8b4585a069725ac6fba, type: 2}
   - {fileID: 11400000, guid: b25ca8162f1f01940bb8830fe1e1124f, type: 2}
-  cheatCharacterSpec: {fileID: 0}
+  cheatCharacterSpec: {fileID: 11400000, guid: f2e62f1b2dd550945966496a958e4df9, type: 2}
   CreateCharacterSample: {fileID: 1103846898}
   CreateCharacterRollText: {fileID: 1579787284}
   CreatCharacterNickInput: {fileID: 2137413803}
