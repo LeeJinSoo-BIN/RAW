@@ -187,6 +187,9 @@ public class CharacterDB : MonoBehaviour
     public static int CreateCharacter(string nickname, string roll)
     {
         int status = 0;
+        int characterId;
+        int maxInventoryNum;
+        int characterNum = 1;
 
         using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
         {
@@ -199,10 +202,6 @@ public class CharacterDB : MonoBehaviour
 
                     command.CommandText = string.Format("SELECT * FROM character_std WHERE roll = '{0}';", roll);
 
-                    int characterId;
-                    int maxInventoryNum;
-                    int characterNum;
-
                     using (MySqlDataReader characterStd = command.ExecuteReader())
                     {
                         characterStd.Read();
@@ -213,21 +212,31 @@ public class CharacterDB : MonoBehaviour
                         characterStd.Close();
                     }
 
+                    command.CommandText = string.Format("SELECT character_num FROM user_character WHERE user_id = '{0}' ORDER BY character_num DESC", userId);
+                    
+                    using (MySqlDataReader userCharacter = command.ExecuteReader())
+                    {
+                        if (userCharacter.Read())
+                            characterNum = Convert.ToInt32(userCharacter["character_num"]) + 1;
+
+                        userCharacter.Close();
+                    }
+
                     command.CommandText = string.Format(
                         "INSERT INTO user_character (user_id, character_num, character_id, nickname, level, exp, last_town, max_inventory) " +
                         "VALUES ('{0}', {1}, {2}, '{3}', {4}, {5}, '{6}', {7})",
-                        userId, 0, characterId, nickname, 1, 0, "Pallet Town", maxInventoryNum
+                        userId, characterNum, characterId, nickname, 1, 0, "Pallet Town", maxInventoryNum
                     );
 
                     command.ExecuteNonQuery();
 
-                    StatDB.InsertCharacterStat(userId, 1, "hp", StatDB.GetCharacterStdStat(characterId, "hp"));
-                    StatDB.InsertCharacterStat(userId, 1, "mp", StatDB.GetCharacterStdStat(characterId, "mp"));
-                    StatDB.InsertCharacterStat(userId, 1, "recover_mp", StatDB.GetCharacterStdStat(characterId, "recover_mp"));
-                    StatDB.InsertCharacterStat(userId, 1, "power", StatDB.GetCharacterStdStat(characterId, "power"));
-                    StatDB.InsertCharacterStat(userId, 1, "critical_dmg", StatDB.GetCharacterStdStat(characterId, "critical_dmg"));
-                    StatDB.InsertCharacterStat(userId, 1, "critical_percent", StatDB.GetCharacterStdStat(characterId, "critical_percent"));
-                    StatDB.InsertCharacterStat(userId, 1, "heal_percent", StatDB.GetCharacterStdStat(characterId, "heal_percent"));
+                    StatDB.InsertCharacterStat(userId, characterNum, "hp", StatDB.GetCharacterStdStat(characterId, "hp"));
+                    StatDB.InsertCharacterStat(userId, characterNum, "mp", StatDB.GetCharacterStdStat(characterId, "mp"));
+                    StatDB.InsertCharacterStat(userId, characterNum, "recover_mp", StatDB.GetCharacterStdStat(characterId, "recover_mp"));
+                    StatDB.InsertCharacterStat(userId, characterNum, "power", StatDB.GetCharacterStdStat(characterId, "power"));
+                    StatDB.InsertCharacterStat(userId, characterNum, "critical_dmg", StatDB.GetCharacterStdStat(characterId, "critical_dmg"));
+                    StatDB.InsertCharacterStat(userId, characterNum, "critical_percent", StatDB.GetCharacterStdStat(characterId, "critical_percent"));
+                    StatDB.InsertCharacterStat(userId, characterNum, "heal_percent", StatDB.GetCharacterStdStat(characterId, "heal_percent"));
 
                     status = 1;
                 }
