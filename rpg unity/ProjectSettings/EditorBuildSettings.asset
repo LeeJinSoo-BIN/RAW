@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Multy Scene.unity
     guid: 0beebfd828bb643aa8a027cda5b246b5
   - enabled: 1
-    path: Assets/Scenes/Login Scene.unity
+    path: Assets/Scenes/Map/Login Scene.unity
     guid: 96dfec35ed8d63b4a931e2504d781633
   - enabled: 1
     path: Assets/Scenes/Map/Pallet Town.unity

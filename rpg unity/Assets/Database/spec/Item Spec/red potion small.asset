@@ -17,8 +17,8 @@ MonoBehaviour:
     \uBB3C\uC57D\uC774\uB2E4. (health)\uC758 \uCCB4\uB825\uC744 \uD68C\uBCF5\uC2DC\uCF1C\uC900\uB2E4."
   itemType: potion
   spriteDirectory: items/sprite/red potion small
-  sellPrice: 0
-  buyPrice: 0
+  sellPrice: 30
+  buyPrice: 50
   maxCarryAmount: 999
   recoveryHealth: 100
   recoveryMana: 0

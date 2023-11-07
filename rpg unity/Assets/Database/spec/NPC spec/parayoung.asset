@@ -23,5 +23,7 @@ MonoBehaviour:
   - {r: 0.246707, g: 0.5283019, b: 0.38750446, a: 1}
   - {r: 0.24705884, g: 0.5294118, b: 0.38823533, a: 1}
   ments: []
-  sellingItems: []
+  sellingItems:
+  - {fileID: 11400000, guid: b1098ecdb9eb2614b834bbd178d71ca5, type: 2}
+  - {fileID: 11400000, guid: 6f3c3ada41ab30742b2c6dc779b708d7, type: 2}
   questList: []

@@ -119,12 +119,14 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
 
         inventory = characterSpec.inventory;
+        quickInventory.Clear();
         foreach (InventoryItem item in inventory)
         {
             quickInventory.Add(item.itemName, new qucikInventoryInfo() { count = item.count, position = item.position});
-        }        
-        UIManager.Instance.quickInventory = quickInventory;        
-        updateInventory();        
+        }
+        quickInventory.Add("money", new qucikInventoryInfo() { count = characterSpec.money, position = 0 });
+        UIManager.Instance.quickInventory = quickInventory;
+        UIManager.Instance.updateInventory();
     }
     void Update()
     {
@@ -139,12 +141,13 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                     if (hit_item.collider != null)
                     {
 
-                        Debug.Log(hit_item.collider.name);
+                        //Debug.Log(hit_item.collider.name);
                         if (hit_item.collider.CompareTag("Item"))
                         {
-                            Debug.Log("click item");
-                            if (hit_item.transform.GetChild(1).gameObject.activeSelf)
-                                getItem(hit_item.transform.gameObject);
+                            //Debug.Log("click item");
+                            if (hit_item.transform.GetChild(1).gameObject.activeSelf) {
+                                getItem(hit_item.transform.GetComponent<Item>().itemName, hit_item.transform.GetComponent<Item>().itemCount, hit_item.transform.name, true);
+                            }
                         }
                         return;
                     }
@@ -584,10 +587,10 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         }
         isAttackingNormal = false;
     }
-    void getItem(GameObject got_item)
+    public bool getItem(string got_item_name, int got_item_cnt, string field_item_name, bool pick)
     {
-        string got_item_name = got_item.GetComponent<Item>().itemName;
-        int got_item_cnt = got_item.GetComponent<Item>().itemCount;
+        //string got_item_name = got_item.GetComponent<Item>().itemName;
+        //int got_item_cnt = got_item.GetComponent<Item>().itemCount;
         bool gotten = false;        
         if (quickInventory.ContainsKey(got_item_name))
         {            
@@ -599,17 +602,19 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             if (quickInventory.Count < characterSpec.maxInventoryNum)
             {                
                 FindFrontInventoryPos();
-                quickInventory.Add(got_item_name, new qucikInventoryInfo() { position = frontInventoryPos, count = got_item_cnt });                
+                quickInventory.Add(got_item_name, new qucikInventoryInfo() { position = frontInventoryPos, count = got_item_cnt });
+                Debug.Log(UIManager.Instance.quickInventory.Keys);
                 gotten = true;                
             }
         }
         if (gotten)
         {
-            updateInventory();
-            PV.RPC("itemDestroySync", RpcTarget.AllBuffered, got_item.name);
+            UIManager.Instance.updateInventory();
+            if(pick)
+                PV.RPC("itemDestroySync", RpcTarget.AllBuffered, field_item_name);
             UIManager.Instance.updateAllQuickSlot();
         }
-
+        return gotten;
         /*
         for (int k = 0; k < inventory.Count; k++)
         {
@@ -715,7 +720,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     void itemDestroySync(string itemName)
     {
-        Debug.Log(itemName);
+        //Debug.Log(itemName);
         Destroy(itemDropField.transform.Find(itemName).gameObject);
     }
 

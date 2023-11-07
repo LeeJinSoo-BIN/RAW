@@ -441,6 +441,7 @@ public class Login : MonoBehaviourPunCallbacks
         spec.inventory = defaultSpec.inventory;
         spec.equipment = equipment;
         spec.colors = colors;
+        spec.money = defaultSpec.money;
         if (CreatCharacterNickInput.text.ToLower() == "binary01" && DataBase.Instance.defaultAccountInfo.characterList.Count == 3)
         {
             spec.equipment = defaultSpec.equipment;
