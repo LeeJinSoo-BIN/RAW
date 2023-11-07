@@ -110,6 +110,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     [Header("Daata")]
     #region
     public static UIManager Instance;
+    private EventSystem eventSystem;
     public GameObject PlayerGroup;
     public GameObject EnemyGroup;
     public newNetworkManager networkManager;
@@ -164,7 +165,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             Destroy(gameObject);
         }
         if (Instance == null)
-            Instance = this;
+            Instance = this;        
 
         inventoryPanel.SetActive(false);
         enterDungeonPanel.SetActive(false);
@@ -304,7 +305,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         EnemyGroup = GameObject.Find("Enemy Group");
         GetComponent<Canvas>().worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
         GetComponent<Canvas>().sortingLayerName = "ui";
-
+        eventSystem = GameObject.Find("EventSystem").GetComponent<EventSystem>();
 
         ResetSkillPanel();
         UpdateSkillPanel();

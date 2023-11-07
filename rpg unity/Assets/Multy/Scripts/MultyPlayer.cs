@@ -68,7 +68,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public GameObject itemDropField;
 
     public TMP_InputField chatInput;
-
+    private EventSystem eventSystem;
     // Multy
     public Rigidbody2D RB;
     public PhotonView PV;
@@ -93,6 +93,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         playerGroup = GameObject.Find("Player Group");
         enemyGroup = GameObject.Find("Enemy Group");
         itemDropField = GameObject.Find("Item Field").gameObject;
+        eventSystem = GameObject.Find("EventSystem").GetComponent<EventSystem>();
         //sortingGroup.sortingOrder = PV.IsMine ? 1 : 0;        
         if (PV.IsMine)
         {
@@ -130,6 +131,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     }
     void Update()
     {
+        
         if (PV.IsMine && !isDeath)
         {
             if (Input.GetMouseButtonDown(0))
@@ -219,8 +221,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                     characterAnimator.SetBool("IsRunning", true);                    
                 }
                 Move_Character();
-            }
-            if (!chatInput.isFocused)
+            }            
+            if (eventSystem.currentSelectedGameObject == null)
             {
                 if (Input.GetKeyDown(KeyCode.S))
                 {
@@ -316,7 +318,6 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             {
                 if (normalAttackTarget != null && !isCoolDown(normalAttackSpec))
                 {
-                    Debug.Log("평타!");
                     CastingSkill(normalAttackTarget.transform.Find("foot").position, normalAttackTarget);
                 }
             }
