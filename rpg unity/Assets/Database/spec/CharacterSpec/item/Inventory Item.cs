@@ -7,12 +7,11 @@ public class InventoryItem : ScriptableObject
 {
     public string itemName;
     public int count;
-    public int position;
     public int reinforce;
 }
 
-public class qucikInventoryInfo
+public class QuickInventory
 {
-    public int count;
-    public int position;
+    public int kindCount = 0;
+    public SortedSet<int> position = new SortedSet<int>();
 }

@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: blue potion small
   count: 1
-  position: 1
   reinforce: 0

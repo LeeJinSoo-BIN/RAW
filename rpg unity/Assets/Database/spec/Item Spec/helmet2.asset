@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: helmet2
   description: "\uCCA0 \uD57C\uB9F7"
-  itemType: helmet
+  itemType: helmet2
   spriteDirectory: SPUM_Sprites/Items/4_Helmet/Helmet_2
   sellPrice: 0
   buyPrice: 0

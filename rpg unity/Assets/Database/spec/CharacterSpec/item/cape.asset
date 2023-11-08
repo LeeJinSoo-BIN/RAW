@@ -13,6 +13,5 @@ MonoBehaviour:
   m_Name: cape
   m_EditorClassIdentifier: 
   itemName: cape
-  count: 0
-  position: 0
+  count: 1
   reinforce: 0

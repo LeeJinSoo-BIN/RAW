@@ -45,7 +45,7 @@ public class InGameUI : MonoBehaviour
     private List<string> quickSlotKeys = new List<string> { "1", "2", "3", "4" };
     public Dictionary<string, string> keyToItemName = new Dictionary<string, string>();
     
-    public Dictionary<string, qucikInventoryInfo> quickInventory;
+    //public Dictionary<string, qucikInventoryInfo> quickInventory;
 
     public RectTransform ChatBox;
     public RectTransform ChatExpandButtonIcon;
@@ -60,7 +60,7 @@ public class InGameUI : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4))
         {
             string now_input_key = Input.inputString;
-            useQuickSlot(now_input_key);
+         //   useQuickSlot(now_input_key);
         }
     }
 
@@ -193,10 +193,10 @@ public class InGameUI : MonoBehaviour
                 StartCoroutine(CoolDownCoroutine(skillNames[k], 0f));
             }
         }
-        setQuickSlot("1", "red potion small");
-        setQuickSlot("2", "blue potion small");
+        //setQuickSlot("1", "red potion small");
+        //setQuickSlot("2", "blue potion small");
     }
-    
+    /*
     void useQuickSlot(string key)
     {
         if (quickInventory.ContainsKey(keyToItemName[key]))
@@ -209,7 +209,7 @@ public class InGameUI : MonoBehaviour
             //myCharacter.GetComponent<MultyPlayer>().updateInventory();
             updateThisQuickSlot(key);
         }
-        /*
+        *//*
         for (int k = 0; k < inventory.Count; k++)
         {
             if(inventory[k].itemName == keyToItemName[key])
@@ -222,7 +222,7 @@ public class InGameUI : MonoBehaviour
                     updateThisQuickSlot(key);
                 }
             }
-        }*/
+        }*//*
     }
     public void updateAllQuickSlot(bool updateSprite = false)
     {
@@ -260,13 +260,13 @@ public class InGameUI : MonoBehaviour
             currentSlot.GetChild(2).GetComponent<TMP_Text>().text = "0";
         }
     }
-    
+  
     void setQuickSlot(string key, string itemName)
     {
         keyToItemName[key] = itemName;
         updateThisQuickSlot(key, true);
     }
-
+    */
 
     void consumePotion(string itemName)
     {

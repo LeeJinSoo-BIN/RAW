@@ -3,6 +3,8 @@ using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor.UI;
 using UnityEngine;
 
 
@@ -25,8 +27,10 @@ public class CharacterSpec : ScriptableObject
     [Serializable]
     public class SerializeDictSkillLevel : SerializableDictionary<string, int> { }
     public SerializeDictSkillLevel skillLevel;
-    public int maxInventoryNum;    
-    public List<InventoryItem> inventory = new List<InventoryItem>();
+    public int maxInventoryNum;
+    
+    public List<InventoryItem> inventory = new List<InventoryItem>(24);
+    
     public List<InventoryItem> equipment = new List<InventoryItem>();
     public List<Color> colors = new List<Color> { Color.black, Color.black, Color.black };
 

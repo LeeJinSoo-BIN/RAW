@@ -13,6 +13,5 @@ MonoBehaviour:
   m_Name: cloth5
   m_EditorClassIdentifier: 
   itemName: cloth5
-  count: 0
-  position: 0
+  count: 1
   reinforce: 0

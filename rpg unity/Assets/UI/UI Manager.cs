@@ -13,6 +13,7 @@ using WebSocketSharp;
 using System.Linq;
 using System;
 using static UnityEditor.Progress;
+using static UnityEditor.PlayerSettings;
 
 public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
 {
@@ -65,8 +66,10 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public GameObject storeInvenItemInfo;
     public GameObject storeBuyPanel;
     public GameObject storeSellPanel;
-    
-    
+
+    [Header("Enchant Panel")]
+    public GameObject EnchantPanel;
+    public GameObject EnchantResult;
     #endregion
 
 
@@ -125,7 +128,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public Dictionary<string, string> skillNameToKey = new Dictionary<string, string>();
     private List<string> quickSlotKeys = new List<string> { "1", "2", "3", "4" };
     public Dictionary<string, string> keyToItemName = new Dictionary<string, string>();
-    public Dictionary<string, qucikInventoryInfo> quickInventory;
+    public Dictionary<string, QuickInventory> quickInventory = new Dictionary<string, QuickInventory>();
     public Dictionary<string, CharacterState> inGameUserList = new Dictionary<string, CharacterState>();
     public Dictionary<int, string> idToNickName = new Dictionary<int, string>();
     public HashSet<GameObject> openedWindows = new HashSet<GameObject>();
@@ -488,13 +491,16 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     void useQuickSlot(string key)
     {
+        if (!quickInventory.ContainsKey(key))
+            return;
+        int invenPos = quickInventory[keyToItemName[key]].position.Max;
         if (quickInventory.ContainsKey(keyToItemName[key]))
         {
-            if (quickInventory[keyToItemName[key]].count > 0)
+            if (quickInventory[keyToItemName[key]].kindCount > 0)
             {
-                quickInventory[keyToItemName[key]].count--;
+                DataBase.Instance.myCharacterControl.loseItem(keyToItemName[key], 1);
+                consumePotion(keyToItemName[key]);
             }
-            consumePotion(keyToItemName[key]);
             updateInventory();
             updateThisQuickSlot(key);
         }
@@ -514,7 +520,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             {
                 currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;
                 currentSlot.GetChild(0).name = "item " + keyToItemName[quickSlotKeys[k]];
-                currentSlot.GetChild(2).GetComponent<TMP_Text>().text = quickInventory[keyToItemName[quickSlotKeys[k]]].count.ToString();
+                currentSlot.GetChild(2).GetComponent<TMP_Text>().text = quickInventory[keyToItemName[quickSlotKeys[k]]].kindCount.ToString();
             }
             else
             {
@@ -535,7 +541,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;
             currentSlot.GetChild(0).name = "item " + keyToItemName[key];
-            currentSlot.GetChild(2).GetComponent<TMP_Text>().text = quickInventory[keyToItemName[key]].count.ToString();
+            currentSlot.GetChild(2).GetComponent<TMP_Text>().text = quickInventory[keyToItemName[key]].kindCount.ToString();
         }
         else
         {
@@ -559,34 +565,25 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     public void updateInventory()
     {
-        List<string> destroyList = new List<string>();
-        inventoryPanel.transform.GetChild(4).GetComponent<TMP_Text>().text = quickInventory["money"].count.ToString();
-        foreach (string item in quickInventory.Keys)
+        inventoryPanel.transform.GetChild(4).GetComponent<TMP_Text>().text = DataBase.Instance.myCharacterState.characterSpec.money.ToString();
+        for (int pos = 0; pos < DataBase.Instance.myCharacterState.characterSpec.maxInventoryNum; pos++)
         {
-            if (item == "money")
-                continue;
-            int pos = quickInventory[item].position;
-            int cnt = quickInventory[item].count;
             Transform box = inventoryBox.transform.GetChild(pos);
-            if (cnt > 0)
+            InventoryItem item = DataBase.Instance.myCharacterState.characterSpec.inventory[pos];
+            if (item == null)
             {
-                box.GetChild(2).GetComponent<TMP_Text>().text = cnt.ToString();
-                box.GetChild(1).GetComponent<Image>().color = Color.white;
-                box.GetChild(1).name = "item " + item;
-                if (box.GetChild(1).GetComponent<Image>().color.a == 0)
-                    box.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[item].spriteDirectory);
-            }
-            else
-            {
-                destroyList.Add(item);
                 box.GetChild(2).GetComponent<TMP_Text>().text = "";
                 box.GetChild(1).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0);
                 box.GetChild(1).name = "";
             }
-        }
-        foreach (string name in destroyList)
-        {
-            quickInventory.Remove(name);
+            else
+            {
+                box.GetChild(2).GetComponent<TMP_Text>().text = item.count.ToString();
+                box.GetChild(1).GetComponent<Image>().color = Color.white;
+                box.GetChild(1).name = "item " + item;
+                if (box.GetChild(1).GetComponent<Image>().color.a == 0)
+                    box.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[item.itemName].spriteDirectory);
+            }
         }
     }
     #endregion
@@ -1166,9 +1163,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     }
     #endregion
 
-
-    #region NPC
-
+    #region NPC 대화
     public void ShowConversationPanel(GameObject NPC)
     {
         updateCurrentFocusWindow(conversationPanel);
@@ -1181,6 +1176,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     }
 
+    #endregion
+
+    #region 상점
     public void ShowStorePanel(GameObject npc)
     {
         UpdateStoreNpc(npc);
@@ -1215,16 +1213,14 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             Destroy(item.gameObject);
         }
-        storeInvenBox.transform.parent.GetChild(0).GetComponent<TMP_Text>().text = quickInventory["money"].count.ToString();
+        storeInvenBox.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = DataBase.Instance.myCharacterState.characterSpec.money.ToString();
         foreach (string itemName in quickInventory.Keys)
         {
-            if (itemName == "money")
-                continue;
             GameObject invenItem = Instantiate(storeInvenItemInfo);
             invenItem.name = itemName;
             invenItem.transform.GetChild(2).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[itemName].spriteDirectory);
             invenItem.transform.GetChild(2).name = "item " + itemName;
-            invenItem.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = quickInventory[itemName].count.ToString();
+            invenItem.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = quickInventory[itemName].kindCount.ToString();
             invenItem.transform.GetChild(3).GetComponent<TMP_Text>().text = itemName;
             invenItem.transform.GetChild(4).GetComponent<TMP_Text>().text = DataBase.Instance.itemInfoDict[itemName].sellPrice.ToString();
             invenItem.transform.parent = storeInvenBox.transform;
@@ -1258,7 +1254,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             {
                 updateCurrentFocusWindow(storeSellPanel);
                 storeSellPanel.transform.GetChild(2).name = currentItemName;
-                storeSellPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().text = quickInventory[currentItemName].count.ToString();
+                storeSellPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().text = quickInventory[currentItemName].kindCount.ToString();
                 storeSellPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().Select();
             }
             else
@@ -1275,15 +1271,15 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         string sellItemName = current_clicked_button.transform.parent.name;
         int sellItemCnt = int.Parse(current_clicked_button.transform.parent.GetChild(0).GetComponent<TMP_InputField>().text);
 
-        if(sellItemCnt > quickInventory[sellItemName].count)
+        if (sellItemCnt > quickInventory[sellItemName].kindCount)
         {
             return;
         }
 
 
         int sellMoney = sellItemCnt * DataBase.Instance.itemInfoDict[sellItemName].sellPrice;
-        quickInventory["money"].count += sellMoney;
-        quickInventory[sellItemName].count -= sellItemCnt;
+        DataBase.Instance.myCharacterState.characterSpec.money += sellMoney;
+        DataBase.Instance.myCharacterControl.loseItem(sellItemName, sellItemCnt);        
         updateInventory();
         UpdateStoreInventory();
         storeSellPanel.SetActive(false);
@@ -1297,13 +1293,13 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         string buyItemName = current_clicked_button.transform.parent.name;
         int buyItemCnt = int.Parse(current_clicked_button.transform.parent.GetChild(0).GetComponent<TMP_InputField>().text);
         int buyMoney = buyItemCnt * DataBase.Instance.itemInfoDict[buyItemName].buyPrice;
-        if(buyMoney > quickInventory["money"].count)
+        if(buyMoney > DataBase.Instance.myCharacterState.characterSpec.money)
         {
             return;
         }
-        if(DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().getItem(buyItemName, buyItemCnt, null, false))
+        if (DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().getItem(new Item { itemName = buyItemName, itemCount = buyItemCnt }, false))
         {
-            quickInventory["money"].count -= buyMoney;
+            DataBase.Instance.myCharacterState.characterSpec.money -= buyMoney;
             UpdateStoreInventory();
             storeBuyPanel.SetActive(false);
             openedWindows.Remove(storeBuyPanel);
@@ -1313,6 +1309,24 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     }
     #endregion
 
+    #region 강화
+    public void UpdateEnchantPanel()
+    {
+        string enchantItemName = EnchantPanel.transform.GetChild(2).GetChild(1).GetChild(0).name;
+        //int currentLevel = quickInventory[enchantItemName].position
+    }
+    public void ClickEnchantButton()
+    {
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        current_clicked_button.transform.parent.parent.GetComponent<Animator>().SetBool("enchant", true);
+    }
+
+    public void ClickEnchantResultButton()
+    {
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        current_clicked_button.SetActive(false);
+    }
+    #endregion
 
     #region 옵션
     public void setResolution()

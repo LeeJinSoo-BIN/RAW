@@ -7,6 +7,7 @@ public class Item : MonoBehaviour
 {    
     public string itemName;
     public int itemCount;
+    public int reinforce;
     //public ItemSpec spec;
     public PhotonView PV;
     private GameObject ItemField;

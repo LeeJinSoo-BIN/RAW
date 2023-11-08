@@ -12,19 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4871128e4c2a3b84aa5379941accb972, type: 3}
   m_Name: reinforce
   m_EditorClassIdentifier: 
-  NpcName: "\uD30C\uB77C\uC6A9"
+  NpcName: "\uAE40\uD654\uAC15"
   NpcType: reinforce
   equipments:
   - {fileID: 11400000, guid: ec8848f748f02bd479a4e2ca80c57d7c, type: 2}
   - {fileID: 11400000, guid: f7de936b32d1b2547891139fb661380f, type: 2}
   - {fileID: 11400000, guid: c79d94a3987ecdb4ca8fb1a7f301665e, type: 2}
   - {fileID: 11400000, guid: 6da7b061541bde345bac7c88c2c2c719, type: 2}
+  - {fileID: 11400000, guid: 49f3f34b269f54348983bbca897ca34f, type: 2}
   colors:
   - {r: 0.2830189, g: 0.23765475, b: 0.20692419, a: 1}
-  - {r: 0.246707, g: 0.5283019, b: 0.38750446, a: 1}
-  - {r: 0.24705884, g: 0.5294118, b: 0.38823533, a: 1}
+  - {r: 0.26415092, g: 0.13332146, b: 0.20998958, a: 1}
+  - {r: 0.2627451, g: 0.13333334, b: 0.21176472, a: 1}
+  - {r: 0.28235295, g: 0.2392157, b: 0.20784315, a: 1}
   ments: []
-  sellingItems:
-  - {fileID: 11400000, guid: b1098ecdb9eb2614b834bbd178d71ca5, type: 2}
-  - {fileID: 11400000, guid: 6f3c3ada41ab30742b2c6dc779b708d7, type: 2}
+  sellingItems: []
   questList: []

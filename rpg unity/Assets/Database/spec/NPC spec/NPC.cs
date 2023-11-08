@@ -23,6 +23,10 @@ public class NPC : MonoBehaviour
         {
             npcName.text = "[상인]\n";            
         }
+        else if(spec.NpcType == "reinforce")
+        {
+            npcName.text = "[강화]\n";
+        }
         else
         {
             npcName.text = "";
@@ -52,12 +56,10 @@ public class NPC : MonoBehaviour
     {
         if(spec.NpcType == "store")
         {
-            //set up store
             UIManager.Instance.ShowStorePanel(gameObject);
         }
         else if(spec.NpcType == "normal")
         {
-            //set up conversation
             UIManager.Instance.ShowConversationPanel(gameObject);
         }        
     }

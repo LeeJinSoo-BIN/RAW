@@ -8,9 +8,9 @@ using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
 using System.IO;
-
-
-
+using System.Linq;
+using System;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 
 public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 {
@@ -33,9 +33,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     private GameObject inventoryUi;
     private GameObject itemBox;    
     private int frontInventoryPos = 0;
-    private List<InventoryItem> inventory;
+    public Dictionary<string, QuickInventory> quickInventory = new Dictionary<string, QuickInventory>();
     
-    private Dictionary<string, qucikInventoryInfo> quickInventory = new Dictionary<string, qucikInventoryInfo>();
     public GameObject skillRadiusArea;
     public GameObject skillRadiusLengthPoint;
     public GameObject skillRangeAreaCircle;
@@ -119,13 +118,21 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         UIManager.Instance.skillNameToKey = skillNameToKey;
 
 
-        inventory = characterSpec.inventory;
         quickInventory.Clear();
-        foreach (InventoryItem item in inventory)
+        for (int k = 0; k < characterSpec.maxInventoryNum; k++)
         {
-            quickInventory.Add(item.itemName, new qucikInventoryInfo() { count = item.count, position = item.position});
-        }
-        quickInventory.Add("money", new qucikInventoryInfo() { count = characterSpec.money, position = 0 });
+            InventoryItem item = characterSpec.inventory[k];
+            if (item == null) continue;
+            if (!quickInventory.ContainsKey(item.itemName))
+            {
+                quickInventory.Add(item.itemName, new QuickInventory { kindCount = item.count, position = new SortedSet<int> { k } });
+            }
+            else
+            {
+                quickInventory[item.itemName].kindCount += item.count;
+                quickInventory[item.itemName].position.Add(k);
+            }
+        }        
         UIManager.Instance.quickInventory = quickInventory;
         UIManager.Instance.updateInventory();
     }
@@ -148,7 +155,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                         {
                             //Debug.Log("click item");
                             if (hit_item.transform.GetChild(1).gameObject.activeSelf) {
-                                getItem(hit_item.transform.GetComponent<Item>().itemName, hit_item.transform.GetComponent<Item>().itemCount, hit_item.transform.name, true);
+                                getItem(hit_item.transform.GetComponent<Item>(), true);
                             }
                         }
                         return;
@@ -198,6 +205,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                     {
                         if (hit_npc.collider.CompareTag("NPC"))
                         {
+                            Debug.Log(hit_npc.collider.name);
                             hit_npc.transform.GetComponent<NPC>().ClickNPC();
                         }
                     }
@@ -494,7 +502,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         characterAnimator.SetBool("IsRunning", false);
         if (currentCastingSkill.animType == "normal")
         {
-            int attack = Random.Range(1, 4);
+            int attack = UnityEngine.Random.Range(1, 4);
             characterAnimator.SetTrigger("attack" + attack.ToString());
         }
         else
@@ -588,33 +596,105 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         }
         isAttackingNormal = false;
     }
-    public bool getItem(string got_item_name, int got_item_cnt, string field_item_name, bool pick)
+    public bool getItem(Item got_item, bool pick)
     {
         //string got_item_name = got_item.GetComponent<Item>().itemName;
         //int got_item_cnt = got_item.GetComponent<Item>().itemCount;
-        bool gotten = false;        
-        if (quickInventory.ContainsKey(got_item_name))
-        {            
-            quickInventory[got_item_name].count += got_item_cnt;
-            gotten = true;
+        bool gotten = false;
+        if (quickInventory.ContainsKey(got_item.itemName))
+        {
+            int findPos = -1;
+            foreach (int pos in quickInventory[got_item.itemName].position)
+            {
+                if (characterSpec.inventory[pos].count == DataBase.Instance.itemInfoDict[got_item.itemName].maxCarryAmount)
+                    continue;
+                findPos = pos;
+                break;
+            }
+            if (findPos != -1)
+            {
+                if (characterSpec.inventory[findPos].count + got_item.itemCount <= DataBase.Instance.itemInfoDict[got_item.itemName].maxCarryAmount)
+                {
+                    characterSpec.inventory[findPos].count += got_item.itemCount;
+                    quickInventory[got_item.itemName].kindCount += got_item.itemCount;
+                    gotten = true;
+                }
+                else
+                {
+                    int remainedCnt = characterSpec.inventory[findPos].count + got_item.itemCount - DataBase.Instance.itemInfoDict[got_item.itemName].maxCarryAmount;
+                    characterSpec.inventory[findPos].count += (got_item.itemCount - remainedCnt);
+                    quickInventory[got_item.itemName].kindCount += (got_item.itemCount - remainedCnt);
+                    got_item.itemCount = remainedCnt;
+                    getItem(got_item, pick);
+                    return false;
+                }
+            }
+            else
+            {
+                FindFrontInventoryPos();
+                if (frontInventoryPos != -1)
+                {
+                    if (got_item.itemCount < DataBase.Instance.itemInfoDict[got_item.itemName].maxCarryAmount)
+                    {
+                        quickInventory[got_item.itemName].position.Add(frontInventoryPos);
+                        quickInventory[got_item.itemName].kindCount += got_item.itemCount;
+                        characterSpec.inventory[frontInventoryPos].itemName = got_item.itemName;
+                        characterSpec.inventory[frontInventoryPos].count = got_item.itemCount;
+                        characterSpec.inventory[frontInventoryPos].reinforce = got_item.reinforce;
+                        gotten = true;
+                    }
+                    else
+                    {
+                        int remainedCnt = characterSpec.inventory[frontInventoryPos].count + got_item.itemCount - DataBase.Instance.itemInfoDict[got_item.itemName].maxCarryAmount;
+                        quickInventory[got_item.itemName].position.Add(frontInventoryPos);
+                        quickInventory[got_item.itemName].kindCount += got_item.itemCount - remainedCnt;
+                        characterSpec.inventory[frontInventoryPos].itemName = got_item.itemName;
+                        characterSpec.inventory[frontInventoryPos].count = got_item.itemCount - remainedCnt;
+                        characterSpec.inventory[frontInventoryPos].reinforce = got_item.reinforce;
+                        got_item.itemCount = remainedCnt;
+                        getItem(got_item, pick);
+                        return false;
+                    }
+                }
+                else
+                {
+                    gotten = false;
+                    pick = false;
+                }
+            }
         }
         else
         {
-            if (quickInventory.Count < characterSpec.maxInventoryNum)
-            {                
-                FindFrontInventoryPos();
-                quickInventory.Add(got_item_name, new qucikInventoryInfo() { position = frontInventoryPos, count = got_item_cnt });
-                Debug.Log(UIManager.Instance.quickInventory.Keys);
-                gotten = true;                
+            FindFrontInventoryPos();
+            if (frontInventoryPos != -1)
+            {
+                if (got_item.itemCount < DataBase.Instance.itemInfoDict[got_item.itemName].maxCarryAmount)
+                {
+                    quickInventory.Add(got_item.itemName,new QuickInventory {  kindCount = got_item.itemCount, position = new SortedSet<int> { frontInventoryPos } });
+                    characterSpec.inventory[frontInventoryPos] = new InventoryItem { itemName = got_item.itemName, count = got_item.itemCount, reinforce = got_item.reinforce };                    
+                    gotten = true;
+                }
+                else
+                {
+                    int remainedCnt = characterSpec.inventory[frontInventoryPos].count + got_item.itemCount - DataBase.Instance.itemInfoDict[got_item.itemName].maxCarryAmount;
+                    quickInventory.Add(got_item.itemName, new QuickInventory { kindCount = got_item.itemCount - remainedCnt, position = new SortedSet<int> { frontInventoryPos } });
+                    characterSpec.inventory[frontInventoryPos] = new InventoryItem { itemName = got_item.itemName, count = got_item.itemCount - remainedCnt, reinforce = got_item.reinforce };                    
+                    got_item.itemCount = remainedCnt;
+                    getItem(got_item, pick);
+                    return false;
+                }
+            }
+            else
+            {
+                gotten = false;
+                pick = false;
             }
         }
-        if (gotten)
-        {
-            UIManager.Instance.updateInventory();
-            if(pick)
-                PV.RPC("itemDestroySync", RpcTarget.AllBuffered, field_item_name);
-            UIManager.Instance.updateAllQuickSlot();
-        }
+        if (pick)
+            PhotonNetwork.Destroy(got_item.PV);
+        UIManager.Instance.updateInventory();
+        UIManager.Instance.updateAllQuickSlot();
+        
         return gotten;
         /*
         for (int k = 0; k < inventory.Count; k++)
@@ -644,6 +724,45 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             inGameUI.updateAllQuickSlot();
         }*/
     }
+
+    public void loseItem(string itemName, int cnt)
+    {
+        List<int> deleteList = new List<int>();
+        int[] posList = quickInventory[itemName].position.ToArray();
+        Array.Sort(posList, (a, b) => b.CompareTo(a));
+        foreach (int pos in posList)
+        {
+            if (characterSpec.inventory[pos].count > cnt)
+            {
+                characterSpec.inventory[pos].count -= cnt;
+                quickInventory[itemName].kindCount -= cnt;
+                break;
+            }
+            else if (characterSpec.inventory[pos].count == cnt)
+            {
+                characterSpec.inventory[pos] = null;
+                deleteList.Add(pos);
+                quickInventory[itemName].kindCount -= cnt;                
+                break;
+            }
+            else
+            {
+                cnt -= characterSpec.inventory[pos].count;
+                quickInventory[itemName].kindCount -= characterSpec.inventory[pos].count;
+                characterSpec.inventory[pos] = null;
+                deleteList.Add(pos);
+            }
+        }
+
+        foreach (int pos in deleteList)
+        {
+            quickInventory[itemName].position.Remove(pos);
+        }
+        if (quickInventory[itemName].kindCount == 0)
+            quickInventory.Remove(itemName);
+        UIManager.Instance.updateInventory();
+        UIManager.Instance.updateAllQuickSlot();
+    }
     public void FindFrontInventoryPos()
     {
         for(int k = 0; k < itemBox.transform.childCount; k++)
@@ -654,8 +773,9 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 return;
             }
         }
+        frontInventoryPos = -1;
     }
-    public void updateInventory()
+    /*public void updateInventory()
     {
         List<string> destroyList = new List<string>();
         foreach (string item in quickInventory.Keys)
@@ -685,7 +805,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         {
             quickInventory.Remove(name);
         }
-        /*for (int k = 0; k < inventory.Count; k++)
+        *//*for (int k = 0; k < inventory.Count; k++)
         {
             int pos = inventory[k].position;
             int cnt = inventory[k].count;
@@ -716,8 +836,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         foreach(int index in destroy)
         {
             inventory.RemoveAt(index);
-        }*/
-    }
+        }*//*
+    }*/
     [PunRPC]
     void itemDestroySync(string itemName)
     {
@@ -725,6 +845,11 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         Destroy(itemDropField.transform.Find(itemName).gameObject);
     }
 
+    [PunRPC]
+    void pickPartOfItem(string itemName, int cnt)
+    {
+        itemDropField.transform.Find(itemName).GetComponent<Item>().itemCount = cnt;
+    }
 
     void Move_Character()
     {
@@ -791,7 +916,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         value[1] = 0;
         if (affectedByCritical) // damage
         {
-            float crit = Random.Range(0f, 100f);
+            float crit = UnityEngine.Random.Range(0f, 100f);
 
             float critical_damage = criticalDamage;
             if (crit < criticalPercent)

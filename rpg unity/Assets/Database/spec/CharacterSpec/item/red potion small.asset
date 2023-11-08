@@ -14,5 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: red potion small
   count: 1
-  position: 0
   reinforce: 0
