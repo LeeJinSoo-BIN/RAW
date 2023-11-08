@@ -417,11 +417,16 @@ public class Login : MonoBehaviourPunCallbacks
         equipment.Add(defaultWeapon[currentRollIdx]);
         equipment.Add(defaultCloth[currentClothIdx]);
         equipment.Add(defaultHair[currentHairIdx]);
-        equipment.Add(defaultSpec.equipment[3]);
+        equipment.Add(defaultSpec.equipment[0]);
+        /*foreach(InventoryItem equipmentItem in defaultSpec.equipment)
+        {
+            equipment.Add(equipmentItem);
+        }*/
 
         colors.Add(currentHairColor);
         colors.Add(currentEyeColor);
         colors.Add(currentEyeColor);
+        colors.Add(defaultSpec.colors[3]);
 
         spec.nickName = CreatCharacterNickInput.text;
         spec.roll = rollList[currentRollIdx];
@@ -438,7 +443,7 @@ public class Login : MonoBehaviourPunCallbacks
 
         spec.maxInventoryNum = defaultSpec.maxInventoryNum;
         spec.skillLevel = defaultSpec.skillLevel;
-        spec.inventory = defaultSpec.inventory;
+        spec.inventory = new List<InventoryItem>(defaultSpec.inventory);
         spec.equipment = equipment;
         spec.colors = colors;
         spec.money = defaultSpec.money;

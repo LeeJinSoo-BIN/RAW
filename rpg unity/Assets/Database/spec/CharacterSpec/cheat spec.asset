@@ -46,7 +46,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: b1098ecdb9eb2614b834bbd178d71ca5, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -59,13 +59,14 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   equipment:
-  - {fileID: 11400000, guid: 31a3a8ec6a069954da533153b3849330, type: 2}
-  - {fileID: 11400000, guid: b207b77cf5668de4b88dffa0be0e209c, type: 2}
-  - {fileID: 11400000, guid: ec8848f748f02bd479a4e2ca80c57d7c, type: 2}
   - {fileID: 11400000, guid: c79d94a3987ecdb4ca8fb1a7f301665e, type: 2}
+  - {fileID: 11400000, guid: ec8848f748f02bd479a4e2ca80c57d7c, type: 2}
+  - {fileID: 11400000, guid: b207b77cf5668de4b88dffa0be0e209c, type: 2}
+  - {fileID: 11400000, guid: 6851261ebf95ad14a8a6a7be7b885bbc, type: 2}
+  - {fileID: 11400000, guid: 31a3a8ec6a069954da533153b3849330, type: 2}
   colors:
   - {r: 0.42168033, g: 0.8679245, b: 0.6901794, a: 1}
   - {r: 0.8405884, g: 0, b: 0.9528302, a: 1}
   - {r: 0, g: 0.07551963, b: 0.7830189, a: 1}
   - {r: 0.42352945, g: 0.86666673, b: 0.6901961, a: 1}
-  money: 0
+  money: 320

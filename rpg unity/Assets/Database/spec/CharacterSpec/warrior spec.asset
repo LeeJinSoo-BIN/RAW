@@ -34,12 +34,35 @@ MonoBehaviour:
     SD_Values: 0100000001000000010000000100000001000000
   maxInventoryNum: 24
   inventory:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 11400000, guid: 6598003d750722744a284bcec258a639, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: 6598003d750722744a284bcec258a639, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   equipment:
+  - {fileID: 11400000, guid: c79d94a3987ecdb4ca8fb1a7f301665e, type: 2}
   - {fileID: 11400000, guid: 47d95b0d4f4a86b408a4f1dae78e077d, type: 2}
   - {fileID: 11400000, guid: d545b5f946badb54fbe446cbda3c4a8f, type: 2}
   - {fileID: 11400000, guid: ec8848f748f02bd479a4e2ca80c57d7c, type: 2}
-  - {fileID: 11400000, guid: c79d94a3987ecdb4ca8fb1a7f301665e, type: 2}
   colors:
   - {r: 0.5568628, g: 0.5568628, b: 0.5568628, a: 1}
   - {r: 0.7058824, g: 0.6901961, b: 0.19215688, a: 1}

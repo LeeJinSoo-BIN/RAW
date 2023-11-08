@@ -17,10 +17,10 @@ using static UnityEditor.PlayerSettings;
 
 public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
 {
+
+    #region Panel
     [Header("Panel")]
-    #region
-    public GameObject currentFocusWindow;
-    
+    public GameObject currentFocusWindow;    
     public GameObject enterDungeonPanel;
     public GameObject gameOverPanel;
     public TMP_InputField timeLimitInputfield;
@@ -73,8 +73,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     #endregion
 
 
+
+    #region UI
     [Header("UI")]
-    #region
     public Slider myCharacterHealthUi;
     private Slider characterHealth;
     public TMP_Text myCharacterCurrentHealthText;
@@ -100,8 +101,6 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public TMP_Text stageText;
     public TMP_Text timerText;
 
-    
-
     [Header("Chat")]
     public TMP_InputField chatInput;
     public TMP_Text chatLogShow;
@@ -110,8 +109,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public Button ChatExpandButton;
     #endregion
 
+
+
+
+    #region Data
     [Header("Daata")]
-    #region
     public static UIManager Instance;
     private EventSystem eventSystem;
     public GameObject PlayerGroup;
@@ -194,7 +196,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
         storeInvenItemInfo.SetActive(false);
         storeItemInfo.SetActive(false);
-        
+
+        EnchantPanel.SetActive(false);
+        EnchantResult.SetActive(false);
 
         chatInput.onSubmit.AddListener(delegate { sendChat(); });
     }

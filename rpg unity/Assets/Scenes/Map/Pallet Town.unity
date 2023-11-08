@@ -8267,6 +8267,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2577585254963922481, guid: ac719b1d0f58391469cc19fd947ca44c, type: 3}
   m_PrefabInstance: {fileID: 1079609457}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1103420449 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8095152935904877633, guid: 4ca36fbd3a9ea7242829319b7ad89adf, type: 3}
+  m_PrefabInstance: {fileID: 447628939934017778}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1135828212
 GameObject:
   m_ObjectHideFlags: 0
@@ -8973,6 +8978,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1501894279 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 512686655706232238, guid: 4ca36fbd3a9ea7242829319b7ad89adf, type: 3}
+  m_PrefabInstance: {fileID: 447628939934017778}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1513777872
 GameObject:
   m_ObjectHideFlags: 0
@@ -10426,6 +10436,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: DataBase
       objectReference: {fileID: 0}
+    - target: {fileID: 2529346988765551258, guid: dacd0ecd0f0d8ca47a37cc9092f3b8aa, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7175309866269639957, guid: dacd0ecd0f0d8ca47a37cc9092f3b8aa, type: 3}
       propertyPath: m_RootOrder
       value: 11
@@ -10850,6 +10864,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4187271952899320316, guid: 4ca36fbd3a9ea7242829319b7ad89adf, type: 3}
+      propertyPath: EnchantPanel
+      value: 
+      objectReference: {fileID: 1103420449}
+    - target: {fileID: 4187271952899320316, guid: 4ca36fbd3a9ea7242829319b7ad89adf, type: 3}
+      propertyPath: EnchantResult
+      value: 
+      objectReference: {fileID: 1501894279}
     - target: {fileID: 4195213456581131966, guid: 4ca36fbd3a9ea7242829319b7ad89adf, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
