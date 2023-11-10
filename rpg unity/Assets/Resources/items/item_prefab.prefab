@@ -179,9 +179,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: 
   itemCount: 0
-  spec: {fileID: 0}
+  reinforce: 0
   PV: {fileID: -1698338457587247853}
-  ItemField: {fileID: 0}
 --- !u!114 &-1698338457587247853
 MonoBehaviour:
   m_ObjectHideFlags: 0

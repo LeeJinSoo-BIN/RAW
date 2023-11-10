@@ -8143,7 +8143,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   networkManager: {fileID: 1858341589}
   portalObject: {fileID: 0}
-  offLine: 1
+  offLine: 0
 --- !u!1001 &1079609457
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10438,7 +10438,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2529346988765551258, guid: dacd0ecd0f0d8ca47a37cc9092f3b8aa, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7175309866269639957, guid: dacd0ecd0f0d8ca47a37cc9092f3b8aa, type: 3}
       propertyPath: m_RootOrder

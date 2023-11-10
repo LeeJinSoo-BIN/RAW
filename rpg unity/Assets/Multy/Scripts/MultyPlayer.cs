@@ -10,7 +10,6 @@ using Photon.Realtime;
 using System.IO;
 using System.Linq;
 using System;
-using UnityEditorInternal.Profiling.Memory.Experimental;
 
 public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 {

@@ -61,6 +61,10 @@ public class NPC : MonoBehaviour
         else if(spec.NpcType == "normal")
         {
             UIManager.Instance.ShowConversationPanel(gameObject);
-        }        
+        }
+        else if(spec.NpcType == "enchant")
+        {
+            UIManager.Instance.ShowEnchantPanel();
+        }
     }
 }

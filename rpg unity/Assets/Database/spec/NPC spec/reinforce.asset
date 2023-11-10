@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4871128e4c2a3b84aa5379941accb972, type: 3}
   m_Name: reinforce
   m_EditorClassIdentifier: 
-  NpcName: "\uAE40\uD654\uAC15"
-  NpcType: reinforce
+  NpcName: "\uB69C\uCD08\uBB47"
+  NpcType: enchant
   equipments:
   - {fileID: 11400000, guid: ec8848f748f02bd479a4e2ca80c57d7c, type: 2}
   - {fileID: 11400000, guid: f7de936b32d1b2547891139fb661380f, type: 2}

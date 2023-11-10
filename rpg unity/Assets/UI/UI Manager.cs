@@ -12,8 +12,6 @@ using Photon.Realtime;
 using WebSocketSharp;
 using System.Linq;
 using System;
-using static UnityEditor.Progress;
-using static UnityEditor.PlayerSettings;
 
 public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
 {
@@ -1314,6 +1312,10 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     #endregion
 
     #region 강화
+    public void ShowEnchantPanel()
+    {
+        EnchantPanel.SetActive(true);
+    }
     public void UpdateEnchantPanel()
     {
         string enchantItemName = EnchantPanel.transform.GetChild(2).GetChild(1).GetChild(0).name;
