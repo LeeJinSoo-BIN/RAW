@@ -468,6 +468,9 @@ public class Login : MonoBehaviourPunCallbacks
             colors.Add("eye", currentEyeColor);
 
             CharacterDB.CreateCharacter(CreatCharacterNickInput.text, rollName[currentRollIdx], equipmentId, colors);
+
+            updateCharacterList();
+            ClearSample();
         }
     }
 

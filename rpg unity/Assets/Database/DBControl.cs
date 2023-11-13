@@ -274,10 +274,12 @@ public class CharacterDB : MonoBehaviour
                     foreach (int id in equipmentId)
                     {
                         int equipmentNum = InsertEquipment(userId, characterNum, id);
+                        Debug.Log(equipmentNum);
                         InsertEquipmentSlot(userId, characterNum, id, equipmentNum);
                     }
 
-                    // insert color
+                    foreach (KeyValuePair<string, Color> color in colors)
+                        InsertColor(userId, characterNum, color.Key, color.Value);
                 }
 
                 status = 1;
@@ -412,6 +414,8 @@ public class CharacterDB : MonoBehaviour
                         "VALUES ('{0}', {1}, {2}, {3});",
                         userId, characterNum, equipmentId, equipmentNum
                     );
+
+                    command.ExecuteNonQuery();
                 }
             }
             catch (Exception e)
@@ -481,7 +485,7 @@ public class CharacterDB : MonoBehaviour
         return res;
     }
 
-    private static int InsertColor(string userId, int characterNum, int colorNum, Color color)
+    private static int InsertColor(string userId, int characterNum, string colorType, Color color)
     {
         int res;
 
@@ -493,10 +497,10 @@ public class CharacterDB : MonoBehaviour
 
                 using (MySqlCommand command = conn.CreateCommand())
                 {
-                    command.CommandText = string.Format("" +
-                        "INSERT INTO character_color (user_id, character_num, color_num, red, green, blue) " +
-                        "VALUES ('{0}', {1}, {2}, {3}, {4}, {5});",
-                        userId, characterNum, colorNum, color.r, color.g, color.b
+                    command.CommandText = string.Format(
+                        "INSERT INTO character_color (user_id, character_num, color_type, red, green, blue) " +
+                        "VALUES ('{0}', {1}, '{2}', {3}, {4}, {5});",
+                        userId, characterNum, colorType, color.r, color.g, color.b
                     );
 
                     res = command.ExecuteNonQuery();
