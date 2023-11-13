@@ -15,20 +15,25 @@ using System;
 
 public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
 {
+
+    #region Panel
     [Header("Panel")]
-    #region
-    public GameObject currentFocusWindow;
-    public GameObject inventoryPanel;
+    public GameObject currentFocusWindow;    
     public GameObject enterDungeonPanel;
     public GameObject gameOverPanel;
     public TMP_InputField timeLimitInputfield;
     public GameObject toolTipPanel;
     public GameObject conversationPanel;
 
+    [Header("Inveontory Panel")]
+    public GameObject inventoryPanel;
+    public GameObject inventoryBox;
+
     [Header("Option Panel")]
     public GameObject optionPanel;
     public TMP_Dropdown resolutionDropdown;
     public TMP_Text windowText;
+    public TMP_Text exitButtonText;
 
     [Header("Skill Panel")]
     public GameObject skillPanel;
@@ -53,13 +58,22 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     [Header("Store Panel")]
     public GameObject storePanel;
+    public GameObject storeBox;
+    public GameObject storeInvenBox;
+    public GameObject storeItemInfo;
+    public GameObject storeInvenItemInfo;
+    public GameObject storeBuyPanel;
+    public GameObject storeSellPanel;
 
-    
+    [Header("Enchant Panel")]
+    public GameObject EnchantPanel;
+    public GameObject EnchantResult;
     #endregion
 
 
+
+    #region UI
     [Header("UI")]
-    #region
     public Slider myCharacterHealthUi;
     private Slider characterHealth;
     public TMP_Text myCharacterCurrentHealthText;
@@ -85,8 +99,6 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public TMP_Text stageText;
     public TMP_Text timerText;
 
-    
-
     [Header("Chat")]
     public TMP_InputField chatInput;
     public TMP_Text chatLogShow;
@@ -95,9 +107,13 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public Button ChatExpandButton;
     #endregion
 
-    [Header("Data")]
-    #region
+
+
+
+    #region Data
+    [Header("Daata")]
     public static UIManager Instance;
+    private EventSystem eventSystem;
     public GameObject PlayerGroup;
     public GameObject EnemyGroup;
     public newNetworkManager networkManager;
@@ -108,12 +124,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public float stageTime;
     public IEnumerator timer;
 
-    public TMP_Text exitButtonText;
 
     public Dictionary<string, string> skillNameToKey = new Dictionary<string, string>();
     private List<string> quickSlotKeys = new List<string> { "1", "2", "3", "4" };
     public Dictionary<string, string> keyToItemName = new Dictionary<string, string>();
-    public Dictionary<string, qucikInventoryInfo> quickInventory;
+    public Dictionary<string, QuickInventory> quickInventory = new Dictionary<string, QuickInventory>();
     public Dictionary<string, CharacterState> inGameUserList = new Dictionary<string, CharacterState>();
     public Dictionary<int, string> idToNickName = new Dictionary<int, string>();
     public HashSet<GameObject> openedWindows = new HashSet<GameObject>();
@@ -125,9 +140,12 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public string chatLog;
 
     public float stayTime = 1f;
-    private bool isHoverToolTip = false;
+    public bool isHoverToolTip = false;
     private GameObject hoverObject;
     private float hoverTime = 0f;
+    private float storeBuyDoubleClickTimer = 0f;
+    private float storeSellDoubleClickTimer = 0f;
+    
 
     public Dictionary<string, party> allPartys = new Dictionary<string, party>();
     public struct party
@@ -150,7 +168,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             Destroy(gameObject);
         }
         if (Instance == null)
-            Instance = this;
+            Instance = this;        
 
         inventoryPanel.SetActive(false);
         enterDungeonPanel.SetActive(false);
@@ -158,6 +176,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         skillPanel.SetActive(false);
         partyPanel.SetActive(false);
         storePanel.SetActive(false);
+        storeBuyPanel.SetActive(false);
+        storeSellPanel.SetActive(false);
         BossUiGroup.SetActive(false);
         StageUiGroup.SetActive(false);
         gameOverPanel.SetActive(false);
@@ -166,12 +186,18 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
         invitePartyPanel.SetActive(false);
         joinPartyRequestPanel.SetActive(false);
-
         inGameUserInfo.SetActive(false);
         partyMemberInfo.SetActive(false);
         partyListInfo.SetActive(false);
+
         skillInfo.SetActive(false);
-        
+
+        storeInvenItemInfo.SetActive(false);
+        storeItemInfo.SetActive(false);
+
+        EnchantPanel.SetActive(false);
+        EnchantResult.SetActive(false);
+
         chatInput.onSubmit.AddListener(delegate { sendChat(); });
     }
     // Update is called once per frame
@@ -284,7 +310,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         EnemyGroup = GameObject.Find("Enemy Group");
         GetComponent<Canvas>().worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
         GetComponent<Canvas>().sortingLayerName = "ui";
-
+        eventSystem = GameObject.Find("EventSystem").GetComponent<EventSystem>();
 
         ResetSkillPanel();
         UpdateSkillPanel();
@@ -380,7 +406,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         foreach (Transform child in myCharacterProfileUiGroup.transform.GetChild(0))
             Destroy(child.gameObject);
         myCharacterHead.transform.parent = myCharacterProfileUiGroup.transform.GetChild(0).transform;
-        myCharacterHead.transform.localPosition = new Vector3(0f, 1f, 0f);
+        myCharacterHead.transform.localPosition = new Vector3(0f, -30f, 0f);
         myCharacterProfileUiGroup.transform.GetChild(1).GetComponent<TMP_Text>().text = "Lv. " + DataBase.Instance.myCharacterState.characterSpec.characterLevel.ToString();
     }
 
@@ -421,7 +447,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     #endregion
 
 
-    #region 퀵슬릇
+    #region 퀵슬릇, 인벤토리
     public void CoolDown(string skillName, float coolingTime)
     {
         StartCoroutine(CoolDownCoroutine(skillName, coolingTime));
@@ -467,14 +493,17 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     void useQuickSlot(string key)
     {
+        if (!quickInventory.ContainsKey(key))
+            return;
+        int invenPos = quickInventory[keyToItemName[key]].position.Max;
         if (quickInventory.ContainsKey(keyToItemName[key]))
         {
-            if (quickInventory[keyToItemName[key]].count > 0)
+            if (quickInventory[keyToItemName[key]].kindCount > 0)
             {
-                quickInventory[keyToItemName[key]].count--;
+                DataBase.Instance.myCharacterControl.loseItem(keyToItemName[key], 1);
+                consumePotion(keyToItemName[key]);
             }
-            consumePotion(keyToItemName[key]);
-            DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().updateInventory();
+            updateInventory();
             updateThisQuickSlot(key);
         }
     }
@@ -493,7 +522,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             {
                 currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;
                 currentSlot.GetChild(0).name = "item " + keyToItemName[quickSlotKeys[k]];
-                currentSlot.GetChild(2).GetComponent<TMP_Text>().text = quickInventory[keyToItemName[quickSlotKeys[k]]].count.ToString();
+                currentSlot.GetChild(2).GetComponent<TMP_Text>().text = quickInventory[keyToItemName[quickSlotKeys[k]]].kindCount.ToString();
             }
             else
             {
@@ -514,7 +543,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;
             currentSlot.GetChild(0).name = "item " + keyToItemName[key];
-            currentSlot.GetChild(2).GetComponent<TMP_Text>().text = quickInventory[keyToItemName[key]].count.ToString();
+            currentSlot.GetChild(2).GetComponent<TMP_Text>().text = quickInventory[keyToItemName[key]].kindCount.ToString();
         }
         else
         {
@@ -536,8 +565,31 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         DataBase.Instance.myCharacterState.ProcessSkill(5, DataBase.Instance.itemInfoDict[itemName].recoveryMana);
     }
 
+    public void updateInventory()
+    {
+        inventoryPanel.transform.GetChild(4).GetComponent<TMP_Text>().text = DataBase.Instance.myCharacterState.characterSpec.money.ToString();
+        for (int pos = 0; pos < DataBase.Instance.myCharacterState.characterSpec.maxInventoryNum; pos++)
+        {
+            Transform box = inventoryBox.transform.GetChild(pos);
+            InventoryItem item = DataBase.Instance.myCharacterState.characterSpec.inventory[pos];
+            if (item == null)
+            {
+                box.GetChild(2).GetComponent<TMP_Text>().text = "";
+                box.GetChild(1).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0);
+                box.GetChild(1).name = "";
+            }
+            else
+            {
+                box.GetChild(2).GetComponent<TMP_Text>().text = item.count.ToString();
+                box.GetChild(1).GetComponent<Image>().color = Color.white;
+                box.GetChild(1).name = "item " + item;
+                if (box.GetChild(1).GetComponent<Image>().color.a == 0)
+                    box.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[item.itemName].spriteDirectory);
+            }
+        }
+    }
     #endregion
-    
+
 
     #region 패널
     public void updateCurrentFocusWindow(GameObject currentWindow = null)
@@ -551,6 +603,19 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         }
         else
         {
+            if(currentFocusWindow == storePanel)
+            {
+                if (storeBuyPanel.activeSelf)
+                {
+                    storeBuyPanel.SetActive(false);
+                    openedWindows.Remove(storeBuyPanel);
+                }
+                if(storeSellPanel.activeSelf)
+                {
+                    storeSellPanel.SetActive(false);
+                    openedWindows.Remove(storeSellPanel);
+                }
+            }
             if (openedWindows.Count > 0)
             {
                 foreach (GameObject window in openedWindows)
@@ -591,13 +656,12 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
 
     #region 툴팁
-
     public void EnterToolTip()
     {
         PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);        
         eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
         List<RaycastResult> results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);        
         if(results.Count > 0)
         {            
             isHoverToolTip = true;
@@ -807,6 +871,25 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     {
         networkManager.PV.RPC("GoToVillage", RpcTarget.All);
     }
+
+    public void EnterDungeonPop()
+    {
+        updateCurrentFocusWindow(enterDungeonPanel);
+    }
+
+    public void ClickEnterDungeonButton()
+    {
+
+        if (!timeLimitInputfield.text.IsNullOrEmpty() && !int.TryParse(timeLimitInputfield.text, out _))
+            return;
+        float _timeLimit;
+        if (timeLimitInputfield.text.IsNullOrEmpty())
+            _timeLimit = 0;
+        else
+            _timeLimit = float.Parse(timeLimitInputfield.text);
+        networkManager.movePortal(_timeLimit);
+        enterDungeonPanel.SetActive(false);
+    }
     #endregion
 
 
@@ -865,6 +948,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
             userInfo.transform.parent = inGameUserBox.transform;
             userInfo.transform.localScale = Vector3.one;
+            userInfo.transform.localPosition = Vector3.zero;
             userInfo.SetActive(true);
         }
     }
@@ -905,6 +989,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
                     newMember.SetActive(true);
                     newMember.transform.localScale = Vector3.one;
+                    newMember.transform.localPosition = Vector3.zero;
                 }
             }
         }
@@ -931,6 +1016,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             newParty.transform.parent = partyListBox.transform;
             newParty.SetActive(true);
             newParty.transform.localScale = Vector3.one;
+            newParty.transform.localPosition = Vector3.zero;
         }
     }
 
@@ -1079,25 +1165,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     }
     #endregion
 
-    public void EnterDungeonPop()
-    {
-        updateCurrentFocusWindow(enterDungeonPanel);
-    }
-
-    public void ClickEnterDungeonButton()
-    {
-
-        if (!timeLimitInputfield.text.IsNullOrEmpty() && !int.TryParse(timeLimitInputfield.text, out _))
-            return;
-        float _timeLimit;
-        if (timeLimitInputfield.text.IsNullOrEmpty())
-            _timeLimit = 0;
-        else
-            _timeLimit = float.Parse(timeLimitInputfield.text);
-        networkManager.movePortal(_timeLimit);
-        enterDungeonPanel.SetActive(false);
-    }
-
+    #region NPC 대화
     public void ShowConversationPanel(GameObject NPC)
     {
         updateCurrentFocusWindow(conversationPanel);
@@ -1109,6 +1177,162 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         npcHead.transform.localScale = new Vector3(120, 120);
 
     }
+
+    #endregion
+
+    #region 상점
+    public void ShowStorePanel(GameObject npc)
+    {
+        UpdateStoreNpc(npc);
+        UpdateStoreInventory();
+        updateCurrentFocusWindow(storePanel);
+    }
+    
+    public void UpdateStoreNpc(GameObject npc)
+    {
+        foreach (Transform box in storeBox.transform)
+        {
+            Destroy(box.gameObject);
+        }
+        storeBox.transform.parent.GetChild(0).GetComponent<TMP_Text>().text = npc.GetComponent<NPC>().spec.NpcName + "의 상점";
+        foreach (InventoryItem item in npc.GetComponent<NPC>().spec.sellingItems)
+        {
+            GameObject sellingItem = Instantiate(storeItemInfo);
+            sellingItem.name = item.itemName;
+            sellingItem.transform.GetChild(2).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[item.itemName].spriteDirectory);
+            sellingItem.transform.GetChild(2).name = "item " + item.itemName;
+            sellingItem.transform.GetChild(3).GetComponent<TMP_Text>().text = item.itemName;
+            sellingItem.transform.GetChild(4).GetComponent<TMP_Text>().text = DataBase.Instance.itemInfoDict[item.itemName].buyPrice.ToString();
+            sellingItem.transform.parent = storeBox.transform;
+            sellingItem.transform.localScale = Vector3.one;
+            sellingItem.transform.localPosition = Vector3.zero;
+            sellingItem.SetActive(true);
+        }        
+    }
+    public void UpdateStoreInventory()
+    {
+        foreach (Transform item in storeInvenBox.transform)
+        {
+            Destroy(item.gameObject);
+        }
+        storeInvenBox.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = DataBase.Instance.myCharacterState.characterSpec.money.ToString();
+        foreach (string itemName in quickInventory.Keys)
+        {
+            GameObject invenItem = Instantiate(storeInvenItemInfo);
+            invenItem.name = itemName;
+            invenItem.transform.GetChild(2).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[itemName].spriteDirectory);
+            invenItem.transform.GetChild(2).name = "item " + itemName;
+            invenItem.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = quickInventory[itemName].kindCount.ToString();
+            invenItem.transform.GetChild(3).GetComponent<TMP_Text>().text = itemName;
+            invenItem.transform.GetChild(4).GetComponent<TMP_Text>().text = DataBase.Instance.itemInfoDict[itemName].sellPrice.ToString();
+            invenItem.transform.parent = storeInvenBox.transform;
+            invenItem.transform.localScale = Vector3.one;
+            invenItem.transform.localPosition = Vector3.zero;
+            invenItem.SetActive(true);
+        }
+    }
+    public void ClickStoreItem(bool buy)
+    {
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        string currentItemName = current_clicked_button.name;
+        if (buy)
+        {            
+            if (Time.time - storeBuyDoubleClickTimer < 0.25f)
+            {
+                updateCurrentFocusWindow(storeBuyPanel);
+                storeBuyPanel.transform.GetChild(2).name = currentItemName;
+                storeBuyPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().text = "1";
+                storeBuyPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().Select();
+            }
+            else
+            {
+                Debug.Log(Time.time - storeBuyDoubleClickTimer);
+                storeBuyDoubleClickTimer = Time.time;
+            }
+        }
+        else
+        {
+            if (Time.time - storeSellDoubleClickTimer < 0.25f)
+            {
+                updateCurrentFocusWindow(storeSellPanel);
+                storeSellPanel.transform.GetChild(2).name = currentItemName;
+                storeSellPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().text = quickInventory[currentItemName].kindCount.ToString();
+                storeSellPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().Select();
+            }
+            else
+            {
+                Debug.Log(Time.time - storeSellDoubleClickTimer);
+                storeSellDoubleClickTimer = Time.time;
+            }
+        }
+    }
+
+    public void ClickSellButton()
+    {
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        string sellItemName = current_clicked_button.transform.parent.name;
+        int sellItemCnt = int.Parse(current_clicked_button.transform.parent.GetChild(0).GetComponent<TMP_InputField>().text);
+
+        if (sellItemCnt > quickInventory[sellItemName].kindCount)
+        {
+            return;
+        }
+
+
+        int sellMoney = sellItemCnt * DataBase.Instance.itemInfoDict[sellItemName].sellPrice;
+        DataBase.Instance.myCharacterState.characterSpec.money += sellMoney;
+        DataBase.Instance.myCharacterControl.loseItem(sellItemName, sellItemCnt);        
+        updateInventory();
+        UpdateStoreInventory();
+        storeSellPanel.SetActive(false);
+        openedWindows.Remove(storePanel);
+        updateCurrentFocusWindow();
+    }
+
+    public void ClickBuyButton()
+    {
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        string buyItemName = current_clicked_button.transform.parent.name;
+        int buyItemCnt = int.Parse(current_clicked_button.transform.parent.GetChild(0).GetComponent<TMP_InputField>().text);
+        int buyMoney = buyItemCnt * DataBase.Instance.itemInfoDict[buyItemName].buyPrice;
+        if(buyMoney > DataBase.Instance.myCharacterState.characterSpec.money)
+        {
+            return;
+        }
+        if (DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().getItem(new Item { itemName = buyItemName, itemCount = buyItemCnt }, false))
+        {
+            DataBase.Instance.myCharacterState.characterSpec.money -= buyMoney;
+            UpdateStoreInventory();
+            storeBuyPanel.SetActive(false);
+            openedWindows.Remove(storeBuyPanel);
+            updateCurrentFocusWindow();
+        }
+
+    }
+    #endregion
+
+    #region 강화
+    public void ShowEnchantPanel()
+    {
+        EnchantPanel.SetActive(true);
+    }
+    public void UpdateEnchantPanel()
+    {
+        string enchantItemName = EnchantPanel.transform.GetChild(2).GetChild(1).GetChild(0).name;
+        //int currentLevel = quickInventory[enchantItemName].position
+    }
+    public void ClickEnchantButton()
+    {
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        current_clicked_button.transform.parent.parent.GetComponent<Animator>().SetBool("enchant", true);
+    }
+
+    public void ClickEnchantResultButton()
+    {
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        current_clicked_button.SetActive(false);
+    }
+    #endregion
 
     #region 옵션
     public void setResolution()

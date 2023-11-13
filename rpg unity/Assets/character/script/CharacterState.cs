@@ -7,6 +7,7 @@ using Photon.Realtime;
 using JetBrains.Annotations;
 using UnityEditor;
 using TMPro;
+using static CharacterSpec;
 
 public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
 {
@@ -19,6 +20,7 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
     public string roll;
     public int level;
     public string nick;
+
     public Animator characterAnimator;
 
     public bool isCaptain;
@@ -38,9 +40,7 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
         PV.RPC("syncInfoNum", RpcTarget.AllBuffered, "power", characterSpec.power);
         PV.RPC("syncInfoString", RpcTarget.AllBuffered, "nick", characterSpec.nickName);
         PV.RPC("syncInfoString", RpcTarget.AllBuffered, "roll", characterSpec.roll);
-
-        updateParty();
-        
+        updateParty();        
     }
     [PunRPC]
     void syncInfoNum(string what, float value)

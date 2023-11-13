@@ -7,9 +7,10 @@ public class Item : MonoBehaviour
 {    
     public string itemName;
     public int itemCount;
-    public ItemSpec spec;
+    public int reinforce;
+    //public ItemSpec spec;
     public PhotonView PV;
-    public GameObject ItemField;
+    private GameObject ItemField;
 
     private void Awake()
     {
@@ -20,7 +21,7 @@ public class Item : MonoBehaviour
     {
         itemName = item_name;
         Sprite sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[itemName].spriteDirectory);
-        spec = DataBase.Instance.itemInfoDict[itemName];
+        //spec = DataBase.Instance.itemInfoDict[itemName];
         transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = sprite;
         transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = sprite;
         transform.parent = ItemField.transform;

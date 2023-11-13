@@ -138,7 +138,7 @@ public class SPUM_SpriteList : MonoBehaviour
                     changeSprite(part, PartsPath[part]);
             }
         }
-        for (int k = 0; k < 3; k++)
+        for (int k = 0; k < 4; k++)
         {
             if(PV != null)
                 PV.RPC("setColors", RpcTarget.AllBuffered, k, _hairAndEyeColor[k].r, _hairAndEyeColor[k].g, _hairAndEyeColor[k].b);
@@ -302,6 +302,8 @@ public class SPUM_SpriteList : MonoBehaviour
             _eyeList[0].color = new Color(r, g, b);
         else if (which == 2)
             _eyeList[1].color = new Color(r, g, b);
+        else if (which == 3)
+            _hairList[3].color = new Color(r, g, b);
     }
 
 }

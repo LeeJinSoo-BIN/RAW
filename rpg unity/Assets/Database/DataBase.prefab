@@ -30,7 +30,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9189976013231314351
 MonoBehaviour:
@@ -152,13 +152,19 @@ MonoBehaviour:
     - {fileID: 11400000, guid: c6cc5dae398f04dd9aad9e92a1b53314, type: 2}
     - {fileID: 11400000, guid: eb3513dee167d4b0ab8053bf20b70fa8, type: 2}
     - {fileID: 11400000, guid: 317b5649f99af4a08b01a3d35ac4d227, type: 2}
+  dungeonInfoDict:
+    SD_Keys:
+    - Dungeon
+    SD_Values:
+    - {fileID: 11400000, guid: 365a4aefcf915ed439cc0d612ade4005, type: 2}
   skillThumbnailPath: Character/skills/thumbnails
   isLogined: 0
-  defaultAccountInfo: {fileID: 11400000, guid: 4a3cc700ec8a89a46a987e7e2013b049, type: 2}
+  defaultAccountInfo: {fileID: 0}
   accountInfo: {fileID: 0}
   selectedCharacterSpec: {fileID: 0}
   currentMapName: 
   currentMapType: 
+  currentStage: 0
   isCurrentDungeonCaptain: 0
   myCharacter: {fileID: 0}
   myCharacterControl: {fileID: 0}

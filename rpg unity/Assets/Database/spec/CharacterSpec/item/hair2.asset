@@ -13,6 +13,5 @@ MonoBehaviour:
   m_Name: hair2
   m_EditorClassIdentifier: 
   itemName: hair2
-  count: 0
-  position: 0
+  count: 1
   reinforce: 0

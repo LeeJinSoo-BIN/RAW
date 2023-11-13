@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: stone
   m_EditorClassIdentifier: 
   itemName: stone
-  itemDescription: "\uD30C\uB780 \uB3CC"
+  description: "\uB3CC\uB9F9\uC774. \uBB34\uB824 RAW\uC758 \uCCAB \uC544\uC774\uD15C"
   itemType: material
   spriteDirectory: items/sprite/stone
-  sellPrice: 0
-  buyPrice: 0
+  sellPrice: 100
+  buyPrice: 50
   maxCarryAmount: 999
   recoveryHealth: 0
   recoveryMana: 0
@@ -26,4 +26,5 @@ MonoBehaviour:
   increaseMaxHealth: 0
   increaseMaxMana: 0
   increaseCriticalPercent: 0
-  incraserCriticalDamage: 0
+  increaseCriticalDamage: 0
+  increasePerReinforce: 0
