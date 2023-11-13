@@ -10,6 +10,7 @@ public class ItemSpec : ScriptableObject
     public string description;
     public string itemType;
     public string spriteDirectory;
+    public string iconDirectory;
     public int sellPrice;
     public int buyPrice;
     public int maxCarryAmount;

@@ -16,6 +16,7 @@ MonoBehaviour:
   description: "\uACE0\uAE09 \uC637\uC774\uB2E4."
   itemType: cloth
   spriteDirectory: SPUM_Sprites/Items/2_Cloth/Cloth_2
+  iconDirectory: items/sprite/Cloth_2
   sellPrice: 0
   buyPrice: 0
   maxCarryAmount: 0

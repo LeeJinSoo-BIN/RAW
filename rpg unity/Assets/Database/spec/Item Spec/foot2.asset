@@ -16,6 +16,7 @@ MonoBehaviour:
   description: "\uAC08\uC0C9 \uC2E0\uBC1C\uC774\uB2E4."
   itemType: pant
   spriteDirectory: SPUM_Sprites/Items/3_Pant/Foot_2
+  iconDirectory: items/sprite/Foot_2
   sellPrice: 0
   buyPrice: 0
   maxCarryAmount: 0

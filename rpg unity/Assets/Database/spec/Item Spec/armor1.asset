@@ -16,6 +16,7 @@ MonoBehaviour:
   description: "\uAC00\uC8FD \uAC11\uC637"
   itemType: armor
   spriteDirectory: SPUM_Sprites/Items/5_Armor/Armor_1
+  iconDirectory: items/sprite/Armor_1
   sellPrice: 0
   buyPrice: 0
   maxCarryAmount: 0

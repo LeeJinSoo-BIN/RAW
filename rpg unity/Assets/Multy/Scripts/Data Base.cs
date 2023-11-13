@@ -57,4 +57,11 @@ public class DataBase : MonoBehaviour
         if(Instance == null)
             Instance = this;
     }
+
+    public int CalEnchantPrice(int currentReinforce)
+    {
+        int price = 0;
+
+        return price;
+    }
 }
