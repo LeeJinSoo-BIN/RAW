@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 using System.Data;
 using MySql.Data.MySqlClient;
 
@@ -33,7 +34,12 @@ public class AccountDB : MonoBehaviour
                 using (MySqlCommand command = conn.CreateCommand())
                 {
 
-                    command.CommandText = string.Format("SELECT password FROM user WHERE user_id = '{0}';", loginId);
+                    command.CommandText = string.Format(
+                        "SELECT password " +
+                        "FROM user " +
+                        "WHERE user_id = '{0}';",
+                        loginId
+                    );
 
                     using (MySqlDataReader userAccount = command.ExecuteReader())
                     {
@@ -73,7 +79,11 @@ public class AccountDB : MonoBehaviour
 
                 using (MySqlCommand command = conn.CreateCommand())
                 {
-                    command.CommandText = string.Format("INSERT INTO user (user_id, password) VALUES ('{0}', '{1}');", loginId, loginPw);
+                    command.CommandText = string.Format(
+                        "INSERT INTO user (user_id, password) " +
+                        "VALUES ('{0}', '{1}');",
+                        loginId, loginPw
+                    );
 
                     status = command.ExecuteNonQuery();
                 }
@@ -104,7 +114,12 @@ public class AccountDB : MonoBehaviour
 
                 using (MySqlCommand command = conn.CreateCommand())
                 {
-                    command.CommandText = string.Format("SELECT * FROM user_character WHERE user_id = '{0}';", userId);
+                    command.CommandText = string.Format(
+                        "SELECT * " +
+                        "FROM user_character " +
+                        "WHERE user_id = '{0}';",
+                        userId
+                    );
 
                     using (MySqlDataReader userCharacter = command.ExecuteReader())
                     {
@@ -153,7 +168,13 @@ public class AccountDB : MonoBehaviour
 
                 using (MySqlCommand command = conn.CreateCommand())
                 {
-                    command.CommandText = string.Format("SELECT EXISTS (SELECT * FROM user_character WHERE nickname = '{0}' LIMIT 1) AS chk;", nickName);
+                    command.CommandText = string.Format(
+                        "SELECT EXISTS " +
+                        "(SELECT * FROM user_character " +
+                        "WHERE nickname = '{0}' " +
+                        "LIMIT 1) " +
+                        "AS chk;", nickName
+                    );
 
                     using (MySqlDataReader userCharacter = command.ExecuteReader())
                     {
@@ -182,14 +203,19 @@ public class AccountDB : MonoBehaviour
 
 public class CharacterDB : MonoBehaviour
 {
-    private static string userId = DataBase.Instance.defaultAccountInfo.accountId;
-
-    public static int CreateCharacter(string nickname, string roll)
+    public static int CreateCharacter(string nickname, string roll, List<int> equipmentId, Dictionary<string, Color> colors)
     {
         int status = 0;
+
+        string userId = DataBase.Instance.defaultAccountInfo.accountId;
+        string lastTown = "Pallet Town";
         int characterId;
         int maxInventoryNum;
         int characterNum = 1;
+        int level = 1;
+        int exp = 0;
+
+        List<string> statNames = new List<string>() { "hp", "mp", "recover_mp", "power", "critical_dmg", "critical_percent", "heal_percent" };
 
         using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
         {
@@ -200,7 +226,11 @@ public class CharacterDB : MonoBehaviour
                 using (MySqlCommand command = conn.CreateCommand())
                 {
 
-                    command.CommandText = string.Format("SELECT * FROM character_std WHERE roll = '{0}';", roll);
+                    command.CommandText = string.Format(
+                        "SELECT * FROM character_std " +
+                        "WHERE roll = '{0}';",
+                        roll
+                    );
 
                     using (MySqlDataReader characterStd = command.ExecuteReader())
                     {
@@ -212,7 +242,14 @@ public class CharacterDB : MonoBehaviour
                         characterStd.Close();
                     }
 
-                    command.CommandText = string.Format("SELECT character_num FROM user_character WHERE user_id = '{0}' ORDER BY character_num DESC", userId);
+                    command.CommandText = string.Format(
+                        "SELECT character_num " +
+                        "FROM user_character " +
+                        "WHERE user_id = '{0}' " +
+                        "ORDER BY character_num " +
+                        "DESC",
+                        userId
+                    );
                     
                     using (MySqlDataReader userCharacter = command.ExecuteReader())
                     {
@@ -225,21 +262,25 @@ public class CharacterDB : MonoBehaviour
                     command.CommandText = string.Format(
                         "INSERT INTO user_character (user_id, character_num, character_id, nickname, level, exp, last_town, max_inventory) " +
                         "VALUES ('{0}', {1}, {2}, '{3}', {4}, {5}, '{6}', {7})",
-                        userId, characterNum, characterId, nickname, 1, 0, "Pallet Town", maxInventoryNum
+                        userId, characterNum, characterId, nickname, level, exp, lastTown, maxInventoryNum
                     );
 
                     command.ExecuteNonQuery();
 
-                    StatDB.InsertCharacterStat(userId, characterNum, "hp", StatDB.GetCharacterStdStat(characterId, "hp"));
-                    StatDB.InsertCharacterStat(userId, characterNum, "mp", StatDB.GetCharacterStdStat(characterId, "mp"));
-                    StatDB.InsertCharacterStat(userId, characterNum, "recover_mp", StatDB.GetCharacterStdStat(characterId, "recover_mp"));
-                    StatDB.InsertCharacterStat(userId, characterNum, "power", StatDB.GetCharacterStdStat(characterId, "power"));
-                    StatDB.InsertCharacterStat(userId, characterNum, "critical_dmg", StatDB.GetCharacterStdStat(characterId, "critical_dmg"));
-                    StatDB.InsertCharacterStat(userId, characterNum, "critical_percent", StatDB.GetCharacterStdStat(characterId, "critical_percent"));
-                    StatDB.InsertCharacterStat(userId, characterNum, "heal_percent", StatDB.GetCharacterStdStat(characterId, "heal_percent"));
 
-                    status = 1;
+                    foreach (string statName in statNames)
+                        InsertCharacterStat(userId, characterNum, statName, GetCharacterStdStat(characterId, statName));
+
+                    foreach (int id in equipmentId)
+                    {
+                        int equipmentNum = InsertEquipment(userId, characterNum, id);
+                        InsertEquipmentSlot(userId, characterNum, id, equipmentNum);
+                    }
+
+                    // insert color
                 }
+
+                status = 1;
             }
             catch (Exception e)
             {
@@ -254,11 +295,8 @@ public class CharacterDB : MonoBehaviour
 
         return status;
     }
-}
 
-public class StatDB : MonoBehaviour
-{
-    public static double GetCharacterStdStat(int characterId, string statName)
+    private static double GetCharacterStdStat(int characterId, string statName)
     {
         double stat = 0;
 
@@ -270,9 +308,13 @@ public class StatDB : MonoBehaviour
 
                 using (MySqlCommand command = conn.CreateCommand())
                 {
-                    int statCode = GetStatCode(statName);
+                    int statCode = StatDB.GetStatCode(statName);
 
-                    command.CommandText = string.Format("SELECT stat FROM character_std_stat WHERE character_id = {0} AND stat_code = {1};", characterId, statCode);
+                    command.CommandText = string.Format(
+                        "SELECT stat FROM character_std_stat " +
+                        "WHERE character_id = {0} AND stat_code = {1};",
+                        characterId, statCode
+                    );
 
                     using (MySqlDataReader statReader = command.ExecuteReader())
                     {
@@ -298,9 +340,10 @@ public class StatDB : MonoBehaviour
         return stat;
     }
 
-    public static int InsertCharacterStat(string user_id, int character_num, string statName, double stat)
+    private static int InsertCharacterStat(string userId, int characterNum, string statName, double stat)
     {
         int res;
+
         using (MySqlConnection conn = new(DBSetting.builder.ConnectionString))
         {
             try
@@ -309,9 +352,13 @@ public class StatDB : MonoBehaviour
 
                 using (MySqlCommand command = conn.CreateCommand())
                 {
-                    int statCode = GetStatCode(statName);
+                    int statCode = StatDB.GetStatCode(statName);
 
-                    command.CommandText = string.Format("INSERT INTO character_stat (user_id, character_num, stat_code, stat) VALUES ('{0}', {1}, {2}, {3});", user_id, character_num, statCode, stat);
+                    command.CommandText = string.Format(
+                        "INSERT INTO character_stat (user_id, character_num, stat_code, stat) " +
+                        "VALUES ('{0}', {1}, {2}, {3});",
+                        userId, characterNum, statCode, stat
+                    );
 
                     res = command.ExecuteNonQuery();
                 }
@@ -330,6 +377,148 @@ public class StatDB : MonoBehaviour
         return res;
     }
 
+    private static int InsertEquipment(string userId, int characterNum, int equipmentId)
+    {
+        int equipmentNum = 1;
+
+        using (MySqlConnection conn = new(DBSetting.builder.ConnectionString))
+        {
+            try
+            {
+                conn.Open();
+
+                using (MySqlCommand command = conn.CreateCommand())
+                {
+                    command.CommandText = string.Format(
+                        "SELECT equipment_num " +
+                        "FROM character_equipment " +
+                        "WHERE user_id = '{0}' " +
+                        "AND character_num = {1} " +
+                        "AND equipment_id = {2} " +
+                        "ORDER BY equipment_num DESC",
+                        userId, characterNum, equipmentId
+                    );
+
+                    using (MySqlDataReader characterEquipment = command.ExecuteReader())
+                    {
+                        if (characterEquipment.Read())
+                            equipmentNum = Convert.ToInt32(characterEquipment["equipment_num"]) + 1;
+
+                        characterEquipment.Close();
+                    }
+
+                    command.CommandText = string.Format(
+                        "INSERT INTO character_equipment (user_id, character_num, equipment_id, equipment_num) " +
+                        "VALUES ('{0}', {1}, {2}, {3});",
+                        userId, characterNum, equipmentId, equipmentNum
+                    );
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+                equipmentNum = -1;
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        return equipmentNum;
+    }
+
+    private static int InsertEquipmentSlot(string userId, int characterNum, int equipmentId, int equipmentNum)
+    {
+        int res = 0;
+
+        string equipmentType;
+
+        using (MySqlConnection conn = new(DBSetting.builder.ConnectionString))
+        {
+            try
+            {
+                conn.Open();
+
+                using (MySqlCommand command = conn.CreateCommand())
+                {
+                    command.CommandText = string.Format(
+                        "SELECT type " +
+                        "FROM equipment " +
+                        "WHERE equipment_id = {0} ",
+                        equipmentId
+                    );
+
+                    using (MySqlDataReader characterEquipment = command.ExecuteReader())
+                    {
+                        characterEquipment.Read();
+
+                        equipmentType = Convert.ToString(characterEquipment["type"]);
+
+                        characterEquipment.Close();
+                    }
+
+                    command.CommandText = string.Format(
+                        "INSERT INTO equipment_slot (user_id, character_num, equipment_id, equipment_num, slot_type) " +
+                        "VALUES ('{0}', {1}, {2}, {3}, '{4}');",
+                        userId, characterNum, equipmentId, equipmentNum, equipmentType
+                    );
+
+                    res = command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+                res = -1;
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        return res;
+    }
+
+    private static int InsertColor(string userId, int characterNum, int colorNum, Color color)
+    {
+        int res;
+
+        using (MySqlConnection conn = new(DBSetting.builder.ConnectionString))
+        {
+            try
+            {
+                conn.Open();
+
+                using (MySqlCommand command = conn.CreateCommand())
+                {
+                    command.CommandText = string.Format("" +
+                        "INSERT INTO character_color (user_id, character_num, color_num, red, green, blue) " +
+                        "VALUES ('{0}', {1}, {2}, {3}, {4}, {5});",
+                        userId, characterNum, colorNum, color.r, color.g, color.b
+                    );
+
+                    res = command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+                res = -1;
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        return res;
+    }
+}
+
+public class StatDB : MonoBehaviour
+{
     public static int GetStatCode(string statName)
     {
         int statCode = 0;
@@ -342,7 +531,12 @@ public class StatDB : MonoBehaviour
 
                 using (MySqlCommand command = conn.CreateCommand())
                 {
-                    command.CommandText = string.Format("SELECT stat_code FROM stat WHERE stat_name = '{0}';", statName);
+                    command.CommandText = string.Format(
+                        "SELECT stat_code " +
+                        "FROM stat " +
+                        "WHERE stat_name = '{0}';",
+                        statName
+                    );
 
                     using (MySqlDataReader statCodeReader = command.ExecuteReader())
                     {

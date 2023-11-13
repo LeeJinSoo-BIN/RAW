@@ -48,6 +48,12 @@ public class Login : MonoBehaviourPunCallbacks
     private Color currentEyeColor = new Color(113f / 255f, 38f / 255f, 38f / 255f);
     public bool useLocal;
     public bool isDebugMode;
+
+    List<string> rollName = new List<string>() { "warrior", "archer", "mage" };
+    List<int> defaultHairId = new List<int>() { 20, 21, 22 };
+    List<int> defaultClothId = new List<int>() { 10, 8, 11 };
+    List<int> defaultWeaponId = new List<int>() { 32, 5, 33 };
+
     private void Awake()
     {
         Screen.SetResolution(960, 540, false);
@@ -384,77 +390,83 @@ public class Login : MonoBehaviourPunCallbacks
 
     public void ClickCreateButton()
     {
-
         if (CreatCharacterNickInput.text.IsNullOrEmpty())
         {
             StartCoroutine(popMessage("오류", "닉네임을 입력해주세요."));
             return;
         }
-        if (!useLocal)
+        
+        if (useLocal)
+        {
+            CharacterSpec spec = ScriptableObject.CreateInstance<CharacterSpec>();
+            CharacterSpec defaultSpec;
+            if (CreatCharacterNickInput.text.ToLower() == "binary01")
+            {
+                defaultSpec = cheatCharacterSpec;
+            }
+            else
+            {
+                defaultSpec = defaultCharacterSpec[currentRollIdx];
+            }
+            List<InventoryItem> equipment = new List<InventoryItem>();
+            List<Color> colors = new List<Color>();
+
+            equipment.Add(defaultWeapon[currentRollIdx]);
+            equipment.Add(defaultCloth[currentClothIdx]);
+            equipment.Add(defaultHair[currentHairIdx]);
+            equipment.Add(defaultSpec.equipment[3]);
+
+            colors.Add(currentHairColor);
+            colors.Add(currentEyeColor);
+            colors.Add(currentEyeColor);
+
+            spec.nickName = CreatCharacterNickInput.text;
+            spec.roll = rollList[currentRollIdx];
+            spec.characterLevel = 1;
+            spec.lastTown = "Pallet Town";
+
+            spec.maxHealth = defaultSpec.maxHealth;
+            spec.maxMana = defaultSpec.maxMana;
+            spec.recoverManaPerThreeSec = defaultSpec.recoverManaPerThreeSec;
+            spec.power = defaultSpec.power;
+            spec.criticalDamage = defaultSpec.criticalDamage;
+            spec.criticalPercent = defaultSpec.criticalPercent;
+            spec.healPercent = defaultSpec.healPercent;
+
+            spec.maxInventoryNum = defaultSpec.maxInventoryNum;
+            spec.skillLevel = defaultSpec.skillLevel;
+            spec.inventory = defaultSpec.inventory;
+            spec.equipment = equipment;
+            spec.colors = colors;
+            if (CreatCharacterNickInput.text.ToLower() == "binary01" && DataBase.Instance.defaultAccountInfo.characterList.Count == 3)
+            {
+                spec.equipment = defaultSpec.equipment;
+                spec.colors = defaultSpec.colors;
+                spec.characterLevel = defaultSpec.characterLevel;
+                spec.roll = defaultSpec.roll;
+            }
+            CreateNewCharacterInLocal(spec);
+        }
+        else
         {
             if (AccountDB.CheckDuplicateNickName(CreatCharacterNickInput.text))
             {
                 StartCoroutine(popMessage("중복", "중복된 닉네임 입니다."));
                 return;
             }
-            CharacterDB.CreateCharacter(CreatCharacterNickInput.text, "warrior");
-        }
-        
 
-        CharacterSpec spec = ScriptableObject.CreateInstance<CharacterSpec>();
-        CharacterSpec defaultSpec; 
-        if(CreatCharacterNickInput.text.ToLower() == "binary01")
-        {
-            defaultSpec = cheatCharacterSpec;
-        }
-        else
-        {
-            defaultSpec = defaultCharacterSpec[currentRollIdx];
-        }
-        List<InventoryItem> equipment = new List<InventoryItem>();
-        List<Color> colors = new List<Color>();
+            List<int> equipmentId = new();
 
-        equipment.Add(defaultWeapon[currentRollIdx]);
-        equipment.Add(defaultCloth[currentClothIdx]);
-        equipment.Add(defaultHair[currentHairIdx]);
-        equipment.Add(defaultSpec.equipment[3]);
+            equipmentId.Add(defaultHairId[currentHairIdx]);
+            equipmentId.Add(defaultClothId[currentClothIdx]);
+            equipmentId.Add(defaultWeaponId[currentRollIdx]);
 
-        colors.Add(currentHairColor);
-        colors.Add(currentEyeColor);
-        colors.Add(currentEyeColor);
+            Dictionary<string, Color> colors = new();
 
-        spec.nickName = CreatCharacterNickInput.text;
-        spec.roll = rollList[currentRollIdx];
-        spec.characterLevel = 1;
-        spec.lastTown = "Pallet Town";
+            colors.Add("hair", currentHairColor);
+            colors.Add("eye", currentEyeColor);
 
-        spec.maxHealth = defaultSpec.maxHealth;
-        spec.maxMana = defaultSpec.maxMana;
-        spec.recoverManaPerThreeSec = defaultSpec.recoverManaPerThreeSec;
-        spec.power = defaultSpec.power;
-        spec.criticalDamage = defaultSpec.criticalDamage;
-        spec.criticalPercent = defaultSpec.criticalPercent;
-        spec.healPercent = defaultSpec.healPercent;
-
-        spec.maxInventoryNum = defaultSpec.maxInventoryNum;
-        spec.skillLevel = defaultSpec.skillLevel;
-        spec.inventory = defaultSpec.inventory;
-        spec.equipment = equipment;
-        spec.colors = colors;
-        if (CreatCharacterNickInput.text.ToLower() == "binary01" && DataBase.Instance.defaultAccountInfo.characterList.Count == 3)
-        {
-            spec.equipment = defaultSpec.equipment;
-            spec.colors = defaultSpec.colors;
-            spec.characterLevel = defaultSpec.characterLevel;
-            spec.roll = defaultSpec.roll;
-        }
-        if (useLocal)
-        {
-            CreateNewCharacterInLocal(spec);
-        }
-        else
-        {
-            CreateNewCharacter(spec);
+            CharacterDB.CreateCharacter(CreatCharacterNickInput.text, rollName[currentRollIdx], equipmentId, colors);
         }
     }
 
