@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: wand
   m_EditorClassIdentifier: 
   itemName: wand
-  itemDescription: "\uC644\uB4DC"
+  description: 
   itemType: weapon left
   spriteDirectory: SPUM_Sprites/Items/6_Weapons/Ward_1
+  iconDirectory: 
   sellPrice: 0
   buyPrice: 0
   maxCarryAmount: 1
@@ -27,4 +28,4 @@ MonoBehaviour:
   increaseMaxMana: 0
   increaseCriticalPercent: 0
   increaseCriticalDamage: 0
-  increasePerReinforce: 0
+  increasePerReinforce: 5

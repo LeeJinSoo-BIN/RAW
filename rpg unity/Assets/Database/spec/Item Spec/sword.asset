@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: sword
   m_EditorClassIdentifier: 
   itemName: sword
-  itemDescription: "\uAC80"
+  description: "\uD3C9\uBC94\uD55C \uCE7C\uC774\uB2E4."
   itemType: weapon left
   spriteDirectory: SPUM_Sprites/Items/6_Weapons/Sword_1
+  iconDirectory: 
   sellPrice: 0
   buyPrice: 0
   maxCarryAmount: 1
@@ -27,4 +28,4 @@ MonoBehaviour:
   increaseMaxMana: 0
   increaseCriticalPercent: 0
   increaseCriticalDamage: 0
-  increasePerReinforce: 0
+  increasePerReinforce: 5

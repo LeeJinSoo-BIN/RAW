@@ -12,6 +12,10 @@ using Photon.Realtime;
 using WebSocketSharp;
 using System.Linq;
 using System;
+using static UnityEditor.Progress;
+using static UnityEditor.PlayerSettings;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
+using ExitGames.Client.Photon;
 
 public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
 {
@@ -143,6 +147,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public float stayTime = 1f;
     public bool isHoverToolTip = false;
     private GameObject hoverObject;
+    private GameObject dragObject;
+    private Vector3 dragObjectOriginPos;
     private float hoverTime = 0f;
     private float storeBuyDoubleClickTimer = 0f;
     private float storeSellDoubleClickTimer = 0f;
@@ -490,7 +496,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             if (key == "q" || key == "w" || key == "e" || key == "r")
             {
                 Transform currentSlot = quiclSlotUI.transform.Find(key);
-                currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(DataBase.Instance.skillThumbnailPath, skillNames[k]));
+                currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.skillInfoDict[skillNames[k]].iconDirectory);
                 currentSlot.GetChild(0).name = "skill " + skillNames[k];
                 currentSlot.GetChild(2).GetComponent<TMP_Text>().text = keys[k];
                 currentSlot.GetChild(3).GetComponent<TMP_Text>().text = DataBase.Instance.skillInfoDict[skillNames[k]].consumeMana.ToString();
@@ -590,13 +596,41 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             }
             else
             {
+                string itemType = DataBase.Instance.itemInfoDict[item.itemName].itemType;
                 box.GetChild(2).GetComponent<TMP_Text>().text = item.count.ToString();
-                box.GetChild(1).name = "item " + item.itemName;
+                if (itemType == "potion" || itemType == "material")
+                {
+                    box.GetChild(1).name = "item " + item.itemName;
+                }
+                else
+                {
+                    box.GetChild(1).name = string.Format("equipInven {0} {1}", pos.ToString(), item.itemName);
+                }
+
                 if (box.GetChild(1).GetComponent<Image>().color.a == 0)
                     box.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[item.itemName].spriteDirectory);
                 box.GetChild(1).GetComponent<Image>().color = Color.white;
             }
         }
+    }
+
+
+    public void DragItemBegin(BaseEventData eventData)
+    {        
+        PointerEventData pointer_data = (PointerEventData)eventData;
+        dragObject = pointer_data.pointerDrag.gameObject;
+        dragObjectOriginPos = dragObject.transform.localPosition;
+    }
+    public void DragItemIng(BaseEventData eventData)
+    {
+        PointerEventData pointer_data = (PointerEventData)eventData;
+        Vector2 currentMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        pointer_data.pointerDrag.gameObject.transform.position = currentMousePos;
+    }
+    public void DragItemEnd(BaseEventData eventData)
+    {
+        PointerEventData pointer_data = (PointerEventData)eventData;
+        dragObject.transform.localPosition = dragObjectOriginPos;
     }
     #endregion
 
@@ -668,7 +702,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     #region 툴팁
     public void EnterToolTip()
     {
-        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);        
         eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
         List<RaycastResult> results = new List<RaycastResult>();
         EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
@@ -695,8 +729,17 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             toolTipPanel.SetActive(false);
             return;
         }
-        string toolTipName;
-        string toolTipContent;
+        if (toolTipPanel.activeSelf)
+        {
+            toolTipPanel.GetComponent<RectTransform>().sizeDelta = new Vector2(350, 185 + toolTipPanel.transform.GetChild(1).GetChild(3).GetComponent<RectTransform>().sizeDelta.y);
+            return;
+        }
+        string toolTipName = "";
+        string toolTipContent = "";
+        string toolTipSummary = "";
+        string iconDir = "";
+        float pivotX = 0.5f;
+        float pivotY = 0f;
         if (hoverObject.name.Contains("skill"))
         {
             toolTipName = hoverObject.name.Substring(6);
@@ -737,6 +780,10 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             toolTipContent = toolTipContent.Replace("(coolDown)", DataBase.Instance.skillInfoDict[toolTipName].coolDown.ToString());
             toolTipContent = toolTipContent.Replace("(consumeMana)", DataBase.Instance.skillInfoDict[toolTipName].consumeMana.ToString());
             toolTipContent = toolTipContent.Replace("(duration)", DataBase.Instance.skillInfoDict[toolTipName].duration.ToString());
+
+            iconDir = DataBase.Instance.skillInfoDict[toolTipName].iconDirectory;
+            toolTipSummary = string.Format("마스터 레벨 : {0}\n스킬 레벨 : {1}", DataBase.Instance.skillInfoDict[toolTipName].maxLevel, DataBase.Instance.myCharacterState.characterSpec.skillLevel[toolTipName]);
+
         }
         else if (hoverObject.name.Contains("item"))
         {
@@ -746,15 +793,55 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             toolTipContent = toolTipContent.Replace("(health)", DataBase.Instance.itemInfoDict[toolTipName].recoveryHealth.ToString());
             toolTipContent = toolTipContent.Replace("(mana)", DataBase.Instance.itemInfoDict[toolTipName].recoveryMana.ToString());
 
+            iconDir = DataBase.Instance.itemInfoDict[toolTipName].iconDirectory;
+            if (iconDir.IsNullOrEmpty())
+                iconDir = DataBase.Instance.itemInfoDict[toolTipName].spriteDirectory;
+
+            toolTipSummary = string.Format("판매 가격 : {0}", DataBase.Instance.itemInfoDict[toolTipName].sellPrice.ToString());
+        }
+        else if (hoverObject.name.Contains("equip"))
+        {
+            int parse1 = hoverObject.name.IndexOf(' ');
+            int parse2 = hoverObject.name.IndexOf(' ', parse1 + 1);
+            int pos = int.Parse(hoverObject.name.Substring(parse1, (parse2 - parse1)));
+            toolTipName = hoverObject.name.Substring(parse2 + 1);
+            int reinforce = 0;
+            if (hoverObject.name.Contains("Inven"))
+            {
+                reinforce = DataBase.Instance.myCharacterState.characterSpec.inventory[pos].reinforce;
+            }
+            else
+            {
+                reinforce = DataBase.Instance.myCharacterState.characterSpec.equipment[pos].reinforce;
+            }
+            toolTipSummary = string.Format("공격력 +{0}", DataBase.Instance.CalEnchantPower(toolTipName, reinforce));
+            iconDir = DataBase.Instance.itemInfoDict[toolTipName].iconDirectory;
+            if (iconDir.IsNullOrEmpty())
+                iconDir = DataBase.Instance.itemInfoDict[toolTipName].spriteDirectory;
+            toolTipContent = DataBase.Instance.itemInfoDict[toolTipName].description;
         }
         else
             return;
 
+        
         toolTipPanel.transform.GetChild(1).GetChild(0).GetComponent<TMP_Text>().text = toolTipName;
-        toolTipPanel.transform.GetChild(1).GetChild(1).GetComponent<TMP_Text>().text = toolTipContent;
-        toolTipPanel.GetComponent<RectTransform>().sizeDelta = new Vector2(250, 90 + toolTipPanel.transform.GetChild(1).GetChild(1).GetComponent<RectTransform>().sizeDelta.y);
+        toolTipPanel.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(iconDir);
+        toolTipPanel.transform.GetChild(1).GetChild(2).GetComponent<TMP_Text>().text = toolTipSummary;
+        toolTipPanel.transform.GetChild(1).GetChild(3).GetComponent<TMP_Text>().text = toolTipContent;
+        float worldx = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0f)).x * 0.75f;        
+        if (hoverObject.transform.position.x > worldx)
+            pivotX = 1;
+        else if (hoverObject.transform.position.x < -worldx)
+            pivotX = 0f;
+        else
+            pivotX = 0.5f;
+        if(hoverObject.transform.position.y > 0)
+            pivotY = 1f;
+        else
+            pivotY = 0f;
+        toolTipPanel.GetComponent<RectTransform>().pivot = new Vector2(pivotX, pivotY);
         toolTipPanel.transform.position = hoverObject.transform.position;
-        toolTipPanel.SetActive(true);
+        toolTipPanel.SetActive(true);        
     }
     #endregion
 
@@ -778,7 +865,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             {
                 GameObject newSkill = Instantiate(skillInfo);
                 newSkill.name = "skill " + name;
-                newSkill.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(DataBase.Instance.skillThumbnailPath, name));
+                newSkill.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.skillInfoDict[name].iconDirectory);
                 newSkill.transform.GetChild(1).name = "skill " + name;
                 newSkill.transform.GetChild(2).GetComponent<TMP_Text>().text = name;
                 string max_level = DataBase.Instance.skillInfoDict[name].maxLevel.ToString();
@@ -1350,9 +1437,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         for (int k = 0; k < 6; k++)
         {
             equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(0).GetComponent<Image>().sprite = null;
+            equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(0).name = "";
+            equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(1).gameObject.SetActive(true);
         }
-        foreach (InventoryItem item in DataBase.Instance.myCharacterState.characterSpec.equipment)
-        {
+        for(int k = 0; k < DataBase.Instance.myCharacterState.characterSpec.equipment.Count; k++) {
+            InventoryItem item = DataBase.Instance.myCharacterState.characterSpec.equipment[k];
             string dir = DataBase.Instance.itemInfoDict[item.itemName].iconDirectory;
             string type = DataBase.Instance.itemInfoDict[item.itemName].itemType;
             if (DataBase.Instance.itemInfoDict[item.itemName].iconDirectory.IsNullOrEmpty())
@@ -1361,26 +1450,38 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             if (type == "helmet")
             {
                 equipmentPanel.transform.GetChild(2).GetChild(0).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(dir);
+                equipmentPanel.transform.GetChild(2).GetChild(0).GetChild(0).name = string.Format("equip {0} {1}", k.ToString(), item.itemName);
+                equipmentPanel.transform.GetChild(2).GetChild(0).GetChild(1).gameObject.SetActive(false);
             }
             else if (type == "cloth")
             {
                 equipmentPanel.transform.GetChild(2).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(dir);
+                equipmentPanel.transform.GetChild(2).GetChild(1).GetChild(0).name = string.Format("equip {0} {1}", k.ToString(), item.itemName);
+                equipmentPanel.transform.GetChild(2).GetChild(1).GetChild(1).gameObject.SetActive(false);
             }
             else if (type == "armor")
             {
                 equipmentPanel.transform.GetChild(2).GetChild(2).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(dir);
+                equipmentPanel.transform.GetChild(2).GetChild(2).GetChild(0).name = string.Format("equip {0} {1}", k.ToString(), item.itemName);
+                equipmentPanel.transform.GetChild(2).GetChild(2).GetChild(1).gameObject.SetActive(false);
             }
             else if (type == "pant")
             {
                 equipmentPanel.transform.GetChild(2).GetChild(4).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(dir);
+                equipmentPanel.transform.GetChild(2).GetChild(4).GetChild(0).name = string.Format("equip {0} {1}", k.ToString(), item.itemName);
+                equipmentPanel.transform.GetChild(2).GetChild(4).GetChild(1).gameObject.SetActive(false);
             }
             else if (type == "back")
             {
                 equipmentPanel.transform.GetChild(2).GetChild(5).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(dir);
+                equipmentPanel.transform.GetChild(2).GetChild(5).GetChild(0).name = string.Format("equip {0} {1}", k.ToString(), item.itemName);
+                equipmentPanel.transform.GetChild(2).GetChild(5).GetChild(1).gameObject.SetActive(false);
             }
             else if (type.Contains("weapon"))
             {
                 equipmentPanel.transform.GetChild(2).GetChild(3).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(dir);
+                equipmentPanel.transform.GetChild(2).GetChild(3).GetChild(0).name = string.Format("equip {0} {1}", k.ToString(), item.itemName);
+                equipmentPanel.transform.GetChild(2).GetChild(3).GetChild(1).gameObject.SetActive(false);
             }
         }
     }

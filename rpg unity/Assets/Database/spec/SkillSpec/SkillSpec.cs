@@ -8,6 +8,7 @@ public class SkillSpec : ScriptableObject
 {
     //public GameObject skillView;
     public string skillName;
+    public string iconDirectory;
     public string description;
     public string castType;
     public string dealType;

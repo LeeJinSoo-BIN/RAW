@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: ArrowNormal
   m_EditorClassIdentifier: 
   skillName: arrow normal
+  iconDirectory: 
+  description: 
   castType: target-enemy
   dealType: throw
   maxLevel: 5

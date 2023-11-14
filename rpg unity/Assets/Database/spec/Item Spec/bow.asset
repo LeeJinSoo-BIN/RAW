@@ -16,6 +16,7 @@ MonoBehaviour:
   description: "\uD3C9\uBC94\uD55C \uD65C\uC774\uB2E4."
   itemType: weapon right
   spriteDirectory: SPUM_Sprites/Items/6_Weapons/Bow_1
+  iconDirectory: 
   sellPrice: 0
   buyPrice: 0
   maxCarryAmount: 1
@@ -27,4 +28,4 @@ MonoBehaviour:
   increaseMaxMana: 0
   increaseCriticalPercent: 0
   increaseCriticalDamage: 0
-  increasePerReinforce: 0
+  increasePerReinforce: 5

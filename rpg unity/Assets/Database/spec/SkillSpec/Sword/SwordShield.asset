@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SwordShield
   m_EditorClassIdentifier: 
   skillName: sword shield
+  iconDirectory: Character/skills/thumbnails/sword shield
   description: "\uC815\uC2E0\uC744 \uC9D1\uC911\uD558\uC5EC \uC790\uC2E0\uC5D0\uAC8C
     \uBC29\uC5B4\uB9C9\uC744 \uAC74\uB2E4. (sumShield)((flatShield) + \uC2A4\uD0AC
     \uB808\uBCA8 \uB2F9 (shieldIncreasePerSkillLevel) + \uD30C\uC6CC \uB2F9 (shieldIncreasePerPower))\uC758

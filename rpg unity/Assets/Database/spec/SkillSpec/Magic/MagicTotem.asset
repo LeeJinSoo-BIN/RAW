@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: MagicTotem
   m_EditorClassIdentifier: 
   skillName: magic totem
+  iconDirectory: Character/skills/thumbnails/magic totem
   description: "\uC544\uAD70\uC758 \uACF5\uACA9\uB825\uC744 \uC99D\uAC00\uC2DC\uCF1C\uC8FC\uB294
     \uB9C8\uBC95\uC758 \uD1A0\uD15C\uC744 (duration)\uCD08 \uAC04 \uC18C\uD658\uD55C\uB2E4.
     \uD1A0\uD15C\uC774 \uB5A8\uC5B4\uC9C8 \uB54C, \uC801\uC740 (sumDeal)((flatDeal)

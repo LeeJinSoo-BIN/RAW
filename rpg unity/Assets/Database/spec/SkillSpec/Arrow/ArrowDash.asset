@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: ArrowDash
   m_EditorClassIdentifier: 
   skillName: arrow dash
+  iconDirectory: Character/skills/thumbnails/arrow dash
   description: "\uC804\uBC29\uC73C\uB85C \uBE60\uB974\uAC8C \uAD6C\uB978\uB2E4. \uCFE8\uD0C0\uC784
     (coolDown)\uCD08"
   castType: bar

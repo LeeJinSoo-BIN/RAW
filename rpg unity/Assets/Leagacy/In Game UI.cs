@@ -187,7 +187,7 @@ public class InGameUI : MonoBehaviour
             if (key == "q" || key == "w" || key == "e" || key == "r")
             {
                 Transform currentSlot = skillKeyUI.transform.Find(key);
-                currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(DataBase.Instance.skillThumbnailPath, skillNames[k]));
+                //currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(Path.Combine(DataBase.Instance.skillThumbnailPath, skillNames[k]));
                 currentSlot.GetChild(2).GetComponent<TMP_Text>().text = keys[k];
                 currentSlot.GetChild(3).GetComponent<TMP_Text>().text = DataBase.Instance.skillInfoDict[skillNames[k]].consumeMana.ToString();
                 StartCoroutine(CoolDownCoroutine(skillNames[k], 0f));

@@ -17,8 +17,7 @@ public class DataBase : MonoBehaviour
 
     public SerializeDictItem itemInfoDict;
     public SerializeDictSkill skillInfoDict;
-    public SerializeDictDungeonInfo dungeonInfoDict;
-    public string skillThumbnailPath = "Character/skills/thumbnails";
+    public SerializeDictDungeonInfo dungeonInfoDict;    
 
     public bool isLogined = false;
 
@@ -46,7 +45,7 @@ public class DataBase : MonoBehaviour
         if (obj.Length == 1)
         {
             DontDestroyOnLoad(gameObject);
-            defaultAccountInfo = new AccountInfo();
+            defaultAccountInfo = ScriptableObject.CreateInstance<AccountInfo>();
             defaultAccountInfo.accountId = "default";
             defaultAccountInfo.characterList = new List<CharacterSpec>();            
         }
@@ -63,5 +62,10 @@ public class DataBase : MonoBehaviour
         int price = 0;
 
         return price;
+    }
+
+    public int CalEnchantPower(string itemName, int reinforce)
+    {
+        return (int)(itemInfoDict[itemName].increasePerReinforce * reinforce + itemInfoDict[itemName].increasePower);
     }
 }

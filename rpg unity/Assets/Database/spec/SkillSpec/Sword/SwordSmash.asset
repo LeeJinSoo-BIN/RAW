@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SwordSmash
   m_EditorClassIdentifier: 
   skillName: sword smash
+  iconDirectory: Character/skills/thumbnails/sword smash
   description: "\uAC80\uC744 \uB0B4\uB824\uCE5C\uB2E4. 1\uBA85\uC758 \uC801\uC5D0\uAC8C
     (sumDeal)((flatDeal) + \uC2A4\uD0AC \uB808\uBCA8 \uB2F9 (dealIncreasePerSkillLevel)
     + \uD30C\uC6CC \uB2F9 (dealIncreasePerPower))\uC758 \uD53C\uD574\uB97C \uC900\uB2E4."

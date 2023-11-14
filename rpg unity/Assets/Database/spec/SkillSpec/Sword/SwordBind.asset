@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: SwordBind
   m_EditorClassIdentifier: 
   skillName: sword bind
+  iconDirectory: Character/skills/thumbnails/sword bind
   description: "\uC801\uC744 \uC6C0\uC9C1\uC774\uC9C0 \uBABB\uD558\uAC8C \uD558\uB294
     \uBD09\uC778\uC758 \uAC80\uC73C\uB85C \uCC0C\uB978\uB2E4. \uC2A4\uD0AC\uC744
     \uB9DE\uC740 \uC801\uC740 (sumDeal)((flatDeal) + \uC2A4\uD0AC \uB808\uBCA8 \uB2F9
