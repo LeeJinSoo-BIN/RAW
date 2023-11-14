@@ -199,7 +199,7 @@ public class Login : MonoBehaviourPunCallbacks
                 {
                     Debug.Log("Success");
                     DataBase.Instance.defaultAccountInfo.accountId = loginId;
-                    DataBase.Instance.defaultAccountInfo.characterList = AccountDB.SelectCharacter(loginId);
+                    DataBase.Instance.defaultAccountInfo.characterList = CharacterDB.SelectCharacter(loginId);
                     LoginButton.enabled = false;
                     PopPanel.SetActive(true);
                     StartCoroutine(LoginMessageUpdate());
