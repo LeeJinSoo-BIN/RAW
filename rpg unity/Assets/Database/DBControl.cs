@@ -102,60 +102,6 @@ public class AccountDB : MonoBehaviour
         return status;
     }
 
-    public static List<CharacterSpec> SelectCharacter(string userId)
-    {
-        List<CharacterSpec> characterSpec = new List<CharacterSpec>();
-
-        using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
-        {
-            try
-            {
-                conn.Open();
-
-                using (MySqlCommand command = conn.CreateCommand())
-                {
-                    command.CommandText = string.Format(
-                        "SELECT * " +
-                        "FROM user_character " +
-                        "WHERE user_id = '{0}';",
-                        userId
-                    );
-
-                    using (MySqlDataReader userCharacter = command.ExecuteReader())
-                    {
-                        while(userCharacter.Read())
-                        {
-                            CharacterSpec spec = new CharacterSpec
-                            {
-                                nickName        = Convert.ToString(userCharacter["nickname"]),
-                                characterLevel  = Convert.ToInt32(userCharacter["level"]),
-                                lastTown        = Convert.ToString(userCharacter["last_town"]),
-                                maxInventoryNum = Convert.ToInt32(userCharacter["max_inventory"]),
-                                exp             = Convert.ToInt32(userCharacter["exp"])
-                                
-                            };
-
-                            characterSpec.Add(spec);
-                        }
-
-                        userCharacter.Close();
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.Log(e.Message);
-                characterSpec = null;
-            }
-            finally
-            {
-                conn.Close();
-            }
-        }
-
-        return characterSpec;
-    }
-
     public static bool CheckDuplicateNickName(string nickName)
     {
         bool chk = false;
@@ -203,8 +149,123 @@ public class AccountDB : MonoBehaviour
 
 public class CharacterDB : MonoBehaviour
 {
+    public static List<CharacterSpec> SelectCharacter(string userId)
+    {
+        List<CharacterSpec> characterSpec = new List<CharacterSpec>();
+
+        int characterId;
+        int characterNum;
+
+        string nickName;
+        string roll;
+        int characterLevel;
+        int exp;
+        string lastTown;
+
+        float maxHealth;
+        float maxMana;
+        float recoverManaPerThreeSec;
+        float power;
+        float criticalDamage;
+        float criticalPercent;
+        float healPercent;
+
+        int maxInventoryNum;
+
+        using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
+        {
+            try
+            {
+                conn.Open();
+
+                using (MySqlCommand command = conn.CreateCommand())
+                {
+                    command.CommandText = string.Format(
+                        "SELECT * " +
+                        "FROM user_character " +
+                        "WHERE user_id = '{0}'" +
+                        "ORDER BY character_num",
+                        userId
+                    );
+
+                    using (MySqlDataReader userCharacter = command.ExecuteReader())
+                    {
+                        while (userCharacter.Read())
+                        {
+                            nickName = Convert.ToString(userCharacter["nickname"]);
+                            lastTown = Convert.ToString(userCharacter["last_town"]);
+                            characterLevel = Convert.ToInt32(userCharacter["level"]);
+                            maxInventoryNum = Convert.ToInt32(userCharacter["max_inventory"]);
+                            exp = Convert.ToInt32(userCharacter["exp"]);
+                            characterId = Convert.ToInt32(userCharacter["character_id"]);
+                            characterNum = Convert.ToInt32(userCharacter["character_num"]);
+
+                            command.CommandText = string.Format(
+                                "SELECT roll " +
+                                "FROM character_std " +
+                                "WHERE character_id = {0}",
+                                characterId
+                            );
+
+                            using (MySqlDataReader characterStd = command.ExecuteReader())
+                            {
+                                characterStd.Read();
+
+                                roll = Convert.ToString(characterStd["roll"]);
+
+                                characterStd.Close();
+                            }
+
+                            maxHealth = (float)GetCharacterStat(userId, characterNum, "hp");
+                            maxMana = (float)GetCharacterStat(userId, characterNum, "mp");
+                            recoverManaPerThreeSec = (float)GetCharacterStat(userId, characterNum, "recover_mp");
+                            power = (float)GetCharacterStat(userId, characterNum, "power");
+                            criticalDamage = (float)GetCharacterStat(userId, characterNum, "critical_dmg");
+                            criticalPercent = (float)GetCharacterStat(userId, characterNum, "critical_percent");
+                            healPercent = (float)GetCharacterStat(userId, characterNum, "heal_percent");
+
+                            CharacterSpec spec = new()
+                            {
+                                nickName = nickName,
+                                roll = roll,
+                                characterLevel = characterLevel,
+                                exp = exp,
+                                lastTown = lastTown,
+                                maxInventoryNum = maxInventoryNum,
+                                maxHealth = maxHealth,
+                                maxMana = maxMana,
+                                recoverManaPerThreeSec = recoverManaPerThreeSec,
+                                power = power,
+                                criticalDamage = criticalDamage,
+                                criticalPercent = criticalPercent,
+                                healPercent = healPercent,
+                            };
+
+                            characterSpec.Add(spec);
+                        }
+
+                        userCharacter.Close();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+                characterSpec = null;
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        return characterSpec;
+    }
+
     public static int CreateCharacter(string nickname, string roll, List<int> equipmentId, Dictionary<string, Color> colors)
     {
+        List<string> statNames = new List<string>() { "hp", "mp", "recover_mp", "power", "critical_dmg", "critical_percent", "heal_percent" };
+
         int status = 0;
 
         string userId = DataBase.Instance.defaultAccountInfo.accountId;
@@ -214,8 +275,6 @@ public class CharacterDB : MonoBehaviour
         int characterNum = 1;
         int level = 1;
         int exp = 0;
-
-        List<string> statNames = new List<string>() { "hp", "mp", "recover_mp", "power", "critical_dmg", "critical_percent", "heal_percent" };
 
         using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
         {
@@ -314,8 +373,55 @@ public class CharacterDB : MonoBehaviour
 
                     command.CommandText = string.Format(
                         "SELECT stat FROM character_std_stat " +
-                        "WHERE character_id = {0} AND stat_code = {1};",
+                        "WHERE character_id = {0} " +
+                        "AND stat_code = {1};",
                         characterId, statCode
+                    );
+
+                    using (MySqlDataReader statReader = command.ExecuteReader())
+                    {
+                        statReader.Read();
+
+                        stat = Convert.ToDouble(statReader["stat"]);
+
+                        statReader.Close();
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        return stat;
+    }
+
+    private static double GetCharacterStat(string userId, int characterNum, string statName)
+    {
+        double stat = 0;
+
+        using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
+        {
+            try
+            {
+                conn.Open();
+
+                using (MySqlCommand command = conn.CreateCommand())
+                {
+                    int statCode = StatDB.GetStatCode(statName);
+
+                    command.CommandText = string.Format(
+                        "SELECT stat FROM character_stat " +
+                        "WHERE user_id = {0} " +
+                        "AND character_num = {1} " +
+                        "AND stat_code = {2};",
+                        userId, characterNum, statCode
                     );
 
                     using (MySqlDataReader statReader = command.ExecuteReader())
