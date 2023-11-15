@@ -239,7 +239,7 @@ public class SPUM_SpriteList : MonoBehaviour
                 BodyParts["armor left shoulder"].sprite = null;
                 BodyParts["armor right shoulder"].sprite = null;
             }
-            else if (part == "pant")
+            else if (part == "foot")
             {
                 BodyParts["pant left"].sprite = null;
                 BodyParts["pant right"].sprite = null;
@@ -273,7 +273,7 @@ public class SPUM_SpriteList : MonoBehaviour
             BodyParts["armor left shoulder"].sprite = sprites[1];
             BodyParts["armor right shoulder"].sprite = sprites[2];
         }
-        else if (part == "pant")
+        else if (part == "foot")
         {
             BodyParts["pant left"].sprite = sprites[0];
             BodyParts["pant right"].sprite = sprites[1];

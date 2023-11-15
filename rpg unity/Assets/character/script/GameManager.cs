@@ -43,8 +43,7 @@ public class GameManager : MonoBehaviour
     {
         CharacterSpec loadedSpec = DataBase.Instance.selectedCharacterSpec;
         player.GetComponent<MultyPlayer>().characterState.characterSpec = loadedSpec;
-        player.GetComponent<MultyPlayer>().loadData();
-        equipItem(player);
+        player.GetComponent<MultyPlayer>().loadData();        
         //Debug.Log("loaded player data");
         player.GetComponent<MultyPlayer>().characterState.setUp();
         //Debug.Log("set up state");
@@ -65,7 +64,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void equipItem(GameObject player)
+    /*void equipItem(GameObject player)
     {
         CharacterSpec spec = player.transform.GetComponent<MultyPlayer>().characterState.characterSpec;
         List<InventoryItem> equipment = spec.equipment;
@@ -79,7 +78,7 @@ public class GameManager : MonoBehaviour
         }
         spriteList._hairAndEyeColor = spec.colors;        
         spriteList.setSprite();
-    }
+    }*/
 
     public void StageClear()
     {

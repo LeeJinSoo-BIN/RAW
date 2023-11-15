@@ -436,7 +436,7 @@ public class Login : MonoBehaviourPunCallbacks
 
             spec.maxInventoryNum = defaultSpec.maxInventoryNum;
             spec.skillLevel = defaultSpec.skillLevel;
-            spec.inventory = defaultSpec.inventory;
+            spec.inventory = new List<InventoryItem>(defaultSpec.inventory);
             spec.equipment = equipment;
             spec.colors = colors;
             if (CreatCharacterNickInput.text.ToLower() == "binary01" && DataBase.Instance.defaultAccountInfo.characterList.Count == 3)

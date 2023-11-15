@@ -40,6 +40,7 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
         PV.RPC("syncInfoNum", RpcTarget.AllBuffered, "power", characterSpec.power);
         PV.RPC("syncInfoString", RpcTarget.AllBuffered, "nick", characterSpec.nickName);
         PV.RPC("syncInfoString", RpcTarget.AllBuffered, "roll", characterSpec.roll);
+        equipItem();
         updateParty();        
     }
     [PunRPC]
@@ -71,6 +72,23 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
             power = value;
         }
     }
+
+    public void equipItem()
+    {        
+        List<InventoryItem> equipment = characterSpec.equipment;
+        SPUM_SpriteList spriteList = gameObject.GetComponentInChildren<SPUM_SpriteList>();
+        spriteList.resetSprite();
+        foreach (InventoryItem item in equipment)
+        {
+            string current_item_sprite = DataBase.Instance.itemInfoDict[item.itemName].spriteDirectory;
+            spriteList.PartsPath[DataBase.Instance.itemInfoDict[item.itemName].itemType] = current_item_sprite;
+            //Debug.Log(spriteList.PartsPath[itemInfoDict[item.itemName].itemType]);
+        }
+        spriteList._hairAndEyeColor = characterSpec.colors;
+        spriteList.setSprite();
+    }
+
+
     [PunRPC]
     void syncInfoString(string what, string value)
     {

@@ -16,9 +16,10 @@ MonoBehaviour:
   description: "\uD654\uC0B4\uD1B5"
   itemType: back
   spriteDirectory: SPUM_Sprites/Items/7_Back/BowBack_1
+  iconDirectory: 
   sellPrice: 0
   buyPrice: 0
-  maxCarryAmount: 0
+  maxCarryAmount: 1
   recoveryHealth: 0
   recoveryMana: 0
   coolDown: 0

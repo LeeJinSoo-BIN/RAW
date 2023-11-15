@@ -15,7 +15,9 @@ MonoBehaviour:
   nickName: binary01
   roll: "\uC774\uC9C4\uC218"
   characterLevel: 99
+  exp: 0
   lastTown: Pallet Town
+  maxInventoryNum: 25
   maxHealth: 999
   maxMana: 999
   recoverManaPerThreeSec: 9
@@ -23,7 +25,6 @@ MonoBehaviour:
   criticalDamage: 1.5
   criticalPercent: 90
   healPercent: 1
-  exp: 0
   skillLevel:
     SD_Keys:
     - sword slash
@@ -32,7 +33,6 @@ MonoBehaviour:
     - sword bind
     - magic normal
     SD_Values: 0500000005000000050000000500000005000000
-  maxInventoryNum: 24
   inventory:
   - {fileID: 0}
   - {fileID: 0}
@@ -47,6 +47,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 11400000, guid: b1098ecdb9eb2614b834bbd178d71ca5, type: 2}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

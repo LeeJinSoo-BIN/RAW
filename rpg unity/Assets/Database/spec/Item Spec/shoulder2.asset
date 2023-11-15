@@ -16,9 +16,10 @@ MonoBehaviour:
   description: "\uD68C\uC0C9 \uACAC\uC7A5"
   itemType: shoulder
   spriteDirectory: SPUM_Sprites/Items/Shoulder/Shoulder_2
+  iconDirectory: 
   sellPrice: 0
   buyPrice: 0
-  maxCarryAmount: 0
+  maxCarryAmount: 1
   recoveryHealth: 0
   recoveryMana: 0
   coolDown: 0

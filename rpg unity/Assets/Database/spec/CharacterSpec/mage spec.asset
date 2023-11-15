@@ -15,7 +15,9 @@ MonoBehaviour:
   nickName: mage
   roll: "\uB9C8\uBC95\uC0AC"
   characterLevel: 1
+  exp: 0
   lastTown: Pallet Town
+  maxInventoryNum: 25
   maxHealth: 700
   maxMana: 1000
   recoverManaPerThreeSec: 5
@@ -23,7 +25,6 @@ MonoBehaviour:
   criticalDamage: 1.2
   criticalPercent: 50
   healPercent: 1
-  exp: 0
   skillLevel:
     SD_Keys:
     - magic floor
@@ -32,7 +33,6 @@ MonoBehaviour:
     - magic global heal
     - magic normal
     SD_Values: 0100000001000000010000000100000001000000
-  maxInventoryNum: 24
   inventory:
   - {fileID: 0}
   - {fileID: 0}
@@ -40,6 +40,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6598003d750722744a284bcec258a639, type: 2}
   - {fileID: 0}
   - {fileID: 11400000, guid: 6f3c3ada41ab30742b2c6dc779b708d7, type: 2}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

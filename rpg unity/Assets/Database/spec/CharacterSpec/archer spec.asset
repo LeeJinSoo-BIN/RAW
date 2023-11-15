@@ -15,7 +15,9 @@ MonoBehaviour:
   nickName: archer
   roll: "\uAD81\uC218"
   characterLevel: 1
+  exp: 0
   lastTown: Pallet Town
+  maxInventoryNum: 25
   maxHealth: 800
   maxMana: 900
   recoverManaPerThreeSec: 5
@@ -23,7 +25,6 @@ MonoBehaviour:
   criticalDamage: 1.2
   criticalPercent: 50
   healPercent: 1
-  exp: 0
   skillLevel:
     SD_Keys:
     - arrow rain
@@ -32,8 +33,32 @@ MonoBehaviour:
     - arrow charge
     - arrow normal
     SD_Values: 0100000001000000010000000100000001000000
-  maxInventoryNum: 24
-  inventory: []
+  inventory:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   equipment:
   - {fileID: 11400000, guid: c79d94a3987ecdb4ca8fb1a7f301665e, type: 2}
   - {fileID: 11400000, guid: 5108b4843e52e9640bbc6dcb37f194bf, type: 2}

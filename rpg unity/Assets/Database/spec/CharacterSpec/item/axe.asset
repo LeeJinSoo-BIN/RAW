@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: axe
   m_EditorClassIdentifier: 
   itemName: axe
-  count: 1
+  count: 0
   reinforce: 0

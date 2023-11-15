@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: foot3
   description: "\uBCF4\uB77C\uC0C9 \uC2E0\uBC1C\uC774\uB2E4."
-  itemType: pant
+  itemType: foot
   spriteDirectory: SPUM_Sprites/Items/3_Pant/Foot_3
   iconDirectory: items/sprite/Foot_3
   sellPrice: 0
   buyPrice: 0
-  maxCarryAmount: 0
+  maxCarryAmount: 1
   recoveryHealth: 0
   recoveryMana: 0
   coolDown: 0

@@ -595,7 +595,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         }
         isAttackingNormal = false;
     }
-    public bool getItem(Item got_item, bool pick)
+    public bool getItem(Item got_item, bool pick, int invenPos = -1)
     {
         //string got_item_name = got_item.GetComponent<Item>().itemName;
         //int got_item_cnt = got_item.GetComponent<Item>().itemCount;
@@ -630,26 +630,36 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             }
             else
             {
-                FindFrontInventoryPos();
+                if (invenPos == -1)
+                    FindFrontInventoryPos();
+                else
+                    frontInventoryPos = invenPos;
                 if (frontInventoryPos != -1)
                 {
-                    if (got_item.itemCount < DataBase.Instance.itemInfoDict[got_item.itemName].maxCarryAmount)
+                    if (got_item.itemCount <= DataBase.Instance.itemInfoDict[got_item.itemName].maxCarryAmount)
                     {
                         quickInventory[got_item.itemName].position.Add(frontInventoryPos);
-                        quickInventory[got_item.itemName].kindCount += got_item.itemCount;
-                        characterSpec.inventory[frontInventoryPos].itemName = got_item.itemName;
-                        characterSpec.inventory[frontInventoryPos].count = got_item.itemCount;
-                        characterSpec.inventory[frontInventoryPos].reinforce = got_item.reinforce;
+                        quickInventory[got_item.itemName].kindCount += got_item.itemCount;                        
+
+                        InventoryItem newItem = ScriptableObject.CreateInstance<InventoryItem>();
+                        newItem.itemName = got_item.itemName;
+                        newItem.reinforce = got_item.reinforce;
+                        newItem.count = got_item.itemCount;
+                        characterSpec.inventory[frontInventoryPos] = newItem;
                         gotten = true;
                     }
                     else
                     {
                         int remainedCnt = characterSpec.inventory[frontInventoryPos].count + got_item.itemCount - DataBase.Instance.itemInfoDict[got_item.itemName].maxCarryAmount;
                         quickInventory[got_item.itemName].position.Add(frontInventoryPos);
-                        quickInventory[got_item.itemName].kindCount += got_item.itemCount - remainedCnt;
-                        characterSpec.inventory[frontInventoryPos].itemName = got_item.itemName;
-                        characterSpec.inventory[frontInventoryPos].count = got_item.itemCount - remainedCnt;
-                        characterSpec.inventory[frontInventoryPos].reinforce = got_item.reinforce;
+                        quickInventory[got_item.itemName].kindCount += got_item.itemCount - remainedCnt;                        
+
+                        InventoryItem newItem = ScriptableObject.CreateInstance<InventoryItem>();
+                        newItem.itemName = got_item.itemName;
+                        newItem.reinforce = got_item.reinforce;
+                        newItem.count = got_item.itemCount - remainedCnt;
+                        characterSpec.inventory[frontInventoryPos] = newItem;
+
                         got_item.itemCount = remainedCnt;
                         getItem(got_item, pick);
                         return false;
@@ -664,20 +674,31 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         }
         else
         {
-            FindFrontInventoryPos();
+            if (invenPos == -1)
+                FindFrontInventoryPos();
+            else
+                frontInventoryPos = invenPos;
             if (frontInventoryPos != -1)
             {
-                if (got_item.itemCount < DataBase.Instance.itemInfoDict[got_item.itemName].maxCarryAmount)
+                if (got_item.itemCount <= DataBase.Instance.itemInfoDict[got_item.itemName].maxCarryAmount)
                 {
                     quickInventory.Add(got_item.itemName,new QuickInventory {  kindCount = got_item.itemCount, position = new SortedSet<int> { frontInventoryPos } });
-                    characterSpec.inventory[frontInventoryPos] = new InventoryItem { itemName = got_item.itemName, count = got_item.itemCount, reinforce = got_item.reinforce };                    
+                    InventoryItem newItem = ScriptableObject.CreateInstance<InventoryItem>();
+                    newItem.itemName = got_item.itemName;
+                    newItem.reinforce = got_item.reinforce;
+                    newItem.count = got_item.itemCount;
+                    characterSpec.inventory[frontInventoryPos] = newItem;
                     gotten = true;
                 }
                 else
                 {
                     int remainedCnt = characterSpec.inventory[frontInventoryPos].count + got_item.itemCount - DataBase.Instance.itemInfoDict[got_item.itemName].maxCarryAmount;
                     quickInventory.Add(got_item.itemName, new QuickInventory { kindCount = got_item.itemCount - remainedCnt, position = new SortedSet<int> { frontInventoryPos } });
-                    characterSpec.inventory[frontInventoryPos] = new InventoryItem { itemName = got_item.itemName, count = got_item.itemCount - remainedCnt, reinforce = got_item.reinforce };                    
+                    InventoryItem newItem = ScriptableObject.CreateInstance<InventoryItem>();
+                    newItem.itemName = got_item.itemName;
+                    newItem.reinforce = got_item.reinforce;
+                    newItem.count = got_item.itemCount;
+                    characterSpec.inventory[frontInventoryPos] = newItem;
                     got_item.itemCount = remainedCnt;
                     getItem(got_item, pick);
                     return false;
@@ -724,8 +745,28 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         }*/
     }
 
-    public void loseItem(string itemName, int cnt)
+    public bool loseItem(string itemName, int cnt, int where = -1)
     {
+        if (where != -1)
+        {
+            if (characterSpec.inventory[where].count < cnt)
+                return false;
+            characterSpec.inventory[where].count -= cnt;
+            quickInventory[itemName].kindCount -= cnt;
+            if (characterSpec.inventory[where].count == 0)
+            {
+                characterSpec.inventory[where] = null;
+                quickInventory[itemName].position.Remove(where);                
+                if (quickInventory[itemName].kindCount == 0)
+                    quickInventory.Remove(itemName);
+            }
+            UIManager.Instance.updateInventory();
+            UIManager.Instance.updateAllQuickSlot();
+            return true;
+        }
+        if (quickInventory[itemName].kindCount < cnt)
+            return false;
+
         List<int> deleteList = new List<int>();
         int[] posList = quickInventory[itemName].position.ToArray();
         Array.Sort(posList, (a, b) => b.CompareTo(a));
@@ -735,13 +776,14 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             {
                 characterSpec.inventory[pos].count -= cnt;
                 quickInventory[itemName].kindCount -= cnt;
+
                 break;
             }
             else if (characterSpec.inventory[pos].count == cnt)
             {
                 characterSpec.inventory[pos] = null;
                 deleteList.Add(pos);
-                quickInventory[itemName].kindCount -= cnt;                
+                quickInventory[itemName].kindCount -= cnt;
                 break;
             }
             else
@@ -761,6 +803,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             quickInventory.Remove(itemName);
         UIManager.Instance.updateInventory();
         UIManager.Instance.updateAllQuickSlot();
+        return true;
     }
     public void FindFrontInventoryPos()
     {

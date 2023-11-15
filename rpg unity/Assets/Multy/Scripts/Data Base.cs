@@ -56,16 +56,39 @@ public class DataBase : MonoBehaviour
         if(Instance == null)
             Instance = this;
     }
-
-    public int CalEnchantPrice(int currentReinforce)
+    public int CalEnchantPercent(int currentReinforce)
     {
-        int price = 0;
+        if (currentReinforce <= 4)
+            return 90 - 5 * currentReinforce;
+        else if (currentReinforce <= 7)
+            return 100 - 10 * currentReinforce;
+        else if (currentReinforce <= 9)
+            return 30;
+        else if (currentReinforce <= 11)
+            return (12 - currentReinforce) * 10;
+        else
+            return 0;
 
+    }
+    public int[] CalEnchantPrice(string itemName, int currentReinforce)
+    {
+        int[] price = new int[2];
+        price[0] = 100 * (currentReinforce + 1);
+        price[1] = 100 * (currentReinforce + 1);
         return price;
     }
 
     public int CalEnchantPower(string itemName, int reinforce)
     {
-        return (int)(itemInfoDict[itemName].increasePerReinforce * reinforce + itemInfoDict[itemName].increasePower);
+        if (reinforce < 5)
+        {
+            return (int)itemInfoDict[itemName].increasePerReinforce;
+        }
+        else if (5 <= reinforce && reinforce <= 7)
+        {
+            return (int)itemInfoDict[itemName].increasePerReinforce + reinforce / 2;
+        }
+        else
+            return (int)itemInfoDict[itemName].increasePerReinforce + reinforce;
     }
 }

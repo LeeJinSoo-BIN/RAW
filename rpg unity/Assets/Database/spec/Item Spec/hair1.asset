@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: hair1
   m_EditorClassIdentifier: 
   itemName: hair1
-  itemDescription: "\uBA38\uB9AC1"
+  description: 
   itemType: hair
   spriteDirectory: SPUM_Sprites/Items/0_Hair/Hair_1
+  iconDirectory: 
   sellPrice: 0
   buyPrice: 0
-  maxCarryAmount: 0
+  maxCarryAmount: 1
   recoveryHealth: 0
   recoveryMana: 0
   coolDown: 0

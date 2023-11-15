@@ -16,9 +16,10 @@ MonoBehaviour:
   description: "\uCF67\uC218\uC5FC"
   itemType: face hair
   spriteDirectory: SPUM_Sprites/Items/1_FaceHair/FaceHair_2
+  iconDirectory: 
   sellPrice: 0
   buyPrice: 0
-  maxCarryAmount: 0
+  maxCarryAmount: 1
   recoveryHealth: 0
   recoveryMana: 0
   coolDown: 0

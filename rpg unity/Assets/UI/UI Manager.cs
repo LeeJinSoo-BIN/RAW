@@ -12,10 +12,7 @@ using Photon.Realtime;
 using WebSocketSharp;
 using System.Linq;
 using System;
-using static UnityEditor.Progress;
-using static UnityEditor.PlayerSettings;
-using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
-using ExitGames.Client.Photon;
+
 
 public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
 {
@@ -29,6 +26,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public GameObject toolTipPanel;
     public GameObject conversationPanel;
     public GameObject equipmentPanel;
+    public GameObject draggingItem;
 
     [Header("Inveontory Panel")]
     public GameObject inventoryPanel;
@@ -161,6 +159,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         public string partyName;
         public HashSet<string> partyMembersNickName;
     }
+
+
+    int enchantPercent;
+    int[] enchantPrice = new int[2];
+    bool isEnchanting = false;
     #endregion
 
     void Awake()
@@ -205,6 +208,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
         EnchantPanel.SetActive(false);
         EnchantResult.SetActive(false);
+
+        draggingItem.SetActive(false);
 
         chatInput.onSubmit.AddListener(delegate { sendChat(); });
         storeSellPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().onSubmit.AddListener(delegate { ClickSellButton(); });
@@ -324,10 +329,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         networkManager = GameObject.Find("NetworkManager").GetComponent<newNetworkManager>();
         PlayerGroup = GameObject.Find("Player Group");
         EnemyGroup = GameObject.Find("Enemy Group");
+        GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceCamera;
         GetComponent<Canvas>().worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
         GetComponent<Canvas>().sortingLayerName = "ui";
         eventSystem = GameObject.Find("EventSystem").GetComponent<EventSystem>();
-
+        
         ResetSkillPanel();
         UpdateSkillPanel();
 
@@ -343,6 +349,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             keyToItemName.Add(quickSlotKeys[k], "");
         }
+        updateAllQuickSlot();
         setKeyMap();
         StartCoroutine(update_health());
         if (DataBase.Instance.currentMapType == "dungeon")
@@ -497,7 +504,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             {
                 Transform currentSlot = quiclSlotUI.transform.Find(key);
                 currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.skillInfoDict[skillNames[k]].iconDirectory);
-                currentSlot.GetChild(0).name = "skill " + skillNames[k];
+                currentSlot.GetChild(0).GetComponent<Image>().preserveAspect = true;
+                currentSlot.GetChild(0).GetComponent<itemslot>().itemName = skillNames[k];
+                currentSlot.GetChild(0).GetComponent<itemslot>().isBlank = false;
                 currentSlot.GetChild(2).GetComponent<TMP_Text>().text = keys[k];
                 currentSlot.GetChild(3).GetComponent<TMP_Text>().text = DataBase.Instance.skillInfoDict[skillNames[k]].consumeMana.ToString();
                 StartCoroutine(CoolDownCoroutine(skillNames[k], 0f));
@@ -527,38 +536,35 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     {
         for (int k = 0; k < quickSlotKeys.Count; k++)
         {
-            Transform currentSlot = quiclSlotUI.transform.Find(quickSlotKeys[k].ToLower());
-            if (updateSprite)
-            {
-                currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[keyToItemName[quickSlotKeys[k]]].spriteDirectory);
-                currentSlot.GetChild(0).name = "item " + keyToItemName[quickSlotKeys[k]];
-            }
-
-            if (quickInventory.ContainsKey(keyToItemName[quickSlotKeys[k]]))
-            {
-                currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;
-                currentSlot.GetChild(0).name = "item " + keyToItemName[quickSlotKeys[k]];
-                currentSlot.GetChild(2).GetComponent<TMP_Text>().text = quickInventory[keyToItemName[quickSlotKeys[k]]].kindCount.ToString();
-            }
-            else
-            {
-                currentSlot.GetChild(0).GetComponent<Image>().color = new Color(0.5f, 0.5f, 0.5f);
-                currentSlot.GetChild(2).GetComponent<TMP_Text>().text = "0";
-            }
+            updateThisQuickSlot(quickSlotKeys[k], updateSprite);
         }
     }
     void updateThisQuickSlot(string key, bool updateSprtie = false)
     {
         Transform currentSlot = quiclSlotUI.transform.Find(key);
+        itemslot slotInfo = currentSlot.GetChild(0).GetComponent<itemslot>();
+        if (keyToItemName[key].IsNullOrEmpty())
+        {
+            slotInfo.isBlank = true;
+            slotInfo.itemName = "";
+            currentSlot.GetChild(0).GetComponent<Image>().sprite = null;
+            currentSlot.GetChild(0).GetComponent<Image>().color = Color.gray;
+            currentSlot.GetChild(2).GetComponent<TMP_Text>().text = "";
+            return;
+        }
+
         if (updateSprtie)
         {
             currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[keyToItemName[key]].spriteDirectory);
-            currentSlot.GetChild(0).name = "item " + keyToItemName[key];
+            currentSlot.GetChild(0).GetComponent<Image>().preserveAspect = true;
         }
+
+
+        slotInfo.isBlank = false;
+        slotInfo.itemName = keyToItemName[key];
         if (quickInventory.ContainsKey(keyToItemName[key]))
         {
-            currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;
-            currentSlot.GetChild(0).name = "item " + keyToItemName[key];
+            currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;            
             currentSlot.GetChild(2).GetComponent<TMP_Text>().text = quickInventory[keyToItemName[key]].kindCount.ToString();
         }
         else
@@ -566,6 +572,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             currentSlot.GetChild(0).GetComponent<Image>().color = Color.gray;
             currentSlot.GetChild(2).GetComponent<TMP_Text>().text = "0";
         }
+
     }
 
     void setQuickSlot(string key, string itemName)
@@ -592,23 +599,23 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             {
                 box.GetChild(2).GetComponent<TMP_Text>().text = "";
                 box.GetChild(1).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0);
-                box.GetChild(1).name = "";
+                box.GetChild(1).GetComponent<itemslot>().itemName = "";
+                box.GetChild(1).GetComponent<itemslot>().isBlank = true;                
             }
             else
             {
                 string itemType = DataBase.Instance.itemInfoDict[item.itemName].itemType;
                 box.GetChild(2).GetComponent<TMP_Text>().text = item.count.ToString();
-                if (itemType == "potion" || itemType == "material")
-                {
-                    box.GetChild(1).name = "item " + item.itemName;
-                }
-                else
-                {
-                    box.GetChild(1).name = string.Format("equipInven {0} {1}", pos.ToString(), item.itemName);
-                }
-
+                box.GetChild(1).GetComponent<itemslot>().itemName = item.itemName;
+                box.GetChild(1).GetComponent<itemslot>().isBlank = false;
+                string iconDir = DataBase.Instance.itemInfoDict[item.itemName].iconDirectory;
+                if (iconDir.IsNullOrEmpty())
+                    iconDir = DataBase.Instance.itemInfoDict[item.itemName].spriteDirectory;
                 if (box.GetChild(1).GetComponent<Image>().color.a == 0)
-                    box.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[item.itemName].spriteDirectory);
+                {
+                    box.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(iconDir);
+                    box.GetChild(1).GetComponent<Image>().preserveAspect = true;
+                }
                 box.GetChild(1).GetComponent<Image>().color = Color.white;
             }
         }
@@ -616,21 +623,193 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
 
     public void DragItemBegin(BaseEventData eventData)
-    {        
+    {
+        Debug.Log("begin");
         PointerEventData pointer_data = (PointerEventData)eventData;
-        dragObject = pointer_data.pointerDrag.gameObject;
+        dragObject = pointer_data.pointerDrag;
+        if (dragObject == null)
+            return;
+        if (dragObject.GetComponent<itemslot>().isBlank)
+        {
+            dragObject = null;
+            return;
+        }
         dragObjectOriginPos = dragObject.transform.localPosition;
+
+        draggingItem.transform.GetChild(0).GetChild(0).GetComponent<Image>().sprite = dragObject.GetComponent<Image>().sprite;
+        draggingItem.transform.GetChild(0).GetChild(0).GetComponent<Image>().preserveAspect = true;
+        
+        isHoverToolTip = false;
+        hoverTime = 0;
     }
     public void DragItemIng(BaseEventData eventData)
-    {
+    {        
+        if(dragObject == null)
+            return;
+        draggingItem.SetActive(true);
         PointerEventData pointer_data = (PointerEventData)eventData;
         Vector2 currentMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        pointer_data.pointerDrag.gameObject.transform.position = currentMousePos;
+        draggingItem.transform.position = new Vector3(currentMousePos.x, currentMousePos.y, -5f);
+
+        isHoverToolTip = false;
+        hoverTime = 0;
     }
     public void DragItemEnd(BaseEventData eventData)
     {
+        Debug.Log("end");
         PointerEventData pointer_data = (PointerEventData)eventData;
+        if(dragObject == null)
+            return;
+        if(pointer_data.pointerCurrentRaycast.gameObject == null)
+        {
+            DragItemDone();
+            return;
+        }
+        itemslot dragItemSlot = dragObject.GetComponent<itemslot>();
+        itemslot desSlot = pointer_data.pointerCurrentRaycast.gameObject.GetComponent<itemslot>();
+        if(desSlot != null)
+        {
+            if(desSlot.slotType == "quick item")
+            {
+
+            }
+            else if(desSlot.slotType == "quick skill")
+            {
+
+            }            
+            else if(desSlot.slotType == "enchant")
+            {
+                if (isEnchanting)
+                {
+                    DragItemDone();
+                    return;
+                }
+                if (dragItemSlot.slotType != "inven" && dragItemSlot.slotType != "equip")
+                {
+                    DragItemDone();
+                    return;
+                }
+                else if (DataBase.Instance.itemInfoDict[dragItemSlot.itemName].itemType == "potion" || DataBase.Instance.itemInfoDict[dragItemSlot.itemName].itemType == "material")
+                {
+                    DragItemDone();
+                    return;
+                }                    
+                desSlot.itemName = dragItemSlot.itemName;
+                desSlot.slotPos = dragItemSlot.slotPos;
+                desSlot.isBlank = true;
+                UpdateEnchantPanel();                
+            }
+            else if(desSlot.slotType == "inven")
+            {
+                if(dragItemSlot.slotType == "inven") // 인벤토리 내 이동 스왑
+                {
+                    if(desSlot.slotPos != dragItemSlot.slotPos)
+                    {
+                        if (DataBase.Instance.myCharacterState.characterSpec.inventory[desSlot.slotPos] == null)
+                        {
+                            string dragItemName = dragItemSlot.itemName;
+                            int dragReinforce = DataBase.Instance.myCharacterState.characterSpec.inventory[dragItemSlot.slotPos].reinforce;
+                            int dragCnt = DataBase.Instance.myCharacterState.characterSpec.inventory[dragItemSlot.slotPos].count;
+                            Debug.Log(dragCnt);
+                            DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().loseItem(dragItemName, dragCnt, dragItemSlot.slotPos);
+                            Debug.Log(dragCnt);
+                            DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().getItem(new Item { itemName = dragItemName, itemCount = dragCnt, reinforce = dragReinforce }, false, desSlot.slotPos);
+                        }
+                        else
+                        {
+                            string desItemName = desSlot.itemName;
+                            int desReinforce = DataBase.Instance.myCharacterState.characterSpec.inventory[desSlot.slotPos].reinforce;
+                            int desCnt = DataBase.Instance.myCharacterState.characterSpec.inventory[desSlot.slotPos].count;
+
+                            string dragItemName = dragItemSlot.itemName;
+                            int dragReinforce = DataBase.Instance.myCharacterState.characterSpec.inventory[dragItemSlot.slotPos].reinforce;
+                            int dragCnt = DataBase.Instance.myCharacterState.characterSpec.inventory[dragItemSlot.slotPos].count;
+
+                            DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().loseItem(desItemName, desCnt, desSlot.slotPos);
+                            DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().loseItem(dragItemName, dragCnt, dragItemSlot.slotPos);
+
+                            DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().getItem(new Item { itemName = desItemName, itemCount = desCnt, reinforce = desReinforce }, false, dragItemSlot.slotPos);
+                            DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().getItem(new Item { itemName = dragItemName, itemCount = dragCnt, reinforce = dragReinforce }, false, desSlot.slotPos);
+
+                        }
+
+                        updateInventory();
+                    }
+                        
+                }
+                else if(dragItemSlot.slotType == "equip") // 장비 -> 인벤토리
+                {
+                    if (desSlot.isBlank) // 빈곳이면 장착해제
+                    {
+                        int equipPos = -dragItemSlot.slotPos - 1;
+                        int invenPos = desSlot.slotPos;
+                        InventoryItem equip = DataBase.Instance.myCharacterState.characterSpec.equipment[equipPos];
+                        DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().getItem(new Item { reinforce = equip.reinforce, itemName = equip.itemName, itemCount = 1 }, false, invenPos);
+                        DataBase.Instance.myCharacterState.characterSpec.equipment.Remove(equip);
+
+
+                        DataBase.Instance.myCharacterState.equipItem();
+                        UpdateEquipmentPanel();
+                        updateInventory();
+
+                    }
+                    else if (DataBase.Instance.itemInfoDict[desSlot.itemName].itemType == dragItemSlot.transform.parent.name ||
+                        (DataBase.Instance.itemInfoDict[desSlot.itemName].itemType.Contains("weapon") && dragItemSlot.transform.parent.name == "weapon"))
+                    {
+                        Debug.Log("swap");
+                        int equipPos = -dragItemSlot.slotPos - 1;
+                        int invenPos = desSlot.slotPos;
+
+                        string invenName = DataBase.Instance.myCharacterState.characterSpec.inventory[invenPos].itemName;
+                        int invenRein = DataBase.Instance.myCharacterState.characterSpec.inventory[invenPos].reinforce;                       
+
+
+                        InventoryItem equip = DataBase.Instance.myCharacterState.characterSpec.equipment[equipPos];                    
+
+                        DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().loseItem(invenName, 1, invenPos);                        
+                        DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().getItem(new Item { reinforce = equip.reinforce, itemName = equip.itemName, itemCount = 1 }, false, invenPos);
+                        DataBase.Instance.myCharacterState.characterSpec.equipment.Remove(equip);
+                        DataBase.Instance.myCharacterState.characterSpec.equipment.Add(new InventoryItem { reinforce = invenRein, itemName = invenName, count = 1 });
+
+                        DataBase.Instance.myCharacterState.equipItem();
+                        UpdateEquipmentPanel();
+                        updateInventory();
+                    }
+                    else
+                    {
+                        DragItemDone();
+                        return;
+                    }
+                }
+            }
+            else if(desSlot.slotType == "equip")
+            {
+                if (dragItemSlot.slotType == "inven")
+                {
+
+                }
+                else if (dragItemSlot.slotType == "equip")
+                {
+
+                }
+            }
+            else
+            {
+                Debug.LogError("wrong slot");
+            }
+            
+        }
+        DragItemDone();
+    }
+
+    void DragItemDone()
+    {
         dragObject.transform.localPosition = dragObjectOriginPos;
+        draggingItem.SetActive(false);
+
+        dragObject = null;
+        isHoverToolTip = false;
+        hoverTime = 0;
     }
     #endregion
 
@@ -727,6 +906,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             hoverTime = 0;
             toolTipPanel.SetActive(false);
+            isHoverToolTip = false;
             return;
         }
         if (toolTipPanel.activeSelf)
@@ -734,15 +914,25 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             toolTipPanel.GetComponent<RectTransform>().sizeDelta = new Vector2(350, 185 + toolTipPanel.transform.GetChild(1).GetChild(3).GetComponent<RectTransform>().sizeDelta.y);
             return;
         }
-        string toolTipName = "";
+
+        itemslot slotInfo = hoverObject.GetComponent<itemslot>();
+        if (slotInfo.isBlank)
+        {
+            return;
+        }
+        string toolTipName = slotInfo.itemName;
         string toolTipContent = "";
         string toolTipSummary = "";
         string iconDir = "";
         float pivotX = 0.5f;
         float pivotY = 0f;
-        if (hoverObject.name.Contains("skill"))
+
+
+
+
+
+        if (slotInfo.slotType == "skill" || slotInfo.slotType == "quick skill")
         {
-            toolTipName = hoverObject.name.Substring(6);
             toolTipContent = DataBase.Instance.skillInfoDict[toolTipName].description;
 
             toolTipContent = toolTipContent.Replace("(sumDeal)",
@@ -785,9 +975,10 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             toolTipSummary = string.Format("마스터 레벨 : {0}\n스킬 레벨 : {1}", DataBase.Instance.skillInfoDict[toolTipName].maxLevel, DataBase.Instance.myCharacterState.characterSpec.skillLevel[toolTipName]);
 
         }
-        else if (hoverObject.name.Contains("item"))
+
+
+        else if (DataBase.Instance.itemInfoDict[slotInfo.itemName].itemType == "material" || DataBase.Instance.itemInfoDict[slotInfo.itemName].itemType == "potion")
         {
-            toolTipName = hoverObject.name.Substring(5);
             toolTipContent = DataBase.Instance.itemInfoDict[toolTipName].description;
 
             toolTipContent = toolTipContent.Replace("(health)", DataBase.Instance.itemInfoDict[toolTipName].recoveryHealth.ToString());
@@ -799,33 +990,31 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
             toolTipSummary = string.Format("판매 가격 : {0}", DataBase.Instance.itemInfoDict[toolTipName].sellPrice.ToString());
         }
-        else if (hoverObject.name.Contains("equip"))
+        else
         {
-            int parse1 = hoverObject.name.IndexOf(' ');
-            int parse2 = hoverObject.name.IndexOf(' ', parse1 + 1);
-            int pos = int.Parse(hoverObject.name.Substring(parse1, (parse2 - parse1)));
-            toolTipName = hoverObject.name.Substring(parse2 + 1);
+            int pos = slotInfo.slotPos;
             int reinforce = 0;
-            if (hoverObject.name.Contains("Inven"))
+            if (slotInfo.slotType == "inven")
             {
                 reinforce = DataBase.Instance.myCharacterState.characterSpec.inventory[pos].reinforce;
             }
             else
             {
-                reinforce = DataBase.Instance.myCharacterState.characterSpec.equipment[pos].reinforce;
+                reinforce = DataBase.Instance.myCharacterState.characterSpec.equipment[-pos - 1].reinforce;
             }
-            toolTipSummary = string.Format("공격력 +{0}", DataBase.Instance.CalEnchantPower(toolTipName, reinforce));
+            toolTipSummary = string.Format("공격력 +{0}", DataBase.Instance.CalEnchantPower(toolTipName, reinforce) + DataBase.Instance.itemInfoDict[toolTipName].increasePower);
             iconDir = DataBase.Instance.itemInfoDict[toolTipName].iconDirectory;
             if (iconDir.IsNullOrEmpty())
                 iconDir = DataBase.Instance.itemInfoDict[toolTipName].spriteDirectory;
             toolTipContent = DataBase.Instance.itemInfoDict[toolTipName].description;
+            if(reinforce > 0) 
+                toolTipName += string.Format(" (+{0})", reinforce);
         }
-        else
-            return;
 
         
         toolTipPanel.transform.GetChild(1).GetChild(0).GetComponent<TMP_Text>().text = toolTipName;
         toolTipPanel.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(iconDir);
+        toolTipPanel.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Image>().preserveAspect = true;
         toolTipPanel.transform.GetChild(1).GetChild(2).GetComponent<TMP_Text>().text = toolTipSummary;
         toolTipPanel.transform.GetChild(1).GetChild(3).GetComponent<TMP_Text>().text = toolTipContent;
         float worldx = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0f)).x * 0.75f;        
@@ -856,7 +1045,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     }
     public void UpdateSkillPanel()
     {
-        List<string> skillName = DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel.SD_Keys;
+        List<string> skillName = DataBase.Instance.myCharacterState.characterSpec.skillLevel.SD_Keys;
         foreach (string name in skillName)
         {
             if (name.Contains("normal"))
@@ -866,7 +1055,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 GameObject newSkill = Instantiate(skillInfo);
                 newSkill.name = "skill " + name;
                 newSkill.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.skillInfoDict[name].iconDirectory);
-                newSkill.transform.GetChild(1).name = "skill " + name;
+                newSkill.transform.GetChild(1).GetComponent<Image>().preserveAspect = true;
+                newSkill.transform.GetChild(1).GetComponent<itemslot>().itemName = name;                
+                newSkill.transform.GetChild(1).GetComponent<itemslot>().slotType = "skill";
                 newSkill.transform.GetChild(2).GetComponent<TMP_Text>().text = name;
                 string max_level = DataBase.Instance.skillInfoDict[name].maxLevel.ToString();
                 string current_level = DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel[name].ToString();
@@ -1184,7 +1375,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 {
                     if (memberName == DataBase.Instance.myCharacter.name)
                         continue;
-                    if (newCaptainName == "")
+                    if (newCaptainName.IsNullOrEmpty())
                         newCaptainName = memberName;
                     networkManager.PV.RPC("ChangeCaptain", inGameUserList[memberName].PV.Owner, newCaptainName);
                 }
@@ -1297,7 +1488,10 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             GameObject sellingItem = Instantiate(storeItemInfo);
             sellingItem.name = item.itemName;
             sellingItem.transform.GetChild(2).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[item.itemName].spriteDirectory);
-            sellingItem.transform.GetChild(2).name = "item " + item.itemName;
+            sellingItem.transform.GetChild(2).GetComponent<Image>().preserveAspect = true;
+            sellingItem.transform.GetChild(2).GetComponent<itemslot>().slotType = "store";
+            sellingItem.transform.GetChild(2).GetComponent<itemslot>().itemName = item.itemName;
+            sellingItem.transform.GetChild(2).GetComponent<itemslot>().isBlank = false;
             sellingItem.transform.GetChild(3).GetComponent<TMP_Text>().text = item.itemName;
             sellingItem.transform.GetChild(4).GetComponent<TMP_Text>().text = DataBase.Instance.itemInfoDict[item.itemName].buyPrice.ToString();
             sellingItem.transform.parent = storeBox.transform;
@@ -1314,18 +1508,51 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         }
         storeInvenBox.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = DataBase.Instance.myCharacterState.characterSpec.money.ToString();
         foreach (string itemName in quickInventory.Keys)
-        {
-            GameObject invenItem = Instantiate(storeInvenItemInfo);
-            invenItem.name = itemName;
-            invenItem.transform.GetChild(2).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[itemName].spriteDirectory);
-            invenItem.transform.GetChild(2).name = "item " + itemName;
-            invenItem.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = quickInventory[itemName].kindCount.ToString();
-            invenItem.transform.GetChild(3).GetComponent<TMP_Text>().text = itemName;
-            invenItem.transform.GetChild(4).GetComponent<TMP_Text>().text = DataBase.Instance.itemInfoDict[itemName].sellPrice.ToString();
-            invenItem.transform.parent = storeInvenBox.transform;
-            invenItem.transform.localScale = Vector3.one;
-            invenItem.transform.localPosition = Vector3.zero;
-            invenItem.SetActive(true);
+        {            
+            
+            if (DataBase.Instance.itemInfoDict[itemName].itemType == "material" || DataBase.Instance.itemInfoDict[itemName].itemType == "potion")
+            {
+                GameObject invenItem = Instantiate(storeInvenItemInfo);
+                invenItem.name = itemName;
+                invenItem.transform.GetChild(2).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[itemName].spriteDirectory);
+                invenItem.transform.GetChild(2).GetComponent<Image>().preserveAspect = true;
+                invenItem.transform.GetChild(2).GetComponent<itemslot>().itemName = itemName;
+                invenItem.transform.GetChild(2).GetComponent<itemslot>().isBlank = false;
+                invenItem.transform.GetChild(2).GetComponent<itemslot>().slotType = "inven";
+                invenItem.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = quickInventory[itemName].kindCount.ToString();
+                invenItem.transform.GetChild(3).GetComponent<TMP_Text>().text = itemName;
+                invenItem.transform.GetChild(4).GetComponent<TMP_Text>().text = DataBase.Instance.itemInfoDict[itemName].sellPrice.ToString();
+                invenItem.transform.parent = storeInvenBox.transform;
+                invenItem.transform.localScale = Vector3.one;
+                invenItem.transform.localPosition = Vector3.zero;
+                invenItem.SetActive(true);
+            }
+            else
+            {
+                foreach(int pos in quickInventory[itemName].position)
+                {
+                    InventoryItem item = DataBase.Instance.myCharacterState.characterSpec.inventory[pos];
+                    GameObject invenItem = Instantiate(storeInvenItemInfo);
+                    string iconDir = DataBase.Instance.itemInfoDict[itemName].iconDirectory;
+                    if (iconDir.IsNullOrEmpty())
+                        iconDir = DataBase.Instance.itemInfoDict[itemName].spriteDirectory;
+                    invenItem.transform.GetChild(2).GetComponent<Image>().sprite = Resources.Load<Sprite>(iconDir);
+                    invenItem.transform.GetChild(2).GetComponent<Image>().preserveAspect = true;
+                    invenItem.transform.GetChild(2).GetComponent<itemslot>().itemName = itemName;
+                    invenItem.transform.GetChild(2).GetComponent<itemslot>().slotPos = pos;
+                    invenItem.transform.GetChild(2).GetComponent<itemslot>().isBlank = false;
+                    invenItem.transform.GetChild(2).GetComponent<itemslot>().slotType = "inven";
+                    invenItem.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = item.count.ToString();
+                    invenItem.transform.GetChild(3).GetComponent<TMP_Text>().text = itemName;
+                    invenItem.transform.GetChild(4).GetComponent<TMP_Text>().text = DataBase.Instance.itemInfoDict[itemName].sellPrice.ToString();
+                    invenItem.transform.parent = storeInvenBox.transform;
+                    invenItem.transform.localScale = Vector3.one;
+                    invenItem.transform.localPosition = Vector3.zero;
+                    invenItem.SetActive(true);
+                }
+            }
+
+            
         }
     }
     public void ClickStoreItem(bool buy)
@@ -1410,24 +1637,112 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     #region 강화
     public void ShowEnchantPanel()
-    {
-        EnchantPanel.SetActive(true);
+    {        
+        EnchantPanel.transform.GetChild(2).GetChild(1).GetChild(0).GetComponent<itemslot>().itemName = "";
+        UpdateEnchantPanel();
+        EnchantResult.SetActive(false);
+        updateCurrentFocusWindow(EnchantPanel);
     }
     public void UpdateEnchantPanel()
     {
-        string enchantItemName = EnchantPanel.transform.GetChild(2).GetChild(1).GetChild(0).name;
-        //int currentLevel = quickInventory[enchantItemName].position
+        EnchantPanel.GetComponent<Animator>().SetBool("enchant", false);
+        itemslot slotInfo = EnchantPanel.transform.GetChild(2).GetChild(1).GetChild(0).GetComponent<itemslot>();
+        if (slotInfo.itemName.IsNullOrEmpty())
+        {
+            EnchantPanel.transform.GetChild(2).GetChild(1).GetChild(0).GetComponent<Image>().sprite = null;
+            EnchantPanel.transform.GetChild(2).GetChild(2).GetComponent<TMP_Text>().text = "";
+            EnchantPanel.transform.GetChild(2).GetChild(3).GetComponent<TMP_Text>().text = "";
+            EnchantPanel.transform.GetChild(2).GetChild(4).GetComponent<TMP_Text>().text = "";
+            EnchantPanel.transform.GetChild(2).GetChild(5).gameObject.SetActive(false);
+            EnchantPanel.transform.GetChild(2).GetChild(6).GetComponent<Button>().interactable = false;
+            enchantPercent = -1;            
+        }
+        else
+        {
+            string iconDir = DataBase.Instance.itemInfoDict[slotInfo.itemName].iconDirectory;
+            if (iconDir.IsNullOrEmpty())
+                iconDir = DataBase.Instance.itemInfoDict[slotInfo.itemName].spriteDirectory;
+            EnchantPanel.transform.GetChild(2).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(iconDir);
+            EnchantPanel.transform.GetChild(2).GetChild(1).GetChild(0).GetComponent<Image>().preserveAspect = true;
+            int currentReinforce = 0;
+            if(slotInfo.slotPos < 0)
+            {
+                currentReinforce = DataBase.Instance.myCharacterState.characterSpec.equipment[-slotInfo.slotPos - 1].reinforce;
+            }
+            else
+            {
+                currentReinforce = DataBase.Instance.myCharacterState.characterSpec.inventory[slotInfo.slotPos].reinforce;
+            }
+            enchantPercent = DataBase.Instance.CalEnchantPercent(currentReinforce);
+            enchantPrice = DataBase.Instance.CalEnchantPrice(slotInfo.itemName, currentReinforce);
+            EnchantPanel.transform.GetChild(2).GetChild(2).GetComponent<TMP_Text>().text = string.Format("{0} => {1}", currentReinforce, currentReinforce + 1);
+            EnchantPanel.transform.GetChild(2).GetChild(2).name = currentReinforce.ToString();
+            EnchantPanel.transform.GetChild(2).GetChild(3).GetComponent<TMP_Text>().text = enchantPercent.ToString() + "%";
+            EnchantPanel.transform.GetChild(2).GetChild(4).GetComponent<TMP_Text>().text = DataBase.Instance.CalEnchantPower(slotInfo.itemName, currentReinforce + 1).ToString();
+            EnchantPanel.transform.GetChild(2).GetChild(5).gameObject.SetActive(true);
+            EnchantPanel.transform.GetChild(2).GetChild(5).GetChild(1).GetComponent<TMP_Text>().text = enchantPrice[0].ToString();
+            EnchantPanel.transform.GetChild(2).GetChild(5).GetChild(3).GetComponent<TMP_Text>().text = enchantPrice[1].ToString();
+            EnchantPanel.transform.GetChild(2).GetChild(6).GetComponent<Button>().interactable = true;
+            
+        }
     }
     public void ClickEnchantButton()
     {
-        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
-        current_clicked_button.transform.parent.parent.GetComponent<Animator>().SetBool("enchant", true);
+        //GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        //current_clicked_button.transform.parent.parent.GetComponent<Animator>().SetBool("enchant", true);
+        EnchantPanel.transform.GetChild(2).GetChild(6).GetComponent<Button>().interactable = false;
+        isEnchanting = true;
+        itemslot slotInfo = EnchantPanel.transform.GetChild(2).GetChild(1).GetChild(0).GetComponent<itemslot>();        
+        StartCoroutine(enchantItem());
+        int percent = UnityEngine.Random.Range(1, 101);
+        int reinforce = int.Parse(EnchantPanel.transform.GetChild(2).GetChild(2).name);
+        if (percent <= enchantPercent)
+        {
+            EnchantResult.transform.GetChild(0).GetComponent<TMP_Text>().text = "강화 성공";
+            EnchantResult.transform.GetChild(1).GetComponent<TMP_Text>().text = string.Format("{0} -> {1}", reinforce, reinforce + 1);
+            if(slotInfo.slotPos < 0)
+            {
+                DataBase.Instance.myCharacterState.characterSpec.equipment[-slotInfo.slotPos - 1].reinforce++;
+            }
+            else
+            {
+                DataBase.Instance.myCharacterState.characterSpec.inventory[slotInfo.slotPos].reinforce++;
+            }
+        }
+        else
+        {
+            EnchantResult.transform.GetChild(0).GetComponent<TMP_Text>().text = "강화 실패";
+            EnchantResult.transform.GetChild(1).GetComponent<TMP_Text>().text = string.Format("{0} -> {1}", reinforce, reinforce);
+        }
+        string iconDir = DataBase.Instance.itemInfoDict[slotInfo.itemName].iconDirectory;
+        if (iconDir.IsNullOrEmpty())
+            iconDir = DataBase.Instance.itemInfoDict[slotInfo.itemName].spriteDirectory;
+        EnchantResult.transform.GetChild(2).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(iconDir);
+        EnchantResult.transform.GetChild(2).GetChild(0).GetComponent<Image>().preserveAspect = true;
     }
-
+    IEnumerator enchantItem()
+    {        
+        EnchantPanel.GetComponent<Animator>().SetBool("enchant", true);
+        float _time = 0f;
+        while(_time < 1f)
+        {
+            _time += Time.deltaTime;
+            yield return null;
+        }
+        EnchantPanel.GetComponent<Animator>().SetBool("enchant", false);
+        ShowEnchantResult();
+        
+    }
+    void ShowEnchantResult()
+    {
+        EnchantResult.SetActive(true);
+    }
     public void ClickEnchantResultButton()
     {
-        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;        
         current_clicked_button.SetActive(false);
+        isEnchanting = false;
+        UpdateEnchantPanel();
     }
     #endregion
 
@@ -1437,7 +1752,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         for (int k = 0; k < 6; k++)
         {
             equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(0).GetComponent<Image>().sprite = null;
-            equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(0).name = "";
+            equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(0).GetComponent<itemslot>().itemName = "";            
+            equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(0).GetComponent<itemslot>().isBlank = true;
             equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(1).gameObject.SetActive(true);
         }
         for(int k = 0; k < DataBase.Instance.myCharacterState.characterSpec.equipment.Count; k++) {
@@ -1446,43 +1762,39 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             string type = DataBase.Instance.itemInfoDict[item.itemName].itemType;
             if (DataBase.Instance.itemInfoDict[item.itemName].iconDirectory.IsNullOrEmpty())
                 dir = DataBase.Instance.itemInfoDict[item.itemName].spriteDirectory;
-
+            int partsNum = -1;
             if (type == "helmet")
             {
-                equipmentPanel.transform.GetChild(2).GetChild(0).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(dir);
-                equipmentPanel.transform.GetChild(2).GetChild(0).GetChild(0).name = string.Format("equip {0} {1}", k.ToString(), item.itemName);
-                equipmentPanel.transform.GetChild(2).GetChild(0).GetChild(1).gameObject.SetActive(false);
+                partsNum = 0;
             }
             else if (type == "cloth")
             {
-                equipmentPanel.transform.GetChild(2).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(dir);
-                equipmentPanel.transform.GetChild(2).GetChild(1).GetChild(0).name = string.Format("equip {0} {1}", k.ToString(), item.itemName);
-                equipmentPanel.transform.GetChild(2).GetChild(1).GetChild(1).gameObject.SetActive(false);
+                partsNum = 1;
             }
             else if (type == "armor")
             {
-                equipmentPanel.transform.GetChild(2).GetChild(2).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(dir);
-                equipmentPanel.transform.GetChild(2).GetChild(2).GetChild(0).name = string.Format("equip {0} {1}", k.ToString(), item.itemName);
-                equipmentPanel.transform.GetChild(2).GetChild(2).GetChild(1).gameObject.SetActive(false);
+                partsNum = 2;
             }
             else if (type == "pant")
             {
-                equipmentPanel.transform.GetChild(2).GetChild(4).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(dir);
-                equipmentPanel.transform.GetChild(2).GetChild(4).GetChild(0).name = string.Format("equip {0} {1}", k.ToString(), item.itemName);
-                equipmentPanel.transform.GetChild(2).GetChild(4).GetChild(1).gameObject.SetActive(false);
+                partsNum = 4;
             }
             else if (type == "back")
             {
-                equipmentPanel.transform.GetChild(2).GetChild(5).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(dir);
-                equipmentPanel.transform.GetChild(2).GetChild(5).GetChild(0).name = string.Format("equip {0} {1}", k.ToString(), item.itemName);
-                equipmentPanel.transform.GetChild(2).GetChild(5).GetChild(1).gameObject.SetActive(false);
+                partsNum = 5;
             }
             else if (type.Contains("weapon"))
             {
-                equipmentPanel.transform.GetChild(2).GetChild(3).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(dir);
-                equipmentPanel.transform.GetChild(2).GetChild(3).GetChild(0).name = string.Format("equip {0} {1}", k.ToString(), item.itemName);
-                equipmentPanel.transform.GetChild(2).GetChild(3).GetChild(1).gameObject.SetActive(false);
+                partsNum = 3;
             }
+            if (partsNum == -1)
+                return;
+            equipmentPanel.transform.GetChild(2).GetChild(partsNum).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(dir);
+            equipmentPanel.transform.GetChild(2).GetChild(partsNum).GetChild(0).GetComponent<Image>().preserveAspect = true;
+            equipmentPanel.transform.GetChild(2).GetChild(partsNum).GetChild(0).GetComponent<itemslot>().itemName = item.itemName;
+            equipmentPanel.transform.GetChild(2).GetChild(partsNum).GetChild(0).GetComponent<itemslot>().isBlank = false;
+            equipmentPanel.transform.GetChild(2).GetChild(partsNum).GetChild(0).GetComponent<itemslot>().slotPos = -(k + 1);
+            equipmentPanel.transform.GetChild(2).GetChild(partsNum).GetChild(1).gameObject.SetActive(false);
         }
     }
     #endregion

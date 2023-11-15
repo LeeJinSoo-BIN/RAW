@@ -15,7 +15,9 @@ MonoBehaviour:
   nickName: warrior
   roll: "\uC804\uC0AC"
   characterLevel: 1
+  exp: 0
   lastTown: Pallet Town
+  maxInventoryNum: 25
   maxHealth: 1000
   maxMana: 700
   recoverManaPerThreeSec: 5
@@ -23,7 +25,6 @@ MonoBehaviour:
   criticalDamage: 1.2
   criticalPercent: 50
   healPercent: 1
-  exp: 0
   skillLevel:
     SD_Keys:
     - sword smash
@@ -32,22 +33,22 @@ MonoBehaviour:
     - sword bind
     - sword normal
     SD_Values: 0100000001000000010000000100000001000000
-  maxInventoryNum: 24
   inventory:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: 11400000, guid: 6598003d750722744a284bcec258a639, type: 2}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 11400000, guid: 6598003d750722744a284bcec258a639, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 11400000, guid: 31a3a8ec6a069954da533153b3849330, type: 2}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: b207b77cf5668de4b88dffa0be0e209c, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 11400000, guid: 6f1f402fe5f5e454a8b7244cfb532bf7, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

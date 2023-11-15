@@ -14,11 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: helmet2
   description: "\uCCA0 \uD57C\uB9F7"
-  itemType: helmet2
+  itemType: helmet
   spriteDirectory: SPUM_Sprites/Items/4_Helmet/Helmet_2
+  iconDirectory: 
   sellPrice: 0
   buyPrice: 0
-  maxCarryAmount: 0
+  maxCarryAmount: 1
   recoveryHealth: 0
   recoveryMana: 0
   coolDown: 0
