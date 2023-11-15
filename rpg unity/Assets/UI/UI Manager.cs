@@ -430,9 +430,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             Destroy(child.gameObject);
         myCharacterHead.transform.parent = myCharacterProfileUiGroup.transform.GetChild(0).transform;
         myCharacterHead.transform.localPosition = new Vector3(0f, -30f, 0f);
-        myCharacterProfileUiGroup.transform.GetChild(1).GetComponent<TMP_Text>().text = "Lv. " + DataBase.Instance.myCharacterState.characterSpec.characterLevel.ToString();
+        myCharacterProfileUiGroup.transform.GetChild(1).GetComponent<TMP_Text>().text = "Lv. " + DataBase.Instance.selectedCharacterSpec.characterLevel.ToString();
     }
-
+    
     #endregion
 
 
@@ -590,17 +590,17 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     public void updateInventory()
     {
-        inventoryPanel.transform.GetChild(4).GetComponent<TMP_Text>().text = DataBase.Instance.myCharacterState.characterSpec.money.ToString();
-        for (int pos = 0; pos < DataBase.Instance.myCharacterState.characterSpec.maxInventoryNum; pos++)
+        inventoryPanel.transform.GetChild(4).GetComponent<TMP_Text>().text = DataBase.Instance.selectedCharacterSpec.money.ToString();
+        for (int pos = 0; pos < DataBase.Instance.selectedCharacterSpec.maxInventoryNum; pos++)
         {
             Transform box = inventoryBox.transform.GetChild(pos);
-            InventoryItem item = DataBase.Instance.myCharacterState.characterSpec.inventory[pos];
+            InventoryItem item = DataBase.Instance.selectedCharacterSpec.inventory[pos];
             if (item == null)
             {
                 box.GetChild(2).GetComponent<TMP_Text>().text = "";
                 box.GetChild(1).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0);
                 box.GetChild(1).GetComponent<itemslot>().itemName = "";
-                box.GetChild(1).GetComponent<itemslot>().isBlank = true;                
+                box.GetChild(1).GetComponent<itemslot>().isBlank = true;
             }
             else
             {
@@ -611,11 +611,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 string iconDir = DataBase.Instance.itemInfoDict[item.itemName].iconDirectory;
                 if (iconDir.IsNullOrEmpty())
                     iconDir = DataBase.Instance.itemInfoDict[item.itemName].spriteDirectory;
-                if (box.GetChild(1).GetComponent<Image>().color.a == 0)
-                {
-                    box.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(iconDir);
-                    box.GetChild(1).GetComponent<Image>().preserveAspect = true;
-                }
+
+                box.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(iconDir);
+                box.GetChild(1).GetComponent<Image>().preserveAspect = true;
                 box.GetChild(1).GetComponent<Image>().color = Color.white;
             }
         }
@@ -705,31 +703,31 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 {
                     if(desSlot.slotPos != dragItemSlot.slotPos)
                     {
-                        if (DataBase.Instance.myCharacterState.characterSpec.inventory[desSlot.slotPos] == null)
+                        if (DataBase.Instance.selectedCharacterSpec.inventory[desSlot.slotPos] == null)
                         {
                             string dragItemName = dragItemSlot.itemName;
-                            int dragReinforce = DataBase.Instance.myCharacterState.characterSpec.inventory[dragItemSlot.slotPos].reinforce;
-                            int dragCnt = DataBase.Instance.myCharacterState.characterSpec.inventory[dragItemSlot.slotPos].count;
+                            int dragReinforce = DataBase.Instance.selectedCharacterSpec.inventory[dragItemSlot.slotPos].reinforce;
+                            int dragCnt = DataBase.Instance.selectedCharacterSpec.inventory[dragItemSlot.slotPos].count;
                             Debug.Log(dragCnt);
-                            DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().loseItem(dragItemName, dragCnt, dragItemSlot.slotPos);
+                            DataBase.Instance.myCharacterControl.loseItem(dragItemName, dragCnt, dragItemSlot.slotPos);
                             Debug.Log(dragCnt);
-                            DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().getItem(new Item { itemName = dragItemName, itemCount = dragCnt, reinforce = dragReinforce }, false, desSlot.slotPos);
+                            DataBase.Instance.myCharacterControl.getItem(new Item { itemName = dragItemName, itemCount = dragCnt, reinforce = dragReinforce }, false, desSlot.slotPos);
                         }
                         else
                         {
                             string desItemName = desSlot.itemName;
-                            int desReinforce = DataBase.Instance.myCharacterState.characterSpec.inventory[desSlot.slotPos].reinforce;
-                            int desCnt = DataBase.Instance.myCharacterState.characterSpec.inventory[desSlot.slotPos].count;
+                            int desReinforce = DataBase.Instance.selectedCharacterSpec.inventory[desSlot.slotPos].reinforce;
+                            int desCnt = DataBase.Instance.selectedCharacterSpec.inventory[desSlot.slotPos].count;
 
                             string dragItemName = dragItemSlot.itemName;
-                            int dragReinforce = DataBase.Instance.myCharacterState.characterSpec.inventory[dragItemSlot.slotPos].reinforce;
-                            int dragCnt = DataBase.Instance.myCharacterState.characterSpec.inventory[dragItemSlot.slotPos].count;
+                            int dragReinforce = DataBase.Instance.selectedCharacterSpec.inventory[dragItemSlot.slotPos].reinforce;
+                            int dragCnt = DataBase.Instance.selectedCharacterSpec.inventory[dragItemSlot.slotPos].count;
 
-                            DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().loseItem(desItemName, desCnt, desSlot.slotPos);
-                            DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().loseItem(dragItemName, dragCnt, dragItemSlot.slotPos);
+                            DataBase.Instance.myCharacterControl.loseItem(desItemName, desCnt, desSlot.slotPos);
+                            DataBase.Instance.myCharacterControl.loseItem(dragItemName, dragCnt, dragItemSlot.slotPos);
 
-                            DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().getItem(new Item { itemName = desItemName, itemCount = desCnt, reinforce = desReinforce }, false, dragItemSlot.slotPos);
-                            DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().getItem(new Item { itemName = dragItemName, itemCount = dragCnt, reinforce = dragReinforce }, false, desSlot.slotPos);
+                            DataBase.Instance.myCharacterControl.getItem(new Item { itemName = desItemName, itemCount = desCnt, reinforce = desReinforce }, false, dragItemSlot.slotPos);
+                            DataBase.Instance.myCharacterControl.getItem(new Item { itemName = dragItemName, itemCount = dragCnt, reinforce = dragReinforce }, false, desSlot.slotPos);
 
                         }
 
@@ -743,9 +741,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                     {
                         int equipPos = -dragItemSlot.slotPos - 1;
                         int invenPos = desSlot.slotPos;
-                        InventoryItem equip = DataBase.Instance.myCharacterState.characterSpec.equipment[equipPos];
-                        DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().getItem(new Item { reinforce = equip.reinforce, itemName = equip.itemName, itemCount = 1 }, false, invenPos);
-                        DataBase.Instance.myCharacterState.characterSpec.equipment.Remove(equip);
+                        InventoryItem equip = DataBase.Instance.selectedCharacterSpec.equipment[equipPos];
+                        DataBase.Instance.myCharacterControl.getItem(new Item { reinforce = equip.reinforce, itemName = equip.itemName, itemCount = 1 }, false, invenPos);
+                        DataBase.Instance.selectedCharacterSpec.equipment.Remove(equip);
 
 
                         DataBase.Instance.myCharacterState.equipItem();
@@ -755,25 +753,23 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                     }
                     else if (DataBase.Instance.itemInfoDict[desSlot.itemName].itemType == dragItemSlot.transform.parent.name ||
                         (DataBase.Instance.itemInfoDict[desSlot.itemName].itemType.Contains("weapon") && dragItemSlot.transform.parent.name == "weapon"))
-                    {
-                        Debug.Log("swap");
+                    { //같은 종류면 스왑
                         int equipPos = -dragItemSlot.slotPos - 1;
                         int invenPos = desSlot.slotPos;
 
-                        string invenName = DataBase.Instance.myCharacterState.characterSpec.inventory[invenPos].itemName;
-                        int invenRein = DataBase.Instance.myCharacterState.characterSpec.inventory[invenPos].reinforce;                       
+                        string invenName = DataBase.Instance.selectedCharacterSpec.inventory[invenPos].itemName;
+                        int invenRein = DataBase.Instance.selectedCharacterSpec.inventory[invenPos].reinforce;
 
 
-                        InventoryItem equip = DataBase.Instance.myCharacterState.characterSpec.equipment[equipPos];                    
+                        InventoryItem equip = DataBase.Instance.selectedCharacterSpec.equipment[equipPos];
 
-                        DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().loseItem(invenName, 1, invenPos);                        
-                        DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().getItem(new Item { reinforce = equip.reinforce, itemName = equip.itemName, itemCount = 1 }, false, invenPos);
-                        DataBase.Instance.myCharacterState.characterSpec.equipment.Remove(equip);
-                        DataBase.Instance.myCharacterState.characterSpec.equipment.Add(new InventoryItem { reinforce = invenRein, itemName = invenName, count = 1 });
-
+                        DataBase.Instance.myCharacterControl.loseItem(invenName, 1, invenPos);
+                        DataBase.Instance.myCharacterControl.getItem(new Item { reinforce = equip.reinforce, itemName = equip.itemName, itemCount = 1 }, false, invenPos);
+                        DataBase.Instance.selectedCharacterSpec.equipment.Remove(equip);
+                        DataBase.Instance.selectedCharacterSpec.equipment.Add(new InventoryItem { reinforce = invenRein, itemName = invenName, count = 1 });
                         DataBase.Instance.myCharacterState.equipItem();
                         UpdateEquipmentPanel();
-                        updateInventory();
+                        updateInventory();                        
                     }
                     else
                     {
@@ -786,12 +782,41 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             {
                 if (dragItemSlot.slotType == "inven")
                 {
+                    if (DataBase.Instance.itemInfoDict[dragItemSlot.itemName].itemType == desSlot.transform.parent.name ||
+                        (DataBase.Instance.itemInfoDict[dragItemSlot.itemName].itemType.Contains("weapon") && desSlot.transform.parent.name == "weapon"))
+                    {//같은 종류 중
+                        int invenPos = dragItemSlot.slotPos;                        
+                        string invenName = DataBase.Instance.selectedCharacterSpec.inventory[invenPos].itemName;
+                        int invenRein = DataBase.Instance.selectedCharacterSpec.inventory[invenPos].reinforce;
+                        if (desSlot.isBlank)
+                        {// 빈곳이면 장착
+                            Debug.Log("Equip");
+                            DataBase.Instance.selectedCharacterSpec.equipment.Add(new InventoryItem { reinforce = invenRein, itemName = invenName, count = 1 });
+                            DataBase.Instance.myCharacterControl.loseItem(invenName, 1, invenPos);
+                            
+                        }
+                        else
+                        {//아니면 스왑
+                            Debug.Log("Swap");
+                            int equipPos = -desSlot.slotPos - 1;
+                            
+                            InventoryItem equip = DataBase.Instance.selectedCharacterSpec.equipment[equipPos];
 
-                }
-                else if (dragItemSlot.slotType == "equip")
-                {
-
-                }
+                            DataBase.Instance.myCharacterControl.loseItem(invenName, 1, invenPos);
+                            DataBase.Instance.myCharacterControl.getItem(new Item { reinforce = equip.reinforce, itemName = equip.itemName, itemCount = 1 }, false, invenPos);
+                            DataBase.Instance.selectedCharacterSpec.equipment.Remove(equip);
+                            DataBase.Instance.selectedCharacterSpec.equipment.Add(new InventoryItem { reinforce = invenRein, itemName = invenName, count = 1 });                            
+                        }
+                        DataBase.Instance.myCharacterState.equipItem();
+                        UpdateEquipmentPanel();
+                        updateInventory();
+                    }
+                    else
+                    {
+                        DragItemDone();
+                        return;
+                    }
+                }                
             }
             else
             {
@@ -937,7 +962,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
             toolTipContent = toolTipContent.Replace("(sumDeal)",
                 (DataBase.Instance.skillInfoDict[toolTipName].flatDeal +
-                DataBase.Instance.skillInfoDict[toolTipName].dealIncreasePerSkillLevel * DataBase.Instance.myCharacterState.characterSpec.skillLevel[toolTipName] +
+                DataBase.Instance.skillInfoDict[toolTipName].dealIncreasePerSkillLevel * DataBase.Instance.selectedCharacterSpec.skillLevel[toolTipName] +
                 DataBase.Instance.skillInfoDict[toolTipName].dealIncreasePerPower * DataBase.Instance.myCharacterState.power).ToString());
             toolTipContent = toolTipContent.Replace("(flatDeal)", DataBase.Instance.skillInfoDict[toolTipName].flatDeal.ToString());
             toolTipContent = toolTipContent.Replace("(dealIncreasePerSkillLevel)", DataBase.Instance.skillInfoDict[toolTipName].dealIncreasePerSkillLevel.ToString());
@@ -945,7 +970,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
             toolTipContent = toolTipContent.Replace("(sumHeal)",
                 (DataBase.Instance.skillInfoDict[toolTipName].flatHeal +
-                DataBase.Instance.skillInfoDict[toolTipName].healIncreasePerSkillLevel * DataBase.Instance.myCharacterState.characterSpec.skillLevel[toolTipName] +
+                DataBase.Instance.skillInfoDict[toolTipName].healIncreasePerSkillLevel * DataBase.Instance.selectedCharacterSpec.skillLevel[toolTipName] +
                 DataBase.Instance.skillInfoDict[toolTipName].healIncreasePerPower * DataBase.Instance.myCharacterState.power).ToString());
             toolTipContent = toolTipContent.Replace("(flatHeal)", DataBase.Instance.skillInfoDict[toolTipName].flatHeal.ToString());
             toolTipContent = toolTipContent.Replace("(healIncreasePerSkillLevel)", DataBase.Instance.skillInfoDict[toolTipName].healIncreasePerSkillLevel.ToString());
@@ -953,7 +978,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
             toolTipContent = toolTipContent.Replace("(sumShield)",
                 (DataBase.Instance.skillInfoDict[toolTipName].flatShield +
-                DataBase.Instance.skillInfoDict[toolTipName].shieldIncreasePerSkillLevel * DataBase.Instance.myCharacterState.characterSpec.skillLevel[toolTipName] +
+                DataBase.Instance.skillInfoDict[toolTipName].shieldIncreasePerSkillLevel * DataBase.Instance.selectedCharacterSpec.skillLevel[toolTipName] +
                 DataBase.Instance.skillInfoDict[toolTipName].shieldIncreasePerPower * DataBase.Instance.myCharacterState.power).ToString());
             toolTipContent = toolTipContent.Replace("(flatShield)", DataBase.Instance.skillInfoDict[toolTipName].flatShield.ToString());
             toolTipContent = toolTipContent.Replace("(shieldIncreasePerSkillLevel)", DataBase.Instance.skillInfoDict[toolTipName].shieldIncreasePerSkillLevel.ToString());
@@ -961,7 +986,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
             toolTipContent = toolTipContent.Replace("(sumPower)",
                 (DataBase.Instance.skillInfoDict[toolTipName].flatPower +
-                DataBase.Instance.skillInfoDict[toolTipName].powerIncreasePerSkillLevel * DataBase.Instance.myCharacterState.characterSpec.skillLevel[toolTipName] +
+                DataBase.Instance.skillInfoDict[toolTipName].powerIncreasePerSkillLevel * DataBase.Instance.selectedCharacterSpec.skillLevel[toolTipName] +
                 DataBase.Instance.skillInfoDict[toolTipName].powerIncreasePerPower * DataBase.Instance.myCharacterState.power).ToString());
             toolTipContent = toolTipContent.Replace("(flatPower)", DataBase.Instance.skillInfoDict[toolTipName].flatPower.ToString());
             toolTipContent = toolTipContent.Replace("(powerIncreasePerSkillLevel)", DataBase.Instance.skillInfoDict[toolTipName].powerIncreasePerSkillLevel.ToString());
@@ -972,7 +997,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             toolTipContent = toolTipContent.Replace("(duration)", DataBase.Instance.skillInfoDict[toolTipName].duration.ToString());
 
             iconDir = DataBase.Instance.skillInfoDict[toolTipName].iconDirectory;
-            toolTipSummary = string.Format("마스터 레벨 : {0}\n스킬 레벨 : {1}", DataBase.Instance.skillInfoDict[toolTipName].maxLevel, DataBase.Instance.myCharacterState.characterSpec.skillLevel[toolTipName]);
+            toolTipSummary = string.Format("마스터 레벨 : {0}\n스킬 레벨 : {1}", DataBase.Instance.skillInfoDict[toolTipName].maxLevel, DataBase.Instance.selectedCharacterSpec.skillLevel[toolTipName]);
 
         }
 
@@ -996,11 +1021,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             int reinforce = 0;
             if (slotInfo.slotType == "inven")
             {
-                reinforce = DataBase.Instance.myCharacterState.characterSpec.inventory[pos].reinforce;
+                reinforce = DataBase.Instance.selectedCharacterSpec.inventory[pos].reinforce;
             }
             else
             {
-                reinforce = DataBase.Instance.myCharacterState.characterSpec.equipment[-pos - 1].reinforce;
+                reinforce = DataBase.Instance.selectedCharacterSpec.equipment[-pos - 1].reinforce;
             }
             toolTipSummary = string.Format("공격력 +{0}", DataBase.Instance.CalEnchantPower(toolTipName, reinforce) + DataBase.Instance.itemInfoDict[toolTipName].increasePower);
             iconDir = DataBase.Instance.itemInfoDict[toolTipName].iconDirectory;
@@ -1045,7 +1070,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     }
     public void UpdateSkillPanel()
     {
-        List<string> skillName = DataBase.Instance.myCharacterState.characterSpec.skillLevel.SD_Keys;
+        List<string> skillName = DataBase.Instance.selectedCharacterSpec.skillLevel.SD_Keys;
         foreach (string name in skillName)
         {
             if (name.Contains("normal"))
@@ -1060,7 +1085,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 newSkill.transform.GetChild(1).GetComponent<itemslot>().slotType = "skill";
                 newSkill.transform.GetChild(2).GetComponent<TMP_Text>().text = name;
                 string max_level = DataBase.Instance.skillInfoDict[name].maxLevel.ToString();
-                string current_level = DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel[name].ToString();
+                string current_level = DataBase.Instance.myCharacterControl.characterState.characterSpec.skillLevel[name].ToString();
                 newSkill.transform.GetChild(3).GetComponent<TMP_Text>().text = current_level + " / " + max_level;
                 newSkill.transform.SetParent(skillBox.transform, false);
                 newSkill.transform.localPosition = Vector3.zero;
@@ -1070,7 +1095,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             else
             {
                 string max_level = DataBase.Instance.skillInfoDict[name].maxLevel.ToString();
-                string current_level = DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().characterState.characterSpec.skillLevel[name].ToString();
+                string current_level = DataBase.Instance.myCharacterControl.characterState.characterSpec.skillLevel[name].ToString();
                 skillBox.transform.Find(name).transform.GetChild(3).GetComponent<TMP_Text>().text = current_level + " / " + max_level;
             }
         }
@@ -1506,7 +1531,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             Destroy(item.gameObject);
         }
-        storeInvenBox.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = DataBase.Instance.myCharacterState.characterSpec.money.ToString();
+        storeInvenBox.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = DataBase.Instance.selectedCharacterSpec.money.ToString();
         foreach (string itemName in quickInventory.Keys)
         {            
             
@@ -1531,7 +1556,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             {
                 foreach(int pos in quickInventory[itemName].position)
                 {
-                    InventoryItem item = DataBase.Instance.myCharacterState.characterSpec.inventory[pos];
+                    InventoryItem item = DataBase.Instance.selectedCharacterSpec.inventory[pos];
                     GameObject invenItem = Instantiate(storeInvenItemInfo);
                     string iconDir = DataBase.Instance.itemInfoDict[itemName].iconDirectory;
                     if (iconDir.IsNullOrEmpty())
@@ -1604,7 +1629,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
 
         int sellMoney = sellItemCnt * DataBase.Instance.itemInfoDict[sellItemName].sellPrice;
-        DataBase.Instance.myCharacterState.characterSpec.money += sellMoney;
+        DataBase.Instance.selectedCharacterSpec.money += sellMoney;
         DataBase.Instance.myCharacterControl.loseItem(sellItemName, sellItemCnt);
         updateInventory();
         UpdateStoreInventory();
@@ -1619,13 +1644,13 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         string buyItemName = current_clicked_button.transform.parent.name;
         int buyItemCnt = int.Parse(current_clicked_button.transform.parent.GetChild(0).GetComponent<TMP_InputField>().text);
         int buyMoney = buyItemCnt * DataBase.Instance.itemInfoDict[buyItemName].buyPrice;
-        if (buyMoney > DataBase.Instance.myCharacterState.characterSpec.money)
+        if (buyMoney > DataBase.Instance.selectedCharacterSpec.money)
         {
             return;
         }
-        if (DataBase.Instance.myCharacter.GetComponent<MultyPlayer>().getItem(new Item { itemName = buyItemName, itemCount = buyItemCnt }, false))
+        if (DataBase.Instance.myCharacterControl.getItem(new Item { itemName = buyItemName, itemCount = buyItemCnt }, false))
         {
-            DataBase.Instance.myCharacterState.characterSpec.money -= buyMoney;
+            DataBase.Instance.selectedCharacterSpec.money -= buyMoney;
             UpdateStoreInventory();
             storeBuyPanel.SetActive(false);
             openedWindows.Remove(storeBuyPanel);
@@ -1667,11 +1692,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             int currentReinforce = 0;
             if(slotInfo.slotPos < 0)
             {
-                currentReinforce = DataBase.Instance.myCharacterState.characterSpec.equipment[-slotInfo.slotPos - 1].reinforce;
+                currentReinforce = DataBase.Instance.selectedCharacterSpec.equipment[-slotInfo.slotPos - 1].reinforce;
             }
             else
             {
-                currentReinforce = DataBase.Instance.myCharacterState.characterSpec.inventory[slotInfo.slotPos].reinforce;
+                currentReinforce = DataBase.Instance.selectedCharacterSpec.inventory[slotInfo.slotPos].reinforce;
             }
             enchantPercent = DataBase.Instance.CalEnchantPercent(currentReinforce);
             enchantPrice = DataBase.Instance.CalEnchantPrice(slotInfo.itemName, currentReinforce);
@@ -1702,11 +1727,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             EnchantResult.transform.GetChild(1).GetComponent<TMP_Text>().text = string.Format("{0} -> {1}", reinforce, reinforce + 1);
             if(slotInfo.slotPos < 0)
             {
-                DataBase.Instance.myCharacterState.characterSpec.equipment[-slotInfo.slotPos - 1].reinforce++;
+                DataBase.Instance.selectedCharacterSpec.equipment[-slotInfo.slotPos - 1].reinforce++;
             }
             else
             {
-                DataBase.Instance.myCharacterState.characterSpec.inventory[slotInfo.slotPos].reinforce++;
+                DataBase.Instance.selectedCharacterSpec.inventory[slotInfo.slotPos].reinforce++;
             }
         }
         else
@@ -1756,8 +1781,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(0).GetComponent<itemslot>().isBlank = true;
             equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(1).gameObject.SetActive(true);
         }
-        for(int k = 0; k < DataBase.Instance.myCharacterState.characterSpec.equipment.Count; k++) {
-            InventoryItem item = DataBase.Instance.myCharacterState.characterSpec.equipment[k];
+        for(int k = 0; k < DataBase.Instance.selectedCharacterSpec.equipment.Count; k++) {
+            InventoryItem item = DataBase.Instance.selectedCharacterSpec.equipment[k];            
             string dir = DataBase.Instance.itemInfoDict[item.itemName].iconDirectory;
             string type = DataBase.Instance.itemInfoDict[item.itemName].itemType;
             if (DataBase.Instance.itemInfoDict[item.itemName].iconDirectory.IsNullOrEmpty())
@@ -1788,7 +1813,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 partsNum = 3;
             }
             if (partsNum == -1)
-                return;
+                continue;
             equipmentPanel.transform.GetChild(2).GetChild(partsNum).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(dir);
             equipmentPanel.transform.GetChild(2).GetChild(partsNum).GetChild(0).GetComponent<Image>().preserveAspect = true;
             equipmentPanel.transform.GetChild(2).GetChild(partsNum).GetChild(0).GetComponent<itemslot>().itemName = item.itemName;
