@@ -1583,7 +1583,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public void ClickStoreItem(bool buy)
     {
         GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
-        string currentItemName = current_clicked_button.name;
+        string currentItemName = current_clicked_button.transform.GetChild(2).GetComponent<itemslot>().itemName;
         if (buy)
         {
             if (Time.time - storeBuyDoubleClickTimer < 0.25f)
@@ -1595,7 +1595,6 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             }
             else
             {
-                Debug.Log(Time.time - storeBuyDoubleClickTimer);
                 storeBuyDoubleClickTimer = Time.time;
             }
         }
