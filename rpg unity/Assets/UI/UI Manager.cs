@@ -217,6 +217,15 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         storeSellPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().onSubmit.AddListener(delegate { ClickSellButton(); });
         storeBuyPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().onSubmit.AddListener(delegate { ClickBuyButton(); });
     }
+    void Start()
+    {
+        keyToItemName.Clear();
+        itemNameToKey.Clear();
+        for (int k = 0; k < quickSlotKeys.Count; k++)
+        {
+            keyToItemName.Add(quickSlotKeys[k], "");
+        }
+    }
     // Update is called once per frame
     void Update()
     {
@@ -345,13 +354,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         makeProfile();
         characterHealth = DataBase.Instance.myCharacterState.health;
         characterMana = DataBase.Instance.myCharacterState.mana;
-        keyToItemName.Clear();
-        itemNameToKey.Clear();
+        
         timerText.text = "00:00:00";
-        for (int k = 0; k < quickSlotKeys.Count; k++)
-        {
-            keyToItemName.Add(quickSlotKeys[k], "");
-        }
         updateAllQuickSlot();
         setKeyMap();
         StartCoroutine(update_health());
@@ -519,18 +523,16 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     void useQuickSlot(string key)
     {
-        if (!quickInventory.ContainsKey(key))
+        if (!quickInventory.ContainsKey(keyToItemName[key]))
             return;
-        int invenPos = quickInventory[keyToItemName[key]].position.Max;
-        if (quickInventory.ContainsKey(keyToItemName[key]))
+
+        if (quickInventory[keyToItemName[key]].kindCount > 0)
         {
-            if (quickInventory[keyToItemName[key]].kindCount > 0)
-            {                
-                consumePotion(keyToItemName[key]);
-            }
-            updateInventory();
-            updateThisQuickSlot(key);
+            consumePotion(keyToItemName[key]);
         }
+        updateInventory();
+        updateThisQuickSlot(key);
+
     }
     public void updateAllQuickSlot(bool updateSprite = false)
     {
@@ -595,8 +597,10 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     void consumePotion(string itemName)
     {
         DataBase.Instance.myCharacterControl.loseItem(itemName, 1);
-        DataBase.Instance.myCharacterState.ProcessSkill(1, DataBase.Instance.itemInfoDict[itemName].recoveryHealth);
-        DataBase.Instance.myCharacterState.ProcessSkill(5, DataBase.Instance.itemInfoDict[itemName].recoveryMana);
+        if (DataBase.Instance.itemInfoDict[itemName].recoveryHealth > 0)
+            DataBase.Instance.myCharacterState.ProcessSkill(1, DataBase.Instance.itemInfoDict[itemName].recoveryHealth);
+        if (DataBase.Instance.itemInfoDict[itemName].recoveryMana > 0)
+            DataBase.Instance.myCharacterState.ProcessSkill(5, DataBase.Instance.itemInfoDict[itemName].recoveryMana);
     }
 
     public void updateInventory()
@@ -1175,8 +1179,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public void UpdateSkillPanel()
     {
         List<string> skillName = DataBase.Instance.selectedCharacterSpec.skillLevel.SD_Keys;
-        foreach (string name in skillName)
+        for(int k = 0; k < skillName.Count; k++)         
         {
+            string name = skillName[k];
             if (name.Contains("normal"))
                 continue;
             if (skillBox.transform.Find(name) == null)
@@ -1187,6 +1192,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 newSkill.transform.GetChild(1).GetComponent<Image>().preserveAspect = true;
                 newSkill.transform.GetChild(1).GetComponent<itemslot>().itemName = name;                
                 newSkill.transform.GetChild(1).GetComponent<itemslot>().slotType = "skill";
+                newSkill.transform.GetChild(1).GetComponent<itemslot>().slotPos = k;
+                newSkill.transform.GetChild(1).GetComponent<itemslot>().isBlank = false;
                 newSkill.transform.GetChild(2).GetComponent<TMP_Text>().text = name;
                 string max_level = DataBase.Instance.skillInfoDict[name].maxLevel.ToString();
                 string current_level = DataBase.Instance.myCharacterControl.characterState.characterSpec.skillLevel[name].ToString();
