@@ -8,6 +8,7 @@ public class Item : MonoBehaviour
     public string itemName;
     public int itemCount;
     public int reinforce;
+    public bool isSomeonePicking = false;
     //public ItemSpec spec;
     public PhotonView PV;
     private GameObject ItemField;
@@ -27,6 +28,11 @@ public class Item : MonoBehaviour
         transform.parent = ItemField.transform;
         name = item_name + ItemField.transform.childCount;
         itemCount = cnt;
+    }
+    [PunRPC]
+    void pickItem(bool pick)
+    {
+        isSomeonePicking = pick;
     }
 }
 

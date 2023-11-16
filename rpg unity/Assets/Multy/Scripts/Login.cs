@@ -395,7 +395,7 @@ public class Login : MonoBehaviourPunCallbacks
             StartCoroutine(popMessage("오류", "닉네임을 입력해주세요."));
             return;
         }
-        
+
         if (useLocal)
         {
             CharacterSpec spec = ScriptableObject.CreateInstance<CharacterSpec>();
@@ -419,7 +419,7 @@ public class Login : MonoBehaviourPunCallbacks
             colors.Add(currentHairColor);
             colors.Add(currentEyeColor);
             colors.Add(currentEyeColor);
-        	colors.Add(defaultSpec.colors[3]);
+            colors.Add(defaultSpec.colors[3]);
 
             spec.nickName = CreatCharacterNickInput.text;
             spec.roll = rollList[currentRollIdx];
@@ -436,7 +436,15 @@ public class Login : MonoBehaviourPunCallbacks
 
             spec.maxInventoryNum = defaultSpec.maxInventoryNum;
             spec.skillLevel = defaultSpec.skillLevel;
-            spec.inventory = new List<InventoryItem>(defaultSpec.inventory);
+            spec.inventory = new List<InventoryItem>();
+            for (int k = 0; k < defaultSpec.inventory.Count; k++)
+            {                
+                InventoryItem item = defaultSpec.inventory[k];
+                if (item == null)
+                    spec.inventory.Add(null);
+                else
+                    spec.inventory.Add(new InventoryItem { count = item.count, itemName = item.itemName, reinforce = item.reinforce });
+            }
             spec.equipment = equipment;
             spec.colors = colors;
             if (CreatCharacterNickInput.text.ToLower() == "binary01" && DataBase.Instance.defaultAccountInfo.characterList.Count == 3)

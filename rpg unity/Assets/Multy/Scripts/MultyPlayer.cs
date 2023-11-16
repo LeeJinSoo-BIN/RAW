@@ -148,12 +148,15 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                     RaycastHit2D hit_item = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, itemLayer);
                     if (hit_item.collider != null)
                     {
-
                         //Debug.Log(hit_item.collider.name);
                         if (hit_item.collider.CompareTag("Item"))
                         {
                             //Debug.Log("click item");
-                            if (hit_item.transform.GetChild(1).gameObject.activeSelf) {
+                            if (hit_item.transform.GetChild(1).gameObject.activeSelf)
+                            {
+                                Item pickingItem = hit_item.transform.GetComponent<Item>();
+                                if (!pickingItem.isSomeonePicking)
+                                    pickingItem.PV.RPC("pickItem", RpcTarget.All, true);
                                 getItem(hit_item.transform.GetComponent<Item>(), true);
                             }
                         }
@@ -600,6 +603,44 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         //string got_item_name = got_item.GetComponent<Item>().itemName;
         //int got_item_cnt = got_item.GetComponent<Item>().itemCount;
         bool gotten = false;
+
+        if (DataBase.Instance.itemInfoDict[got_item.itemName].itemType == "coin")
+        {
+            DataBase.Instance.selectedCharacterSpec.money += got_item.itemCount;
+            gotten = true;
+            if (pick)
+            {
+                PhotonNetwork.Destroy(got_item.PV);
+            }
+            return true;
+        }
+        if(invenPos != -1)
+        {
+            if (got_item.itemCount <= DataBase.Instance.itemInfoDict[got_item.itemName].maxCarryAmount)
+            {
+                if(quickInventory.ContainsKey(got_item.itemName))
+                {
+                    quickInventory[got_item.itemName].position.Add(invenPos);
+                    quickInventory[got_item.itemName].kindCount += got_item.itemCount;
+                }
+                else
+                {
+                    quickInventory.Add(got_item.itemName, new QuickInventory { kindCount = got_item.itemCount, position = new SortedSet<int> { invenPos } });
+                }
+                InventoryItem newItem = ScriptableObject.CreateInstance<InventoryItem>();
+                newItem.itemName = got_item.itemName;
+                newItem.reinforce = got_item.reinforce;
+                newItem.count = got_item.itemCount;
+                characterSpec.inventory[invenPos] = newItem;
+
+                return true;
+            }
+            else
+            {
+                Debug.LogError("cant get that amount. it is over max Carry");
+                return false;
+            }
+        }
         if (quickInventory.ContainsKey(got_item.itemName))
         {
             int findPos = -1;
@@ -630,10 +671,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             }
             else
             {
-                if (invenPos == -1)
-                    FindFrontInventoryPos();
-                else
-                    frontInventoryPos = invenPos;
+
+                FindFrontInventoryPos();
                 if (frontInventoryPos != -1)
                 {
                     if (got_item.itemCount <= DataBase.Instance.itemInfoDict[got_item.itemName].maxCarryAmount)
@@ -668,16 +707,12 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 else
                 {
                     gotten = false;
-                    pick = false;
                 }
             }
         }
         else
         {
-            if (invenPos == -1)
-                FindFrontInventoryPos();
-            else
-                frontInventoryPos = invenPos;
+            FindFrontInventoryPos();
             if (frontInventoryPos != -1)
             {
                 if (got_item.itemCount <= DataBase.Instance.itemInfoDict[got_item.itemName].maxCarryAmount)
@@ -707,11 +742,20 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             else
             {
                 gotten = false;
-                pick = false;
             }
         }
         if (pick)
-            PhotonNetwork.Destroy(got_item.PV);
+        {
+            if (gotten)
+            {
+                PhotonNetwork.Destroy(got_item.PV);
+            }
+            else
+            {
+                got_item.PV.RPC("initItem", RpcTarget.All, got_item.itemName, got_item.itemCount);
+                got_item.PV.RPC("piclItem", RpcTarget.All, false);
+            }
+        }
         UIManager.Instance.updateInventory();
         UIManager.Instance.updateAllQuickSlot();
         
@@ -807,9 +851,9 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     }
     public void FindFrontInventoryPos()
     {
-        for(int k = 0; k < itemBox.transform.childCount; k++)
+        for (int k = 0; k < DataBase.Instance.selectedCharacterSpec.inventory.Count; k++)
         {
-            if (itemBox.transform.GetChild(k).GetChild(1).GetComponent<Image>().color.a == 0)
+            if (DataBase.Instance.selectedCharacterSpec.inventory[k] == null)
             {
                 frontInventoryPos = k;
                 return;
