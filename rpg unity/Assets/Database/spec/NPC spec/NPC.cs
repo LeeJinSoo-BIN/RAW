@@ -23,7 +23,7 @@ public class NPC : MonoBehaviour
         {
             npcName.text = "[상인]\n";            
         }
-        else if(spec.NpcType == "reinforce")
+        else if(spec.NpcType == "enchant")
         {
             npcName.text = "[강화]\n";
         }

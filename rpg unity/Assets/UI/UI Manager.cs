@@ -12,8 +12,6 @@ using Photon.Realtime;
 using WebSocketSharp;
 using System.Linq;
 using System;
-using static UnityEditor.PlayerSettings;
-
 
 public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
 {
@@ -216,15 +214,17 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         chatInput.onSubmit.AddListener(delegate { sendChat(); });
         storeSellPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().onSubmit.AddListener(delegate { ClickSellButton(); });
         storeBuyPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().onSubmit.AddListener(delegate { ClickBuyButton(); });
-    }
-    void Start()
-    {
+
         keyToItemName.Clear();
         itemNameToKey.Clear();
         for (int k = 0; k < quickSlotKeys.Count; k++)
         {
             keyToItemName.Add(quickSlotKeys[k], "");
         }
+    }
+    void Start()
+    {
+        
     }
     // Update is called once per frame
     void Update()
