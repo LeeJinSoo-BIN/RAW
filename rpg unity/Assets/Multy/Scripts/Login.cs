@@ -15,8 +15,6 @@ public class Login : MonoBehaviourPunCallbacks
     public TMP_InputField pwCheckInputField;
     public TMP_InputField idInputField;
     private int maxNumServerPlayer = 20;
-    //public TMP_Text currentNumOnlinePlayer;
-    private string selectedCharacterName;
     public GameObject characterSelectList;
     public GameObject characterSelectButton;
 
@@ -48,6 +46,7 @@ public class Login : MonoBehaviourPunCallbacks
     private Color currentEyeColor = new Color(113f / 255f, 38f / 255f, 38f / 255f);
     public bool useLocal;
     public bool isDebugMode;
+    private int connecting;
 
     List<string> rollName = new List<string>() { "warrior", "archer", "mage" };
     List<int> defaultHairId = new List<int>() { 20, 21, 22 };
@@ -182,6 +181,12 @@ public class Login : MonoBehaviourPunCallbacks
 
     public void ClickLoginButton()
     {
+        LoginButton.interactable = false;
+        PopPanel.SetActive(true);
+        connecting = 1;
+        StartCoroutine(LoginMessageUpdate());
+
+
         if (useLocal)
         {
             ConnectWithOutLogin();
@@ -198,21 +203,29 @@ public class Login : MonoBehaviourPunCallbacks
                 if (loginStatus == 1)
                 {
                     Debug.Log("Success");
+                    
                     DataBase.Instance.defaultAccountInfo.accountId = loginId;
                     DataBase.Instance.defaultAccountInfo.characterList = CharacterDB.SelectCharacter(loginId);
-                    LoginButton.enabled = false;
-                    PopPanel.SetActive(true);
-                    StartCoroutine(LoginMessageUpdate());
-                    PhotonNetwork.ConnectUsingSettings();
+                    connecting = 2;
+                    if (!PhotonNetwork.ConnectUsingSettings())
+                    {
+                        connecting = 3;
+                        StartCoroutine(popMessage("서버 접속 실패", "서버에 문제가 있습니다."));
+                    }
                 }
                 else if (loginStatus == 0) 
                 {
                     Debug.Log("Fail");
+                    connecting = 3;
                     StartCoroutine(popMessage("로그인 실패", "아이디 혹은 비밀번호가 일치하지 않습니다."));
+                    
+                    LoginButton.interactable = true;
                 }
                 else
                 {
-                    StartCoroutine(popMessage("로그인 실패", "서버에 문제가 있습니다."));
+                    connecting = 3;
+                    StartCoroutine(popMessage("로그인 실패", "서버에 문제가 있습니다."));                    
+                    LoginButton.interactable = true;
                 }
             }
         }
@@ -220,7 +233,7 @@ public class Login : MonoBehaviourPunCallbacks
 
     public void ConnectWithOutLogin()
     {
-        LoginButton.interactable = false;
+        
         PopPanel.SetActive(true);
         StartCoroutine(LoginMessageUpdate());
         PhotonNetwork.ConnectUsingSettings();
@@ -573,7 +586,16 @@ public class Login : MonoBehaviourPunCallbacks
         popTitle.text = "로그인 중";
         while (true)
         {
-            popContent.text = PhotonNetwork.NetworkClientState.ToString();
+            if (connecting == 1)
+            {
+                popContent.text = "데이터 불러오는 중";
+            }
+            else if (connecting == 2)
+            {
+                popContent.text = "서버 접속 중";
+            }
+            else if (connecting == 3)
+                break;
             if (PhotonNetwork.IsConnected)
                 break;
             yield return null;

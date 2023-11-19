@@ -1873,7 +1873,7 @@ MonoBehaviour:
   currentRollIdx: 0
   currentHairIdx: 0
   currentClothIdx: 0
-  useLocal: 1
+  useLocal: 0
   isDebugMode: 0
 --- !u!4 &373080856
 Transform:
