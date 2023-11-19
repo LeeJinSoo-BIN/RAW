@@ -404,7 +404,7 @@ public class CharacterDB : MonoBehaviour
 
                     command.CommandText = string.Format(
                         "SELECT stat FROM character_stat " +
-                        "WHERE user_id = {0} " +
+                        "WHERE user_id = '{0}' " +
                         "AND character_num = {1} " +
                         "AND stat_code = {2};",
                         userId, characterNum, statCode
