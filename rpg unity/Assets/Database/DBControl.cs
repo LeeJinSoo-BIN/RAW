@@ -200,21 +200,7 @@ public class CharacterDB : MonoBehaviour
                             characterId = Convert.ToInt32(userCharacter["character_id"]);
                             characterNum = Convert.ToInt32(userCharacter["character_num"]);
 
-                            command.CommandText = string.Format(
-                                "SELECT roll " +
-                                "FROM character_std " +
-                                "WHERE character_id = {0}",
-                                characterId
-                            );
-
-                            using (MySqlDataReader characterStd = command.ExecuteReader())
-                            {
-                                characterStd.Read();
-
-                                roll = Convert.ToString(characterStd["roll"]);
-
-                                characterStd.Close();
-                            }
+                            roll = GetRollName(characterId);
 
                             maxHealth = (float)GetCharacterStat(userId, characterNum, "hp");
                             maxMana = (float)GetCharacterStat(userId, characterNum, "mp");
@@ -624,6 +610,49 @@ public class CharacterDB : MonoBehaviour
         }
 
         return res;
+    }
+
+    public static string GetRollName(int characterId)
+    {
+        string roll;
+
+        using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
+        {
+            try
+            {
+                conn.Open();
+
+                using (MySqlCommand command = conn.CreateCommand())
+                {
+                    command.CommandText = string.Format(
+                                "SELECT roll " +
+                                "FROM character_std " +
+                                "WHERE character_id = {0}",
+                                characterId
+                            );
+
+                    using (MySqlDataReader characterStd = command.ExecuteReader())
+                    {
+                        characterStd.Read();
+
+                        roll = Convert.ToString(characterStd["roll"]);
+
+                        characterStd.Close();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+                roll = "";
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        return roll;
     }
 }
 
