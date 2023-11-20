@@ -932,7 +932,10 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             }
             else if (desSlot.slotType == "quick skill")
             {
+                if(dragItemSlot.slotType == "skill" || dragItemSlot.slotType == "quick skill")
+                {
 
+                }
             }
             else if (desSlot.slotType == "enchant")
             {

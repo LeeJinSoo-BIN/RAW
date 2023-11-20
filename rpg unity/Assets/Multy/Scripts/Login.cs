@@ -8,6 +8,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using WebSocketSharp;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Dependencies.Sqlite;
 
 public class Login : MonoBehaviourPunCallbacks
 {
@@ -59,7 +60,8 @@ public class Login : MonoBehaviourPunCallbacks
         PhotonNetwork.SendRate = 60;
         PhotonNetwork.SerializationRate = 30;
         Application.targetFrameRate = 60;
-        PhotonNetwork.AutomaticallySyncScene = true;
+        PhotonNetwork.AutomaticallySyncScene = true;            
+
         if(useLocal)
         {
             RegisterButton.interactable = false;
@@ -177,7 +179,11 @@ public class Login : MonoBehaviourPunCallbacks
         updateCharacterList();
         ClearSample();
     }
-
+    async void checkDB()
+    {
+        await DBSetting.CheckConnecting();
+        StartCoroutine(LoginMessageUpdate());
+    }
 
     public void ClickLoginButton()
     {
@@ -185,7 +191,7 @@ public class Login : MonoBehaviourPunCallbacks
         PopPanel.SetActive(true);
         connecting = 1;
         StartCoroutine(LoginMessageUpdate());
-
+        
 
         if (useLocal)
         {
