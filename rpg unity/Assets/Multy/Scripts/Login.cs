@@ -490,10 +490,13 @@ public class Login : MonoBehaviourPunCallbacks
             equipmentId.Add(defaultClothId[currentClothIdx]);
             equipmentId.Add(defaultWeaponId[currentRollIdx]);
 
-            Dictionary<string, Color> colors = new();
-
-            colors.Add("hair", currentHairColor);
-            colors.Add("eye", currentEyeColor);
+            Dictionary<string, Color> colors = new()
+            {
+                { "hair", currentHairColor },
+                { "left eye", currentEyeColor },
+                { "right eye", currentEyeColor },
+                { "mustache", Color.black },
+            };
 
             CharacterDB.CreateCharacter(CreatCharacterNickInput.text, rollName[currentRollIdx], equipmentId, colors);
 

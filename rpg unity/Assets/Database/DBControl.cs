@@ -205,6 +205,7 @@ public class CharacterDB : MonoBehaviour
         int maxInventoryNum;
 
         List<InventoryItem> equipment;
+        List<Color> colors;
 
         using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
         {
@@ -245,7 +246,7 @@ public class CharacterDB : MonoBehaviour
                             healPercent = (float)GetCharacterStat(userId, characterNum, "heal_percent");
 
                             equipment = SelectEquipment(userId, characterNum);
-                            Debug.Log(equipment.Count);
+                            colors = SelectColor(userId, characterNum);
 
                             CharacterSpec spec = new()
                             {
@@ -263,6 +264,7 @@ public class CharacterDB : MonoBehaviour
                                 criticalPercent = criticalPercent,
                                 healPercent = healPercent,
                                 equipment = equipment,
+                                colors = colors,
                             };
 
                             characterSpec.Add(spec);
@@ -349,7 +351,6 @@ public class CharacterDB : MonoBehaviour
                     );
 
                     command.ExecuteNonQuery();
-
 
                     foreach (string statName in statNames)
                         InsertCharacterStat(userId, characterNum, statName, GetCharacterStdStat(characterId, statName));
@@ -700,6 +701,8 @@ public class CharacterDB : MonoBehaviour
     {
         List<InventoryItem> equipments = new();
 
+        InventoryItem equipment;
+
         string itemName;
         int count = 1;
         int reinforce;
@@ -734,7 +737,7 @@ public class CharacterDB : MonoBehaviour
                             itemName = Convert.ToString(equipmentReader["name"]);
                             reinforce = Convert.ToInt32(equipmentReader["reinforce"]);
 
-                            InventoryItem equipment = new()
+                            equipment = new()
                             {
                                 itemName = itemName,
                                 reinforce = reinforce,
@@ -760,6 +763,64 @@ public class CharacterDB : MonoBehaviour
         }
 
         return equipments;
+    }
+
+    public static List<Color> SelectColor(string userId, int characterNum)
+    {
+        List<Color> colors = new();
+
+        List<string> colorType = new() { "hair", "left eye", "right eye", "mustache" };
+
+        float red, green, blue;
+
+        using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
+        {
+            try
+            {
+                conn.Open();
+
+                using (MySqlCommand command = conn.CreateCommand())
+                {
+                    foreach (string type in colorType)
+                    {
+                        command.CommandText = string.Format(
+                            "SELECT red, green, blue " +
+                            "FROM character_color " +
+                            "WHERE user_id = '{0}' " +
+                            "AND character_num = {1} " +
+                            "AND color_type = '{2}'",
+                            userId, characterNum, type
+                        );
+
+                        using (MySqlDataReader characterColor = command.ExecuteReader())
+                        {
+                            characterColor.Read();
+
+                            red = (float)Convert.ToDouble(characterColor["red"]);
+                            green = (float)Convert.ToDouble(characterColor["green"]);
+                            blue = (float)Convert.ToDouble(characterColor["blue"]);
+
+                            characterColor.Close();
+                        }
+
+                        Color color = new() { r = red, g = green, b = blue };
+
+                        colors.Add(color);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+                colors = null;
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        return colors;
     }
 }
 
