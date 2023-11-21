@@ -5,6 +5,9 @@ using System;
 using System.Linq;
 using System.Data;
 using MySql.Data.MySqlClient;
+using System.Threading.Tasks;
+using System.Runtime.InteropServices.WindowsRuntime;
+using UnityEditor.MemoryProfiler;
 
 public class DBSetting : MonoBehaviour
 {
@@ -17,6 +20,35 @@ public class DBSetting : MonoBehaviour
         Password = "binary01!",
         CharacterSet = "utf8",
     };
+    public static bool availableDB = false;
+    public static int connectingState = 0;
+    public static async Task CheckConnecting()
+    {
+        using (MySqlConnection connection = new MySqlConnection(builder.ConnectionString))
+        {
+            try
+            {
+                await connection.OpenAsync();
+                connectingState= 1;
+            }
+            catch (MySqlException ex)
+            {
+                availableDB = false;
+                connectingState = 2;
+            }
+            finally
+            {
+                if (connection.State == ConnectionState.Open)
+                {
+                    connection.Close();
+                    availableDB = true;                                       
+                    connectingState = 3;
+                }
+            }
+        }
+    }
+    
+    
 }
 
 public class AccountDB : MonoBehaviour
