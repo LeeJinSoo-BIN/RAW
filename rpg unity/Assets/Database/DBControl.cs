@@ -516,6 +516,7 @@ public class CharacterDB : MonoBehaviour
     private static int InsertEquipment(string userId, int characterNum, int equipmentId)
     {
         int equipmentNum = 1;
+        int reinforce = 1;
 
         using (MySqlConnection conn = new(DBSetting.builder.ConnectionString))
         {
@@ -544,9 +545,9 @@ public class CharacterDB : MonoBehaviour
                     }
 
                     command.CommandText = string.Format(
-                        "INSERT INTO character_equipment (user_id, character_num, equipment_id, equipment_num) " +
-                        "VALUES ('{0}', {1}, {2}, {3});",
-                        userId, characterNum, equipmentId, equipmentNum
+                        "INSERT INTO character_equipment (user_id, character_num, equipment_id, equipment_num, reinforce) " +
+                        "VALUES ('{0}', {1}, {2}, {3}, {4});",
+                        userId, characterNum, equipmentId, equipmentNum, reinforce
                     );
 
                     command.ExecuteNonQuery();
