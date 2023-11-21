@@ -484,11 +484,13 @@ public class Login : MonoBehaviourPunCallbacks
                 return;
             }
 
-            List<int> equipmentId = new();
-
-            equipmentId.Add(defaultHairId[currentHairIdx]);
-            equipmentId.Add(defaultClothId[currentClothIdx]);
-            equipmentId.Add(defaultWeaponId[currentRollIdx]);
+            List<int> equipmentId = new()
+            {
+                defaultHairId[currentHairIdx],
+                defaultClothId[currentClothIdx],
+                defaultWeaponId[currentRollIdx],
+                14
+            };
 
             Dictionary<string, Color> colors = new()
             {
