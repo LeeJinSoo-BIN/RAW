@@ -172,6 +172,8 @@ public class CharacterDB : MonoBehaviour
 
         int maxInventoryNum;
 
+        List<InventoryItem> equipment;
+
         using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
         {
             try
@@ -201,7 +203,7 @@ public class CharacterDB : MonoBehaviour
                             characterNum = Convert.ToInt32(userCharacter["character_num"]);
 
                             roll = GetRollName(characterId);
-
+                            
                             maxHealth = (float)GetCharacterStat(userId, characterNum, "hp");
                             maxMana = (float)GetCharacterStat(userId, characterNum, "mp");
                             recoverManaPerThreeSec = (float)GetCharacterStat(userId, characterNum, "recover_mp");
@@ -209,6 +211,9 @@ public class CharacterDB : MonoBehaviour
                             criticalDamage = (float)GetCharacterStat(userId, characterNum, "critical_dmg");
                             criticalPercent = (float)GetCharacterStat(userId, characterNum, "critical_percent");
                             healPercent = (float)GetCharacterStat(userId, characterNum, "heal_percent");
+
+                            equipment = SelectEquipment(userId, characterNum);
+                            Debug.Log(equipment.Count);
 
                             CharacterSpec spec = new()
                             {
@@ -225,6 +230,7 @@ public class CharacterDB : MonoBehaviour
                                 criticalDamage = criticalDamage,
                                 criticalPercent = criticalPercent,
                                 healPercent = healPercent,
+                                equipment = equipment,
                             };
 
                             characterSpec.Add(spec);
@@ -355,13 +361,15 @@ public class CharacterDB : MonoBehaviour
 
                 using (MySqlCommand command = conn.CreateCommand())
                 {
-                    int statCode = StatDB.GetStatCode(statName);
-
                     command.CommandText = string.Format(
-                        "SELECT stat FROM character_std_stat " +
+                        "SELECT stat " +
+                        "FROM character_std_stat " +
                         "WHERE character_id = {0} " +
-                        "AND stat_code = {1};",
-                        characterId, statCode
+                        "AND stat_code = " +
+                        "(SELECT stat_code " +
+                        "FROM stat " +
+                        "WHERE stat_name = '{1}')",
+                        characterId, statName
                     );
 
                     using (MySqlDataReader statReader = command.ExecuteReader())
@@ -400,14 +408,15 @@ public class CharacterDB : MonoBehaviour
 
                 using (MySqlCommand command = conn.CreateCommand())
                 {
-                    int statCode = StatDB.GetStatCode(statName);
-
                     command.CommandText = string.Format(
                         "SELECT stat FROM character_stat " +
                         "WHERE user_id = '{0}' " +
                         "AND character_num = {1} " +
-                        "AND stat_code = {2};",
-                        userId, characterNum, statCode
+                        "AND stat_code = " +
+                        "(SELECT stat_code " +
+                        "FROM stat " +
+                        "WHERE stat_name = '{2}')",
+                        userId, characterNum, statName
                     );
 
                     using (MySqlDataReader statReader = command.ExecuteReader())
@@ -625,11 +634,11 @@ public class CharacterDB : MonoBehaviour
                 using (MySqlCommand command = conn.CreateCommand())
                 {
                     command.CommandText = string.Format(
-                                "SELECT roll " +
-                                "FROM character_std " +
-                                "WHERE character_id = {0}",
-                                characterId
-                            );
+                        "SELECT roll " +
+                        "FROM character_std " +
+                        "WHERE character_id = {0}",
+                        characterId
+                    );
 
                     using (MySqlDataReader characterStd = command.ExecuteReader())
                     {
@@ -653,6 +662,72 @@ public class CharacterDB : MonoBehaviour
         }
 
         return roll;
+    }
+
+    public static List<InventoryItem> SelectEquipment(string userId, int characterNum)
+    {
+        List<InventoryItem> equipments = new();
+
+        string itemName;
+        int count = 1;
+        int reinforce;
+
+        using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
+        {
+            try
+            {
+                conn.Open();
+
+                using (MySqlCommand command = conn.CreateCommand())
+                {
+                    command.CommandText = string.Format(
+                        "SELECT e.name, c.reinforce " +
+                        "FROM equipment_slot s " +
+                        "LEFT JOIN character_equipment c " +
+                        "ON s.user_id = c.user_id " +
+                        "AND s.character_num = c.character_num " +
+                        "AND s.equipment_id = c.equipment_id " +
+                        "AND s.equipment_num = c.equipment_num " +
+                        "LEFT JOIN equipment e " +
+                        "ON s.equipment_id = e.equipment_id " +
+                        "WHERE s.user_id = '{0}' " +
+                        "AND s.character_num = {1}",
+                        userId, characterNum
+                    );
+
+                    using (MySqlDataReader equipmentReader = command.ExecuteReader())
+                    {
+                        while (equipmentReader.Read())
+                        {
+                            itemName = Convert.ToString(equipmentReader["name"]);
+                            reinforce = Convert.ToInt32(equipmentReader["reinforce"]);
+
+                            InventoryItem equipment = new()
+                            {
+                                itemName = itemName,
+                                reinforce = reinforce,
+                                count = count,
+                            };
+
+                            equipments.Add(equipment);
+                        }
+
+                        equipmentReader.Close();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.Log(e.Message);
+                equipments = null;
+            }
+            finally
+            {
+                conn.Close();
+            }
+        }
+
+        return equipments;
     }
 }
 
