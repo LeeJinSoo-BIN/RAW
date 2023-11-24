@@ -334,8 +334,6 @@ public class Login : MonoBehaviourPunCallbacks
         }
     }
 
-
-
     public void ClickCharacterSelectButton()
     {
         if (PhotonNetwork.InLobby)
@@ -380,7 +378,6 @@ public class Login : MonoBehaviourPunCallbacks
         }
     }
 
-
     void UpdateSample(string part)
     {
         string part_ = null;
@@ -405,7 +402,6 @@ public class Login : MonoBehaviourPunCallbacks
         }
         CreateCharacterSample.changeSprite(part_, path);        
     }
-
 
     public void ClickCreateButton()
     {
@@ -506,7 +502,6 @@ public class Login : MonoBehaviourPunCallbacks
             ClearSample();
         }
     }
-
 
     public void ClickNextButton(string part)
     {
