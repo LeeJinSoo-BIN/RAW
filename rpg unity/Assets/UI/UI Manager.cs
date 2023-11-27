@@ -128,9 +128,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
 
     public Dictionary<string, string> skillNameToKey = new Dictionary<string, string>();
-    private List<string> quickSlotKeys = new List<string> { "1", "2", "3", "4" };
-    private Dictionary<string, string> keyToItemName = new Dictionary<string, string>();
-    private Dictionary<string, string> itemNameToKey = new Dictionary<string, string>();
+    private List<string> quickItemSlotKeys = new List<string> { "1", "2", "3", "4" };
+    private List<string> quickSkillSlotKeys = new List<string> { "q", "w", "e", "r" };
     public Dictionary<string, QuickInventory> quickInventory = new Dictionary<string, QuickInventory>();
     public Dictionary<string, CharacterState> inGameUserList = new Dictionary<string, CharacterState>();    
     public HashSet<GameObject> openedWindows = new HashSet<GameObject>();
@@ -215,12 +214,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         storeSellPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().onSubmit.AddListener(delegate { ClickSellButton(); });
         storeBuyPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().onSubmit.AddListener(delegate { ClickBuyButton(); });
 
-        keyToItemName.Clear();
-        itemNameToKey.Clear();
-        for (int k = 0; k < quickSlotKeys.Count; k++)
-        {
-            keyToItemName.Add(quickSlotKeys[k], "");
-        }
+        
     }
     void Start()
     {
@@ -301,7 +295,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             {
                 if (DataBase.Instance.currentMapType == "village")
                     return;
-                string now_input_key = Input.inputString;
+                string now_input_key = Input.inputString;                
                 useQuickSlot(now_input_key);
             }
         }
@@ -516,19 +510,22 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 currentSlot.GetChild(0).GetComponent<itemslot>().isBlank = false;
                 currentSlot.GetChild(2).GetComponent<TMP_Text>().text = keys[k];
                 currentSlot.GetChild(3).GetComponent<TMP_Text>().text = DataBase.Instance.skillInfoDict[skillNames[k]].consumeMana.ToString();
-                StartCoroutine(CoolDownCoroutine(skillNames[k], 0f));
+                CoolDown(skillNames[k], 0f);
             }
         }
     }
 
     void useQuickSlot(string key)
     {
-        if (!quickInventory.ContainsKey(keyToItemName[key]))
+        string itemName = DataBase.Instance.selectedCharacterSpec.itemQuickSlot[key];
+        if (itemName.IsNullOrEmpty())
+            return;
+        if (!quickInventory.ContainsKey(itemName))
             return;
 
-        if (quickInventory[keyToItemName[key]].kindCount > 0)
+        if (quickInventory[itemName].kindCount > 0)
         {
-            consumePotion(keyToItemName[key]);
+            consumePotion(itemName);
         }
         updateInventory();
         updateThisQuickSlot(key);
@@ -536,16 +533,17 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     }
     public void updateAllQuickSlot(bool updateSprite = false)
     {
-        for (int k = 0; k < quickSlotKeys.Count; k++)
+        for (int k = 0; k < quickItemSlotKeys.Count; k++)
         {
-            updateThisQuickSlot(quickSlotKeys[k], updateSprite);
+            updateThisQuickSlot(quickItemSlotKeys[k], updateSprite);
         }
     }
     void updateThisQuickSlot(string key, bool updateSprtie = false)
     {
         Transform currentSlot = quiclSlotUI.transform.Find(key);
         itemslot slotInfo = currentSlot.GetChild(0).GetComponent<itemslot>();
-        if (keyToItemName[key].IsNullOrEmpty())
+        string itemName = DataBase.Instance.selectedCharacterSpec.itemQuickSlot[key];
+        if (itemName.IsNullOrEmpty())
         {
             slotInfo.isBlank = true;
             slotInfo.itemName = "";
@@ -557,43 +555,24 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
         if (updateSprtie)
         {
-            currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[keyToItemName[key]].spriteDirectory);
+            currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[itemName].spriteDirectory);
             currentSlot.GetChild(0).GetComponent<Image>().preserveAspect = true;
         }
 
 
         slotInfo.isBlank = false;
-        slotInfo.itemName = keyToItemName[key];
-        if (quickInventory.ContainsKey(keyToItemName[key]))
+        slotInfo.itemName = itemName;
+        if (quickInventory.ContainsKey(itemName))
         {
-            currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;            
-            currentSlot.GetChild(2).GetComponent<TMP_Text>().text = quickInventory[keyToItemName[key]].kindCount.ToString();
+            currentSlot.GetChild(0).GetComponent<Image>().color = Color.white;
+            currentSlot.GetChild(2).GetComponent<TMP_Text>().text = quickInventory[itemName].kindCount.ToString();
         }
         else
         {
             currentSlot.GetChild(0).GetComponent<Image>().color = Color.gray;
             currentSlot.GetChild(2).GetComponent<TMP_Text>().text = "0";
         }
-
     }
-
-    void setQuickSlot(string key, string itemName)
-    {        
-        if (itemNameToKey.ContainsKey(itemName))
-        {
-            keyToItemName[itemNameToKey[itemName]] = "";
-            updateThisQuickSlot(itemNameToKey[itemName], true);            
-            itemNameToKey[itemName] = key;
-        }
-        else
-        {
-            itemNameToKey.Add(itemName, key);
-        }
-        keyToItemName[key] = itemName;
-        updateThisQuickSlot(key, true);
-    }
-
-
     void consumePotion(string itemName)
     {
         DataBase.Instance.myCharacterControl.loseItem(itemName, 1);
@@ -926,7 +905,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 {
                     string slot = desSlot.slotPos.ToString();
                     string itemName = dragItemSlot.itemName;
-                    setQuickSlot(slot, itemName);
+                    DataBase.Instance.selectedCharacterSpec.itemQuickSlot[slot] = itemName;
                 }
 
             }

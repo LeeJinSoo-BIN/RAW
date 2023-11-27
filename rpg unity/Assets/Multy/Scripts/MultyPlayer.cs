@@ -30,7 +30,6 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public float characterMoveSpeed = 1.0f;
     public Animator characterAnimator;
     private GameObject inventoryUi;
-    private GameObject itemBox;    
     private int frontInventoryPos = 0;
     public Dictionary<string, QuickInventory> quickInventory = new Dictionary<string, QuickInventory>();
     
@@ -50,8 +49,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     private IEnumerator castSkill;
     public bool isCastingSkill;
     
-    private List<string> skill_key = new List<string> { "Q", "W", "E", "R", "A" };    
-    private Dictionary<string, SkillSpec> keyToSkillSpec = new Dictionary<string, SkillSpec>();
+    private List<string> skill_key = new List<string> { "q", "w", "e", "r", "a" };
     private SkillSpec current_skill;
     private bool isAttackingNormal;
     
@@ -97,7 +95,6 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         {
             chatInput = UIManager.Instance.chatInput;
             inventoryUi = UIManager.Instance.inventoryPanel;
-            itemBox = inventoryUi.transform.GetChild(2).gameObject;
         }        
         transform.parent = playerGroup.transform;
     }
@@ -105,14 +102,13 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     {
         characterSpec = characterState.characterSpec;
         PV.RPC("setName", RpcTarget.AllBuffered, characterSpec.nickName + PV.ViewID.ToString());
-        List<string> skill_name_list = characterSpec.skillLevel.SD_Keys;        
-        for (int i = 0; i < characterSpec.skillLevel.Count; i++)
+        foreach(string key in skill_key)
         {
-            keyToSkillSpec.Add(skill_key[i], DataBase.Instance.skillInfoDict[skill_name_list[i]]);
-            skillActivatedTime.Add(skill_name_list[i], 0f);
-            skillNameToKey.Add(skill_name_list[i], skill_key[i]);
-            if (skill_name_list[i].Contains("normal"))
-                normalAttackSpec = DataBase.Instance.skillInfoDict[skill_name_list[i]];
+            string skillName = characterSpec.skillQuickSlot[key];
+            skillActivatedTime.Add(skillName, 0f);
+            skillNameToKey.Add(skillName, key);
+            if (key== "a")
+                normalAttackSpec = DataBase.Instance.skillInfoDict[skillName];
         }
         UIManager.Instance.skillNameToKey = skillNameToKey;
 
@@ -246,7 +242,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 {
                     if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.A))
                     {
-                        string now_input_key = Input.inputString.ToUpper();
+                        string now_input_key = Input.inputString.ToLower();
                         if (now_input_key.Length > 1)
                             return;
                         if (now_input_key == current_casting_skill_key)
@@ -350,15 +346,13 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     void activateSkill(string now_skill_key)
     {
         current_casting_skill_key = now_skill_key;
-        current_skill = keyToSkillSpec[now_skill_key];
+        current_skill = DataBase.Instance.skillInfoDict[characterSpec.skillQuickSlot[now_skill_key]];
         if (isCoolDown(current_skill) && !current_skill.skillName.Contains("normal"))
         {
-            print("쿨타임");
             return;
         }
         if (characterState.mana.value < current_skill.consumeMana)
         {
-            print("마나 부족");
             return;
         }
         Vector2 range_area = current_skill.range;

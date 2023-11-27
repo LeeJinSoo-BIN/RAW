@@ -41,7 +41,7 @@ public class DataBase : MonoBehaviour
     public bool isPromotioned = false;
     private void Awake()
     {
-        var obj = FindObjectsOfType<DataBase>();
+        var obj = FindObjectsOfType<DataBase>();                                                                                                                                                        
         if (obj.Length == 1)
         {
             DontDestroyOnLoad(gameObject);

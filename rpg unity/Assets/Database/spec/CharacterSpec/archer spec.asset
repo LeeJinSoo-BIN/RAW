@@ -33,6 +33,28 @@ MonoBehaviour:
     - arrow charge
     - arrow normal
     SD_Values: 0100000001000000010000000100000001000000
+  skillQuickSlot:
+    SD_Keys:
+    - q
+    - w
+    - e
+    - r
+    SD_Values:
+    - arrow rain
+    - arrow dash
+    - arrow gatling
+    - arrow charge
+  itemQuickSlot:
+    SD_Keys:
+    - 1
+    - 2
+    - 3
+    - 4
+    SD_Values:
+    - 
+    - 
+    - 
+    - 
   inventory:
   - {fileID: 0}
   - {fileID: 0}

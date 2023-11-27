@@ -33,6 +33,28 @@ MonoBehaviour:
     - sword bind
     - sword normal
     SD_Values: 0100000001000000010000000100000001000000
+  skillQuickSlot:
+    SD_Keys:
+    - q
+    - w
+    - e
+    - r
+    SD_Values:
+    - sword smash
+    - sword shield
+    - sword slash
+    - sword bind
+  itemQuickSlot:
+    SD_Keys:
+    - 1
+    - 2
+    - 3
+    - 4
+    SD_Values:
+    - 
+    - 
+    - 
+    - 
   inventory:
   - {fileID: 0}
   - {fileID: 0}

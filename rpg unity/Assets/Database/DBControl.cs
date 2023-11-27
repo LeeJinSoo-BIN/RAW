@@ -8,6 +8,8 @@ using MySql.Data.MySqlClient;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEditor.MemoryProfiler;
+using System.Linq.Expressions;
+using System.Threading;
 
 public class DBSetting : MonoBehaviour
 {
@@ -20,48 +22,39 @@ public class DBSetting : MonoBehaviour
         Password = "binary01!",
         CharacterSet = "utf8",
     };
-    public static bool availableDB = false;
-    public static int connectingState = 0;
-    public static async Task CheckConnecting()
+
+    public static async Task<bool> ConnectToDB()
     {
-        using (MySqlConnection connection = new MySqlConnection(builder.ConnectionString))
+        try
         {
-            try
+            using (MySqlConnection connection = new MySqlConnection(builder.ConnectionString))
             {
                 await connection.OpenAsync();
-                connectingState= 1;
-            }
-            catch (MySqlException ex)
-            {
-                availableDB = false;
-                connectingState = 2;
-            }
-            finally
-            {
-                if (connection.State == ConnectionState.Open)
-                {
-                    connection.Close();
-                    availableDB = true;                                       
-                    connectingState = 3;
-                }
+                return true;
             }
         }
+        catch (MySqlException ex)
+        {
+            Debug.LogException(ex);
+            return false;
+        }
     }
-    
-    
 }
+    
+    
+
 
 public class AccountDB : MonoBehaviour
 {
-    public static int Login(string loginId, string loginPw)
+    public static async Task<int> Login(string loginId, string loginPw)
     {
         int status = 0;
-
-        using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
+        try
         {
-            try
+            using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
             {
-                conn.Open();
+
+                await conn.OpenAsync();
 
                 using (MySqlCommand command = conn.CreateCommand())
                 {
@@ -69,32 +62,28 @@ public class AccountDB : MonoBehaviour
                     command.CommandText = string.Format(
                         "SELECT password " +
                         "FROM user " +
-                        "WHERE user_id = '{0}';",
-                        loginId
+                        "WHERE user_id = '{0}';", loginId
                     );
 
-                    using (MySqlDataReader userAccount = command.ExecuteReader())
+                    using (MySqlDataReader userAccount = (MySqlDataReader)await command.ExecuteReaderAsync())
                     {
-                        if (userAccount.Read())
+                        if (await userAccount.ReadAsync())
                         {
                             if (loginPw == Convert.ToString(userAccount["password"]))
                                 status = 1;
+                            else 
+                                status = 0;
                         }
-
-                        userAccount.Close();
                     }
                 }
             }
-            catch (Exception e)
-            {
-                Debug.Log(e.Message);
-                status = -1;
-            }
-            finally
-            {
-                conn.Close();
-            }
         }
+        catch (Exception e)
+        {
+            Debug.Log(e.Message);
+            status = -1;
+        }
+
 
         return status;
     }

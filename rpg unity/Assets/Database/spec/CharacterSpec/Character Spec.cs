@@ -27,7 +27,15 @@ public class CharacterSpec : ScriptableObject
     [Serializable]
     public class SerializeDictSkillLevel : SerializableDictionary<string, int> { }
     public SerializeDictSkillLevel skillLevel;
-    
+
+    [Serializable]
+    public class SerializeDictSkillQuickSlot : SerializableDictionary<string, string> { }
+    public SerializeDictSkillQuickSlot skillQuickSlot;
+
+    [Serializable]
+    public class SerializeDictItemQuickSlot : SerializableDictionary<string, string> { }
+    public SerializeDictItemQuickSlot itemQuickSlot;
+
     public List<InventoryItem> inventory = new List<InventoryItem>(24);
     
     public List<InventoryItem> equipment = new List<InventoryItem>();

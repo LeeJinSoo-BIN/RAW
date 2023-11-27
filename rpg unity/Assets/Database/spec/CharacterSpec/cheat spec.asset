@@ -33,6 +33,28 @@ MonoBehaviour:
     - sword bind
     - magic normal
     SD_Values: 0500000005000000050000000500000005000000
+  skillQuickSlot:
+    SD_Keys:
+    - q
+    - w
+    - e
+    - r
+    SD_Values:
+    - sword slash
+    - magic totem
+    - arrow gatling
+    - sword bind
+  itemQuickSlot:
+    SD_Keys:
+    - 1
+    - 2
+    - 3
+    - 4
+    SD_Values:
+    - 
+    - 
+    - 
+    - 
   inventory:
   - {fileID: 0}
   - {fileID: 0}

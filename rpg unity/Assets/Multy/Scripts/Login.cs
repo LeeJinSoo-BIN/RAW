@@ -9,6 +9,7 @@ using UnityEngine.UI;
 using WebSocketSharp;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Dependencies.Sqlite;
+using System.Threading.Tasks;
 
 public class Login : MonoBehaviourPunCallbacks
 {
@@ -60,15 +61,13 @@ public class Login : MonoBehaviourPunCallbacks
         PhotonNetwork.SendRate = 60;
         PhotonNetwork.SerializationRate = 30;
         Application.targetFrameRate = 60;
-        PhotonNetwork.AutomaticallySyncScene = true;            
-
-        if(useLocal)
-        {
-            RegisterButton.interactable = false;
-        }
+        PhotonNetwork.AutomaticallySyncScene = true;
     }
     void Start()
     {
+        LoginButton.interactable = false;
+        RegisterButton.interactable = false;
+        
         if (!DataBase.Instance.isLogined)
         {
             LoginPanel.SetActive(true);
@@ -82,6 +81,7 @@ public class Login : MonoBehaviourPunCallbacks
             CharacterCreatePanel.SetActive(false);
             updateCharacterList();
         }
+        CheckDBConnect();
     }
 
     void Update()
@@ -100,6 +100,27 @@ public class Login : MonoBehaviourPunCallbacks
                 Input.imeCompositionMode = IMECompositionMode.Auto;
         }
     }
+
+    async void CheckDBConnect()
+    {
+        popTitle.text = "서버 연결";
+        popContent.text = "DB 연결 확인중..";
+        PopPanel.SetActive(true);
+        bool isConnectable = await DBSetting.ConnectToDB();
+        if (isConnectable)
+        {
+            //StartCoroutine(popMessage("DB 연결 가능", "로그인 해주세요."));
+            PopPanel.SetActive(false);
+            RegisterButton.interactable = true;
+        }
+        else
+        {
+            StartCoroutine(popMessage("DB 연결 불가능", "로컬 모드로 전환합니다."));
+            useLocal = true;            
+        }
+        LoginButton.interactable = true;
+    }
+
 
     public void Show_Hide_PassWordCheck(bool show)
     {
@@ -151,8 +172,6 @@ public class Login : MonoBehaviourPunCallbacks
         }
     }
 
-    
-
     public void CreateNewCharacter(CharacterSpec newSpec)
     {
         string ID = DataBase.Instance.defaultAccountInfo.accountId;
@@ -178,20 +197,14 @@ public class Login : MonoBehaviourPunCallbacks
         DataBase.Instance.defaultAccountInfo.characterList.Add(newSpec);
         updateCharacterList();
         ClearSample();
-    }
-    async void checkDB()
-    {
-        await DBSetting.CheckConnecting();
-        StartCoroutine(LoginMessageUpdate());
-    }
+    }    
 
     public void ClickLoginButton()
     {
         LoginButton.interactable = false;
-        PopPanel.SetActive(true);
         connecting = 1;
-        StartCoroutine(LoginMessageUpdate());
         
+        //StartCoroutine(LoginMessageUpdate());        
 
         if (useLocal)
         {
@@ -199,42 +212,105 @@ public class Login : MonoBehaviourPunCallbacks
         }
         else
         {
-            string loginId = idInputField.text;
-            string loginPw = pwInputField.text;
-
             if (!pwCheckInputField.gameObject.activeSelf)
             {
-                int loginStatus = AccountDB.Login(loginId, loginPw);
-
-                if (loginStatus == 1)
-                {
-                    Debug.Log("Success");
-                    
-                    DataBase.Instance.defaultAccountInfo.accountId = loginId;
-                    DataBase.Instance.defaultAccountInfo.characterList = CharacterDB.SelectCharacter(loginId);
-                    connecting = 2;
-                    if (!PhotonNetwork.ConnectUsingSettings())
-                    {
-                        connecting = 3;
-                        StartCoroutine(popMessage("서버 접속 실패", "서버에 문제가 있습니다."));
-                    }
-                }
-                else if (loginStatus == 0) 
-                {
-                    Debug.Log("Fail");
-                    connecting = 3;
-                    StartCoroutine(popMessage("로그인 실패", "아이디 혹은 비밀번호가 일치하지 않습니다."));
-                    
-                    LoginButton.interactable = true;
-                }
-                else
-                {
-                    connecting = 3;
-                    StartCoroutine(popMessage("로그인 실패", "서버에 문제가 있습니다."));                    
-                    LoginButton.interactable = true;
-                }
+                StartCoroutine(LoginWithDBCoroutine());
             }
         }
+    }/*
+    private async Task LoginWithDB()
+    {
+        string loginId = idInputField.text;
+        string loginPw = pwInputField.text;
+        
+        popTitle.text = "로그인 중";
+        popContent.text = "데이터 불러오는 중";
+        PopPanel.SetActive(true);
+        int loginStatus = await AccountDB.Login(loginId, loginPw);
+
+        if (loginStatus == 1)
+        {
+            Debug.Log("Success");
+
+            DataBase.Instance.defaultAccountInfo.accountId = loginId;
+            DataBase.Instance.defaultAccountInfo.characterList = CharacterDB.SelectCharacter(loginId);
+            connecting = 2;
+            popContent.text = "서버 접속 중";
+            if (!PhotonNetwork.ConnectUsingSettings())
+            {
+                connecting = 3;
+                StartCoroutine(popMessage("서버 접속 실패", "서버에 문제가 있습니다."));
+            }
+        }
+        else if (loginStatus == 0)
+        {
+            Debug.Log("Fail");
+            connecting = 3;
+            StartCoroutine(popMessage("로그인 실패", "아이디 혹은 비밀번호가 일치하지 않습니다."));
+
+            LoginButton.interactable = true;
+        }
+        else
+        {
+            connecting = 3;
+            StartCoroutine(popMessage("로그인 실패", "서버에 문제가 있습니다."));
+            LoginButton.interactable = true;
+        }
+    }
+*/
+    private IEnumerator LoginWithDBCoroutine()
+    {
+        string loginId = idInputField.text;
+        string loginPw = pwInputField.text;
+
+        popTitle.text = "로그인 중";
+        popContent.text = "데이터 불러오는 중";
+        PopPanel.SetActive(true);
+
+        // 비동기 작업 시작
+        Task<int> loginTask = AccountDB.Login(loginId, loginPw);
+
+        // 비동기 작업 완료를 기다림
+        while (!loginTask.IsCompleted)
+        {
+            yield return null; // 다음 프레임까지 기다림
+        }
+
+        // 비동기 작업 완료 후 실행될 코드
+        int loginStatus = loginTask.Result;
+
+        if (loginStatus == 1)
+        {
+            Debug.Log("Success");
+
+            DataBase.Instance.defaultAccountInfo.accountId = loginId;
+            DataBase.Instance.defaultAccountInfo.characterList = CharacterDB.SelectCharacter(loginId);
+            connecting = 2;
+
+            popContent.text = "서버 접속 중";
+
+            if (!PhotonNetwork.ConnectUsingSettings())
+            {
+                connecting = 3;
+                StartCoroutine(popMessage("서버 접속 실패", "서버에 문제가 있습니다."));
+            }
+        }
+        else if (loginStatus == 0)
+        {
+            Debug.Log("Fail");
+            connecting = 3;
+            StartCoroutine(popMessage("로그인 실패", "아이디 혹은 비밀번호가 일치하지 않습니다."));
+            LoginButton.interactable = true;
+        }
+        else
+        {
+            connecting = 3;
+            StartCoroutine(popMessage("로그인 실패", "서버에 문제가 있습니다."));
+            LoginButton.interactable = true;
+        }
+
+        // 비동기 작업 완료
+        //loginComplete = true;
     }
 
     public void ConnectWithOutLogin()
@@ -600,9 +676,7 @@ public class Login : MonoBehaviourPunCallbacks
             {
                 popContent.text = "서버 접속 중";
             }
-            else if (connecting == 3)
-                break;
-            if (PhotonNetwork.IsConnected)
+            else if (connecting == 3 || PhotonNetwork.IsConnected)
                 break;
             yield return null;
         }
