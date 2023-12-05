@@ -39,11 +39,13 @@ MonoBehaviour:
     - w
     - e
     - r
+    - a
     SD_Values:
     - sword slash
     - magic totem
     - arrow gatling
     - sword bind
+    - magic normal
   itemQuickSlot:
     SD_Keys:
     - 1

@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
             //Screen.SetResolution(960, 540, false);
         }
     }
-        private void Start()
+    private void Start()
     {
         GameObject player = PhotonNetwork.Instantiate("Character/Player", Vector3.zero, Quaternion.identity);
         DataBase.Instance.myCharacter = player;

@@ -39,11 +39,13 @@ MonoBehaviour:
     - w
     - e
     - r
+    - a
     SD_Values:
     - magic floor
     - magic heal
     - magic totem
     - magic global heal
+    - magic normal
   itemQuickSlot:
     SD_Keys:
     - 1

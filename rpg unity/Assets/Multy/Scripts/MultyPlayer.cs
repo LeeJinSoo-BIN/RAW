@@ -10,6 +10,7 @@ using Photon.Realtime;
 using System.IO;
 using System.Linq;
 using System;
+using WebSocketSharp;
 
 public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 {
@@ -59,8 +60,6 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public CharacterState characterState;
     private CharacterSpec characterSpec;
     private Dictionary<string, float> skillActivatedTime = new Dictionary<string, float>();
-    private Dictionary<string, string> skillNameToKey = new Dictionary<string, string>();
-    
     public GameObject itemDropField;
 
     public TMP_InputField chatInput;
@@ -106,11 +105,9 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         {
             string skillName = characterSpec.skillQuickSlot[key];
             skillActivatedTime.Add(skillName, 0f);
-            skillNameToKey.Add(skillName, key);
-            if (key== "a")
+            if (key == "a")
                 normalAttackSpec = DataBase.Instance.skillInfoDict[skillName];
         }
-        UIManager.Instance.skillNameToKey = skillNameToKey;
 
 
         quickInventory.Clear();
@@ -244,6 +241,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                     {
                         string now_input_key = Input.inputString.ToLower();
                         if (now_input_key.Length > 1)
+                            return;
+                        if (characterSpec.skillQuickSlot[now_input_key].IsNullOrEmpty())
                             return;
                         if (now_input_key == current_casting_skill_key)
                             deactivateSkill();
@@ -430,13 +429,13 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             isAttackingNormal = false;
             normalAttackTarget = null;
         }
-        castSkill = CastSkill(skillPos, current_skill, target);
+        castSkill = CastSkill(skillPos, current_skill, current_casting_skill_key, target);
         StartCoroutine(castSkill);
         //if(!current_skill.skillName.Contains("normal"))
             deactivateSkill();
     }
 
-    IEnumerator CastSkill(Vector2 skillPos, SkillSpec currentCastingSkill, GameObject targetObject = null)
+    IEnumerator CastSkill(Vector2 skillPos, SkillSpec currentCastingSkill, string currentCastingSkillKey, GameObject targetObject = null)
     {
         isCastingSkill = true;
         float skill_radius_len = Vector2.Distance(skillRadiusLengthPoint.transform.position, transform.position);
@@ -560,7 +559,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             skill.GetComponent<PhotonView>().RPC("initSkill", RpcTarget.All, current_skill_deal, current_skill_heal, current_skill_shield, current_skill_power, isCritical, currentCastingSkill.dealSync, currentCastingSkill.duration, current_skill_target_name, current_skill_target_pos);
         
         skillActivatedTime[currentCastingSkill.skillName] = Time.time;
-        UIManager.Instance.CoolDown(currentCastingSkill.skillName, currentCastingSkill.coolDown);
+        UIManager.Instance.CoolDown(currentCastingSkillKey, currentCastingSkill.coolDown);
         characterState.mana.value -= currentCastingSkill.consumeMana;
 
         float delay = 0;

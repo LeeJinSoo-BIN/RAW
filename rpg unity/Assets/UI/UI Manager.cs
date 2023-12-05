@@ -125,9 +125,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public float limitTime;
     public float stageTime;
     public IEnumerator timer;
+    
 
-
-    public Dictionary<string, string> skillNameToKey = new Dictionary<string, string>();
+    private Dictionary<string, string> skillNameToKey = new Dictionary<string, string>();
     private List<string> quickItemSlotKeys = new List<string> { "1", "2", "3", "4" };
     private List<string> quickSkillSlotKeys = new List<string> { "q", "w", "e", "r" };
     public Dictionary<string, QuickInventory> quickInventory = new Dictionary<string, QuickInventory>();
@@ -472,13 +472,12 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
 
     #region 퀵슬릇, 인벤토리
-    public void CoolDown(string skillName, float coolingTime)
+    public void CoolDown(string key, float coolingTime)
     {
-        StartCoroutine(CoolDownCoroutine(skillName, coolingTime));
+        StartCoroutine(CoolDownCoroutine(key, coolingTime));
     }
-    IEnumerator CoolDownCoroutine(string skill_name, float coolingTime)
+    IEnumerator CoolDownCoroutine(string key, float coolingTime)
     {
-        string key = skillNameToKey[skill_name];
         Transform currentKeyUI = quiclSlotUI.transform.Find(key.ToLower());
         if (currentKeyUI == null) yield break;
         Image skill_cool = currentKeyUI.GetChild(1).GetComponent<Image>();
@@ -495,22 +494,23 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     }
     public void setKeyMap()
-    {
-        List<string> keys = skillNameToKey.Values.ToList();
-        List<string> skillNames = skillNameToKey.Keys.ToList();
-        for (int k = 0; k < skillNameToKey.Count; k++)
+    { 
+        skillNameToKey.Clear();
+        for (int k = 0; k < quickSkillSlotKeys.Count; k++)
         {
-            string key = keys[k].ToLower();
+            string key = quickSkillSlotKeys[k].ToLower();
             if (key == "q" || key == "w" || key == "e" || key == "r")
             {
+                string skillName = DataBase.Instance.selectedCharacterSpec.skillQuickSlot[key];
                 Transform currentSlot = quiclSlotUI.transform.Find(key);
-                currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.skillInfoDict[skillNames[k]].iconDirectory);
+                currentSlot.GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.skillInfoDict[skillName].iconDirectory);
                 currentSlot.GetChild(0).GetComponent<Image>().preserveAspect = true;
-                currentSlot.GetChild(0).GetComponent<itemslot>().itemName = skillNames[k];
+                currentSlot.GetChild(0).GetComponent<itemslot>().itemName = skillName;
                 currentSlot.GetChild(0).GetComponent<itemslot>().isBlank = false;
-                currentSlot.GetChild(2).GetComponent<TMP_Text>().text = keys[k];
-                currentSlot.GetChild(3).GetComponent<TMP_Text>().text = DataBase.Instance.skillInfoDict[skillNames[k]].consumeMana.ToString();
-                CoolDown(skillNames[k], 0f);
+                currentSlot.GetChild(2).GetComponent<TMP_Text>().text = key;
+                currentSlot.GetChild(3).GetComponent<TMP_Text>().text = DataBase.Instance.skillInfoDict[skillName].consumeMana.ToString();
+                skillNameToKey[skillName] = key;
+                CoolDown(key, 0f);
             }
         }
     }
@@ -731,10 +731,6 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         float pivotX = 0.5f;
         float pivotY = 0f;
 
-
-
-
-
         if (slotInfo.slotType == "skill" || slotInfo.slotType == "quick skill")
         {
             toolTipContent = DataBase.Instance.skillInfoDict[toolTipName].description;
@@ -895,25 +891,34 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         if (desSlot != null)
         {
             if (desSlot.slotType == "quick item")
-            {
-                if (DataBase.Instance.itemInfoDict[dragItemSlot.itemName].itemType != "potion")
-                {
-                    DragItemDone();
-                    return;
-                }
+            {                
                 if(dragItemSlot.slotType == "inven" || dragItemSlot.slotType == "quick item")
                 {
+                    if (DataBase.Instance.itemInfoDict[dragItemSlot.itemName].itemType != "potion")
+                    {
+                        DragItemDone();
+                        return;
+                    }
                     string slot = desSlot.slotPos.ToString();
                     string itemName = dragItemSlot.itemName;
                     DataBase.Instance.selectedCharacterSpec.itemQuickSlot[slot] = itemName;
                 }
-
             }
             else if (desSlot.slotType == "quick skill")
             {
                 if(dragItemSlot.slotType == "skill" || dragItemSlot.slotType == "quick skill")
                 {
+                    string dragSkillKey = skillNameToKey[dragItemSlot.itemName];
+                    string dragSKillName = dragItemSlot.itemName;
 
+                    string desSkillKey = skillNameToKey[desSlot.itemName];
+                    string desSKillName = desSlot.itemName;
+
+                    if(!dragSkillKey.IsNullOrEmpty())
+                        DataBase.Instance.selectedCharacterSpec.skillQuickSlot[dragSkillKey] = desSKillName;
+                    if (!desSkillKey.IsNullOrEmpty())
+                        DataBase.Instance.selectedCharacterSpec.skillQuickSlot[desSkillKey] = dragSKillName;
+                    setKeyMap();
                 }
             }
             else if (desSlot.slotType == "enchant")
@@ -1061,7 +1066,6 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 DragItemDone();
                 return;
             }
-
         }
         DragItemDone();
     }
@@ -1160,25 +1164,27 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     }
     public void UpdateSkillPanel()
     {
-        List<string> skillName = DataBase.Instance.selectedCharacterSpec.skillLevel.SD_Keys;
+        List<string> skillName = DataBase.Instance.selectedCharacterSpec.skillQuickSlot.SD_Values;
         for(int k = 0; k < skillName.Count; k++)         
         {
             string name = skillName[k];
             if (name.Contains("normal"))
                 continue;
-            if (skillBox.transform.Find(name) == null)
+            Transform _skillBox = skillBox.transform.Find(name);
+            if (_skillBox == null)
             {
                 GameObject newSkill = Instantiate(skillInfo);
                 newSkill.name = "skill " + name;
                 newSkill.transform.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.skillInfoDict[name].iconDirectory);
                 newSkill.transform.GetChild(1).GetComponent<Image>().preserveAspect = true;
-                newSkill.transform.GetChild(1).GetComponent<itemslot>().itemName = name;                
-                newSkill.transform.GetChild(1).GetComponent<itemslot>().slotType = "skill";
-                newSkill.transform.GetChild(1).GetComponent<itemslot>().slotPos = k;
-                newSkill.transform.GetChild(1).GetComponent<itemslot>().isBlank = false;
+                itemslot _itemSlot = newSkill.transform.GetChild(1).GetComponent<itemslot>();
+                _itemSlot.itemName = name;
+                _itemSlot.slotType = "skill";
+                _itemSlot.slotPos = k;
+                _itemSlot.isBlank = false;
                 newSkill.transform.GetChild(2).GetComponent<TMP_Text>().text = name;
                 string max_level = DataBase.Instance.skillInfoDict[name].maxLevel.ToString();
-                string current_level = DataBase.Instance.myCharacterControl.characterState.characterSpec.skillLevel[name].ToString();
+                string current_level = DataBase.Instance.selectedCharacterSpec.skillLevel[name].ToString();
                 newSkill.transform.GetChild(3).GetComponent<TMP_Text>().text = current_level + " / " + max_level;
                 newSkill.transform.SetParent(skillBox.transform, false);
                 newSkill.transform.localPosition = Vector3.zero;
@@ -1188,8 +1194,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             else
             {
                 string max_level = DataBase.Instance.skillInfoDict[name].maxLevel.ToString();
-                string current_level = DataBase.Instance.myCharacterControl.characterState.characterSpec.skillLevel[name].ToString();
-                skillBox.transform.Find(name).transform.GetChild(3).GetComponent<TMP_Text>().text = current_level + " / " + max_level;
+                string current_level = DataBase.Instance.selectedCharacterSpec.skillLevel[name].ToString();
+                _skillBox.transform.GetChild(3).GetComponent<TMP_Text>().text = current_level + " / " + max_level;
             }
         }
     }

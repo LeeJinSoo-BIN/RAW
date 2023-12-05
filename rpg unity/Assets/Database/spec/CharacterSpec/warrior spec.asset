@@ -39,11 +39,13 @@ MonoBehaviour:
     - w
     - e
     - r
+    - a
     SD_Values:
     - sword smash
     - sword shield
     - sword slash
     - sword bind
+    - sword normal
   itemQuickSlot:
     SD_Keys:
     - 1

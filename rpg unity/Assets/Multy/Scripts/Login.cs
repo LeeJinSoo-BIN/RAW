@@ -10,6 +10,7 @@ using WebSocketSharp;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Dependencies.Sqlite;
 using System.Threading.Tasks;
+using MySql.Data.MySqlClient.Authentication;
 
 public class Login : MonoBehaviourPunCallbacks
 {
@@ -67,7 +68,7 @@ public class Login : MonoBehaviourPunCallbacks
     {
         LoginButton.interactable = false;
         RegisterButton.interactable = false;
-        
+        PopPanel.SetActive(false);
         if (!DataBase.Instance.isLogined)
         {
             LoginPanel.SetActive(true);
@@ -81,7 +82,10 @@ public class Login : MonoBehaviourPunCallbacks
             CharacterCreatePanel.SetActive(false);
             updateCharacterList();
         }
-        CheckDBConnect();
+        if(useLocal)
+            LoginButton.interactable = true;
+        else
+            CheckDBConnect();
     }
 
     void Update()
@@ -546,6 +550,8 @@ public class Login : MonoBehaviourPunCallbacks
                 spec.characterLevel = defaultSpec.characterLevel;
                 spec.roll = defaultSpec.roll;
             }
+            spec.itemQuickSlot = defaultSpec.itemQuickSlot;
+            spec.skillQuickSlot = defaultSpec.skillQuickSlot;
             CreateNewCharacterInLocal(spec);
         }
         else

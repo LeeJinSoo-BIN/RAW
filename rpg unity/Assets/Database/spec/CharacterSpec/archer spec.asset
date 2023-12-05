@@ -39,11 +39,13 @@ MonoBehaviour:
     - w
     - e
     - r
+    - a
     SD_Values:
     - arrow rain
     - arrow dash
     - arrow gatling
     - arrow charge
+    - arrow normal
   itemQuickSlot:
     SD_Keys:
     - 1
