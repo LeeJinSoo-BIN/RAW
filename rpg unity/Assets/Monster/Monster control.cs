@@ -205,7 +205,7 @@ public class MonsterControl : MonoBehaviour
     void setActiveCollider(int childNum, bool onOff, int deal)
     {
         GameObject area = transform.GetChild(childNum).gameObject;
-        area.GetComponent<MonsterDirectAttack>().dealOnce = true;
+        area.GetComponent<MonsterDirectAttack>().dealOnce = onOff;
         area.GetComponent<MonsterDirectAttack>().Deal = deal;        
         area.SetActive(onOff);        
     }

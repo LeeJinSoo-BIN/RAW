@@ -9,6 +9,7 @@ public class portal : MonoBehaviour
     int playerOn = 0;
     public GameObject portalHole;
     public Collider2D portalPlate;
+    public GameManager gameManager;
     private void Awake()
     {
         //networkManager = GameObject.Find("NetworkManager").GetComponent<newNetworkManager>();
@@ -36,7 +37,8 @@ public class portal : MonoBehaviour
                 playerOn++;
                 if(playerOn == GameObject.Find("Player Group").transform.childCount)
                 {
-                    if(PhotonNetwork.IsMasterClient)
+                    Debug.Log("syncscene = " + PhotonNetwork.AutomaticallySyncScene);
+                    if (PhotonNetwork.IsMasterClient)
                     {
                         if(DataBase.Instance.currentStage == DataBase.Instance.dungeonInfoDict[DataBase.Instance.currentMapName].monsterInfoList.Count)
                         {
@@ -44,8 +46,7 @@ public class portal : MonoBehaviour
                         }
                         else
                         {
-                            DataBase.Instance.currentStage++;
-                            PhotonNetwork.LoadLevel(DataBase.Instance.currentMapName);
+                            newNetworkManager.Instance.PV.RPC("NextStage", RpcTarget.All);
                         }                        
                     }
                 }

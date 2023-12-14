@@ -13,13 +13,25 @@ public class MonsterDirectAttack : MonoBehaviour
     {
         if (collision == null)
             return;
-        if (collision.CompareTag("Player") && ((foot == true && collision.name == "foot") || (foot == false && collision.name != "foot")) && dealOnce)
+        if (collision.CompareTag("Player") && dealOnce) 
         {
-            if (collision.transform.GetComponent<PhotonView>().IsMine)
+            if (foot == true && collision.name == "foot")
             {
-                CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
-                state.ProcessSkill(0, Deal);
-                dealOnce = false;
+                if (collision.transform.parent.GetComponent<PhotonView>().IsMine)
+                {
+                    CharacterState state = collision.transform.parent.GetComponentInChildren<CharacterState>();
+                    state.ProcessSkill(0, Deal);
+                    dealOnce = false;
+                }
+            }
+            else if (foot == false && collision.name != "foot")
+            {
+                if (collision.transform.GetComponent<PhotonView>().IsMine)
+                {
+                    CharacterState state = collision.transform.GetComponentInChildren<CharacterState>();
+                    state.ProcessSkill(0, Deal);
+                    dealOnce = false;
+                }
             }
         }
     }

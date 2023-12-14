@@ -34,5 +34,13 @@ public class Item : MonoBehaviour
     {
         isSomeonePicking = pick;
     }
+    [PunRPC]
+    void destroyItem()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.Destroy(PV);
+        }
+    }
 }
 

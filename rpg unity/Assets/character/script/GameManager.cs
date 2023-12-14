@@ -10,7 +10,6 @@ using WebSocketSharp;
 
 public class GameManager : MonoBehaviour
 {   
-    public newNetworkManager networkManager;
     public portal portalObject;
     public bool offLine = false;
     void Awake()
@@ -28,7 +27,7 @@ public class GameManager : MonoBehaviour
         DataBase.Instance.myCharacter = player;
         DataBase.Instance.myCharacterControl = player.GetComponent<MultyPlayer>();
         DataBase.Instance.myCharacterState = player.GetComponent<CharacterState>();
-
+        newNetworkManager.Instance.gameManager = this;
         
         if (GameObject.Find("EasterEgg") != null)
         {
@@ -48,37 +47,33 @@ public class GameManager : MonoBehaviour
         player.GetComponent<MultyPlayer>().characterState.setUp();
         //Debug.Log("set up state");
         UIManager.Instance.SetUP();
+        newNetworkManager.Instance.PV.RPC("UpdateParty", RpcTarget.All);
         //Debug.Log("set up ingame ui");
         if (DataBase.Instance.currentMapType == "dungeon")
         {
             portalObject.ActivatePortal(false);
-            if (PhotonNetwork.LocalPlayer.IsMasterClient)
-            {
-                StartCoroutine(SpawnMonster());
-                if(DataBase.Instance.currentStage == 1)
-                {
-                    networkManager.PV.RPC("startTimer", RpcTarget.AllBuffered);
-                }
-            }
+            DataBase.Instance.isInDungeon = true;
+            if (DataBase.Instance.currentStage > 1)
+                startDungeon();
 
         }
     }
 
-    /*void equipItem(GameObject player)
+    public void startDungeon()
     {
-        CharacterSpec spec = player.transform.GetComponent<MultyPlayer>().characterState.characterSpec;
-        List<InventoryItem> equipment = spec.equipment;
-        SPUM_SpriteList spriteList = player.GetComponentInChildren<SPUM_SpriteList>();
-        spriteList.resetSprite();
-        foreach (InventoryItem item in equipment)
+        foreach (DungeonSpec.monsterInfo monster in DataBase.Instance.dungeonInfoDict[DataBase.Instance.currentMapName].monsterInfoList[DataBase.Instance.currentStage - 1].monsterList)
         {
-            string current_item_sprite = DataBase.Instance.itemInfoDict[item.itemName].spriteDirectory;
-            spriteList.PartsPath[DataBase.Instance.itemInfoDict[item.itemName].itemType] = current_item_sprite;
-            //Debug.Log(spriteList.PartsPath[itemInfoDict[item.itemName].itemType]);
+            string monsterName = monster.monsterName;
+            Vector2 montserPos = monster.monsterPos;
+            GameObject spawnedMonster = PhotonNetwork.InstantiateRoomObject("Monster/" + monsterName, montserPos, Quaternion.identity);
+            if (spawnedMonster.GetComponent<MonsterControl>().monsterSpec.monsterType.ToLower() == "boss")
+                newNetworkManager.Instance.PV.RPC("SpawnBoss", RpcTarget.All);
         }
-        spriteList._hairAndEyeColor = spec.colors;        
-        spriteList.setSprite();
-    }*/
+        if (DataBase.Instance.currentStage == 1)
+        {
+            newNetworkManager.Instance.PV.RPC("startTimer", RpcTarget.AllBuffered);
+        }
+    }
 
     public void StageClear()
     {
@@ -99,23 +94,5 @@ public class GameManager : MonoBehaviour
             Destroy(item.gameObject);
         }
         Start();
-    }
-
-    IEnumerator SpawnMonster()
-    {
-        float _timer = 0f;
-        while (_timer < (DataBase.Instance.currentStage == 1 ? 3 : 0.1))
-        {
-            _timer += Time.deltaTime;
-            yield return null;
-        }
-        foreach (DungeonSpec.monsterInfo monster in DataBase.Instance.dungeonInfoDict[DataBase.Instance.currentMapName].monsterInfoList[DataBase.Instance.currentStage - 1].monsterList)
-        {
-            string monsterName = monster.monsterName;
-            Vector2 montserPos = monster.monsterPos;
-            GameObject spawnedMonster =  PhotonNetwork.InstantiateRoomObject("Monster/" + monsterName, montserPos, Quaternion.identity);
-            if(spawnedMonster.GetComponent<MonsterControl>().monsterSpec.monsterType.ToLower() == "boss")
-                networkManager.PV.RPC("SpawnBoss", RpcTarget.All);
-        }
     }
 }

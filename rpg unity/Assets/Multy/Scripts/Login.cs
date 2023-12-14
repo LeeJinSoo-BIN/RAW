@@ -7,10 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using WebSocketSharp;
-using Unity.VisualScripting;
-using Unity.VisualScripting.Dependencies.Sqlite;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient.Authentication;
 
 public class Login : MonoBehaviourPunCallbacks
 {

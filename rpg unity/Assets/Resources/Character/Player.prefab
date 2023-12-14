@@ -1068,7 +1068,6 @@ MonoBehaviour:
   isCastingSkill: 0
   characterState: {fileID: 3169862357116271973}
   itemDropField: {fileID: 0}
-  chatInput: {fileID: 0}
   RB: {fileID: 6386664294005497407}
   PV: {fileID: 2889512801467157385}
   NickNameText: {fileID: 8023766195003740084}

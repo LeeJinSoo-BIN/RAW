@@ -59,7 +59,7 @@ public class SwordNormal : MonoBehaviourPunCallbacks
             target = GameObject.Find(target_name);
             if (target == null)
             {
-                PV.RPC("destroySelf", RpcTarget.AllBuffered, 0f);
+                PV.RPC("destroySelf", RpcTarget.AllBuffered);
                 return;
             }
             transform.parent = target.transform;

@@ -13,22 +13,33 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
 
     public PhotonView PV;
     public GameManager gameManager;
-
+    public static newNetworkManager Instance;
     //public Dictionary<string, party> allPartys = new Dictionary<string, party>();
     //public HashSet<string> usersInParty = new HashSet<string>();
     
 
     public TMP_Text disconnectButtonText;
-    private string nextRoom;
-    public struct party
+    private string nextRoomName;
+
+    private void Awake()
     {
-        public string partyName;
-        public HashSet<string> partyMembersNickName;
-    }    
+        var obj = FindObjectsOfType<newNetworkManager>();
+        if (obj.Length == 1)
+        {
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+        if (Instance == null)
+            Instance = this;
+    }
 
     void Start()
     {
         disconnectButtonText = UIManager.Instance.exitButtonText;
+        PV.RPC("UpdateParty", RpcTarget.All);
     }
     public override void OnJoinedRoom()
     {
@@ -49,7 +60,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     {
         if (DataBase.Instance.currentMapType == "dungeon")
         {
-            PhotonNetwork.JoinOrCreateRoom(nextRoom, new RoomOptions { MaxPlayers = 3 }, null);
+            PhotonNetwork.JoinOrCreateRoom(nextRoomName, new RoomOptions { MaxPlayers = 3 }, null);
         }
         else if(DataBase.Instance.currentMapType == "village")
         {
@@ -61,27 +72,12 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
             PhotonNetwork.JoinLobby();
         }
     }
-
     public override void OnJoinedLobby()
     {
         Destroy(UIManager.Instance.gameObject);        
         SceneManager.LoadScene(DataBase.Instance.currentMapName);
     }
 
-    /*public override void OnPlayerLeftRoom(Player otherPlayer)
-    {
-        if (DataBase.Instance.currentMapType == "village")
-        {
-            if (UIManager.Instance.idToNickName.ContainsKey(otherPlayer.ActorNumber))
-            {
-                allPartys.Remove(UIManager.Instance.idToNickName[otherPlayer.ActorNumber]);
-                usersInParty.Remove(UIManager.Instance.idToNickName[otherPlayer.ActorNumber]);
-                if (DataBase.Instance.myPartyCaptainName == UIManager.Instance.idToNickName[otherPlayer.ActorNumber])
-                    DataBase.Instance.myPartyCaptainName = "";
-                UIManager.Instance.UpdatePartyPanel();
-            }
-        }
-    }*/
     
     public void ClickDisconnectButton()
     {
@@ -114,19 +110,18 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
             PV.RPC("enterDungeon", UIManager.Instance.inGameUserList[mem].PV.Owner, timeLimit);
         }
         enterDungeon(timeLimit);
-        DataBase.Instance.isCurrentDungeonCaptain = true;
     }
 
 
     [PunRPC]
     void enterDungeon(float timeLimit)
     {
-        DataBase.Instance.isCurrentDungeonCaptain = false;
+        UIManager.Instance.LoadingPop();
         DataBase.Instance.currentMapType = "dungeon";
         DataBase.Instance.currentMapName = "Dungeon";
         DataBase.Instance.currentStage = 1;
         UIManager.Instance.limitTime = timeLimit;
-        nextRoom = DataBase.Instance.myPartyCaptainName;
+        nextRoomName = DataBase.Instance.myPartyCaptainName;
         PhotonNetwork.LeaveRoom();        
     }
 
@@ -134,6 +129,14 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     void ReGame()
     {
         UIManager.Instance.gameOverPanel.SetActive(false);
+        DataBase.Instance.currentStage = 1;
+        gameManager.ReGame();
+    }
+
+    [PunRPC]
+    void NextStage()
+    {
+        DataBase.Instance.currentStage++;
         gameManager.ReGame();
     }
 
@@ -141,7 +144,6 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     void GoToVillage()
     {
         UIManager.Instance.gameOverPanel.SetActive(false);
-        DataBase.Instance.isCurrentDungeonCaptain = false;
         DataBase.Instance.currentMapType = "village";
         DataBase.Instance.currentMapName = "Pallet Town";
         PhotonNetwork.LeaveRoom();
@@ -199,7 +201,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    public void UpdateParty()
+    void UpdateParty()
     {
         UIManager.Instance.UpdatePartyPanel();
     }

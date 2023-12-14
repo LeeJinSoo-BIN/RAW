@@ -20,6 +20,7 @@ public class DataBase : MonoBehaviour
     public SerializeDictDungeonInfo dungeonInfoDict;    
 
     public bool isLogined = false;
+    public bool isInDungeon = false;
 
     public AccountInfo defaultAccountInfo;
     public AccountInfo accountInfo;
@@ -27,7 +28,6 @@ public class DataBase : MonoBehaviour
     public string currentMapName;    
     public string currentMapType;
     public int currentStage;
-    public bool isCurrentDungeonCaptain;
 
     public GameObject myCharacter;
     public MultyPlayer myCharacterControl;

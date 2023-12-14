@@ -30,7 +30,6 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public float pointSpeed = 1.0f;
     public float characterMoveSpeed = 1.0f;
     public Animator characterAnimator;
-    private GameObject inventoryUi;
     private int frontInventoryPos = 0;
     public Dictionary<string, QuickInventory> quickInventory = new Dictionary<string, QuickInventory>();
     
@@ -62,7 +61,6 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     private Dictionary<string, float> skillActivatedTime = new Dictionary<string, float>();
     public GameObject itemDropField;
 
-    public TMP_InputField chatInput;
     private EventSystem eventSystem;
     // Multy
     public Rigidbody2D RB;
@@ -90,11 +88,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         itemDropField = GameObject.Find("Item Field").gameObject;
         eventSystem = GameObject.Find("EventSystem").GetComponent<EventSystem>();
         //sortingGroup.sortingOrder = PV.IsMine ? 1 : 0;        
-        if (PV.IsMine)
-        {
-            chatInput = UIManager.Instance.chatInput;
-            inventoryUi = UIManager.Instance.inventoryPanel;
-        }        
+               
         transform.parent = playerGroup.transform;
     }
     public void loadData()
@@ -128,9 +122,9 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         UIManager.Instance.quickInventory = quickInventory;
         UIManager.Instance.updateInventory();
     }
+
     void Update()
-    {
-        
+    {        
         if (PV.IsMine && !isDeath)
         {
             if (Input.GetMouseButtonDown(0))
@@ -603,7 +597,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             gotten = true;
             if (pick)
             {
-                PhotonNetwork.Destroy(got_item.PV);
+                got_item.PV.RPC("destroyItem", RpcTarget.All);
             }
             return true;
         }
@@ -741,7 +735,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         {
             if (gotten)
             {
-                PhotonNetwork.Destroy(got_item.PV);
+                got_item.PV.RPC("destroyItem", RpcTarget.All);
             }
             else
             {
@@ -753,33 +747,6 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         UIManager.Instance.updateAllQuickSlot();
         
         return gotten;
-        /*
-        for (int k = 0; k < inventory.Count; k++)
-        {
-            if (inventory[k].name == got_item_name)
-            {
-                inventory[k].count += got_item_cnt;
-                gotten = true;
-                break;
-            }
-        }
-        if (!gotten)
-        {
-            if(inventory.Count < characterSpec.maxInventoryNum) {
-                InventoryItem add_inventory = new InventoryItem();
-                add_inventory.name = got_item_name;
-                add_inventory.position = frontInventoryPos;
-                inventory.Add(add_inventory);
-                FindFrontInventoryPos();
-                gotten = true;
-            }
-        }
-        if (gotten)
-        {
-            updateInventory();
-            PV.RPC("itemDestroySync", RpcTarget.All, got_item.name);
-            inGameUI.updateAllQuickSlot();
-        }*/
     }
 
     public bool loseItem(string itemName, int cnt, int where = -1)

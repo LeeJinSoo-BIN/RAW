@@ -180,6 +180,7 @@ MonoBehaviour:
   itemName: 
   itemCount: 0
   reinforce: 0
+  isSomeonePicking: 0
   PV: {fileID: -1698338457587247853}
 --- !u!114 &-1698338457587247853
 MonoBehaviour:
