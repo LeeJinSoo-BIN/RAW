@@ -6,8 +6,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using WebSocketSharp;
 using System.Threading.Tasks;
+using WebSocketSharp;
+
 
 public class Login : MonoBehaviourPunCallbacks
 {
@@ -27,6 +28,7 @@ public class Login : MonoBehaviourPunCallbacks
     public GameObject PopPanel;
     public TMP_Text popTitle;
     public TMP_Text popContent;
+    public GameObject loadingIcon;
 
     public List<string> rollList = new List<string>();
     public List<InventoryItem> defaultHair = new List<InventoryItem>();
@@ -46,13 +48,13 @@ public class Login : MonoBehaviourPunCallbacks
     private Color currentEyeColor = new Color(113f / 255f, 38f / 255f, 38f / 255f);
     public bool useLocal;
     public bool isDebugMode;
-    private int connecting;
 
     List<string> rollName = new List<string>() { "warrior", "archer", "mage" };
     List<int> defaultHairId = new List<int>() { 20, 21, 22 };
     List<int> defaultClothId = new List<int>() { 10, 8, 11 };
     List<int> defaultWeaponId = new List<int>() { 32, 5, 33 };
 
+    private float timer = 0f;
     private void Awake()
     {
         Screen.SetResolution(960, 540, false);
@@ -61,7 +63,7 @@ public class Login : MonoBehaviourPunCallbacks
         Application.targetFrameRate = 60;
         PhotonNetwork.AutomaticallySyncScene = true;
     }
-    void Start()
+    async void Start()
     {
         LoginButton.interactable = false;
         RegisterButton.interactable = false;
@@ -79,10 +81,13 @@ public class Login : MonoBehaviourPunCallbacks
             CharacterCreatePanel.SetActive(false);
             updateCharacterList();
         }
-        if(useLocal)
+        if (useLocal)
             LoginButton.interactable = true;
         else
-            CheckDBConnect();
+        {
+            await CheckDBConnect();
+        }
+        
     }
 
     void Update()
@@ -100,24 +105,38 @@ public class Login : MonoBehaviourPunCallbacks
             else
                 Input.imeCompositionMode = IMECompositionMode.Auto;
         }
+        if (loadingIcon.activeSelf)
+        {
+            timer += Time.deltaTime;
+            if (timer > 0.2f)
+            {
+                loadingIcon.transform.rotation *= Quaternion.Euler(0, 0, 45f);
+                if (loadingIcon.transform.rotation.z >= 360f)
+                    loadingIcon.transform.rotation = Quaternion.identity;
+                timer = 0;
+            }
+        }
     }
 
-    async void CheckDBConnect()
+    async Task CheckDBConnect()
     {
         popTitle.text = "서버 연결";
         popContent.text = "DB 연결 확인중..";
+        loadingIcon.SetActive(true);
         PopPanel.SetActive(true);
-        bool isConnectable = await DBSetting.ConnectToDB();
+
+        bool isConnectable = await Task.Run(async () => await DBSetting.ConnectToDB());
+
         if (isConnectable)
         {
-            //StartCoroutine(popMessage("DB 연결 가능", "로그인 해주세요."));
+            StartCoroutine(popMessage("DB 연결 가능", "로그인 해주세요."));            
             PopPanel.SetActive(false);
             RegisterButton.interactable = true;
         }
         else
-        {
+        {            
             StartCoroutine(popMessage("DB 연결 불가능", "로컬 모드로 전환합니다."));
-            useLocal = true;            
+            useLocal = true;
         }
         LoginButton.interactable = true;
     }
@@ -200,10 +219,9 @@ public class Login : MonoBehaviourPunCallbacks
         ClearSample();
     }    
 
-    public void ClickLoginButton()
+    public async void ClickLoginButton()
     {
-        LoginButton.interactable = false;
-        connecting = 1;
+        LoginButton.interactable = false;        
         
         //StartCoroutine(LoginMessageUpdate());        
 
@@ -215,110 +233,55 @@ public class Login : MonoBehaviourPunCallbacks
         {
             if (!pwCheckInputField.gameObject.activeSelf)
             {
-                StartCoroutine(LoginWithDBCoroutine());
+                await LoginWithDBCoroutine();
             }
-        }
-    }/*
-    private async Task LoginWithDB()
-    {
-        string loginId = idInputField.text;
-        string loginPw = pwInputField.text;
-        
-        popTitle.text = "로그인 중";
-        popContent.text = "데이터 불러오는 중";
-        PopPanel.SetActive(true);
-        int loginStatus = await AccountDB.Login(loginId, loginPw);
-
-        if (loginStatus == 1)
-        {
-            Debug.Log("Success");
-
-            DataBase.Instance.defaultAccountInfo.accountId = loginId;
-            DataBase.Instance.defaultAccountInfo.characterList = CharacterDB.SelectCharacter(loginId);
-            connecting = 2;
-            popContent.text = "서버 접속 중";
-            if (!PhotonNetwork.ConnectUsingSettings())
-            {
-                connecting = 3;
-                StartCoroutine(popMessage("서버 접속 실패", "서버에 문제가 있습니다."));
-            }
-        }
-        else if (loginStatus == 0)
-        {
-            Debug.Log("Fail");
-            connecting = 3;
-            StartCoroutine(popMessage("로그인 실패", "아이디 혹은 비밀번호가 일치하지 않습니다."));
-
-            LoginButton.interactable = true;
-        }
-        else
-        {
-            connecting = 3;
-            StartCoroutine(popMessage("로그인 실패", "서버에 문제가 있습니다."));
-            LoginButton.interactable = true;
         }
     }
-*/
-    private IEnumerator LoginWithDBCoroutine()
+    async Task LoginWithDBCoroutine()
     {
         string loginId = idInputField.text;
         string loginPw = pwInputField.text;
 
         popTitle.text = "로그인 중";
-        popContent.text = "데이터 불러오는 중";
+        popContent.text = "DB에서 데이터 불러오는 중";
+        loadingIcon.SetActive(true);
         PopPanel.SetActive(true);
 
-        // 비동기 작업 시작
-        Task<int> loginTask = AccountDB.Login(loginId, loginPw);
-
-        // 비동기 작업 완료를 기다림
-        while (!loginTask.IsCompleted)
-        {
-            yield return null; // 다음 프레임까지 기다림
-        }
-
-        // 비동기 작업 완료 후 실행될 코드
-        int loginStatus = loginTask.Result;
+        int loginStatus = await Task.Run(async () => await AccountDB.Login(loginId, loginPw));
 
         if (loginStatus == 1)
         {
             Debug.Log("Success");
 
             DataBase.Instance.defaultAccountInfo.accountId = loginId;
-            DataBase.Instance.defaultAccountInfo.characterList = CharacterDB.SelectCharacter(loginId);
-            connecting = 2;
+            DataBase.Instance.defaultAccountInfo.characterList = CharacterDB.SelectCharacter(loginId);            
 
-            popContent.text = "서버 접속 중";
+            popContent.text = "RAW 서버 접속 중";
 
             if (!PhotonNetwork.ConnectUsingSettings())
-            {
-                connecting = 3;
+            {                
                 StartCoroutine(popMessage("서버 접속 실패", "서버에 문제가 있습니다."));
             }
         }
         else if (loginStatus == 0)
         {
-            Debug.Log("Fail");
-            connecting = 3;
+            Debug.Log("Fail");            
             StartCoroutine(popMessage("로그인 실패", "아이디 혹은 비밀번호가 일치하지 않습니다."));
             LoginButton.interactable = true;
         }
         else
-        {
-            connecting = 3;
+        {            
             StartCoroutine(popMessage("로그인 실패", "서버에 문제가 있습니다."));
             LoginButton.interactable = true;
         }
 
-        // 비동기 작업 완료
-        //loginComplete = true;
     }
 
     public void ConnectWithOutLogin()
     {
-        
+        popTitle.text = "RAW 서버 접속";
+        popContent.text = "서버 연결중..";
         PopPanel.SetActive(true);
-        StartCoroutine(LoginMessageUpdate());
         PhotonNetwork.ConnectUsingSettings();
     }
 
@@ -655,6 +618,7 @@ public class Login : MonoBehaviourPunCallbacks
 
     IEnumerator popMessage(string title, string content, float popTime = 2f)
     {
+        loadingIcon.SetActive(false);
         popTitle.text = title;
         popContent.text = content;
         PopPanel.SetActive(true);
@@ -666,23 +630,4 @@ public class Login : MonoBehaviourPunCallbacks
         }
         PopPanel.SetActive(false);
     }
-    IEnumerator LoginMessageUpdate()
-    {
-        popTitle.text = "로그인 중";
-        while (true)
-        {
-            if (connecting == 1)
-            {
-                popContent.text = "데이터 불러오는 중";
-            }
-            else if (connecting == 2)
-            {
-                popContent.text = "서버 접속 중";
-            }
-            else if (connecting == 3 || PhotonNetwork.IsConnected)
-                break;
-            yield return null;
-        }
-    }
-
 }

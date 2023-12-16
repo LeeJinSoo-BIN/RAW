@@ -28,16 +28,6 @@ public class SwordBind : MonoBehaviourPunCallbacks
         if(PV.IsMine)
             PhotonNetwork.Destroy(PV);
     }
-    [PunRPC]
-    void destroySelf()
-    {
-        try
-        {
-            GetComponent<Animator>().SetTrigger("vanish");
-        }
-        catch { }
-        Destroy(gameObject, 0.45f);
-    }
 
     IEnumerator Excute()
     {
@@ -72,7 +62,8 @@ public class SwordBind : MonoBehaviourPunCallbacks
             target = GameObject.Find(target_name);
             if (target == null)
             {
-                PV.RPC("destroySelf", RpcTarget.AllBuffered, 0f);
+                if (PV.IsMine)
+                    PhotonNetwork.Destroy(PV);
                 return;
             }
             transform.parent = target.transform;

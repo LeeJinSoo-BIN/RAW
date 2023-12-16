@@ -88,7 +88,8 @@ public class MagicNormal : MonoBehaviourPunCallbacks
             target = GameObject.Find(target_name);
             if (target == null)
             {
-                PV.RPC("destroySelf", RpcTarget.AllBuffered, 0f);
+                if (PV.IsMine)
+                    PV.RPC("destroySelf", RpcTarget.AllBuffered, 0f);                
                 return;
             }
             targetPos = target.transform.Find("hit position").transform.position;

@@ -24,19 +24,21 @@ public class DBSetting : MonoBehaviour
 
     public static async Task<bool> ConnectToDB()
     {
+        bool isConnectable = false;
+        Debug.Log("checking");
         try
         {
             using (MySqlConnection connection = new MySqlConnection(builder.ConnectionString))
             {
                 await connection.OpenAsync();
-                return true;
-            }
+                isConnectable = true;
+            }            
         }
         catch (MySqlException ex)
         {
             Debug.LogException(ex);
-            return false;
         }
+        return isConnectable;
     }
 }
     
@@ -50,7 +52,7 @@ public class AccountDB : MonoBehaviour
         int status = 0;
         try
         {
-            using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
+            await using (MySqlConnection conn = new MySqlConnection(DBSetting.builder.ConnectionString))
             {
 
                 await conn.OpenAsync();

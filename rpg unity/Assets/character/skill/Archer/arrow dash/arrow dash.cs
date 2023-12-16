@@ -29,16 +29,6 @@ public class ArrowDash : MonoBehaviour
         if(PV.IsMine)
             PhotonNetwork.Destroy(PV);
     }
-    [PunRPC]
-    void destroySelf()
-    {
-        /*try
-        {
-            GetComponent<Animator>().SetTrigger("vanish");
-        }
-        catch { }*/
-        Destroy(gameObject);
-    }
 
     [PunRPC]
     void initSkill(float deal, float heal, float sheild, float power, bool isCritical, float sync, float duration, string target_name, Vector2 target_pos)

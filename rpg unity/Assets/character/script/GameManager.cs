@@ -54,13 +54,22 @@ public class GameManager : MonoBehaviour
             portalObject.ActivatePortal(false);
             DataBase.Instance.isInDungeon = true;
             if (DataBase.Instance.currentStage > 1)
-                startDungeon();
-
+                SpawnMonster();
         }
     }
 
-    public void startDungeon()
+    public void SpawnMonster()
     {
+        StartCoroutine(spawnDelay());
+    }
+    IEnumerator spawnDelay()
+    {
+        float _timer = 0f;
+        while (_timer < 0.2)
+        {
+            _timer += Time.deltaTime;
+            yield return null;
+        }
         foreach (DungeonSpec.monsterInfo monster in DataBase.Instance.dungeonInfoDict[DataBase.Instance.currentMapName].monsterInfoList[DataBase.Instance.currentStage - 1].monsterList)
         {
             string monsterName = monster.monsterName;

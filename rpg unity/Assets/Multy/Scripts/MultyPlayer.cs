@@ -25,6 +25,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public LayerMask monsterLayer;
     public LayerMask itemLayer;
     public LayerMask npcLayer;
+    public LayerMask obstacleLayer;
 
     public Vector3 goalPos;
     public float pointSpeed = 1.0f;
@@ -204,11 +205,16 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             {
                 if (Input.GetMouseButtonDown(1))
                 {
-                    Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    Vector3 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     RaycastHit2D hit = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
                     if (hit.collider == null || hit.transform.CompareTag("Not Ground"))
                         return;
-                    goalPos = hit.point;
+
+                    RaycastHit2D hit2 = Physics2D.Raycast(transform.position, ray - transform.position, Mathf.Infinity, obstacleLayer);
+                    if (hit2.collider != null)
+                        goalPos = hit2.point;
+                    else
+                        goalPos = hit.point;
                     isAttackingNormal = false;
                     normalAttackTarget = null;
                     stopCastingSkill();

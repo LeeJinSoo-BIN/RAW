@@ -1055,6 +1055,9 @@ MonoBehaviour:
   npcLayer:
     serializedVersion: 2
     m_Bits: 8192
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 16384
   goalPos: {x: 0, y: 0, z: 0}
   pointSpeed: 5
   characterMoveSpeed: 1.2

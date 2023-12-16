@@ -35,16 +35,6 @@ public class SwordNormal : MonoBehaviourPunCallbacks
         }
         giveDeal();
     }
-    [PunRPC]
-    void destroySelf()
-    {
-        /*try
-        {
-            GetComponent<Animator>().SetTrigger("vanish");
-        }
-        catch { }*/
-        Destroy(gameObject);
-    }
 
     [PunRPC]
     void initSkill(float deal, float heal, float sheild, float power, bool isCritical, float sync, float duration, string target_name, Vector2 target_pos)
@@ -59,7 +49,8 @@ public class SwordNormal : MonoBehaviourPunCallbacks
             target = GameObject.Find(target_name);
             if (target == null)
             {
-                PV.RPC("destroySelf", RpcTarget.AllBuffered);
+                if (PV.IsMine)
+                    PhotonNetwork.Destroy(PV);
                 return;
             }
             transform.parent = target.transform;

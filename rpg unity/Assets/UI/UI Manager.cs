@@ -1382,7 +1382,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         loadingPanel.SetActive(false);
         if (PhotonNetwork.IsMasterClient)
         {
-            GameObject.Find("GameManager").GetComponent<GameManager>().startDungeon();
+            GameObject.Find("GameManager").GetComponent<GameManager>().SpawnMonster();
         }
     }
     #endregion

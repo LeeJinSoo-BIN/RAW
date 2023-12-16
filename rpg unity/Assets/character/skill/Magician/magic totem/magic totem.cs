@@ -25,7 +25,7 @@ public class MagicTotem : MonoBehaviourPunCallbacks
             time += Time.deltaTime;
             yield return null;
         }
-        if(PV.IsMine)
+        if (PV.IsMine)
             PV.RPC("destroySelf", RpcTarget.AllBuffered);
     }
     [PunRPC]
@@ -36,7 +36,8 @@ public class MagicTotem : MonoBehaviourPunCallbacks
             GetComponent<Animator>().SetTrigger("vanish");
         }
         catch { }
-        Destroy(gameObject, 0.45f);
+        if (PV.IsMine)
+            PhotonNetwork.Destroy(PV);        
     }
     IEnumerator Excute()
     {

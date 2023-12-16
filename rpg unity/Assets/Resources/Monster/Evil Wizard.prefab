@@ -762,9 +762,9 @@ GameObject:
   - component: {fileID: 1399720485939322631}
   - component: {fileID: 2672548942401345917}
   - component: {fileID: 435484925033273472}
+  - component: {fileID: 7273569848881289795}
   - component: {fileID: 4241070347977510028}
   - component: {fileID: 11439640600108841}
-  - component: {fileID: 7273569848881289795}
   - component: {fileID: 9140936220363964851}
   m_Layer: 9
   m_Name: Evil Wizard
@@ -899,6 +899,20 @@ MonoBehaviour:
   isDeath: 0
   PV: {fileID: 4241070347977510028}
   animator: {fileID: 7196801161601376449}
+--- !u!114 &7273569848881289795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4888214507846658816}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a43f1dd9ca38c47588f08a821a9a4769, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: {fileID: 0}
+  shield: {fileID: 0}
 --- !u!114 &4241070347977510028
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -939,20 +953,6 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
---- !u!114 &7273569848881289795
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4888214507846658816}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a43f1dd9ca38c47588f08a821a9a4769, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  health: {fileID: 0}
-  shield: {fileID: 0}
 --- !u!114 &9140936220363964851
 MonoBehaviour:
   m_ObjectHideFlags: 0

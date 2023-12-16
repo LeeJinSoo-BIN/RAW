@@ -23,6 +23,7 @@ MonoBehaviour:
   defaultMovement: following
   defaultMoveSpeed: 0.8
   haveWalkMotion: 1
+  stopWhileHit: 1
   defaultScale: {x: 1, y: 1, z: 1}
   dropItems:
     SD_Keys:

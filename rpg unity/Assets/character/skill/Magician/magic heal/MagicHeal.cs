@@ -38,16 +38,7 @@ public class MagicHeal : MonoBehaviourPunCallbacks
         if (PV.IsMine)
             PhotonNetwork.Destroy(PV);
     }
-    [PunRPC]
-    void destroySelf()
-    {
-        try
-        {
-            GetComponent<Animator>().SetTrigger("vanish");
-        }
-        catch { }
-        Destroy(gameObject, 0.45f);
-    }
+
 
     [PunRPC]
     void initSkill(float deal, float heal, float sheild, float power, bool isCritical, float sync, float duration, string target_name, Vector2 target_pos)
@@ -61,7 +52,8 @@ public class MagicHeal : MonoBehaviourPunCallbacks
             target = GameObject.Find(target_name);
             if (target == null)
             {
-                PV.RPC("destroySelf", RpcTarget.AllBuffered, 0f);
+                if (PV.IsMine)
+                    PhotonNetwork.Destroy(PV);
                 return;
             }
             transform.parent = target.transform;

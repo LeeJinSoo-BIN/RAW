@@ -36,16 +36,6 @@ public class ArrowRain : MonoBehaviourPunCallbacks
         if (PV.IsMine)
             PhotonNetwork.Destroy(PV);
     }
-    [PunRPC]
-    void destroySelf()
-    {
-        try
-        {
-            GetComponent<Animator>().SetTrigger("vanish");
-        }
-        catch { }
-        Destroy(gameObject, 0.45f);
-    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {

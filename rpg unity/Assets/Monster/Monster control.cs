@@ -17,6 +17,7 @@ public class MonsterControl : MonoBehaviour
     public int level = 1;
     public bool attackable = true;
     public bool isDeath = false;
+    private bool isMovable = true;
     private float time = 0f;
     private bool isMoving = false;
     private bool isCastingSkill = false;
@@ -283,6 +284,12 @@ public class MonsterControl : MonoBehaviour
             animator.SetBool("run", true);
         while ((transform.position - targetPosition).magnitude > distance)
         {
+            while (!isMovable)
+            {
+                yield return null;
+            }
+
+
             Vector3 _dirMVec = (targetPosition - transform.position).normalized;
             PV.RPC("direction", RpcTarget.AllBuffered, _dirMVec);
             float distanceCovered = (Time.time - startTime) * speed;
@@ -299,6 +306,12 @@ public class MonsterControl : MonoBehaviour
     {
         Vector3 _dirVec = target.transform.position - transform.position;
         Vector3 _disVec = (Vector2)target.transform.position - (Vector2)transform.position;
+
+        if (!isMovable)
+        {
+            return;
+        }
+
         if (_disVec.sqrMagnitude < minDistance && isMoving == true)
         {
             if (monsterSpec.haveWalkMotion)
@@ -371,8 +384,34 @@ public class MonsterControl : MonoBehaviour
     public void Hit()
     {
         if (!isDeath)
+        {
             animator.SetTrigger("hit");
+            if (monsterSpec.stopWhileHit)
+            {
+                StopAllCoroutines();
+                StartCoroutine(stopWhileHit());
+            }
+        }
     }
+
+    IEnumerator stopWhileHit()
+    {
+        isMovable = false;
+        float timer_ = 0f;
+        while (timer_ < 0.3f)
+        {
+            timer_ += Time.deltaTime;
+            yield return null;
+        }
+        isMovable = true;
+        if (isCastingSkill)
+        {
+            time = patternCycle;
+            isCastingSkill = false;
+        }
+            
+    }
+
 
     [PunRPC]
     void direction(Vector3 _dirMVec)
