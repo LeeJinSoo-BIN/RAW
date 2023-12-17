@@ -112,7 +112,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         enterDungeon(timeLimit);
     }
 
-
+    #region 던전
     [PunRPC]
     void enterDungeon(float timeLimit)
     {
@@ -148,6 +148,25 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         DataBase.Instance.currentMapName = "Pallet Town";
         PhotonNetwork.LeaveRoom();
     }
+
+    [PunRPC]
+    void startTimer()
+    {
+        if (UIManager.Instance.limitTime <= 0)
+            UIManager.Instance.limitTime = 6000;
+        UIManager.Instance.timer = UIManager.Instance.startTimer();
+        UIManager.Instance.StartCoroutine(UIManager.Instance.timer);
+    }
+
+    [PunRPC]
+    void SpawnBoss()
+    {
+        //spawnButton.SetActive(false);
+        //timeLimit.SetActive(false);
+        //StageManager.active = true;
+        UIManager.Instance.BossSetUp();
+    }
+    #endregion
 
     [PunRPC]
     void sendChatLog(string chat)
@@ -253,21 +272,29 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     }*/
     #endregion
 
+    #region 교환
     [PunRPC]
-    void startTimer()
+    void sendAndReceiveTradeRequest(string fromWho)
     {
-        if (UIManager.Instance.limitTime <= 0)
-            UIManager.Instance.limitTime = 6000;
-        UIManager.Instance.timer = UIManager.Instance.startTimer();
-        UIManager.Instance.StartCoroutine(UIManager.Instance.timer);
+        UIManager.Instance.receiveTradeRequest(fromWho);
     }
 
     [PunRPC]
-    void SpawnBoss()
+    void upTradeItem(string itemName, int cnt)
     {
-        //spawnButton.SetActive(false);
-        //timeLimit.SetActive(false);
-        //StageManager.active = true;
-        UIManager.Instance.BossSetUp();        
+        UIManager.Instance.UpdateOpTradeItem(itemName, cnt);
     }
+
+    [PunRPC]
+    void leaveTradePanel()
+    {
+        UIManager.Instance.OpLeaveTrade();
+    }
+
+    [PunRPC]
+    void joinTradePanel(string who)
+    {
+
+    }
+    #endregion
 }

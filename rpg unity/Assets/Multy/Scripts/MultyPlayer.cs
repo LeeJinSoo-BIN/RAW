@@ -201,9 +201,10 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                     }
                 }            
             }
-            if (movable)
+
+            if (Input.GetMouseButtonDown(1))
             {
-                if (Input.GetMouseButtonDown(1))
+                if (movable)
                 {
                     Vector3 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     RaycastHit2D hit = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
@@ -221,10 +222,12 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                     StartCoroutine(pointingGoal(goalPos));
                     if (isActivingSkill)
                         deactivateSkill();
-                    characterAnimator.SetBool("IsRunning", true);                    
-                }
-                Move_Character();
-            }            
+                    characterAnimator.SetBool("IsRunning", true);
+
+                    Move_Character();
+                }          
+            }
+            
             if (eventSystem.currentSelectedGameObject == null)
             {
                 if (Input.GetKeyDown(KeyCode.S))

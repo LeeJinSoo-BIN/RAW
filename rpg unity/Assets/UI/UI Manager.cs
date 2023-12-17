@@ -27,6 +27,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public GameObject equipmentPanel;
     public GameObject draggingItem;
     public GameObject loadingPanel;
+    public GameObject characterInteractionPanel;
 
     [Header("Inveontory Panel")]
     public GameObject inventoryPanel;
@@ -71,6 +72,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     [Header("Enchant Panel")]
     public GameObject EnchantPanel;
     public GameObject EnchantResult;
+
+    [Header("Trade Panel")]
+    public GameObject tradePanel;
+    public GameObject tradeRequestPanel;
+    public TMP_InputField tradeChatInput;
     #endregion
 
 
@@ -243,7 +249,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 updateCurrentFocusWindow(optionPanel);
             }
         }
-        if (!chatInput.isFocused && !partyMakeNameInput.isFocused)
+        if (!chatInput.isFocused && !partyMakeNameInput.isFocused && !tradeChatInput.isFocused)
         {
             if (Input.GetKeyDown(KeyCode.I) || Input.GetKeyDown(KeyCode.K) || Input.GetKeyDown(KeyCode.P) || Input.GetKeyDown(KeyCode.U))
             {
@@ -2073,6 +2079,73 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     }
     #endregion
 
+
+    #region 교환창
+    void UpdateTradePanel()
+    {
+
+    }
+    public void UpdateOpTradeItem(string itemName, int cnt)
+    {
+        if(itemName == "money")
+        {
+
+        }
+        else
+        {
+
+        }
+    }
+
+    public void UpdateMyTradeItem(string itemName, int cnt)
+    {
+        if(itemName == "money")
+        {
+
+        }
+        else
+        {
+
+        }
+    }
+    public void receiveTradeRequest(string fromWho)
+    {
+        updateCurrentFocusWindow(tradeRequestPanel);
+        tradeRequestPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = fromWho + "님이\n 교환 신청을 보냈습니다.";
+    }
+
+    public void ClickTradeRequestButton(bool accept)
+    {
+        if (accept)
+        {
+            UpdateTradePanel();
+            updateCurrentFocusWindow(tradePanel);
+        }
+        else
+        {
+            tradeRequestPanel.SetActive(false);
+            openedWindows.Remove(tradeRequestPanel);
+            updateCurrentFocusWindow();
+        }
+    }
+    public void OpLeaveTrade()
+    {
+
+    }
+    public void ClickLeaveTradeButton()
+    {
+
+    }
+
+    public void ClickSendTradeRequestButton()
+    {
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        string opName = current_clicked_button.name;
+        newNetworkManager.Instance.PV.RPC("sendAndReceiveTradeRequest", inGameUserList[opName].PV.Owner, opName);
+        UpdateTradePanel();
+        updateCurrentFocusWindow(tradePanel);
+    }
+    #endregion
 
     #region 옵션
     public void setResolution()
