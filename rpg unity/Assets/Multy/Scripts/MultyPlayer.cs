@@ -204,28 +204,28 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
 
             if (Input.GetMouseButtonDown(1))
             {
-                if (movable)
-                {
-                    Vector3 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                    RaycastHit2D hit = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
-                    if (hit.collider == null || hit.transform.CompareTag("Not Ground"))
-                        return;
 
-                    RaycastHit2D hit2 = Physics2D.Raycast(transform.position, ray - transform.position, Mathf.Infinity, obstacleLayer);
-                    if (hit2.collider != null)
-                        goalPos = hit2.point;
-                    else
-                        goalPos = hit.point;
-                    isAttackingNormal = false;
-                    normalAttackTarget = null;
-                    stopCastingSkill();
-                    StartCoroutine(pointingGoal(goalPos));
-                    if (isActivingSkill)
-                        deactivateSkill();
-                    characterAnimator.SetBool("IsRunning", true);
+                Vector3 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                RaycastHit2D hit = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
+                if (hit.collider == null || hit.transform.CompareTag("Not Ground"))
+                    return;
 
-                    Move_Character();
-                }          
+                RaycastHit2D hit2 = Physics2D.Raycast(transform.position, ray - transform.position, Mathf.Infinity, obstacleLayer);
+                if (hit2.collider != null)
+                    goalPos = hit2.point;
+                else
+                    goalPos = hit.point;
+                isAttackingNormal = false;
+                normalAttackTarget = null;
+                stopCastingSkill();
+                StartCoroutine(pointingGoal(goalPos));
+                if (isActivingSkill)
+                    deactivateSkill();
+                characterAnimator.SetBool("IsRunning", true);
+            }
+            if (movable)
+            {
+                Move_Character();
             }
             
             if (eventSystem.currentSelectedGameObject == null)

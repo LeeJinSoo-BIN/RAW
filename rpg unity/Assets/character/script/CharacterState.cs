@@ -20,12 +20,13 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
     public string roll;
     public int level;
     public string nick;
-
+    
     public Animator characterAnimator;
 
     public bool isCaptain;
     public string partyCaptainName;
     public string partyName;
+    public bool doingSomeThing;
 
     public bool isDeath = false;
     public MultyPlayer playerControl;
@@ -41,7 +42,8 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
         PV.RPC("syncInfoString", RpcTarget.AllBuffered, "nick", characterSpec.nickName);
         PV.RPC("syncInfoString", RpcTarget.AllBuffered, "roll", characterSpec.roll);
         equipItem();
-        updateParty();        
+        updateParty();
+        updateDoing(false);
     }
     [PunRPC]
     void syncInfoNum(string what, float value)
@@ -102,13 +104,21 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
     {
         PV.RPC("syncParty", RpcTarget.AllBuffered, DataBase.Instance.isCaptain, DataBase.Instance.myPartyCaptainName, DataBase.Instance.myPartyName);
     }
-
+    public void updateDoing(bool doing)
+    {
+        PV.RPC("syncDoing", RpcTarget.AllBuffered, doing);
+    }
     [PunRPC]
     void syncParty(bool is_captain, string party_captain_name, string party_name)
     {
         isCaptain = is_captain;
         partyCaptainName = party_captain_name;
         partyName = party_name;
+    }
+    [PunRPC]
+    void syncDoing(bool doing)
+    {
+        doingSomeThing = doing;
     }
 
     // Update is called once per frame

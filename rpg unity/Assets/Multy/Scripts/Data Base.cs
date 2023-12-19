@@ -36,6 +36,7 @@ public class DataBase : MonoBehaviour
     public string myPartyCaptainName;
     public string myPartyName;
     public bool isCaptain;
+    public int myPartyMemNum;
 
     public bool usingCheat = false;
     public bool isPromotioned = false;

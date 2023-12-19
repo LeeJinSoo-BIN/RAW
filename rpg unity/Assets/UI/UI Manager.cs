@@ -27,7 +27,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public GameObject equipmentPanel;
     public GameObject draggingItem;
     public GameObject loadingPanel;
-    public GameObject characterInteractionPanel;
+    public GameObject userInteractionPanel;
+    public GameObject infoPopUpPanel;
 
     [Header("Inveontory Panel")]
     public GameObject inventoryPanel;
@@ -77,6 +78,10 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public GameObject tradePanel;
     public GameObject tradeRequestPanel;
     public TMP_InputField tradeChatInput;
+    public GameObject myTradeBox;
+    public GameObject opTradeBox;
+    public TMP_Text tradeChatLogShow;
+    public GameObject opAcceptTrade;
     #endregion
 
 
@@ -131,13 +136,13 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public float limitTime;
     public float stageTime;
     public IEnumerator timer;
-    
+
 
     private Dictionary<string, string> skillNameToKey = new Dictionary<string, string>();
     private List<string> quickItemSlotKeys = new List<string> { "1", "2", "3", "4" };
     private List<string> quickSkillSlotKeys = new List<string> { "q", "w", "e", "r" };
     public Dictionary<string, QuickInventory> quickInventory = new Dictionary<string, QuickInventory>();
-    public Dictionary<string, CharacterState> inGameUserList = new Dictionary<string, CharacterState>();    
+    public Dictionary<string, CharacterState> inGameUserList = new Dictionary<string, CharacterState>();
     public HashSet<GameObject> openedWindows = new HashSet<GameObject>();
     private Color failColor = new Color((94f / 255f), 0, 0);
     private Color succesColor = new Color(0, (94f / 255f), 0);
@@ -154,6 +159,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     private float hoverTime = 0f;
     private float storeBuyDoubleClickTimer = 0f;
     private float storeSellDoubleClickTimer = 0f;
+
+
+    public string tradeChatLog;
+    private bool tradeChatEnd = false;
+    public LayerMask playerLayer;
 
 
     public Dictionary<string, party> allPartys = new Dictionary<string, party>();
@@ -202,6 +212,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         equipmentPanel.SetActive(false);
 
         loadingPanel.SetActive(false);
+        infoPopUpPanel.SetActive(false);
 
         invitePartyPanel.SetActive(false);
         joinPartyRequestPanel.SetActive(false);
@@ -217,16 +228,19 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         EnchantPanel.SetActive(false);
         EnchantResult.SetActive(false);
 
-        draggingItem.SetActive(false);        
+        draggingItem.SetActive(false);
         chatInput.onSubmit.AddListener(delegate { sendChat(); });
+        tradeChatInput.onSubmit.AddListener(delegate { sendTradeChat(); });
         storeSellPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().onSubmit.AddListener(delegate { ClickSellButton(); });
         storeBuyPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().onSubmit.AddListener(delegate { ClickBuyButton(); });
 
-        
+        tradePanel.SetActive(false);
+        tradeRequestPanel.SetActive(false);
+
     }
     void Start()
     {
-        
+
     }
     // Update is called once per frame
     void Update()
@@ -240,6 +254,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             if (currentFocusWindow != null)
             {
+                if(currentFocusWindow == tradePanel)
+                {
+
+                    return;
+                }
                 currentFocusWindow.SetActive(false);
                 openedWindows.Remove(currentFocusWindow);
                 updateCurrentFocusWindow();
@@ -301,7 +320,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             {
                 if (DataBase.Instance.currentMapType == "village")
                     return;
-                string now_input_key = Input.inputString;                
+                string now_input_key = Input.inputString;
                 useQuickSlot(now_input_key);
             }
         }
@@ -324,12 +343,35 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             {
+                if(currentFocusWindow == tradePanel)
+                {
+                    if(!tradeChatInput.isFocused && !tradeChatEnd)
+                    {
+                        tradeChatInput.ActivateInputField();
+                    }
+                    tradeChatEnd = false;
+                    return;
+                }
+
                 if (!chatInput.isFocused && !chatEnd)
                 {
                     chatInput.ActivateInputField();
                 }
                 chatEnd = false;
             }
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            Vector3 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            RaycastHit2D hit = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, playerLayer);
+            if (hit.collider == null)
+                return;            
+            if (!inGameUserList.ContainsKey(hit.collider.transform.name))
+                UpdateInGameUser();
+            if (hit.collider.gameObject == DataBase.Instance.myCharacter)
+                return;
+            ShowUserInteractionPanel(hit.collider.transform.name);
+            
         }
     }
 
@@ -343,7 +385,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         GetComponent<Canvas>().worldCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
         GetComponent<Canvas>().sortingLayerName = "ui";
         eventSystem = GameObject.Find("EventSystem").GetComponent<EventSystem>();
-        
+
         ResetSkillPanel();
         UpdateSkillPanel();
 
@@ -353,7 +395,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         makeProfile();
         characterHealth = DataBase.Instance.myCharacterState.health;
         characterMana = DataBase.Instance.myCharacterState.mana;
-        
+
         timerText.text = "00:00:00";
         updateAllQuickSlot();
         setKeyMap();
@@ -438,7 +480,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         myCharacterHead.transform.localPosition = new Vector3(0f, -30f, 0f);
         myCharacterProfileUiGroup.transform.GetChild(1).GetComponent<TMP_Text>().text = "Lv. " + DataBase.Instance.selectedCharacterSpec.characterLevel.ToString();
     }
-    
+
     #endregion
 
 
@@ -499,7 +541,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     }
     public void setKeyMap()
-    { 
+    {
         skillNameToKey.Clear();
         for (int k = 0; k < quickSkillSlotKeys.Count; k++)
         {
@@ -619,7 +661,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             }
         }
     }
-    
+
     #endregion
 
 
@@ -684,6 +726,16 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     {
         draging = false;
     }
+    
+    void ShowUserInteractionPanel(string userName)
+    {
+        userInteractionPanel.transform.GetChild(0).GetChild(1).name = userName;
+        userInteractionPanel.transform.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text = inGameUserList[userName].nick;
+        Vector3 mousePoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        userInteractionPanel.transform.position = new Vector3(mousePoint.x, mousePoint.y, 0);
+        
+        updateCurrentFocusWindow(userInteractionPanel);
+    }
     #endregion
 
 
@@ -697,7 +749,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         if (results.Count > 0)
         {
             isHoverToolTip = true;
-            hoverObject = results[0].gameObject;            
+            hoverObject = results[0].gameObject;
         }
     }
 
@@ -823,30 +875,30 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             if (iconDir.IsNullOrEmpty())
                 iconDir = DataBase.Instance.itemInfoDict[toolTipName].spriteDirectory;
             toolTipContent = DataBase.Instance.itemInfoDict[toolTipName].description;
-            if(reinforce > 0) 
+            if (reinforce > 0)
                 toolTipName += string.Format(" (+{0})", reinforce);
         }
 
-        
+
         toolTipPanel.transform.GetChild(1).GetChild(0).GetComponent<TMP_Text>().text = toolTipName;
         toolTipPanel.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(iconDir);
         toolTipPanel.transform.GetChild(1).GetChild(1).GetChild(0).GetComponent<Image>().preserveAspect = true;
         toolTipPanel.transform.GetChild(1).GetChild(2).GetComponent<TMP_Text>().text = toolTipSummary;
         toolTipPanel.transform.GetChild(1).GetChild(3).GetComponent<TMP_Text>().text = toolTipContent;
-        float worldx = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0f)).x * 0.75f;        
+        float worldx = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, 0f)).x * 0.75f;
         if (hoverObject.transform.position.x > worldx)
             pivotX = 1;
         else if (hoverObject.transform.position.x < -worldx)
             pivotX = 0f;
         else
             pivotX = 0.5f;
-        if(hoverObject.transform.position.y > 0)
+        if (hoverObject.transform.position.y > 0)
             pivotY = 1f;
         else
             pivotY = 0f;
         toolTipPanel.GetComponent<RectTransform>().pivot = new Vector2(pivotX, pivotY);
         toolTipPanel.transform.position = hoverObject.transform.position;
-        toolTipPanel.SetActive(true);        
+        toolTipPanel.SetActive(true);
     }
 
 
@@ -920,7 +972,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             }
             else if (desSlot.slotType == "quick skill")
             {
-                if(dragItemSlot.slotType == "skill" || dragItemSlot.slotType == "quick skill")
+                if (dragItemSlot.slotType == "skill" || dragItemSlot.slotType == "quick skill")
                 {
                     string dragSkillKey = skillNameToKey[dragItemSlot.itemName];
                     string dragSKillName = dragItemSlot.itemName;
@@ -928,7 +980,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                     string desSkillKey = skillNameToKey[desSlot.itemName];
                     string desSKillName = desSlot.itemName;
 
-                    if(!dragSkillKey.IsNullOrEmpty())
+                    if (!dragSkillKey.IsNullOrEmpty())
                         DataBase.Instance.selectedCharacterSpec.skillQuickSlot[dragSkillKey] = desSKillName;
                     if (!desSkillKey.IsNullOrEmpty())
                         DataBase.Instance.selectedCharacterSpec.skillQuickSlot[desSkillKey] = dragSKillName;
@@ -1179,7 +1231,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public void UpdateSkillPanel()
     {
         List<string> skillName = DataBase.Instance.selectedCharacterSpec.skillQuickSlot.SD_Values;
-        for(int k = 0; k < skillName.Count; k++)         
+        for (int k = 0; k < skillName.Count; k++)
         {
             string name = skillName[k];
             if (name.Contains("normal"))
@@ -1241,7 +1293,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     {
         string title = null;
         string content = null;
-        if (timer != null) 
+        if (timer != null)
             StopCoroutine(timer);
         if (condition == "time out")
         {
@@ -1338,7 +1390,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         else
             _timeLimit = float.Parse(timeLimitInputfield.text);
         newNetworkManager.Instance.movePortal(_timeLimit);
-        enterDungeonPanel.SetActive(false);        
+        enterDungeonPanel.SetActive(false);
     }
 
 
@@ -1372,11 +1424,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 loadingPanel.transform.GetChild(0).GetChild(k).GetChild(5).gameObject.SetActive(false);
             }
         }
-        StartCoroutine(updateLoadingPanel(partyMemberNum));        
+        StartCoroutine(updateLoadingPanel(partyMemberNum));
     }
 
     IEnumerator updateLoadingPanel(int partyMemNum)
-    {        
+    {
         while (!DataBase.Instance.isInDungeon)
         {
             yield return null;
@@ -1402,7 +1454,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         UpdateInGameUser();
         UpdatePartyMember();
         UpdatePartyList();
-        if(DataBase.Instance.currentMapType == "dungeon")
+        if (DataBase.Instance.currentMapType == "dungeon")
         {
             partyPanel.transform.GetChild(7).GetChild(1).GetComponent<Button>().interactable = false;
         }
@@ -1496,7 +1548,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                         newMember.transform.GetChild(6).GetComponent<Button>().interactable = false;
                     else if (memberName == DataBase.Instance.myCharacter.name)
                         newMember.transform.GetChild(6).GetComponent<Button>().interactable = false;
-                    else if(DataBase.Instance.currentMapType == "dungeon")
+                    else if (DataBase.Instance.currentMapType == "dungeon")
                         newMember.transform.GetChild(6).GetComponent<Button>().interactable = false;
                     newMember.transform.parent = partyMemberBox.transform;
 
@@ -1518,7 +1570,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
 
             GameObject newParty = Instantiate(partyListInfo);
-            newParty.transform.GetChild(0).GetComponent<TMP_Text>().text = "파티장: " + partyInfo.captainName;
+            newParty.transform.GetChild(0).GetComponent<TMP_Text>().text = "파티장: " + inGameUserList[partyInfo.captainName].nick;
             newParty.transform.GetChild(1).GetComponent<TMP_Text>().text = "파티명: " + partyInfo.partyName;
             newParty.transform.GetChild(2).GetComponent<TMP_Text>().text = "인원: " + partyInfo.partyMembersNickName.Count + "/3";
             newParty.transform.GetChild(3).name = partyInfo.captainName;
@@ -1554,17 +1606,18 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     {
         UpdateInGameUser();
         GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
-        if (allPartys[current_clicked_button.name].partyMembersNickName.Count < 3)
+        string captainName = current_clicked_button.name;
+        if (allPartys[captainName].partyMembersNickName.Count < 3)
         {
             DataBase.Instance.isCaptain = false;
-            DataBase.Instance.myPartyCaptainName = current_clicked_button.name;
-            DataBase.Instance.myPartyName = allPartys[current_clicked_button.name].partyName;
+            DataBase.Instance.myPartyCaptainName = captainName;
+            DataBase.Instance.myPartyName = allPartys[captainName].partyName;
             DataBase.Instance.myCharacterState.updateParty();
             newNetworkManager.Instance.PV.RPC("UpdateParty", RpcTarget.All);
         }
         else
         {
-
+            popInfo("파티 정원을 초과해 참가할 수 없습니다.");
         }
         invitePartyPanel.SetActive(false);
         openedWindows.Remove(invitePartyPanel);
@@ -1581,7 +1634,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         }
         else
         {
-
+            popInfo("파티 정원을 초과합니다.");
         }
         joinPartyRequestPanel.SetActive(false);
         openedWindows.Remove(joinPartyRequestPanel);
@@ -1627,6 +1680,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     public void ClickRejectPartyInviteButton()
     {
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        string captainName = current_clicked_button.name;
+        newNetworkManager.Instance.PV.RPC("sendInfo", inGameUserList[captainName].PV.Owner, DataBase.Instance.myCharacterState.nick + "님이 파티 초대를 거절하였습니다.");
         invitePartyPanel.SetActive(false);
         openedWindows.Remove(invitePartyPanel);
         updateCurrentFocusWindow();
@@ -1636,6 +1692,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     public void ClickRejectJoinPartyRequestButton()
     {
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        string requesterName = current_clicked_button.name;
+        newNetworkManager.Instance.PV.RPC("sendInfo", inGameUserList[requesterName].PV.Owner, DataBase.Instance.myCharacterState.nick + "님이 파티 신청을 거절하였습니다.");
         joinPartyRequestPanel.SetActive(false);
         openedWindows.Remove(joinPartyRequestPanel);
         updateCurrentFocusWindow();
@@ -1667,6 +1726,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         string captainRoll = captainInfo.roll;
         invitePartyPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = string.Format("{0}님\r\n레벨: {1}\r\n직업: {2}\r\n이 파티 초대를 보냈습니다.\r\n\r\n파티명: {3}", captainNick, captainLevel, captainRoll, partyName);
         invitePartyPanel.transform.GetChild(2).GetChild(1).name = captain;
+        invitePartyPanel.transform.GetChild(2).GetChild(2).name = captain;
     }
     public void receiveJoinRequest(string fromWho)
     {
@@ -1677,6 +1737,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         string captainRoll = captainInfo.roll;
         joinPartyRequestPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = string.Format("{0}님\r\n레벨: {1}\r\n직업: {2}\r\n이 파티 가입 요청을 보냈습니다.", captainNick, captainLevel, captainRoll);
         joinPartyRequestPanel.transform.GetChild(2).GetChild(1).name = fromWho;
+        joinPartyRequestPanel.transform.GetChild(2).GetChild(2).name = fromWho;
     }
     #endregion
 
@@ -1739,8 +1800,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         }
         storeInvenBox.transform.parent.GetChild(1).GetComponent<TMP_Text>().text = DataBase.Instance.selectedCharacterSpec.money.ToString();
         foreach (string itemName in quickInventory.Keys)
-        {            
-            
+        {
+
             if (DataBase.Instance.itemInfoDict[itemName].itemType == "material" || DataBase.Instance.itemInfoDict[itemName].itemType == "potion")
             {
                 GameObject invenItem = Instantiate(storeInvenItemInfo);
@@ -1761,7 +1822,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             }
             else
             {
-                foreach(int pos in quickInventory[itemName].position)
+                foreach (int pos in quickInventory[itemName].position)
                 {
                     InventoryItem item = DataBase.Instance.selectedCharacterSpec.inventory[pos];
                     GameObject invenItem = Instantiate(storeInvenItemInfo);
@@ -1784,13 +1845,13 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 }
             }
 
-            
+
         }
     }
     public void ClickStoreItem(bool buy)
     {
         GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
-        itemslot item = current_clicked_button.transform.GetChild(1).GetChild(0).GetComponent<itemslot>();        
+        itemslot item = current_clicked_button.transform.GetChild(1).GetChild(0).GetComponent<itemslot>();
         if (buy)
         {
             if (Time.time - storeBuyDoubleClickTimer < 0.25f)
@@ -1836,9 +1897,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         if (storeSellPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().text.IsNullOrEmpty())
             return;
         string sellItemName = storeSellPanel.transform.GetChild(2).name;
-        int sellItemCnt = int.Parse(storeSellPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().text);        
+        int sellItemCnt = int.Parse(storeSellPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().text);
         int invenPos = int.Parse(storeSellPanel.transform.GetChild(2).GetChild(1).name);
-        if(sellItemCnt <= 0)
+        if (sellItemCnt <= 0)
         {
             storeSellPanel.transform.GetChild(2).GetChild(3).GetComponent<TMP_Text>().text = "0보다 큰 수를 입력해주세요.";
             storeSellPanel.transform.GetChild(2).GetChild(3).gameObject.SetActive(true);
@@ -1874,13 +1935,13 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     }
 
     public void ClickBuyButton()
-    {        
+    {
         if (storeBuyPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().text.IsNullOrEmpty())
             return;
         string buyItemName = storeBuyPanel.transform.GetChild(2).name;
         int buyItemCnt = int.Parse(storeBuyPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().text);
         int buyMoney = buyItemCnt * DataBase.Instance.itemInfoDict[buyItemName].buyPrice;
-        if(buyItemCnt <= 0)
+        if (buyItemCnt <= 0)
         {
             storeBuyPanel.transform.GetChild(2).GetChild(3).GetComponent<TMP_Text>().text = "0보다 큰 수를 입력해주세요.";
             storeBuyPanel.transform.GetChild(2).GetChild(3).gameObject.SetActive(true);
@@ -1907,7 +1968,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             DataBase.Instance.selectedCharacterSpec.money -= buyMoney;
             UpdateStoreInventory();
             storeBuyPanel.transform.GetChild(2).GetChild(3).gameObject.SetActive(false);
-            storeBuyPanel.SetActive(false);            
+            storeBuyPanel.SetActive(false);
         }
 
     }
@@ -1915,7 +1976,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     #region 강화
     public void ShowEnchantPanel()
-    {        
+    {
         EnchantPanel.transform.GetChild(2).GetChild(1).GetChild(0).GetComponent<itemslot>().itemName = "";
         UpdateEnchantPanel();
         EnchantResult.SetActive(false);
@@ -1945,7 +2006,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             EnchantPanel.transform.GetChild(2).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(iconDir);
             EnchantPanel.transform.GetChild(2).GetChild(1).GetChild(0).GetComponent<Image>().preserveAspect = true;
             int currentReinforce = 0;
-            if(slotInfo.slotPos < 0)
+            if (slotInfo.slotPos < 0)
             {
                 currentReinforce = DataBase.Instance.selectedCharacterSpec.equipment[-slotInfo.slotPos - 1].reinforce;
             }
@@ -1963,7 +2024,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             EnchantPanel.transform.GetChild(2).GetChild(5).GetChild(1).GetComponent<TMP_Text>().text = enchantPrice[0].ToString();
             EnchantPanel.transform.GetChild(2).GetChild(5).GetChild(3).GetComponent<TMP_Text>().text = enchantPrice[1].ToString();
             EnchantPanel.transform.GetChild(2).GetChild(6).GetComponent<Button>().interactable = true;
-            
+
         }
     }
     public void ClickEnchantButton()
@@ -1972,7 +2033,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         //current_clicked_button.transform.parent.parent.GetComponent<Animator>().SetBool("enchant", true);
         EnchantPanel.transform.GetChild(2).GetChild(6).GetComponent<Button>().interactable = false;
         isEnchanting = true;
-        itemslot slotInfo = EnchantPanel.transform.GetChild(2).GetChild(1).GetChild(0).GetComponent<itemslot>();        
+        itemslot slotInfo = EnchantPanel.transform.GetChild(2).GetChild(1).GetChild(0).GetComponent<itemslot>();
         StartCoroutine(enchantItem());
         int percent = UnityEngine.Random.Range(1, 101);
         int reinforce = int.Parse(EnchantPanel.transform.GetChild(2).GetChild(2).name);
@@ -1980,7 +2041,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             EnchantResult.transform.GetChild(0).GetComponent<TMP_Text>().text = "강화 성공";
             EnchantResult.transform.GetChild(1).GetComponent<TMP_Text>().text = string.Format("{0} -> {1}", reinforce, reinforce + 1);
-            if(slotInfo.slotPos < 0)
+            if (slotInfo.slotPos < 0)
             {
                 DataBase.Instance.selectedCharacterSpec.equipment[-slotInfo.slotPos - 1].reinforce++;
             }
@@ -2001,17 +2062,17 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         EnchantResult.transform.GetChild(2).GetChild(0).GetComponent<Image>().preserveAspect = true;
     }
     IEnumerator enchantItem()
-    {        
+    {
         EnchantPanel.GetComponent<Animator>().SetBool("enchant", true);
         float _time = 0f;
-        while(_time < 1f)
+        while (_time < 1f)
         {
             _time += Time.deltaTime;
             yield return null;
         }
         EnchantPanel.GetComponent<Animator>().SetBool("enchant", false);
         ShowEnchantResult();
-        
+
     }
     void ShowEnchantResult()
     {
@@ -2019,7 +2080,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     }
     public void ClickEnchantResultButton()
     {
-        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;        
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
         current_clicked_button.SetActive(false);
         isEnchanting = false;
         UpdateEnchantPanel();
@@ -2032,12 +2093,12 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         for (int k = 0; k < 6; k++)
         {
             equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(0).GetComponent<Image>().sprite = null;
-            equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(0).GetComponent<itemslot>().itemName = "";            
+            equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(0).GetComponent<itemslot>().itemName = "";
             equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(0).GetComponent<itemslot>().isBlank = true;
             equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(1).gameObject.SetActive(true);
         }
-        for(int k = 0; k < DataBase.Instance.selectedCharacterSpec.equipment.Count; k++) {
-            InventoryItem item = DataBase.Instance.selectedCharacterSpec.equipment[k];            
+        for (int k = 0; k < DataBase.Instance.selectedCharacterSpec.equipment.Count; k++) {
+            InventoryItem item = DataBase.Instance.selectedCharacterSpec.equipment[k];
             string dir = DataBase.Instance.itemInfoDict[item.itemName].iconDirectory;
             string type = DataBase.Instance.itemInfoDict[item.itemName].itemType;
             if (DataBase.Instance.itemInfoDict[item.itemName].iconDirectory.IsNullOrEmpty())
@@ -2083,8 +2144,44 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     #region 교환창
     void UpdateTradePanel()
     {
-
+        
     }
+
+    void resetTradePanel()
+    {
+        resetMyTradePanel();
+        resetOpTradePanel();
+        tradeChatLog = "";
+        tradeChatLogShow.text = tradeChatLog;
+        tradeChatInput.text = "";
+        opAcceptTrade.SetActive(false);
+    }
+    void resetMyTradePanel()
+    {
+        myTradeBox.transform.parent.GetChild(0).GetComponent<TMP_Text>().text = DataBase.Instance.myCharacterState.nick;
+        for (int k = 0; k < 10; k++)
+        {
+            myTradeBox.transform.GetChild(k).GetChild(1).GetChild(0).GetComponent<Image>().sprite = null;
+            myTradeBox.transform.GetChild(k).GetChild(1).GetChild(0).GetComponent<itemslot>().isBlank = true;
+            myTradeBox.transform.GetChild(k).GetChild(1).GetChild(0).GetChild(0).GetComponent<TMP_Text>().text = "";
+            myTradeBox.transform.GetChild(k).GetChild(2).GetComponent<TMP_Text>().text = "";
+            myTradeBox.transform.GetChild(k).GetChild(3).gameObject.SetActive(true);
+        }
+    }
+    void resetOpTradePanel()
+    {
+        opTradeBox.transform.parent.GetChild(0).GetComponent<TMP_Text>().text = "";
+        opTradeBox.transform.parent.GetChild(4).gameObject.SetActive(true);
+        for (int k = 0; k < 10; k++)
+        {
+            opTradeBox.transform.GetChild(k).GetChild(1).GetChild(0).GetComponent<Image>().sprite = null;
+            opTradeBox.transform.GetChild(k).GetChild(1).GetChild(0).GetComponent<itemslot>().isBlank = true;
+            opTradeBox.transform.GetChild(k).GetChild(1).GetChild(0).GetChild(0).GetComponent<TMP_Text>().text = "";
+            opTradeBox.transform.GetChild(k).GetChild(2).GetComponent<TMP_Text>().text = "";
+            opTradeBox.transform.GetChild(k).GetChild(3).gameObject.SetActive(true);
+        }
+    }
+
     public void UpdateOpTradeItem(string itemName, int cnt)
     {
         if(itemName == "money")
@@ -2111,43 +2208,135 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public void receiveTradeRequest(string fromWho)
     {
         updateCurrentFocusWindow(tradeRequestPanel);
-        tradeRequestPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = fromWho + "님이\n 교환 신청을 보냈습니다.";
+        if (!inGameUserList.ContainsKey(fromWho))
+        {
+            UpdateInGameUser();
+        }
+        tradeRequestPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = inGameUserList[fromWho].nick + "님이\n 교환 신청을 보냈습니다.";
+        tradeRequestPanel.transform.GetChild(2).name = fromWho;
     }
 
     public void ClickTradeRequestButton(bool accept)
     {
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        string OpName = current_clicked_button.transform.parent.name;
         if (accept)
         {
-            UpdateTradePanel();
+            resetTradePanel();
+            opTradeBox.transform.parent.GetChild(0).GetComponent<TMP_Text>().text = inGameUserList[OpName].nick;
+            opTradeBox.transform.parent.GetChild(0).name = OpName;
+            opTradeBox.transform.parent.GetChild(4).gameObject.SetActive(false);
+            DataBase.Instance.myCharacterState.updateDoing(true);
             updateCurrentFocusWindow(tradePanel);
+            newNetworkManager.Instance.PV.RPC("joinTradePanel", inGameUserList[OpName].PV.Owner, DataBase.Instance.myCharacter.name);
         }
         else
         {
-            tradeRequestPanel.SetActive(false);
-            openedWindows.Remove(tradeRequestPanel);
-            updateCurrentFocusWindow();
+            newNetworkManager.Instance.PV.RPC("leaveOrRejectTradePanel", inGameUserList[OpName].PV.Owner, true);
         }
-    }
-    public void OpLeaveTrade()
-    {
+        tradeRequestPanel.SetActive(false);
+        openedWindows.Remove(tradeRequestPanel);
+        updateCurrentFocusWindow();
 
+    }
+
+    public void OpJoinTrade(string who)
+    {
+        opTradeBox.transform.parent.GetChild(0).GetComponent<TMP_Text>().text = inGameUserList[who].nick;
+        opTradeBox.transform.parent.GetChild(4).gameObject.SetActive(false);
+        opTradeBox.transform.parent.GetChild(0).name = who;
+        tradeChatLog += "\n" + inGameUserList[who].nick + "님이 교환 신청을 수락하였습니다.";
+        tradeChatLogShow.text = tradeChatLog;
+    }
+
+    public void OpLeaveTrade(bool reject)
+    {
+        tradePanel.SetActive(false);
+        tradeRequestPanel.SetActive(false);
+        openedWindows.Remove(tradePanel);
+        openedWindows.Remove(tradeRequestPanel);
+        updateCurrentFocusWindow();
+        DataBase.Instance.myCharacterState.updateDoing(false);
+        if (reject)
+            popInfo("상대방이 교환을 거절하였습니다.");
+        else
+            popInfo("상대방이 교환을 취소하였습니다.");
     }
     public void ClickLeaveTradeButton()
     {
+        string OpName = opTradeBox.transform.parent.GetChild(0).name;
+        if (!OpName.IsNullOrEmpty())
+            newNetworkManager.Instance.PV.RPC("leaveOrRejectTradePanel", inGameUserList[OpName].PV.Owner, false);
 
+        DataBase.Instance.myCharacterState.updateDoing(false);
+        tradePanel.SetActive(false);
+        openedWindows.Remove(tradePanel);
+        updateCurrentFocusWindow();
     }
 
     public void ClickSendTradeRequestButton()
-    {
-        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
-        string opName = current_clicked_button.name;
-        newNetworkManager.Instance.PV.RPC("sendAndReceiveTradeRequest", inGameUserList[opName].PV.Owner, opName);
-        UpdateTradePanel();
+    {        
+        string opName = userInteractionPanel.transform.GetChild(0).GetChild(1).name;
+        if (!inGameUserList.ContainsKey(opName))
+        {
+            userInteractionPanel.SetActive(false);
+            updateCurrentFocusWindow();
+            return;
+        }
+        if (inGameUserList[opName].doingSomeThing)
+        {
+            popInfo("상대방이 교환 신청을 받을 수 없습니다.");
+            userInteractionPanel.SetActive(false);
+            updateCurrentFocusWindow();
+            return;
+        }
+        DataBase.Instance.myCharacterState.updateDoing(true);
+        newNetworkManager.Instance.PV.RPC("sendAndReceiveTradeRequest", inGameUserList[opName].PV.Owner, DataBase.Instance.myCharacter.name);
+        userInteractionPanel.SetActive(false);
+        updateCurrentFocusWindow();
+        resetTradePanel();
+        opTradeBox.transform.parent.GetChild(0).name = opName;
         updateCurrentFocusWindow(tradePanel);
+        
+    }
+
+    void sendTradeChat()
+    {
+        if (tradeChatInput.text != "")
+        {
+            string chat = tradeChatInput.text;
+            tradeChatLog += "\n" + PhotonNetwork.NickName + " : " + chat;
+            tradeChatLogShow.text = tradeChatLog;
+
+            newNetworkManager.Instance.PV.RPC("sendTradeChatLog", inGameUserList[opTradeBox.transform.parent.GetChild(0).name].PV.Owner, PhotonNetwork.NickName + " : " + chat);
+            tradeChatInput.text = "";
+            tradeChatEnd = false;
+        }
+        else
+        {
+            tradeChatInput.DeactivateInputField();
+            tradeChatEnd = true;
+        }
     }
     #endregion
 
     #region 옵션
+
+    public void popInfo(string content)
+    {
+        GameObject newInfo = Instantiate(infoPopUpPanel);
+        newInfo.transform.GetChild(2).GetChild(0).GetComponent<TMP_Text>().text = content;
+        newInfo.transform.parent = transform;
+        newInfo.transform.localScale = Vector3.one;
+        newInfo.transform.localPosition = Vector3.zero;
+        newInfo.GetComponent<Canvas>().sortingOrder = openedWindows.Count + 6;
+        newInfo.SetActive(true);
+    }
+    public void ClickClosePop()
+    {
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        Destroy(current_clicked_button.transform.parent.gameObject);
+    }
     public void setResolution()
     {
         string selected_resolution_string = resolutionDropdown.options[resolutionDropdown.value].text;
@@ -2196,3 +2385,4 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     
 
 }
+

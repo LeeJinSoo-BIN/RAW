@@ -23,7 +23,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
-        var obj = FindObjectsOfType<newNetworkManager>();
+       /* var obj = FindObjectsOfType<newNetworkManager>();
         if (obj.Length == 1)
         {
             DontDestroyOnLoad(gameObject);
@@ -31,7 +31,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         else
         {
             Destroy(gameObject);
-        }
+        }*/
         if (Instance == null)
             Instance = this;
     }
@@ -100,6 +100,11 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         else if (disconnectButtonText.text == "RAW 종료")
             Application.Quit();
     }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        UIManager.Instance.UpdatePartyPanel();
+    }    
 
     public void movePortal(float timeLimit)
     {
@@ -175,7 +180,11 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         UIManager.Instance.updateChatLog();
     }
 
-
+    [PunRPC]
+    void sendInfo(string content)
+    {
+        UIManager.Instance.popInfo(content);
+    }
     #region 파티
 
     [PunRPC]
@@ -207,6 +216,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         DataBase.Instance.myPartyCaptainName = "";
         DataBase.Instance.myPartyName = "";
         DataBase.Instance.myCharacterState.updateParty();
+        UIManager.Instance.popInfo("파티에서 강퇴당하였습니다.");
         PV.RPC("UpdateParty", RpcTarget.All);
     }
 
@@ -286,15 +296,24 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void leaveTradePanel()
+    void leaveOrRejectTradePanel(bool reject)
     {
-        UIManager.Instance.OpLeaveTrade();
+        UIManager.Instance.OpLeaveTrade(reject);
     }
 
     [PunRPC]
     void joinTradePanel(string who)
     {
+        UIManager.Instance.OpJoinTrade(who);        
+    }
 
+    [PunRPC]
+    void sendTradeChatLog(string chat)
+    {
+        UIManager.Instance.tradeChatLog += "\n" + chat;
+        UIManager.Instance.tradeChatLogShow.text = UIManager.Instance.tradeChatLog;
     }
     #endregion
 }
+
+

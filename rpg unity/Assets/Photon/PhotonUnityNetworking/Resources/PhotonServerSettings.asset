@@ -113,6 +113,14 @@ MonoBehaviour:
   - pickItem
   - destroyItem
   - NextStage
+  - sendAndReceiveTradeRequest
+  - upTradeItem
+  - leaveTradePanel
+  - joinTradePanel
+  - sendTradeChatLog
+  - sendInfo
+  - leaveOrRejectTradePanel
+  - syncDoing
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
