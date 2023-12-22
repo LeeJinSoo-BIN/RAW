@@ -52,7 +52,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         else if (DataBase.Instance.currentMapType == "dungeon")
         {
             if (PhotonNetwork.IsMasterClient)
-                PhotonNetwork.LoadLevel(DataBase.Instance.currentMapName);
+                PhotonNetwork.LoadLevel("Dungeon");
             disconnectButtonText.text = "던전 나가기";
         }
     }
@@ -103,29 +103,35 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        UIManager.Instance.UpdatePartyPanel();
-    }    
+        if (PhotonNetwork.CurrentRoom.Name == DataBase.Instance.myPartyCaptainName)
+        {
+            DataBase.Instance.myPartyMemNum--;
+        }
+    }
 
-    public void movePortal(float timeLimit)
+    public void movePortal(string dungeonName, int dungeonLevel)
     {
-        foreach(string mem in UIManager.Instance.allPartys[DataBase.Instance.myCharacter.name].partyMembersNickName)
+        UIManager.Instance.UpdatePartyPanel();
+        int partyMemNum = UIManager.Instance.allPartys[DataBase.Instance.myCharacter.name].partyMembersNickName.Count;
+        foreach (string mem in UIManager.Instance.allPartys[DataBase.Instance.myCharacter.name].partyMembersNickName)
         {
             if (mem == DataBase.Instance.myCharacter.name)
                 continue;
-            PV.RPC("enterDungeon", UIManager.Instance.inGameUserList[mem].PV.Owner, timeLimit);
+            PV.RPC("enterDungeon", UIManager.Instance.inGameUserList[mem].PV.Owner, dungeonName, dungeonLevel);
         }
-        enterDungeon(timeLimit);
+        enterDungeon(dungeonName, dungeonLevel, partyMemNum);
     }
 
     #region 던전
     [PunRPC]
-    void enterDungeon(float timeLimit)
+    void enterDungeon(string dungeonName, int dungeonLevel, int partyMemNum)
     {
+        DataBase.Instance.myPartyMemNum = partyMemNum;
         UIManager.Instance.LoadingPop();
         DataBase.Instance.currentMapType = "dungeon";
-        DataBase.Instance.currentMapName = "Dungeon";
-        DataBase.Instance.currentStage = 1;
-        UIManager.Instance.limitTime = timeLimit;
+        DataBase.Instance.currentMapName = dungeonName;
+        DataBase.Instance.currentDungeonLevel = dungeonLevel;
+        DataBase.Instance.currentStage = 1;        
         nextRoomName = DataBase.Instance.myPartyCaptainName;
         PhotonNetwork.LeaveRoom();        
     }
@@ -157,8 +163,6 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void startTimer()
     {
-        if (UIManager.Instance.limitTime <= 0)
-            UIManager.Instance.limitTime = 6000;
         UIManager.Instance.timer = UIManager.Instance.startTimer();
         UIManager.Instance.StartCoroutine(UIManager.Instance.timer);
     }

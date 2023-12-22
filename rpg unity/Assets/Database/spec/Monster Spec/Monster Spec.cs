@@ -9,8 +9,8 @@ public class MonsterSpec : ScriptableObject
     public string monsterType;
     public string monsterDirectory;
 
-    public float maxHealth;
-    public float patternCycle;
+    public List<float> maxHealth;
+    public List<float> patternCycle;
     public List<MonsterSkillSpec> skillList;
 
     public string defaultMovement;

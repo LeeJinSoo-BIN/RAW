@@ -19,4 +19,5 @@ public class DungeonSpec : ScriptableObject
     }
     [SerializeField]
     public List<monsterList2D> monsterInfoList = new List<monsterList2D>();
+    public List<float> timeLimit;
 }

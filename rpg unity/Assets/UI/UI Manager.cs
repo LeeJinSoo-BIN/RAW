@@ -21,7 +21,6 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public GameObject currentFocusWindow;
     public GameObject enterDungeonPanel;
     public GameObject gameOverPanel;
-    public TMP_InputField timeLimitInputfield;
     public GameObject toolTipPanel;
     public GameObject conversationPanel;
     public GameObject equipmentPanel;
@@ -133,7 +132,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public GameObject Boss;
     private MonsterState bossState;
     private bool isBossConnected;
-    public float limitTime;
+    //public float limitTime;
     public float stageTime;
     public IEnumerator timer;
 
@@ -1281,7 +1280,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             stageTime += Time.deltaTime;
             timerText.text = string.Format("{0:00}:{1:00}:{2:00}", (int)stageTime / 3600, (int)stageTime / 60 % 60, (int)stageTime % 60);
-            if (stageTime >= limitTime)
+            if (stageTime >= DataBase.Instance.dungeonInfoDict[DataBase.Instance.currentMapName].timeLimit[DataBase.Instance.currentDungeonLevel])
                 break;
             yield return null;
         }
@@ -1301,11 +1300,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             gameOverPanel.transform.GetChild(0).GetComponent<Image>().color = failColor;
             if (DataBase.Instance.currentStage - 1 == DataBase.Instance.dungeonInfoDict[DataBase.Instance.currentMapName].monsterInfoList.Count)
             {
-                content = string.Format("남은 체력\n{0}\n\n소요시간\n{1}초\n\n인 원\n", bossCurrentHealthText.text, limitTime.ToString());
+                content = string.Format("남은 체력\n{0}\n\n소요시간\n{1}초\n\n인 원\n", bossCurrentHealthText.text, DataBase.Instance.dungeonInfoDict[DataBase.Instance.currentMapName].timeLimit[DataBase.Instance.currentDungeonLevel].ToString());
             }
             else
             {
-                content = string.Format("스테이지\n{0}\n\n소요시간\n{1}초\n\n인 원\n", DataBase.Instance.currentStage.ToString(), limitTime.ToString());
+                content = string.Format("스테이지\n{0}\n\n소요시간\n{1}초\n\n인 원\n", DataBase.Instance.currentStage.ToString(), DataBase.Instance.dungeonInfoDict[DataBase.Instance.currentMapName].timeLimit[DataBase.Instance.currentDungeonLevel].ToString());
             }
             gameOverPanel.transform.GetChild(3).gameObject.SetActive(true);
             gameOverPanel.transform.GetChild(4).gameObject.SetActive(true);
@@ -1379,17 +1378,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         updateCurrentFocusWindow(enterDungeonPanel);
     }
 
-    public void ClickEnterDungeonButton()
+    public void ClickEnterDungeonButton(int level)  
     {
-
-        if (!timeLimitInputfield.text.IsNullOrEmpty() && !int.TryParse(timeLimitInputfield.text, out _))
-            return;
-        float _timeLimit;
-        if (timeLimitInputfield.text.IsNullOrEmpty())
-            _timeLimit = 0;
-        else
-            _timeLimit = float.Parse(timeLimitInputfield.text);
-        newNetworkManager.Instance.movePortal(_timeLimit);
+        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
+        string dungeonName = current_clicked_button.transform.parent.name;
+        newNetworkManager.Instance.movePortal(dungeonName, level);
         enterDungeonPanel.SetActive(false);
     }
 
@@ -1397,7 +1390,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public void LoadingPop()
     {
         loadingPanel.SetActive(true);
-        int partyMemberNum = partyMemberBox.transform.childCount;
+        int partyMemberNum = DataBase.Instance.myPartyMemNum;
         for (int k = 0; k < 3; k++)
         {
             if (k < partyMemberNum)

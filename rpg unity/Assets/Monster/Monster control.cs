@@ -41,14 +41,13 @@ public class MonsterControl : MonoBehaviour
         characterGroup = GameObject.Find("Player Group");
         transform.parent = GameObject.Find("Enemy Group").transform;
         name += transform.parent.childCount;
-        patternCycle = monsterSpec.patternCycle;
+        patternCycle = monsterSpec.patternCycle[DataBase.Instance.currentDungeonLevel];
         currentCastingSkill = new MonsterSkillSpec();
     }
 
     private void Start()
     {
-        if (monsterSpec.monsterType.ToLower() == "boss")
-            patternCycle -= characterGroup.transform.childCount;
+
     }
 
     void Update()

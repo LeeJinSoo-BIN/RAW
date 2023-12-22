@@ -28,6 +28,7 @@ public class DataBase : MonoBehaviour
     public string currentMapName;    
     public string currentMapType;
     public int currentStage;
+    public int currentDungeonLevel;
 
     public GameObject myCharacter;
     public MultyPlayer myCharacterControl;
@@ -37,6 +38,7 @@ public class DataBase : MonoBehaviour
     public string myPartyName;
     public bool isCaptain;
     public int myPartyMemNum;
+    
 
     public bool usingCheat = false;
     public bool isPromotioned = false;

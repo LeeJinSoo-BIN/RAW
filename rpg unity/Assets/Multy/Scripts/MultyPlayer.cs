@@ -413,12 +413,10 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         
         if (isCoolDown(current_skill))
         {
-            print("쿨타임");
             return;
         }
         if (characterState.mana.value < current_skill.consumeMana)
         {
-            print("마나 부족");
             return;
         }
         stopCastingSkill();
