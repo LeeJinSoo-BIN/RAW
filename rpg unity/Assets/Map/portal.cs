@@ -37,7 +37,6 @@ public class portal : MonoBehaviour
                 playerOn++;
                 if(playerOn == GameObject.Find("Player Group").transform.childCount)
                 {
-                    Debug.Log("syncscene = " + PhotonNetwork.AutomaticallySyncScene);
                     if (PhotonNetwork.IsMasterClient)
                     {
                         if(DataBase.Instance.currentStage == DataBase.Instance.dungeonInfoDict[DataBase.Instance.currentMapName].monsterInfoList.Count)

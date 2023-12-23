@@ -16,13 +16,13 @@ MonoBehaviour:
   monsterType: Normal
   monsterDirectory: Monster/Skeleton
   maxHealth:
-  - 0
-  - 0
-  - 0
+  - 100
+  - 150
+  - 200
   patternCycle:
-  - 0
-  - 0
-  - 0
+  - 5
+  - 4.5
+  - 4
   skillList:
   - {fileID: 11400000, guid: df9f723617f67df49b7f3847c5b34e02, type: 2}
   - {fileID: 11400000, guid: 74df0ffed9f30584f90fb01352f29a6f, type: 2}

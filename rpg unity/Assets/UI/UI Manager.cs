@@ -364,11 +364,12 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             Vector3 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             RaycastHit2D hit = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, playerLayer);
             if (hit.collider == null)
-                return;            
+                return;
             if (!inGameUserList.ContainsKey(hit.collider.transform.name))
                 UpdateInGameUser();
             if (hit.collider.gameObject == DataBase.Instance.myCharacter)
                 return;
+            DataBase.Instance.myCharacterControl.goalPos = DataBase.Instance.myCharacterControl.transform.position;
             ShowUserInteractionPanel(hit.collider.transform.name);
             
         }

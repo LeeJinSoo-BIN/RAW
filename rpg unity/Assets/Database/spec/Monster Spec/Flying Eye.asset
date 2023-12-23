@@ -16,13 +16,13 @@ MonoBehaviour:
   monsterType: Normal
   monsterDirectory: Monster/Flying Eye
   maxHealth:
+  - 100
+  - 125
   - 150
-  - 200
-  - 250
   patternCycle:
-  - 5
-  - 4
-  - 3
+  - 2
+  - 2
+  - 2
   skillList:
   - {fileID: 11400000, guid: 35e8da350c0fb6c46ad1d54c63c5b40b, type: 2}
   - {fileID: 11400000, guid: e55584cd1ee5a574982bdb29a1cde3ef, type: 2}

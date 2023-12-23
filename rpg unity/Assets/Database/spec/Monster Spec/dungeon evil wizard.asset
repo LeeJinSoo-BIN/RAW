@@ -24,6 +24,6 @@ MonoBehaviour:
     - monsterName: Evil Wizard
       monsterPos: {x: 2.16, y: 1}
   timeLimit:
-  - 6000
-  - 10
-  - 5
+  - 3600
+  - 300
+  - 240
