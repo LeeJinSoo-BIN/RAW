@@ -112,6 +112,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public TMP_Text stageText;
     public TMP_Text timerText;
 
+    public GameObject magnifierIcon;
+
     [Header("Chat")]
     public TMP_InputField chatInput;
     public TMP_Text chatLogShow;
@@ -236,6 +238,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         tradePanel.SetActive(false);
         tradeRequestPanel.SetActive(false);
 
+        magnifierIcon.SetActive(false);
+
     }
     void Start()
     {
@@ -329,6 +333,19 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             {
                 currentFocusWindow = null;
             }
+
+            if (magnifierIcon.activeSelf)
+            {
+                Vector3 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                RaycastHit2D hit = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, playerLayer);
+                if (hit.collider == null)
+                    return;
+                if (!inGameUserList.ContainsKey(hit.collider.transform.name))
+                    UpdateInGameUser();
+                if (hit.collider.gameObject == DataBase.Instance.myCharacter)
+                    return;
+                ShowUserInteractionPanel(hit.collider.transform.name);
+            }
         }
         if (isHoverToolTip)
         {
@@ -359,20 +376,21 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 chatEnd = false;
             }
         }
-        if (Input.GetMouseButtonDown(1))
+
+        if (Input.GetKeyDown(KeyCode.LeftControl))
         {
-            Vector3 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, playerLayer);
-            if (hit.collider == null)
-                return;
-            if (!inGameUserList.ContainsKey(hit.collider.transform.name))
-                UpdateInGameUser();
-            if (hit.collider.gameObject == DataBase.Instance.myCharacter)
-                return;
-            DataBase.Instance.myCharacterControl.goalPos = DataBase.Instance.myCharacterControl.transform.position;
-            ShowUserInteractionPanel(hit.collider.transform.name);
-            
+            magnifierIcon.SetActive(true);
         }
+        if (Input.GetKey(KeyCode.LeftControl))
+        {
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            magnifierIcon.transform.position = new Vector3(mousePos.x, mousePos.y, 0);
+        }
+        if (Input.GetKeyUp(KeyCode.LeftControl))
+        {
+            magnifierIcon.SetActive(false);
+        }
+
     }
 
 
@@ -863,13 +881,19 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             {
                 reinforce = 0;
             }
-            else if (slotInfo.slotType == "enchant")
+            else if (slotInfo.slotType == "enchant" || slotInfo.slotType == "trade")
             {
                 if (pos < 0)
                     reinforce = DataBase.Instance.selectedCharacterSpec.equipment[-pos - 1].reinforce;
                 else
                     reinforce = DataBase.Instance.selectedCharacterSpec.inventory[pos].reinforce;
             }
+            else if(slotInfo.slotType == "opTrade")
+            {
+                reinforce = pos;
+            }
+
+
             toolTipSummary = string.Format("공격력 +{0}", DataBase.Instance.CalEnchantPower(toolTipName, reinforce) + DataBase.Instance.itemInfoDict[toolTipName].increasePower);
             iconDir = DataBase.Instance.itemInfoDict[toolTipName].iconDirectory;
             if (iconDir.IsNullOrEmpty())
@@ -906,9 +930,15 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     {
         PointerEventData pointer_data = (PointerEventData)eventData;
         dragObject = pointer_data.pointerDrag;
+        string slotType = dragObject.GetComponent<itemslot>().slotType;
         if (dragObject == null)
             return;
         if (dragObject.GetComponent<itemslot>().isBlank)
+        {
+            dragObject = null;
+            return;
+        }
+        if (slotType == "enchant" || slotType == "opTrade" || slotType == "trade")
         {
             dragObject = null;
             return;
@@ -1126,6 +1156,13 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                     }
                 }
             }
+            else if (desSlot.slotType == "trade")
+            {
+                if(dragItemSlot.slotType == "inven")
+                {
+
+                }   
+            }
             else
             {
                 Debug.LogError("wrong slot");
@@ -1156,6 +1193,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         if (itemInfo.isBlank)
             return;
         int pos = itemInfo.slotPos;
+
         if (Time.time - itemDoubleClickTimer < 0.25f)
         {
             if (pos < 0)
@@ -2156,7 +2194,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         for (int k = 0; k < 10; k++)
         {
             myTradeBox.transform.GetChild(k).GetChild(1).GetChild(0).GetComponent<Image>().sprite = null;
-            myTradeBox.transform.GetChild(k).GetChild(1).GetChild(0).GetComponent<itemslot>().isBlank = true;
+            myTradeBox.transform.GetChild(k).GetChild(1).GetChild(0).GetComponent<itemslot>().isBlank = true;            
+            myTradeBox.transform.GetChild(k).GetChild(1).GetChild(0).GetComponent<itemslot>().itemName = "";
             myTradeBox.transform.GetChild(k).GetChild(1).GetChild(0).GetChild(0).GetComponent<TMP_Text>().text = "";
             myTradeBox.transform.GetChild(k).GetChild(2).GetComponent<TMP_Text>().text = "";
             myTradeBox.transform.GetChild(k).GetChild(3).gameObject.SetActive(true);
@@ -2176,7 +2215,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         }
     }
 
-    public void UpdateOpTradeItem(string itemName, int cnt)
+    public void UpdateOpTradeItem(string itemName, int cnt, int slotPos, int enchant)
     {
         if(itemName == "money")
         {
@@ -2184,11 +2223,20 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         }
         else
         {
-
+            itemslot updatingItemSlot = opTradeBox.transform.GetChild(slotPos).GetChild(1).GetChild(0).GetComponent<itemslot>();            
+            updatingItemSlot.itemName = itemName;
+            updatingItemSlot.slotPos = enchant;
+            if(cnt == 0)
+            {
+                updatingItemSlot.transform.GetChild(0).GetComponent<TMP_Text>().text = "";
+            }
+            else
+            {
+                updatingItemSlot.transform.GetChild(0).GetComponent<TMP_Text>().text = cnt.ToString();
+            }
         }
     }
-
-    public void UpdateMyTradeItem(string itemName, int cnt)
+    public void UpdateMyTradeItem(string itemName, int cnt, int slotPos, int invenPos, int enchant)
     {
         if(itemName == "money")
         {
@@ -2196,8 +2244,19 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         }
         else
         {
-
+            itemslot updatingItemSlot = myTradeBox.transform.GetChild(slotPos).GetChild(1).GetChild(0).GetComponent<itemslot>();
+            updatingItemSlot.itemName = itemName;
+            updatingItemSlot.slotPos = invenPos;
+            if (cnt == 0)
+            {
+                updatingItemSlot.transform.GetChild(0).GetComponent<TMP_Text>().text = "";
+            }
+            else
+            {
+                updatingItemSlot.transform.GetChild(0).GetComponent<TMP_Text>().text = cnt.ToString();
+            }
         }
+        newNetworkManager.Instance.PV.RPC("upTradeItem", inGameUserList[opTradeBox.transform.parent.GetChild(0).name].PV.Owner, itemName, cnt, slotPos, enchant);
     }
     public void receiveTradeRequest(string fromWho)
     {

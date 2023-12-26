@@ -294,9 +294,10 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void upTradeItem(string itemName, int cnt)
+    void upTradeItem(string itemName, int cnt, int slotPos, int enchant)
     {
-        UIManager.Instance.UpdateOpTradeItem(itemName, cnt);
+        
+        UIManager.Instance.UpdateOpTradeItem(itemName, cnt, slotPos, enchant);
     }
 
     [PunRPC]
