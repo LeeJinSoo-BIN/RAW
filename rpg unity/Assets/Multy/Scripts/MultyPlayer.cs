@@ -606,7 +606,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             {
                 got_item.PV.RPC("destroyItem", RpcTarget.All);
             }
-            return true;
+            return gotten;
         }
         if(invenPos != -1)
         {
@@ -622,12 +622,29 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                     quickInventory.Add(got_item.itemName, new QuickInventory { kindCount = got_item.itemCount, position = new SortedSet<int> { invenPos } });
                 }
                 InventoryItem newItem = ScriptableObject.CreateInstance<InventoryItem>();
-                newItem.itemName = got_item.itemName;
-                newItem.reinforce = got_item.reinforce;
-                newItem.count = got_item.itemCount;
-                characterSpec.inventory[invenPos] = newItem;
-
-                return true;
+                if (characterSpec.inventory[invenPos] == null)
+                {
+                    newItem.itemName = got_item.itemName;
+                    newItem.reinforce = got_item.reinforce;
+                    newItem.count = got_item.itemCount;
+                    characterSpec.inventory[invenPos] = newItem;
+                    gotten = true;
+                }
+                else
+                {
+                    if (characterSpec.inventory[invenPos].itemName != got_item.itemName)
+                    {
+                        Debug.LogError("cant get that item at that invenPosition. it already has different item");
+                        return false;
+                    }
+                    if(characterSpec.inventory[invenPos].count + got_item.itemCount > DataBase.Instance.itemInfoDict[got_item.itemName].maxCarryAmount)
+                    {
+                        Debug.LogError("cant get that item at that invenPosition with that amoumt. it will be over max carry");
+                        return false;
+                    }
+                    characterSpec.inventory[invenPos].count += got_item.itemCount;
+                    gotten = true;
+                }
             }
             else
             {
@@ -635,7 +652,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 return false;
             }
         }
-        if (quickInventory.ContainsKey(got_item.itemName))
+        else if (quickInventory.ContainsKey(got_item.itemName))
         {
             int findPos = -1;
             foreach (int pos in quickInventory[got_item.itemName].position)

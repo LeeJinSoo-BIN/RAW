@@ -10,8 +10,9 @@ public class itemslot : MonoBehaviour
     // Start is called before the first frame update
     public string slotType;
     public string itemName;
-    public int slotPos;    
-    public bool isBlank;    
+    public int slotPos;
+    public int oriPos;
+    public bool isBlank;
     
 }
 

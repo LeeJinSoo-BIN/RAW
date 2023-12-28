@@ -307,9 +307,9 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void joinTradePanel(string who)
+    void joinTradePanel()
     {
-        UIManager.Instance.OpJoinTrade(who);        
+        UIManager.Instance.OpJoinTrade();        
     }
 
     [PunRPC]
@@ -317,6 +317,18 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     {
         UIManager.Instance.tradeChatLog += "\n" + chat;
         UIManager.Instance.tradeChatLogShow.text = UIManager.Instance.tradeChatLog;
+    }
+
+    [PunRPC]
+    void acceptTrade()
+    {
+        UIManager.Instance.OpAcceptTrade();
+    }
+
+    [PunRPC]
+    void doTrade()
+    {
+
     }
     #endregion
 }
