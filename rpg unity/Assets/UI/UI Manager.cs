@@ -2370,6 +2370,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         opTradeBox.transform.parent.GetChild(4).GetComponent<TMP_Text>().text = "교환 수락";
         opTradeBox.transform.parent.GetChild(4).gameObject.SetActive(true);
         opAcceptTradeText.SetActive(true);
+
+        if (myTradeBox.transform.parent.GetChild(4).gameObject.activeSelf)
+        {
+            doTrade();
+        }
     }
 
     public void ClickLeaveTradeButton()
@@ -2404,9 +2409,6 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         }
     }
 
-
-
-    
     void sendTradeChat()
     {
         if (tradeChatInput.text != "")
@@ -2486,18 +2488,60 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         UpdateMyTradeItem(upItemName, upItemCnt, slotPos, invenPos, enchant);
 
     }
-    
+
+    public void TradeDone(int type)
+    {
+        if(type == 0)
+        {
+            popInfo("교환되었습니다.");
+        }
+        else if( type == 1)
+        {
+            popInfo("교환에 실패했습니다. 상대방 인벤토리에 공간이 부족합니다.");
+            regetUpItems();
+        }
+        else if (type == 2)
+        {
+            popInfo("교환에 실패했습니다. 인벤토리에 공간이 부족합니다.");
+            regetUpItems();
+        }
+        else if (type == 2)
+        {
+            popInfo("알 수 없는 이유로 교환에 실패하였습니다.");
+            regetUpItems();
+        }
+        DataBase.Instance.myCharacterState.updateDoing(false);
+        tradePanel.SetActive(false);
+        openedWindows.Remove(tradePanel);
+        updateCurrentFocusWindow();
+    }
+
+
     public void ClickTradeAcceptButton()
     {
         tradePanel.transform.GetChild(2).GetChild(5).GetComponent<Button>().interactable = false;
         tradeCheckCntPanel.SetActive(false);
         myTradeBox.transform.parent.GetChild(4).gameObject.SetActive(true);
         newNetworkManager.Instance.PV.RPC("acceptTrade", inGameUserList[tradeOpName].PV.Owner);
+        if (opAcceptTradeText.activeSelf)
+        {
+            doTrade();
+        }
     }
-
+    bool CheckTradable()
+    {
+        return true;
+    }
     public void doTrade()
     {
-
+        if (CheckTradable())
+        {
+            
+        }
+        else
+        {
+            
+        }
     }
     #endregion
 

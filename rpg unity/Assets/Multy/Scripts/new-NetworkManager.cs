@@ -330,6 +330,12 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     {
 
     }
+
+    [PunRPC]
+    void endTrade(int type)
+    {
+        UIManager.Instance.TradeDone(type);
+    }
     #endregion
 }
 

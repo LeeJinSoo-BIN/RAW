@@ -81,7 +81,7 @@ SpriteRenderer:
   m_Size: {x: 0.03125, y: 0.09375}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &136744893649055542
@@ -2732,7 +2732,7 @@ SpriteRenderer:
   m_Size: {x: 0.03125, y: 0.09375}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &5095747469395063047
@@ -3659,6 +3659,11 @@ MonoBehaviour:
   level: 0
   nick: 
   characterAnimator: {fileID: 6308030836626245559}
+  isCaptain: 0
+  partyCaptainName: 
+  partyName: 
+  doingSomeThing: 0
+  isDeath: 0
   playerControl: {fileID: 0}
   PV: {fileID: 0}
 --- !u!1 &8245904191574495730
