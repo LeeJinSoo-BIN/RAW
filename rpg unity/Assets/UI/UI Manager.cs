@@ -2008,6 +2008,10 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             storeBuyPanel.transform.GetChild(2).GetChild(3).gameObject.SetActive(false);
             storeBuyPanel.SetActive(false);
         }
+        else
+        {
+            storeBuyPanel.transform.GetChild(2).GetChild(3).GetComponent<TMP_Text>().text = "인벤토리에 공간이 부족합니다.";
+        }
 
     }
     #endregion
@@ -2237,6 +2241,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             itemslot updatingItemSlot = opTradeBox.transform.GetChild(slotPos).GetChild(1).GetChild(0).GetComponent<itemslot>();
             updatingItemSlot.itemName = itemName;
             updatingItemSlot.slotPos = enchant;
+            updatingItemSlot.oriPos = cnt;
             updatingItemSlot.isBlank = false;
             opTradeBox.transform.GetChild(slotPos).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[itemName].spriteDirectory);
             opTradeBox.transform.GetChild(slotPos).GetChild(2).GetComponent<TMP_Text>().text = itemName;
@@ -2530,7 +2535,41 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     }
     bool CheckTradable()
     {
-        return true;
+        int blank_slot_cnt = 0;
+        Dictionary<string, int> opUpItem = new Dictionary<string, int>();
+        for (int k = 0; k < DataBase.Instance.selectedCharacterSpec.inventory.Count; k++)
+        {
+            if (DataBase.Instance.selectedCharacterSpec.inventory[k] == null)
+            {
+                blank_slot_cnt++;
+            }
+        }
+        for (int k = 0; k < opTradeBox.transform.childCount; k++)
+        {
+            itemslot upItem = opTradeBox.transform.GetChild(k).GetChild(1).GetChild(0).GetComponent<itemslot>();
+            if (!upItem.isBlank)
+            {
+                if (!opUpItem.ContainsKey(upItem.itemName))
+                    opUpItem.Add(upItem.itemName, upItem.oriPos);
+                else
+                    opUpItem[upItem.itemName] += upItem.oriPos;
+            }
+        }
+        else
+        {
+            foreach (string itemName in opUpItem.Keys)
+            {
+                int cnt = opUpItem[itemName];
+                int slotCnt;
+                if (cnt > DataBase.Instance.itemInfoDict[itemName].maxCarryAmount)
+                {
+                    slotCnt = cnt / DataBase.Instance.itemInfoDict[itemName].maxCarryAmount;
+                    if (cnt % DataBase.Instance.itemInfoDict[itemName].maxCarryAmount != 0)
+                        slotCnt++;
+                }
+
+            }
+        }
     }
     public void doTrade()
     {

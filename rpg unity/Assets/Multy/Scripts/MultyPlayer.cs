@@ -611,16 +611,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         if(invenPos != -1)
         {
             if (got_item.itemCount <= DataBase.Instance.itemInfoDict[got_item.itemName].maxCarryAmount)
-            {
-                if(quickInventory.ContainsKey(got_item.itemName))
-                {
-                    quickInventory[got_item.itemName].position.Add(invenPos);
-                    quickInventory[got_item.itemName].kindCount += got_item.itemCount;
-                }
-                else
-                {
-                    quickInventory.Add(got_item.itemName, new QuickInventory { kindCount = got_item.itemCount, position = new SortedSet<int> { invenPos } });
-                }
+            {                
                 InventoryItem newItem = ScriptableObject.CreateInstance<InventoryItem>();
                 if (characterSpec.inventory[invenPos] == null)
                 {
@@ -642,8 +633,18 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                         Debug.LogError("cant get that item at that invenPosition with that amoumt. it will be over max carry");
                         return false;
                     }
-                    characterSpec.inventory[invenPos].count += got_item.itemCount;
+                    characterSpec.inventory[invenPos].count += got_item.itemCount;                    
                     gotten = true;
+                }
+
+                if (quickInventory.ContainsKey(got_item.itemName))
+                {
+                    quickInventory[got_item.itemName].position.Add(invenPos);
+                    quickInventory[got_item.itemName].kindCount += got_item.itemCount;
+                }
+                else
+                {
+                    quickInventory.Add(got_item.itemName, new QuickInventory { kindCount = got_item.itemCount, position = new SortedSet<int> { invenPos } });
                 }
             }
             else
