@@ -122,8 +122,8 @@ MonoBehaviour:
   - leaveOrRejectTradePanel
   - syncDoing
   - acceptTrade
-  - doTrade
-  - endTrade
+  - tradeDone
+  - tryTrade
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
