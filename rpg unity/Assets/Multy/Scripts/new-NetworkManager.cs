@@ -326,9 +326,15 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void doTrade()
+    void tradeDone(int type)
     {
+        UIManager.Instance.TradeDone(type);
+    }
 
+    [PunRPC]
+    void tryTrade(bool iCan)
+    {
+        UIManager.Instance.tryTrade(iCan);
     }
 
     [PunRPC]

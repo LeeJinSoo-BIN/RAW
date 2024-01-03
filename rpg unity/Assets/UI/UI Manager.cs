@@ -9,8 +9,7 @@ using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
 using WebSocketSharp;
-using System.Linq;
-using System;
+
 
 public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
 {
@@ -2374,12 +2373,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     {
         opTradeBox.transform.parent.GetChild(4).GetComponent<TMP_Text>().text = "교환 수락";
         opTradeBox.transform.parent.GetChild(4).gameObject.SetActive(true);
-        opAcceptTradeText.SetActive(true);
-
-        if (myTradeBox.transform.parent.GetChild(4).gameObject.activeSelf)
-        {
-            doTrade();
-        }
+        opAcceptTradeText.SetActive(true);        
     }
 
     public void ClickLeaveTradeButton()
@@ -2406,13 +2400,31 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             if (updatedItemSlot.isBlank)
                 continue;
 
-            int cnt = int.Parse(myTradeBox.transform.GetChild(k).GetChild(1).GetChild(0).GetChild(0).name);
             string itemName = updatedItemSlot.itemName;
+            int cnt = int.Parse(myTradeBox.transform.GetChild(k).GetChild(1).GetChild(0).GetChild(0).name);            
             int invenPos = updatedItemSlot.oriPos;
             int enchant = updatedItemSlot.slotPos;
+
             DataBase.Instance.myCharacterControl.getItem(new Item { reinforce = enchant, itemName = itemName, itemCount = cnt }, false, invenPos);
         }
     }
+
+    void getTradeItems()
+    {
+        for (int k = 0; k < 10; k++)
+        {
+            itemslot updatedItemSlot = opTradeBox.transform.GetChild(k).GetChild(1).GetChild(0).GetComponent<itemslot>();
+            if (updatedItemSlot.isBlank)
+                continue;
+
+            string itemName = updatedItemSlot.itemName;
+            int cnt = updatedItemSlot.oriPos;
+            int enchant = updatedItemSlot.slotPos;
+            
+            DataBase.Instance.myCharacterControl.getItem(new Item { reinforce = enchant, itemName = itemName, itemCount = cnt }, false);
+        }
+    }
+
 
     void sendTradeChat()
     {
@@ -2499,6 +2511,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         if(type == 0)
         {
             popInfo("교환되었습니다.");
+            getTradeItems();
         }
         else if( type == 1)
         {
@@ -2510,11 +2523,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             popInfo("교환에 실패했습니다. 인벤토리에 공간이 부족합니다.");
             regetUpItems();
         }
-        else if (type == 2)
+        else
         {
             popInfo("알 수 없는 이유로 교환에 실패하였습니다.");
             regetUpItems();
-        }
+        }        
         DataBase.Instance.myCharacterState.updateDoing(false);
         tradePanel.SetActive(false);
         openedWindows.Remove(tradePanel);
@@ -2530,7 +2543,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         newNetworkManager.Instance.PV.RPC("acceptTrade", inGameUserList[tradeOpName].PV.Owner);
         if (opAcceptTradeText.activeSelf)
         {
-            doTrade();
+            bool iCan = CheckTradable();
+            newNetworkManager.Instance.PV.RPC("tryTrade", inGameUserList[tradeOpName].PV.Owner, iCan);
         }
     }
     bool CheckTradable()
@@ -2555,31 +2569,70 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                     opUpItem[upItem.itemName] += upItem.oriPos;
             }
         }
-        else
+        foreach (string itemName in opUpItem.Keys)
         {
-            foreach (string itemName in opUpItem.Keys)
+            int cnt = opUpItem[itemName];
+            int slotCnt;
+            
+            if(quickInventory.ContainsKey(itemName))
             {
-                int cnt = opUpItem[itemName];
-                int slotCnt;
+                int already_slot = quickInventory[itemName].position.Count;
+                int need_slot = (quickInventory[itemName].kindCount + cnt) / DataBase.Instance.itemInfoDict[itemName].maxCarryAmount;
+                if ((quickInventory[itemName].kindCount + cnt) % DataBase.Instance.itemInfoDict[itemName].maxCarryAmount != 0)
+                    need_slot++;
+                if (already_slot >= need_slot)
+                    slotCnt = 0;
+                else
+                    slotCnt = need_slot - already_slot;
+            }
+            else
+            {
                 if (cnt > DataBase.Instance.itemInfoDict[itemName].maxCarryAmount)
                 {
                     slotCnt = cnt / DataBase.Instance.itemInfoDict[itemName].maxCarryAmount;
                     if (cnt % DataBase.Instance.itemInfoDict[itemName].maxCarryAmount != 0)
                         slotCnt++;
                 }
-
+                else
+                {
+                    slotCnt = 1;
+                }
             }
+            blank_slot_cnt -= slotCnt;
+            if (blank_slot_cnt < 0)
+                return false;
         }
+        return true;
     }
-    public void doTrade()
+    
+    public void tryTrade(bool opCan)
     {
-        if (CheckTradable())
+        bool iCan = CheckTradable();
+
+        if (opCan && iCan)
         {
-            
+            TradeDone(0);
+            newNetworkManager.Instance.PV.RPC("tradeDone", inGameUserList[tradeOpName].PV.Owner, 0);
+        }
+        else if (opCan && !iCan)
+        {
+            TradeDone(2);
+            newNetworkManager.Instance.PV.RPC("tradeDone", inGameUserList[tradeOpName].PV.Owner, 1);
+        }
+        else if (!opCan && iCan)
+        {
+            newNetworkManager.Instance.PV.RPC("tradeDone", inGameUserList[tradeOpName].PV.Owner, 2);
+            TradeDone(1);
+        }
+        else if (!opCan && !iCan)
+        {
+            newNetworkManager.Instance.PV.RPC("tradeDone", inGameUserList[tradeOpName].PV.Owner, 2);
+            TradeDone(2);
         }
         else
         {
-            
+            newNetworkManager.Instance.PV.RPC("tradeDone", inGameUserList[tradeOpName].PV.Owner, 3);
+            TradeDone(3);
         }
     }
     #endregion
