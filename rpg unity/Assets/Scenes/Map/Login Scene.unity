@@ -1998,6 +1998,7 @@ MonoBehaviour:
   popTitle: {fileID: 2017155023}
   popContent: {fileID: 410688581}
   loadingIcon: {fileID: 1534266788}
+  patchNote: {fileID: 823389081}
   rollList:
   - "\uC804\uC0AC"
   - "\uAD81\uC218"

@@ -2216,7 +2216,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     void resetOpTradePanel()
     {
         opTradeBox.transform.parent.GetChild(0).GetComponent<TMP_Text>().text = inGameUserList[tradeOpName].nick;
-        opTradeBox.transform.parent.GetChild(4).GetComponent<TMP_Text>().text = "요청 대기중..";
+        opTradeBox.transform.parent.GetChild(4).GetChild(0).GetComponent<TMP_Text>().text = "요청 대기중..";
         opTradeBox.transform.parent.GetChild(4).gameObject.SetActive(true);        
         for (int k = 0; k < 10; k++)
         {
@@ -2242,7 +2242,10 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             updatingItemSlot.slotPos = enchant;
             updatingItemSlot.oriPos = cnt;
             updatingItemSlot.isBlank = false;
-            opTradeBox.transform.GetChild(slotPos).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[itemName].spriteDirectory);
+            if (DataBase.Instance.itemInfoDict[itemName].iconDirectory.IsNullOrEmpty())
+                opTradeBox.transform.GetChild(slotPos).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[itemName].spriteDirectory);
+            else
+                opTradeBox.transform.GetChild(slotPos).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[itemName].iconDirectory);
             opTradeBox.transform.GetChild(slotPos).GetChild(2).GetComponent<TMP_Text>().text = itemName;
             opTradeBox.transform.GetChild(slotPos).GetChild(3).gameObject.SetActive(false);
             if (cnt == 0)
@@ -2269,8 +2272,10 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             updatingItemSlot.slotPos = enchant;
             updatingItemSlot.oriPos = invenPos;
             updatingItemSlot.isBlank = false;
-
-            myTradeBox.transform.GetChild(slotPos).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[itemName].spriteDirectory);
+            if (DataBase.Instance.itemInfoDict[itemName].iconDirectory.IsNullOrEmpty())
+                myTradeBox.transform.GetChild(slotPos).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[itemName].spriteDirectory);
+            else
+                myTradeBox.transform.GetChild(slotPos).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[itemName].iconDirectory);
             myTradeBox.transform.GetChild(slotPos).GetChild(2).GetComponent<TMP_Text>().text = itemName;
             myTradeBox.transform.GetChild(slotPos).GetChild(3).gameObject.SetActive(false);
             if (cnt == 0)
@@ -2282,7 +2287,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 updatingItemSlot.transform.GetChild(0).GetComponent<TMP_Text>().text = cnt.ToString();
             }
         }
-        newNetworkManager.Instance.PV.RPC("upTradeItem", inGameUserList[opTradeBox.transform.parent.GetChild(0).name].PV.Owner, itemName, cnt, slotPos, enchant);
+        newNetworkManager.Instance.PV.RPC("upTradeItem", inGameUserList[tradeOpName].PV.Owner, itemName, cnt, slotPos, enchant);
     }
 
     public void ClickSendTradeRequestButton()
@@ -2327,7 +2332,6 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     public void ClickTradeRequestButton(bool accept)
     {
-        GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
         if (accept)
         {
             resetTradePanel();
@@ -2343,7 +2347,6 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         tradeRequestPanel.SetActive(false);
         openedWindows.Remove(tradeRequestPanel);
         updateCurrentFocusWindow();
-
     }
 
     public void OpJoinTrade()
@@ -2371,7 +2374,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     public void OpAcceptTrade()
     {
-        opTradeBox.transform.parent.GetChild(4).GetComponent<TMP_Text>().text = "교환 수락";
+        opTradeBox.transform.parent.GetChild(4).GetChild(0).GetComponent<TMP_Text>().text = "교환 수락";
         opTradeBox.transform.parent.GetChild(4).gameObject.SetActive(true);
         opAcceptTradeText.SetActive(true);        
     }

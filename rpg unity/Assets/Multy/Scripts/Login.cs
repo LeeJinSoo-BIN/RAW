@@ -29,6 +29,7 @@ public class Login : MonoBehaviourPunCallbacks
     public TMP_Text popTitle;
     public TMP_Text popContent;
     public GameObject loadingIcon;
+    public GameObject patchNote;
 
     public List<string> rollList = new List<string>();
     public List<InventoryItem> defaultHair = new List<InventoryItem>();
@@ -290,6 +291,7 @@ public class Login : MonoBehaviourPunCallbacks
         PhotonNetwork.JoinLobby();
         DataBase.Instance.isLogined = true;
         PopPanel.SetActive(false);
+        patchNote.SetActive(false);
     }
 
     public void ClickLogoutButton()
