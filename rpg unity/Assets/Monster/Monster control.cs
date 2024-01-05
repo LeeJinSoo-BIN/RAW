@@ -429,14 +429,11 @@ public class MonsterControl : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (PhotonNetwork.IsMasterClient)
+        if (monsterSpec.monsterType.ToLower() == "boss")
+            UIManager.Instance.EndGame("clear");
+        else if (transform.parent.childCount == 1)
         {
-            if (monsterSpec.monsterType.ToLower() == "boss")
-                UIManager.Instance.EndGame("clear");
-            else if (transform.parent.childCount == 1)
-            {
-                GameObject.Find("GameManager").GetComponent<GameManager>().StageClear();
-            }
+            GameObject.Find("GameManager").GetComponent<GameManager>().StageClear();
         }
     }
 }

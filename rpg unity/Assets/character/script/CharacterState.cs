@@ -102,6 +102,11 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
 
     public void updateParty()
     {
+        if (!PV.IsMine)
+        {
+            Debug.LogError("unexpected access!");
+            return;
+        }
         PV.RPC("syncParty", RpcTarget.AllBuffered, DataBase.Instance.isCaptain, DataBase.Instance.myPartyCaptainName, DataBase.Instance.myPartyName);
     }
     public void updateDoing(bool doing)

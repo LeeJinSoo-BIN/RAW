@@ -173,8 +173,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         public string captainName;
         public string partyName;
         public HashSet<string> partyMembersNickName;
-    }
-
+    }    
 
     private int enchantPercent;
     private int[] enchantPrice = new int[2];
@@ -334,7 +333,6 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             {
                 currentFocusWindow = null;
             }
-
             if (magnifierIcon.activeSelf)
             {
                 Vector3 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -378,6 +376,13 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 }
                 chatEnd = false;
             }
+            if(DataBase.Instance.currentMapType == "village")
+            {
+                if(PlayerGroup.transform.childCount != inGameUserList.Count)
+                {
+                    UpdatePartyPanel();
+                }
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.LeftControl))
@@ -410,8 +415,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         ResetSkillPanel();
         UpdateSkillPanel();
 
-
-        UpdatePartyPanel();
+        if (DataBase.Instance.currentMapType == "village")
+            UpdatePartyPanel();
 
         makeProfile();
         characterHealth = DataBase.Instance.myCharacterState.health;
@@ -1330,6 +1335,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         stageTime = 0f;
         while (true)
         {
+            if(DataBase.Instance.currentMapType == "village")
+                yield break;
             stageTime += Time.deltaTime;
             timerText.text = string.Format("{0:00}:{1:00}:{2:00}", (int)stageTime / 3600, (int)stageTime / 60 % 60, (int)stageTime % 60);
             if (stageTime >= DataBase.Instance.dungeonInfoDict[DataBase.Instance.currentMapName].timeLimit[DataBase.Instance.currentDungeonLevel])
@@ -1360,6 +1367,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             }
             gameOverPanel.transform.GetChild(3).gameObject.SetActive(true);
             gameOverPanel.transform.GetChild(4).gameObject.SetActive(true);
+            gameOverPanel.transform.GetChild(5).gameObject.SetActive(false);
         }
         else if (condition == "clear")
         {
@@ -1368,6 +1376,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             content = string.Format("클리어 시간\n{0}초\n\n인 원\n", stageTime.ToString());
             gameOverPanel.transform.GetChild(3).gameObject.SetActive(false);
             gameOverPanel.transform.GetChild(4).gameObject.SetActive(false);
+            gameOverPanel.transform.GetChild(5).gameObject.SetActive(true);
         }
         else if (condition == "all death")
         {
@@ -1383,6 +1392,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             }
             gameOverPanel.transform.GetChild(3).gameObject.SetActive(true);
             gameOverPanel.transform.GetChild(4).gameObject.SetActive(true);
+            gameOverPanel.transform.GetChild(5).gameObject.SetActive(false);
         }
         else
         {
@@ -1392,7 +1402,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         foreach (Transform player in PlayerGroup.transform)
         {
             content += player.GetComponent<CharacterState>().nick + "(" + player.GetComponent<CharacterState>().roll + ") ";
-            player.GetComponent<MultyPlayer>().isDeath = true;
+            if(condition != "all death")
+                player.GetComponent<MultyPlayer>().isDeath = true;
         }
         foreach (Transform monster in EnemyGroup.transform)
         {
@@ -1441,11 +1452,10 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     public void LoadingPop()
     {
-        loadingPanel.SetActive(true);
-        int partyMemberNum = DataBase.Instance.myPartyMemNum;
+        loadingPanel.SetActive(true);        
         for (int k = 0; k < 3; k++)
         {
-            if (k < partyMemberNum)
+            if (k < DataBase.Instance.myPartyMemNum)
             {
                 loadingPanel.transform.GetChild(0).GetChild(k).GetChild(0).GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
                 loadingPanel.transform.GetChild(0).GetChild(k).GetChild(1).GetComponent<Image>().color = new Color(1f, 1f, 1f, 1f);
@@ -1469,16 +1479,16 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 loadingPanel.transform.GetChild(0).GetChild(k).GetChild(5).gameObject.SetActive(false);
             }
         }
-        StartCoroutine(updateLoadingPanel(partyMemberNum));
+        StartCoroutine(updateLoadingPanel());
     }
 
-    IEnumerator updateLoadingPanel(int partyMemNum)
+    IEnumerator updateLoadingPanel()
     {
         while (!DataBase.Instance.isInDungeon)
         {
             yield return null;
         }
-        while (partyMemNum != PlayerGroup.transform.childCount)
+        while (DataBase.Instance.myPartyMemNum != PlayerGroup.transform.childCount)
         {
             yield return null;
         }
@@ -1521,6 +1531,15 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             CharacterState currentUserState = user.GetComponent<CharacterState>();
             inGameUserList.Add(user.name, currentUserState);
+        }        
+        if(!DataBase.Instance.myPartyCaptainName.IsNullOrEmpty() && !inGameUserList.ContainsKey(DataBase.Instance.myPartyCaptainName))
+        {
+            PhotonNetwork.FindFriends(new string[] { DataBase.Instance.myPartyCaptainName });
+        }
+        foreach (Transform user in PlayerGroup.transform)
+        {
+            CharacterState currentUserState = user.GetComponent<CharacterState>();
+
             if (!currentUserState.partyCaptainName.IsNullOrEmpty())
             {
                 if (allPartys.ContainsKey(currentUserState.partyCaptainName))
@@ -1557,8 +1576,26 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             userInfo.transform.localPosition = Vector3.zero;
             userInfo.SetActive(true);
         }
+        if (!tradeOpName.IsNullOrEmpty())
+        {
+            if (!inGameUserList.ContainsKey(tradeOpName))
+            {
+                OpLeaveTrade(false);
+            }
+        }
     }
-
+    public override void OnFriendListUpdate(List<FriendInfo> friendList)
+    {
+        foreach (FriendInfo friend in friendList)
+        {
+            Debug.Log(friend.UserId + " " + friend.IsInRoom);
+            if (!friend.IsOnline)
+            {
+                popInfo("파티장이 게임을 떠나 파티가 해체됩니다.");
+                ClickLeavePartyButton();
+            }
+        }        
+    }
     public void UpdatePartyMember()
     {
         for (int k = 0; k < partyMemberBox.transform.childCount; k++)
@@ -1613,7 +1650,6 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         }
         foreach (party partyInfo in allPartys.Values)
         {
-
             GameObject newParty = Instantiate(partyListInfo);
             newParty.transform.GetChild(0).GetComponent<TMP_Text>().text = "파티장: " + inGameUserList[partyInfo.captainName].nick;
             newParty.transform.GetChild(1).GetComponent<TMP_Text>().text = "파티명: " + partyInfo.partyName;
@@ -2230,7 +2266,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             myTradeBox.transform.GetChild(k).GetChild(2).GetComponent<TMP_Text>().text = "";
             myTradeBox.transform.GetChild(k).GetChild(3).gameObject.SetActive(true);
         }
-        tradePanel.transform.GetChild(1).GetChild(5).GetComponent<Button>().interactable = true;
+        tradePanel.transform.GetChild(1).GetChild(5).GetComponent<Button>().interactable = false;
     }
     void resetOpTradePanel()
     {
@@ -2324,9 +2360,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             userInteractionPanel.SetActive(false);
             updateCurrentFocusWindow();
             return;
-        }
-        tradeOpName = opName;
+        }        
         DataBase.Instance.myCharacterState.updateDoing(true);
+        tradeOpName = opName;
         newNetworkManager.Instance.PV.RPC("sendAndReceiveTradeRequest", inGameUserList[opName].PV.Owner, DataBase.Instance.myCharacter.name);
         userInteractionPanel.SetActive(false);
         updateCurrentFocusWindow();
@@ -2355,6 +2391,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             resetTradePanel();
             opTradeBox.transform.parent.GetChild(4).gameObject.SetActive(false);
+            tradePanel.transform.GetChild(1).GetChild(5).GetComponent<Button>().interactable = true;
             DataBase.Instance.myCharacterState.updateDoing(true);
             updateCurrentFocusWindow(tradePanel);
             newNetworkManager.Instance.PV.RPC("joinTradePanel", inGameUserList[tradeOpName].PV.Owner);
@@ -2362,6 +2399,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         else
         {
             newNetworkManager.Instance.PV.RPC("leaveOrRejectTradePanel", inGameUserList[tradeOpName].PV.Owner, true);
+            tradeOpName = null;
         }
         tradeRequestPanel.SetActive(false);
         openedWindows.Remove(tradeRequestPanel);
@@ -2374,6 +2412,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         opTradeBox.transform.parent.GetChild(4).gameObject.SetActive(false);        
         tradeChatLog += "\n" + inGameUserList[tradeOpName].nick + "님이 교환 신청을 수락하였습니다.";
         tradeChatLogShow.text = tradeChatLog;
+        tradePanel.transform.GetChild(1).GetChild(5).GetComponent<Button>().interactable = true;
     }
 
     public void OpLeaveTrade(bool reject)
@@ -2384,18 +2423,19 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         openedWindows.Remove(tradeRequestPanel);
         updateCurrentFocusWindow();
         DataBase.Instance.myCharacterState.updateDoing(false);
+        tradeOpName = null;
         if (reject)
             popInfo("상대방이 교환을 거절하였습니다.");
         else
             popInfo("상대방이 교환을 취소하였습니다.");
-        regetUpItems();
+        regetUpItems();        
     }
 
     public void OpAcceptTrade()
     {
         opTradeBox.transform.parent.GetChild(4).GetChild(0).GetComponent<TMP_Text>().text = "교환 수락";
         opTradeBox.transform.parent.GetChild(4).gameObject.SetActive(true);
-        opAcceptTradeText.SetActive(true);        
+        opAcceptTradeText.SetActive(true);
     }
 
     public void ClickLeaveTradeButton()
@@ -2408,10 +2448,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             newNetworkManager.Instance.PV.RPC("leaveOrRejectTradePanel", inGameUserList[tradeOpName].PV.Owner, false);
 
         DataBase.Instance.myCharacterState.updateDoing(false);
+        tradeOpName = null;
         tradePanel.SetActive(false);
         openedWindows.Remove(tradePanel);
         updateCurrentFocusWindow();
-        regetUpItems();
+        regetUpItems();        
     }
 
     void regetUpItems()
@@ -2473,18 +2514,19 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         tradeCheckCntPanel.transform.GetChild(2).GetChild(0).name = invenSlotPot.ToString();
         tradeCheckCntPanel.transform.GetChild(2).GetChild(1).name = slotPos.ToString();
         tradeCheckCntPanel.transform.GetChild(2).GetChild(3).gameObject.SetActive(false);
+        tradeCheckCntPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().text = DataBase.Instance.myCharacterState.characterSpec.inventory[invenSlotPot].count.ToString();
         if (DataBase.Instance.itemInfoDict[itemName].itemType == "potion" || DataBase.Instance.itemInfoDict[itemName].itemType == "material")
-        {
-            tradeCheckCntPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().text = "";
             tradeCheckCntPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().interactable = true;
-        }
         else
-        {
-            tradeCheckCntPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().text = "1";
             tradeCheckCntPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().interactable = false;
-        }
-        tradeCheckCntPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().ActivateInputField();
+
         tradeCheckCntPanel.SetActive(true);
+        tradeCheckCntPanel.transform.GetChild(2).GetChild(0).GetComponent<TMP_InputField>().ActivateInputField();
+
+        updateCurrentFocusWindow();
+        currentFocusWindow.GetComponent<Canvas>().sortingOrder -= 1;
+        tradePanel.GetComponent<Canvas>().sortingOrder = openedWindows.Count + 5;
+        currentFocusWindow = tradePanel;
     }
 
     public void ClickTradeCheckCntButton()
@@ -2525,7 +2567,6 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         tradeCheckCntPanel.SetActive(false);
 
         UpdateMyTradeItem(upItemName, upItemCnt, slotPos, invenPos, enchant);
-
     }
 
     public void TradeDone(int type)
@@ -2551,9 +2592,10 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             regetUpItems();
         }        
         DataBase.Instance.myCharacterState.updateDoing(false);
+        tradeOpName = null;
         tradePanel.SetActive(false);
         openedWindows.Remove(tradePanel);
-        updateCurrentFocusWindow();
+        updateCurrentFocusWindow();        
     }
 
 
@@ -2626,20 +2668,22 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         }
         return true;
     }
-    
+
     public void tryTrade(bool opCan)
     {
         bool iCan = CheckTradable();
-
+        Debug.Log(tradeOpName);
+        if (!inGameUserList.ContainsKey(tradeOpName))
+            UpdateInGameUser();
         if (opCan && iCan)
-        {
-            TradeDone(0);
+        {            
             newNetworkManager.Instance.PV.RPC("tradeDone", inGameUserList[tradeOpName].PV.Owner, 0);
+            TradeDone(0);
         }
         else if (opCan && !iCan)
-        {
-            TradeDone(2);
+        {            
             newNetworkManager.Instance.PV.RPC("tradeDone", inGameUserList[tradeOpName].PV.Owner, 1);
+            TradeDone(2);
         }
         else if (!opCan && iCan)
         {

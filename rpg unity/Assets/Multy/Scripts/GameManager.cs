@@ -47,13 +47,13 @@ public class GameManager : MonoBehaviour
         player.GetComponent<MultyPlayer>().characterState.setUp();
         //Debug.Log("set up state");
         UIManager.Instance.SetUP();
-        newNetworkManager.Instance.PV.RPC("UpdateParty", RpcTarget.All);
+        //newNetworkManager.Instance.PV.RPC("UpdateParty", RpcTarget.All);
         //Debug.Log("set up ingame ui");
         if (DataBase.Instance.currentMapType == "dungeon")
         {
             portalObject.ActivatePortal(false);
             DataBase.Instance.isInDungeon = true;
-            if (DataBase.Instance.currentStage > 1)
+            if (DataBase.Instance.currentStage > 1 && PhotonNetwork.IsMasterClient)
                 SpawnMonster();
         }
     }

@@ -95,7 +95,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
     public void loadData()
     {
         characterSpec = characterState.characterSpec;
-        PV.RPC("setName", RpcTarget.AllBuffered, characterSpec.nickName + PV.ViewID.ToString());
+        PV.RPC("setName", RpcTarget.AllBuffered, PhotonNetwork.LocalPlayer.UserId);
         foreach(string key in skill_key)
         {
             string skillName = characterSpec.skillQuickSlot[key];

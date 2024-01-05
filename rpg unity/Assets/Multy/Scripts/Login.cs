@@ -72,12 +72,14 @@ public class Login : MonoBehaviourPunCallbacks
         if (!DataBase.Instance.isLogined)
         {
             LoginPanel.SetActive(true);
+            patchNote.SetActive(true);
             SelectCharacterPanel.SetActive(false);
             CharacterCreatePanel.SetActive(false);
         }
         else
         {
             LoginPanel.SetActive(false);
+            patchNote.SetActive(false);
             SelectCharacterPanel.SetActive(true);
             CharacterCreatePanel.SetActive(false);
             updateCharacterList();
@@ -306,6 +308,7 @@ public class Login : MonoBehaviourPunCallbacks
     {
         LoginButton.interactable = true;
         LoginPanel.SetActive(true);
+        patchNote.SetActive(true);
         CharacterCreatePanel.SetActive(false);
         SelectCharacterPanel.SetActive(false);
         DataBase.Instance.isLogined = false;
@@ -314,6 +317,7 @@ public class Login : MonoBehaviourPunCallbacks
     public override void OnJoinedLobby()
     {
         LoginPanel.SetActive(false);
+        patchNote.SetActive(false);
         updateCharacterList();
         SelectCharacterPanel.SetActive(true);        
     }
@@ -326,7 +330,7 @@ public class Login : MonoBehaviourPunCallbacks
     public void ClickChannel()
     {
         string channelName = EventSystem.current.currentSelectedGameObject.name;
-        PhotonNetwork.JoinOrCreateRoom(channelName, new RoomOptions { MaxPlayers = maxNumServerPlayer }, null);
+        PhotonNetwork.JoinOrCreateRoom(channelName, new RoomOptions { MaxPlayers = maxNumServerPlayer, PublishUserId = true }, null);
     }
 
     public void IME_Off()

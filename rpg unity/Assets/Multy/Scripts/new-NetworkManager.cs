@@ -39,7 +39,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     void Start()
     {
         disconnectButtonText = UIManager.Instance.exitButtonText;
-        PV.RPC("UpdateParty", RpcTarget.All);
+        //PV.RPC("UpdateParty", RpcTarget.All);
     }
     public override void OnJoinedRoom()
     {
@@ -87,7 +87,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
             DataBase.Instance.currentMapName = "Pallet Town";
             DataBase.Instance.myPartyCaptainName = "";
             DataBase.Instance.myPartyName = "";
-            DataBase.Instance.isCaptain = false;
+            DataBase.Instance.isCaptain = false;            
             PhotonNetwork.LeaveRoom();
         }
         else if (disconnectButtonText.text == "게임 나가기")
@@ -106,7 +106,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.CurrentRoom.Name == DataBase.Instance.myPartyCaptainName)
         {
             DataBase.Instance.myPartyMemNum--;
-        }
+        }        
     }
 
     public void movePortal(string dungeonName, int dungeonLevel)
@@ -117,7 +117,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         {
             if (mem == DataBase.Instance.myCharacter.name)
                 continue;
-            PV.RPC("enterDungeon", UIManager.Instance.inGameUserList[mem].PV.Owner, dungeonName, dungeonLevel);
+            PV.RPC("enterDungeon", UIManager.Instance.inGameUserList[mem].PV.Owner, dungeonName, dungeonLevel, partyMemNum);
         }
         enterDungeon(dungeonName, dungeonLevel, partyMemNum);
     }
@@ -237,53 +237,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     void UpdateParty()
     {
         UIManager.Instance.UpdatePartyPanel();
-    }
-    /*
-    [PunRPC]
-    void registParty(string partyName, string captain)
-    {
-        if (!allPartys.ContainsKey(captain))
-        {
-            party newParty;
-            newParty.partyName = partyName;
-            newParty.partyMembersNickName = new HashSet<string> { captain };
-            allPartys.Add(captain, newParty);
-            usersInParty.Add(captain);
-        }
-        UIManager.Instance.UpdatePartyPanel();
-    }
-
-    [PunRPC]
-    void joinParty(string captainName, string member)
-    {
-        allPartys[captainName].partyMembersNickName.Add(member);
-        if (member == DataBase.Instance.currentCharacterNickname)
-            DataBase.Instance.myPartyCaptainName = captainName;
-        usersInParty.Add(member);
-        UIManager.Instance.UpdatePartyPanel();
-    }
-
-    [PunRPC]
-    void LeaveParty(string captainName, string leaveName)
-    {
-        allPartys[captainName].partyMembersNickName.Remove(leaveName);
-        if (leaveName == DataBase.Instance.currentCharacterNickname)
-            DataBase.Instance.myPartyCaptainName = "";
-        usersInParty.Remove(leaveName);
-        UIManager.Instance.UpdatePartyPanel();
-    }
-
-    
-
-    [PunRPC]
-    void BoomParty(string captainName)
-    {
-        allPartys.Remove(captainName);
-        usersInParty.Remove(captainName);
-        if (DataBase.Instance.myPartyCaptainName == captainName)
-            DataBase.Instance.myPartyCaptainName = "";
-        UIManager.Instance.UpdatePartyPanel();
-    }*/
+    }    
     #endregion
 
     #region 교환
