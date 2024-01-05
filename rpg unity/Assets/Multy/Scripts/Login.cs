@@ -283,7 +283,10 @@ public class Login : MonoBehaviourPunCallbacks
         popTitle.text = "RAW 서버 접속";
         popContent.text = "서버 연결중..";
         PopPanel.SetActive(true);
-        PhotonNetwork.ConnectUsingSettings();
+        if (!PhotonNetwork.ConnectUsingSettings())
+        {
+            StartCoroutine(popMessage("서버 접속 실패", "서버에 문제가 있습니다."));
+        }
     }
 
     public override void OnConnectedToMaster()
@@ -292,7 +295,7 @@ public class Login : MonoBehaviourPunCallbacks
         DataBase.Instance.isLogined = true;
         PopPanel.SetActive(false);
         patchNote.SetActive(false);
-    }
+    }   
 
     public void ClickLogoutButton()
     {

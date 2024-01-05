@@ -1034,7 +1034,16 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                     return;
                 }
                 desSlot.itemName = dragItemSlot.itemName;
-                desSlot.slotPos = dragItemSlot.slotPos;
+                if (dragItemSlot.slotType == "inven")
+                {
+                    desSlot.slotPos = 1;
+                    desSlot.oriPos = dragItemSlot.slotPos;
+                }
+                else
+                {
+                    desSlot.slotPos = -1;
+                    desSlot.oriPos = dragItemSlot.oriPos;
+                }
                 desSlot.isBlank = false;
                 UpdateEnchantPanel();
             }
@@ -1078,7 +1087,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 {
                     if (desSlot.isBlank) // 빈곳이면 장착해제
                     {
-                        int equipPos = -dragItemSlot.slotPos - 1;
+                        int equipPos = dragItemSlot.oriPos;
                         int invenPos = desSlot.slotPos;
                         InventoryItem equip = DataBase.Instance.selectedCharacterSpec.equipment[equipPos];
                         DataBase.Instance.myCharacterControl.getItem(new Item { reinforce = equip.reinforce, itemName = equip.itemName, itemCount = 1 }, false, invenPos);
@@ -1093,7 +1102,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                     else if (DataBase.Instance.itemInfoDict[desSlot.itemName].itemType == dragItemSlot.transform.parent.name ||
                         (DataBase.Instance.itemInfoDict[desSlot.itemName].itemType.Contains("weapon") && dragItemSlot.transform.parent.name == "weapon"))
                     { //같은 종류면 스왑
-                        int equipPos = -dragItemSlot.slotPos - 1;
+                        int equipPos = dragItemSlot.oriPos;
                         int invenPos = desSlot.slotPos;
 
                         string invenName = DataBase.Instance.selectedCharacterSpec.inventory[invenPos].itemName;
@@ -1122,7 +1131,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 if (dragItemSlot.slotType == "inven")
                 {
                     if (DataBase.Instance.itemInfoDict[dragItemSlot.itemName].itemType == desSlot.transform.parent.name ||
-                        (DataBase.Instance.itemInfoDict[dragItemSlot.itemName].itemType.Contains("weapon") && desSlot.transform.parent.name == "weapon"))
+                        (DataBase.Instance.itemInfoDict[dragItemSlot.itemName].itemType.Contains("weapon") && desSlot.slotPos == 3))
                     {//같은 종류 중
                         int invenPos = dragItemSlot.slotPos;
                         string invenName = DataBase.Instance.selectedCharacterSpec.inventory[invenPos].itemName;
@@ -1131,11 +1140,10 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                         {// 빈곳이면 장착
                             DataBase.Instance.selectedCharacterSpec.equipment.Add(new InventoryItem { reinforce = invenRein, itemName = invenName, count = 1 });
                             DataBase.Instance.myCharacterControl.loseItem(invenName, 1, invenPos);
-
                         }
                         else
                         {//아니면 스왑
-                            int equipPos = -desSlot.slotPos - 1;
+                            int equipPos = desSlot.oriPos;
 
                             InventoryItem equip = DataBase.Instance.selectedCharacterSpec.equipment[equipPos];
 
@@ -2047,13 +2055,17 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             EnchantPanel.transform.GetChild(2).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(iconDir);
             EnchantPanel.transform.GetChild(2).GetChild(1).GetChild(0).GetComponent<Image>().preserveAspect = true;
             int currentReinforce = 0;
-            if (slotInfo.slotPos < 0)
+            if (slotInfo.slotPos == -1)
             {
-                currentReinforce = DataBase.Instance.selectedCharacterSpec.equipment[-slotInfo.slotPos - 1].reinforce;
+                currentReinforce = DataBase.Instance.selectedCharacterSpec.equipment[slotInfo.oriPos].reinforce;
+            }
+            else if (slotInfo.slotPos == 1)
+            {
+                currentReinforce = DataBase.Instance.selectedCharacterSpec.inventory[slotInfo.oriPos].reinforce;
             }
             else
             {
-                currentReinforce = DataBase.Instance.selectedCharacterSpec.inventory[slotInfo.slotPos].reinforce;
+                Debug.LogError("wrong slot pos");
             }
             enchantPercent = DataBase.Instance.CalEnchantPercent(currentReinforce);
             enchantPrice = DataBase.Instance.CalEnchantPrice(slotInfo.itemName, currentReinforce);
@@ -2082,13 +2094,17 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             EnchantResult.transform.GetChild(0).GetComponent<TMP_Text>().text = "강화 성공";
             EnchantResult.transform.GetChild(1).GetComponent<TMP_Text>().text = string.Format("{0} -> {1}", reinforce, reinforce + 1);
-            if (slotInfo.slotPos < 0)
+            if (slotInfo.slotPos == -1)
             {
-                DataBase.Instance.selectedCharacterSpec.equipment[-slotInfo.slotPos - 1].reinforce++;
+                DataBase.Instance.selectedCharacterSpec.equipment[slotInfo.oriPos].reinforce++;
+            }
+            else if(slotInfo.slotPos == 1)
+            {
+                DataBase.Instance.selectedCharacterSpec.inventory[slotInfo.oriPos].reinforce++;
             }
             else
             {
-                DataBase.Instance.selectedCharacterSpec.inventory[slotInfo.slotPos].reinforce++;
+                Debug.LogError("wrong slot Pos");
             }
         }
         else
@@ -2135,7 +2151,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(0).GetComponent<Image>().sprite = null;
             equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(0).GetComponent<itemslot>().itemName = "";
-            equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(0).GetComponent<itemslot>().isBlank = true;
+            equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(0).GetComponent<itemslot>().isBlank = true;            
             equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(1).gameObject.SetActive(true);
         }
         for (int k = 0; k < DataBase.Instance.selectedCharacterSpec.equipment.Count; k++) {
@@ -2169,13 +2185,16 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             {
                 partsNum = 3;
             }
-            if (partsNum == -1)
+            else
+            {
+                Debug.LogError("wrong equipment type");
                 continue;
+            }
             equipmentPanel.transform.GetChild(2).GetChild(partsNum).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(dir);
             equipmentPanel.transform.GetChild(2).GetChild(partsNum).GetChild(0).GetComponent<Image>().preserveAspect = true;
             equipmentPanel.transform.GetChild(2).GetChild(partsNum).GetChild(0).GetComponent<itemslot>().itemName = item.itemName;
             equipmentPanel.transform.GetChild(2).GetChild(partsNum).GetChild(0).GetComponent<itemslot>().isBlank = false;
-            equipmentPanel.transform.GetChild(2).GetChild(partsNum).GetChild(0).GetComponent<itemslot>().slotPos = -(k + 1);
+            equipmentPanel.transform.GetChild(2).GetChild(partsNum).GetChild(0).GetComponent<itemslot>().oriPos = k;
             equipmentPanel.transform.GetChild(2).GetChild(partsNum).GetChild(1).gameObject.SetActive(false);
         }
     }
@@ -2211,7 +2230,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             myTradeBox.transform.GetChild(k).GetChild(2).GetComponent<TMP_Text>().text = "";
             myTradeBox.transform.GetChild(k).GetChild(3).gameObject.SetActive(true);
         }
-        tradePanel.transform.GetChild(2).GetChild(5).GetComponent<Button>().interactable = true;
+        tradePanel.transform.GetChild(1).GetChild(5).GetComponent<Button>().interactable = true;
     }
     void resetOpTradePanel()
     {
@@ -2540,7 +2559,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     public void ClickTradeAcceptButton()
     {
-        tradePanel.transform.GetChild(2).GetChild(5).GetComponent<Button>().interactable = false;
+        tradePanel.transform.GetChild(1).GetChild(5).GetComponent<Button>().interactable = false;
         tradeCheckCntPanel.SetActive(false);
         myTradeBox.transform.parent.GetChild(4).gameObject.SetActive(true);
         newNetworkManager.Instance.PV.RPC("acceptTrade", inGameUserList[tradeOpName].PV.Owner);

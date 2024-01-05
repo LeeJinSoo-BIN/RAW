@@ -209,8 +209,8 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 RaycastHit2D hit = Physics2D.Raycast(ray, transform.forward, Mathf.Infinity, groundLayer);
                 if (hit.collider == null || hit.transform.CompareTag("Not Ground"))
                     return;
-
-                RaycastHit2D hit2 = Physics2D.Raycast(transform.position, ray - transform.position, Mathf.Infinity, obstacleLayer);
+                Vector2 findObstacle = ray - transform.position;
+                RaycastHit2D hit2 = Physics2D.Raycast(transform.position, findObstacle, Vector2.Distance(transform.position, ray), obstacleLayer);
                 if (hit2.collider != null)
                     goalPos = hit2.point;
                 else

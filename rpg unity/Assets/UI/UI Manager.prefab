@@ -9276,10 +9276,10 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3129594919869925085}
-  - {fileID: 1580736090799921488}
   - {fileID: 1246494446222698057}
   - {fileID: 5221073324586849440}
   - {fileID: 5360249023757314103}
+  - {fileID: 1580736090799921488}
   m_Father: {fileID: 5852610557021355047}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -9744,7 +9744,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: equip
   itemName: 
-  slotPos: 0
+  slotPos: 3
   oriPos: 0
   isBlank: 0
 --- !u!1 &1010609540095030265
@@ -23340,7 +23340,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: equip
   itemName: 
-  slotPos: 0
+  slotPos: 5
   oriPos: 0
   isBlank: 0
 --- !u!1 &2324383062204197820
@@ -40964,7 +40964,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: equip
   itemName: 
-  slotPos: 0
+  slotPos: 1
   oriPos: 0
   isBlank: 0
 --- !u!1 &4363284095505021582
@@ -64096,7 +64096,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: equip
   itemName: 
-  slotPos: 0
+  slotPos: 4
   oriPos: 0
   isBlank: 0
 --- !u!1 &7018422609020406585
@@ -66644,7 +66644,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: equip
   itemName: 
-  slotPos: 0
+  slotPos: 2
   oriPos: 0
   isBlank: 0
 --- !u!1 &7265261880710932280
