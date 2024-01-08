@@ -17,13 +17,10 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     #region Panel
     [Header("Panel")]
     public GameObject currentFocusWindow;
-    public GameObject enterDungeonPanel;
-    public GameObject gameOverPanel;
     public GameObject toolTipPanel;
     public GameObject conversationPanel;
     public GameObject equipmentPanel;
     public GameObject draggingItem;
-    public GameObject loadingPanel;
     public GameObject userInteractionPanel;
     public GameObject infoPopUpPanel;
 
@@ -80,6 +77,13 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public TMP_Text tradeChatLogShow;
     public GameObject opAcceptTradeText;
     public GameObject tradeCheckCntPanel;
+
+    [Header("Dungeon Panel")]
+
+    public GameObject enterDungeonPanel;
+    public GameObject gameOverPanel;
+    public GameObject gameClearPanel;
+    public GameObject loadingPanel;
     #endregion
 
 
@@ -207,6 +211,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         BossUiGroup.SetActive(false);
         StageUiGroup.SetActive(false);
         gameOverPanel.SetActive(false);
+        gameClearPanel.SetActive(false);
         toolTipPanel.SetActive(false);
         conversationPanel.SetActive(false);
         equipmentPanel.SetActive(false);
@@ -415,27 +420,26 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         ResetSkillPanel();
         UpdateSkillPanel();
 
-        if (DataBase.Instance.currentMapType == "village")
-            UpdatePartyPanel();
-
         makeProfile();
         characterHealth = DataBase.Instance.myCharacterState.health;
         characterMana = DataBase.Instance.myCharacterState.mana;
-
-        timerText.text = "00:00:00";
+        
         updateAllQuickSlot();
         setKeyMap();
         StartCoroutine(update_health());
         if (DataBase.Instance.currentMapType == "dungeon")
         {
-            StageUiGroup.SetActive(true);
+            StageUiGroup.SetActive(true);            
         }
-        else
-        {
+        else if(DataBase.Instance.currentMapType == "village")            
+        {            
+            UpdatePartyPanel();
+            stopTimer();
             StageUiGroup.SetActive(false);
         }
         BossUiGroup.SetActive(false);
     }
+
     public void BossSetUp()
     {
         foreach (Transform monster in EnemyGroup.transform)
@@ -1344,15 +1348,18 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             yield return null;
         }
         EndGame("time out");
-
-
     }
+    public void stopTimer()
+    {
+        timerText.text = "00:00:00";
+        if (timer != null)
+            StopCoroutine(timer);
+    }
+
     public void EndGame(string condition)
     {
         string title = null;
         string content = null;
-        if (timer != null)
-            StopCoroutine(timer);
         if (condition == "time out")
         {
             title = "타임아웃";
@@ -1402,7 +1409,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         foreach (Transform player in PlayerGroup.transform)
         {
             content += player.GetComponent<CharacterState>().nick + "(" + player.GetComponent<CharacterState>().roll + ") ";
-            if(condition != "all death")
+            if(condition != "clear")
                 player.GetComponent<MultyPlayer>().isDeath = true;
         }
         foreach (Transform monster in EnemyGroup.transform)
@@ -1425,6 +1432,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             gameOverPanel.transform.GetChild(4).GetComponent<Button>().interactable = false;
         }
         gameOverPanel.SetActive(true);
+    }
+
+    public void popGameClearPanel()
+    {
+        gameClearPanel.SetActive(true);
     }
 
     public void ClickReGameButton()
@@ -1532,10 +1544,10 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             CharacterState currentUserState = user.GetComponent<CharacterState>();
             inGameUserList.Add(user.name, currentUserState);
         }        
-        if(!DataBase.Instance.myPartyCaptainName.IsNullOrEmpty() && !inGameUserList.ContainsKey(DataBase.Instance.myPartyCaptainName))
+        /*if(!DataBase.Instance.myPartyCaptainName.IsNullOrEmpty() && !inGameUserList.ContainsKey(DataBase.Instance.myPartyCaptainName))
         {
             PhotonNetwork.FindFriends(new string[] { DataBase.Instance.myPartyCaptainName });
-        }
+        }*/
         foreach (Transform user in PlayerGroup.transform)
         {
             CharacterState currentUserState = user.GetComponent<CharacterState>();

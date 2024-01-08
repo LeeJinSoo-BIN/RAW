@@ -193,14 +193,9 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
             playerControl.isDeath = true;
             playerControl.deactivateSkill();
         }
-        isDeath = true;
-        int death_count = 0;
-        foreach(Transform player in GameObject.Find("Player Group").transform)
-        {
-            if (player.GetComponent<CharacterState>().isDeath)
-                death_count++;
-        }
-        if (death_count == GameObject.Find("Player Group").transform.childCount)
+        isDeath = true;        
+        DataBase.Instance.myPartyMemNum--;
+        if (DataBase.Instance.myPartyMemNum == 0)
             UIManager.Instance.EndGame("all death");
     }
 

@@ -16,22 +16,22 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     public static newNetworkManager Instance;
     //public Dictionary<string, party> allPartys = new Dictionary<string, party>();
     //public HashSet<string> usersInParty = new HashSet<string>();
-    
+
 
     public TMP_Text disconnectButtonText;
     private string nextRoomName;
 
     private void Awake()
     {
-       /* var obj = FindObjectsOfType<newNetworkManager>();
-        if (obj.Length == 1)
-        {
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }*/
+        /* var obj = FindObjectsOfType<newNetworkManager>();
+         if (obj.Length == 1)
+         {
+             DontDestroyOnLoad(gameObject);
+         }
+         else
+         {
+             Destroy(gameObject);
+         }*/
         if (Instance == null)
             Instance = this;
     }
@@ -60,13 +60,13 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     {
         if (DataBase.Instance.currentMapType == "dungeon")
         {
-            PhotonNetwork.JoinOrCreateRoom(nextRoomName, new RoomOptions { MaxPlayers = 3 }, null);
+            PhotonNetwork.JoinOrCreateRoom(nextRoomName, new RoomOptions { MaxPlayers = 3, PublishUserId = true }, null);
         }
-        else if(DataBase.Instance.currentMapType == "village")
+        else if (DataBase.Instance.currentMapType == "village")
         {
-            PhotonNetwork.JoinOrCreateRoom("palletTown", new RoomOptions { MaxPlayers = 20 }, null);
+            PhotonNetwork.JoinOrCreateRoom("palletTown", new RoomOptions { MaxPlayers = 20, PublishUserId = true }, null);
         }
-        else if(DataBase.Instance.currentMapType == "character Select")
+        else if (DataBase.Instance.currentMapType == "character Select")
         {
             DataBase.Instance.currentMapName = "Login Scene";
             PhotonNetwork.JoinLobby();
@@ -74,21 +74,19 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     }
     public override void OnJoinedLobby()
     {
-        Destroy(UIManager.Instance.gameObject);        
+        Destroy(UIManager.Instance.gameObject);
         SceneManager.LoadScene(DataBase.Instance.currentMapName);
     }
 
-    
+
     public void ClickDisconnectButton()
     {
         if (disconnectButtonText.text == "던전 나가기")
         {
-            DataBase.Instance.currentMapType = "village";
-            DataBase.Instance.currentMapName = "Pallet Town";
             DataBase.Instance.myPartyCaptainName = "";
             DataBase.Instance.myPartyName = "";
-            DataBase.Instance.isCaptain = false;            
-            PhotonNetwork.LeaveRoom();
+            DataBase.Instance.isCaptain = false;
+            GoToVillage();
         }
         else if (disconnectButtonText.text == "게임 나가기")
         {
@@ -103,10 +101,16 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        if (PhotonNetwork.CurrentRoom.Name == DataBase.Instance.myPartyCaptainName)
+        if (DataBase.Instance.currentMapType == "dungeon")
         {
             DataBase.Instance.myPartyMemNum--;
-        }        
+        }
+
+        if (DataBase.Instance.myPartyCaptainName == otherPlayer.UserId)
+        {
+            UIManager.Instance.popInfo("파티장이 게임을 떠나 파티가 해체됩니다.");
+            UIManager.Instance.ClickLeavePartyButton();
+        }
     }
 
     public void movePortal(string dungeonName, int dungeonLevel)
@@ -140,6 +144,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     void ReGame()
     {
         UIManager.Instance.gameOverPanel.SetActive(false);
+        UIManager.Instance.gameClearPanel.SetActive(false);
         DataBase.Instance.currentStage = 1;
         gameManager.ReGame();
     }
@@ -155,6 +160,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     void GoToVillage()
     {
         UIManager.Instance.gameOverPanel.SetActive(false);
+        UIManager.Instance.gameClearPanel.SetActive(false);
         DataBase.Instance.currentMapType = "village";
         DataBase.Instance.currentMapName = "Pallet Town";
         PhotonNetwork.LeaveRoom();

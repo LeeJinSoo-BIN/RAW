@@ -35,13 +35,13 @@ public class portal : MonoBehaviour
             else if(DataBase.Instance.currentMapType == "dungeon")
             {
                 playerOn++;
-                if(playerOn == GameObject.Find("Player Group").transform.childCount)
+                if(playerOn == DataBase.Instance.myPartyMemNum)
                 {
                     if (PhotonNetwork.IsMasterClient)
                     {
                         if(DataBase.Instance.currentStage == DataBase.Instance.dungeonInfoDict[DataBase.Instance.currentMapName].monsterInfoList.Count)
                         {
-
+                            UIManager.Instance.popGameClearPanel();
                         }
                         else
                         {

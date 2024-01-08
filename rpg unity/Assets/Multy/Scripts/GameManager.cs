@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
 {   
     public portal portalObject;
     public bool offLine = false;
+    private bool isClearingMonster;
     void Awake()
     {
         if (offLine)
@@ -55,12 +56,13 @@ public class GameManager : MonoBehaviour
             DataBase.Instance.isInDungeon = true;
             if (DataBase.Instance.currentStage > 1 && PhotonNetwork.IsMasterClient)
                 SpawnMonster();
+            isClearingMonster = false;
         }
     }
 
     public void SpawnMonster()
     {
-        StartCoroutine(spawnDelay());
+        StartCoroutine(spawnDelay());        
     }
     IEnumerator spawnDelay()
     {
@@ -84,12 +86,18 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void StageClear()
+    public void StageClear(bool killBoss)
     {
-        portalObject.ActivatePortal(true);
+        if (!isClearingMonster)
+        {
+            portalObject.ActivatePortal(true);
+            if (killBoss)
+                UIManager.Instance.EndGame("clear");
+        }
     }
     public void ReGame()
     {
+        isClearingMonster = true;
         foreach (Transform player in GameObject.Find("Player Group").transform)
         {
             Destroy(player.gameObject);
@@ -103,5 +111,7 @@ public class GameManager : MonoBehaviour
             Destroy(item.gameObject);
         }
         Start();
+        if (DataBase.Instance.currentStage == 1 && PhotonNetwork.IsMasterClient)
+            SpawnMonster();
     }
 }

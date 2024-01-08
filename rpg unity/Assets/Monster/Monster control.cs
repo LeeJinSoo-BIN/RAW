@@ -33,6 +33,7 @@ public class MonsterControl : MonoBehaviour
     public PhotonView PV;
     public Animator animator;
 
+    private GameManager gameManager;
     
     private void Awake()
     {
@@ -40,6 +41,7 @@ public class MonsterControl : MonoBehaviour
         bottomRight = GameObject.Find("map").transform.Find("right bottom");
         characterGroup = GameObject.Find("Player Group");
         transform.parent = GameObject.Find("Enemy Group").transform;
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         name += transform.parent.childCount;
         patternCycle = monsterSpec.patternCycle[DataBase.Instance.currentDungeonLevel];
         currentCastingSkill = new MonsterSkillSpec();
@@ -408,7 +410,6 @@ public class MonsterControl : MonoBehaviour
             time = patternCycle;
             isCastingSkill = false;
         }
-            
     }
 
 
@@ -430,10 +431,13 @@ public class MonsterControl : MonoBehaviour
     private void OnDestroy()
     {
         if (monsterSpec.monsterType.ToLower() == "boss")
-            UIManager.Instance.EndGame("clear");
+        {
+            gameManager.StageClear(true);
+
+        }
         else if (transform.parent.childCount == 1)
         {
-            GameObject.Find("GameManager").GetComponent<GameManager>().StageClear();
+            gameManager.StageClear(false);
         }
     }
 }
