@@ -199,9 +199,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                             hit_npc.transform.GetComponent<NPC>().ClickNPC();
                         }
                     }
-                }
-                else
-                    Debug.Log(EventSystem.current.currentSelectedGameObject.name);
+                }                
             }
 
             if (Input.GetMouseButtonDown(1))

@@ -979,8 +979,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             DragItemDone();
             return;
-        }
-        Debug.Log(pointer_data.pointerCurrentRaycast.gameObject.name);
+        }        
         itemslot dragItemSlot = dragObject.GetComponent<itemslot>();
         itemslot desSlot = pointer_data.pointerCurrentRaycast.gameObject.GetComponent<itemslot>();
         if (desSlot != null)
@@ -2233,9 +2232,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             {
                 partsNum = 3;
             }
+            else if (type == "eye" || type == "hair")
+                continue;
             else
             {
-                Debug.LogError("wrong equipment type");
+                Debug.LogError("wrong equipment type : " + type);
                 continue;
             }
             equipmentPanel.transform.GetChild(2).GetChild(partsNum).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(dir);
