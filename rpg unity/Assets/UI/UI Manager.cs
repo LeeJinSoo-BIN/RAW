@@ -178,7 +178,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         public string captainName;
         public string partyName;
         public HashSet<string> partyMembersNickName;
-    }    
+    }
 
     private int enchantPercent;
     private int[] enchantPrice = new int[2];
@@ -296,7 +296,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 }
                 else if (Input.GetKeyDown(KeyCode.U))
                 {
-                    currentKeyDownPanel = equipmentPanel;                    
+                    currentKeyDownPanel = equipmentPanel;
                 }
                 if (currentKeyDownPanel == null)
                     return;
@@ -380,9 +380,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 }
                 chatEnd = false;
             }
-            if(DataBase.Instance.currentMapType == "village")
+            if (DataBase.Instance.currentMapType == "village")
             {
-                if(PlayerGroup.transform.childCount != inGameUserList.Count)
+                if (PlayerGroup.transform.childCount != inGameUserList.Count)
                 {
                     UpdatePartyPanel();
                 }
@@ -423,16 +423,16 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         makeProfile();
         characterHealth = DataBase.Instance.myCharacterState.health;
         characterMana = DataBase.Instance.myCharacterState.mana;
-        
+
         updateAllQuickSlot();
         setKeyMap();
         StartCoroutine(update_health());
         if (DataBase.Instance.currentMapType == "dungeon")
         {
-            StageUiGroup.SetActive(true);            
+            StageUiGroup.SetActive(true);
         }
-        else if(DataBase.Instance.currentMapType == "village")            
-        {            
+        else if (DataBase.Instance.currentMapType == "village")
+        {
             UpdatePartyPanel();
             stopTimer();
             StageUiGroup.SetActive(false);
@@ -658,7 +658,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         if (DataBase.Instance.itemInfoDict[itemName].recoveryMana > 0)
             DataBase.Instance.myCharacterState.ProcessSkill(5, DataBase.Instance.itemInfoDict[itemName].recoveryMana);
     }
-    
+
     public void UpdateInventory()
     {
         inventoryPanel.transform.GetChild(4).GetComponent<TMP_Text>().text = DataBase.Instance.selectedCharacterSpec.money.ToString();
@@ -666,7 +666,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             Transform box = inventoryBox.transform.GetChild(pos);
             InventoryItem item = DataBase.Instance.selectedCharacterSpec.inventory[pos];
-            itemslot thisSlot = box.GetChild(1).GetComponent<itemslot>();            
+            itemslot thisSlot = box.GetChild(1).GetComponent<itemslot>();
             if (item == null)
             {
                 if (thisSlot.isBlank)
@@ -675,7 +675,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 thisSlot.isBlank = true;
 
                 box.GetChild(1).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0);
-                box.GetChild(2).GetComponent<TMP_Text>().text = "";                
+                box.GetChild(2).GetComponent<TMP_Text>().text = "";
             }
             else
             {
@@ -982,7 +982,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             DragItemDone();
             return;
-        }        
+        }
         itemslot dragItemSlot = dragObject.GetComponent<itemslot>();
         itemslot desSlot = pointer_data.pointerCurrentRaycast.gameObject.GetComponent<itemslot>();
         if (desSlot != null)
@@ -1048,7 +1048,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 desSlot.oriPos = dragItemSlot.oriPos;
                 if (dragItemSlot.slotType == "inven")
                 {
-                    desSlot.slotPos = 1;                    
+                    desSlot.slotPos = 1;
                 }
                 else
                 {
@@ -1337,7 +1337,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         stageTime = 0f;
         while (true)
         {
-            if(DataBase.Instance.currentMapType == "village")
+            if (DataBase.Instance.currentMapType == "village")
                 yield break;
             stageTime += Time.deltaTime;
             timerText.text = string.Format("{0:00}:{1:00}:{2:00}", (int)stageTime / 3600, (int)stageTime / 60 % 60, (int)stageTime % 60);
@@ -1415,7 +1415,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         foreach (Transform player in PlayerGroup.transform)
         {
             content += player.GetComponent<CharacterState>().nick + "(" + player.GetComponent<CharacterState>().roll + ") ";
-            if(condition != "clear")
+            if (condition != "clear")
                 player.GetComponent<MultyPlayer>().isDeath = true;
         }
         foreach (Transform monster in EnemyGroup.transform)
@@ -1470,7 +1470,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     public void LoadingPop()
     {
-        loadingPanel.SetActive(true);        
+        loadingPanel.SetActive(true);
         for (int k = 0; k < 3; k++)
         {
             if (k < DataBase.Instance.myPartyMemNum)
@@ -1511,10 +1511,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             yield return null;
         }
         loadingPanel.SetActive(false);
-        if (PhotonNetwork.IsMasterClient)
-        {
-            GameObject.Find("GameManager").GetComponent<GameManager>().SpawnMonster();
-        }
+        GameObject.Find("GameManager").GetComponent<GameManager>().SpawnMonster();
     }
     #endregion
 
@@ -1549,7 +1546,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             CharacterState currentUserState = user.GetComponent<CharacterState>();
             inGameUserList.Add(user.name, currentUserState);
-        }        
+        }
         /*if(!DataBase.Instance.myPartyCaptainName.IsNullOrEmpty() && !inGameUserList.ContainsKey(DataBase.Instance.myPartyCaptainName))
         {
             PhotonNetwork.FindFriends(new string[] { DataBase.Instance.myPartyCaptainName });
@@ -1612,7 +1609,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 popInfo("파티장이 게임을 떠나 파티가 해체됩니다.");
                 ClickLeavePartyButton();
             }
-        }        
+        }
     }
     public void UpdatePartyMember()
     {
@@ -2155,9 +2152,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 DataBase.Instance.myCharacterState.equipItem();
                 UpdateEquipmentPanel();
             }
-            else if(slotInfo.slotPos == 1)
+            else if (slotInfo.slotPos == 1)
             {
-                DataBase.Instance.selectedCharacterSpec.inventory[slotInfo.oriPos].reinforce++;                
+                DataBase.Instance.selectedCharacterSpec.inventory[slotInfo.oriPos].reinforce++;
                 UpdateInventory();
             }
             else
@@ -2211,10 +2208,11 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(0).GetComponent<Image>().sprite = null;
             equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(0).GetComponent<itemslot>().itemName = "";
-            equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(0).GetComponent<itemslot>().isBlank = true;            
+            equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(0).GetComponent<itemslot>().isBlank = true;
             equipmentPanel.transform.GetChild(2).GetChild(k).GetChild(1).gameObject.SetActive(true);
         }
-        for (int k = 0; k < DataBase.Instance.selectedCharacterSpec.equipment.Count; k++) {
+        for (int k = 0; k < DataBase.Instance.selectedCharacterSpec.equipment.Count; k++)
+        {
             InventoryItem item = DataBase.Instance.selectedCharacterSpec.equipment[k];
             string dir = DataBase.Instance.itemInfoDict[item.itemName].iconDirectory;
             string type = DataBase.Instance.itemInfoDict[item.itemName].itemType;
@@ -2276,7 +2274,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         resetOpTradePanel();
         tradeChatLog = "";
         tradeChatLogShow.text = tradeChatLog;
-        tradeChatInput.text = "";        
+        tradeChatInput.text = "";
         tradeCheckCntPanel.SetActive(false);
     }
     void resetMyTradePanel()
@@ -2297,7 +2295,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     {
         opTradeBox.transform.parent.GetChild(0).GetComponent<TMP_Text>().text = inGameUserList[tradeOpName].nick;
         opTradeBox.transform.parent.GetChild(4).GetChild(0).GetComponent<TMP_Text>().text = "요청 대기중..";
-        opTradeBox.transform.parent.GetChild(4).gameObject.SetActive(true);        
+        opTradeBox.transform.parent.GetChild(4).gameObject.SetActive(true);
         for (int k = 0; k < 10; k++)
         {
             opTradeBox.transform.GetChild(k).GetChild(1).GetChild(0).GetComponent<Image>().sprite = null;
@@ -2349,7 +2347,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             itemslot updatingItemSlot = myTradeBox.transform.GetChild(slotPos).GetChild(1).GetChild(0).GetComponent<itemslot>();
             updatingItemSlot.itemName = itemName;
             updatingItemSlot.enchant = enchant;
-            updatingItemSlot.cnt = cnt;            
+            updatingItemSlot.cnt = cnt;
             updatingItemSlot.oriPos = invenPos;
             updatingItemSlot.isBlank = false;
             if (DataBase.Instance.itemInfoDict[itemName].iconDirectory.IsNullOrEmpty())
@@ -2385,13 +2383,13 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             userInteractionPanel.SetActive(false);
             updateCurrentFocusWindow();
             return;
-        }        
+        }
         DataBase.Instance.myCharacterState.updateDoing(true);
         tradeOpName = opName;
         newNetworkManager.Instance.PV.RPC("sendAndReceiveTradeRequest", inGameUserList[opName].PV.Owner, DataBase.Instance.myCharacter.name);
         userInteractionPanel.SetActive(false);
         updateCurrentFocusWindow();
-        resetTradePanel();        
+        resetTradePanel();
         updateCurrentFocusWindow(tradePanel);
 
     }
@@ -2434,7 +2432,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     public void OpJoinTrade()
     {
         opTradeBox.transform.parent.GetChild(0).GetComponent<TMP_Text>().text = inGameUserList[tradeOpName].nick;
-        opTradeBox.transform.parent.GetChild(4).gameObject.SetActive(false);        
+        opTradeBox.transform.parent.GetChild(4).gameObject.SetActive(false);
         tradeChatLog += "\n" + inGameUserList[tradeOpName].nick + "님이 교환 신청을 수락하였습니다.";
         tradeChatLogShow.text = tradeChatLog;
         tradePanel.transform.GetChild(1).GetChild(5).GetComponent<Button>().interactable = true;
@@ -2453,7 +2451,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             popInfo("상대방이 교환을 거절하였습니다.");
         else
             popInfo("상대방이 교환을 취소하였습니다.");
-        regetUpItems();        
+        regetUpItems();
     }
 
     public void OpAcceptTrade()
@@ -2477,7 +2475,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         tradePanel.SetActive(false);
         openedWindows.Remove(tradePanel);
         updateCurrentFocusWindow();
-        regetUpItems();        
+        regetUpItems();
     }
 
     void regetUpItems()
@@ -2508,7 +2506,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             string itemName = updatedItemSlot.itemName;
             int cnt = updatedItemSlot.cnt;
             int enchant = updatedItemSlot.enchant;
-            
+
             DataBase.Instance.myCharacterControl.getItem(new Item { reinforce = enchant, itemName = itemName, itemCount = cnt }, false);
         }
     }
@@ -2587,7 +2585,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
         DataBase.Instance.myCharacterControl.loseItem(upItemName, upItemCnt, invenPos);
         UpdateInventory();
-        
+
         tradeCheckCntPanel.transform.GetChild(2).GetChild(3).gameObject.SetActive(false);
         tradeCheckCntPanel.SetActive(false);
 
@@ -2596,12 +2594,12 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     public void TradeDone(int type)
     {
-        if(type == 0)
+        if (type == 0)
         {
             popInfo("교환되었습니다.");
             getTradeItems();
         }
-        else if( type == 1)
+        else if (type == 1)
         {
             popInfo("교환에 실패했습니다. 상대방 인벤토리에 공간이 부족합니다.");
             regetUpItems();
@@ -2615,12 +2613,12 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             popInfo("알 수 없는 이유로 교환에 실패하였습니다.");
             regetUpItems();
-        }        
+        }
         DataBase.Instance.myCharacterState.updateDoing(false);
         tradeOpName = null;
         tradePanel.SetActive(false);
         openedWindows.Remove(tradePanel);
-        updateCurrentFocusWindow();        
+        updateCurrentFocusWindow();
     }
 
 
@@ -2662,8 +2660,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             int cnt = opUpItem[itemName];
             int slotCnt;
-            
-            if(quickInventory.ContainsKey(itemName))
+
+            if (quickInventory.ContainsKey(itemName))
             {
                 int already_slot = quickInventory[itemName].position.Count;
                 int need_slot = (quickInventory[itemName].kindCount + cnt) / DataBase.Instance.itemInfoDict[itemName].maxCarryAmount;
@@ -2701,12 +2699,12 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         if (!inGameUserList.ContainsKey(tradeOpName))
             UpdateInGameUser();
         if (opCan && iCan)
-        {            
+        {
             newNetworkManager.Instance.PV.RPC("tradeDone", inGameUserList[tradeOpName].PV.Owner, 0);
             TradeDone(0);
         }
         else if (opCan && !iCan)
-        {            
+        {
             newNetworkManager.Instance.PV.RPC("tradeDone", inGameUserList[tradeOpName].PV.Owner, 1);
             TradeDone(2);
         }
@@ -2790,7 +2788,6 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     #endregion
 
 
-    
+
 
 }
-

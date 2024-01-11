@@ -46,13 +46,14 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         {
             if (PhotonNetwork.IsMasterClient)
                 PhotonNetwork.LoadLevel(DataBase.Instance.currentMapName);
-            disconnectButtonText.text = "게임 나가기";
+            disconnectButtonText.text = "게임 나가기";            
         }
         else if (DataBase.Instance.currentMapType == "dungeon")
         {
             if (PhotonNetwork.IsMasterClient)
                 PhotonNetwork.LoadLevel("Dungeon");
             disconnectButtonText.text = "던전 나가기";
+            DataBase.Instance.isInDungeon = false;
         }
     }
     public override void OnConnectedToMaster()
@@ -60,14 +61,17 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         if (DataBase.Instance.currentMapType == "dungeon")
         {
             PhotonNetwork.JoinOrCreateRoom(nextRoomName, new RoomOptions { MaxPlayers = 3, PublishUserId = true }, null);
+            DataBase.Instance.isInDungeon = true;
         }
         else if (DataBase.Instance.currentMapType == "village")
         {
             PhotonNetwork.JoinOrCreateRoom("palletTown", new RoomOptions { MaxPlayers = 20, PublishUserId = true }, null);
+            DataBase.Instance.isInDungeon = false;
         }
         else if (DataBase.Instance.currentMapType == "character Select")
         {
             DataBase.Instance.currentMapName = "Login Scene";
+            DataBase.Instance.isInDungeon = false;
             PhotonNetwork.JoinLobby();
         }
     }
@@ -145,6 +149,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         UIManager.Instance.gameOverPanel.SetActive(false);
         UIManager.Instance.gameClearPanel.SetActive(false);
         DataBase.Instance.currentStage = 1;
+        gameManager.isClearingMonster = true;
         gameManager.ReGame(false);
     }
 
@@ -152,6 +157,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     void NextStage()
     {
         DataBase.Instance.currentStage++;
+        gameManager.isClearingMonster = true;
         gameManager.ReGame(true);
     }
 

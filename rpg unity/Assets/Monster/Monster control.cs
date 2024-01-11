@@ -34,7 +34,7 @@ public class MonsterControl : MonoBehaviour
     public Animator animator;
 
     private GameManager gameManager;
-    
+
     private void Awake()
     {
         topLeft = GameObject.Find("map").transform.Find("left top");
@@ -57,7 +57,7 @@ public class MonsterControl : MonoBehaviour
         if (PhotonNetwork.IsMasterClient && attackable && !isDeath)
         {
             if (isAggro)
-            {                
+            {
                 MoveToTarget(0.01f, 0.1f);
                 return;
             }
@@ -156,7 +156,7 @@ public class MonsterControl : MonoBehaviour
                 break;
             _time += Time.deltaTime;
             yield return null;
-        }        
+        }
         if (currentCastingSkill.type == "spawn" || currentCastingSkill.type == "spawn creature")
             yield return StartCoroutine(spawnAttack());
         else if (currentCastingSkill.type == "direct")
@@ -172,24 +172,24 @@ public class MonsterControl : MonoBehaviour
             spawnPos = target.transform.position;
         else
             spawnPos = transform.Find(currentCastingSkill.spawnPos).position;
-        GameObject spawnObject = PhotonNetwork.InstantiateRoomObject(currentCastingSkill.skillDirectory, spawnPos, Quaternion.identity);        
+        GameObject spawnObject = PhotonNetwork.InstantiateRoomObject(currentCastingSkill.skillDirectory, spawnPos, Quaternion.identity);
         int numDeal = currentCastingSkill.flatDeal.Length;
         float[] deal = new float[numDeal];
-        for(int k = 0; k < currentCastingSkill.flatDeal.Length; k++)
+        for (int k = 0; k < currentCastingSkill.flatDeal.Length; k++)
         {
             deal[k] = currentCastingSkill.flatDeal[k] + currentCastingSkill.increaseDealPerLevel[k] * level;
         }
-        if(currentCastingSkill.type == "spawn")
+        if (currentCastingSkill.type == "spawn")
             spawnObject.GetComponent<PhotonView>().RPC("InitSkill", RpcTarget.All, spawnPos, target.name, deal);
         float _time = 0f;
         while (_time < currentCastingSkill.skillDuration)
         {
             _time += Time.deltaTime;
             yield return null;
-        }        
+        }
     }
     IEnumerator directAttack()
-    {   
+    {
         int deal = (int)(currentCastingSkill.flatDeal[0] + currentCastingSkill.increaseDealPerLevel[0] * level);
         PV.RPC("setActiveCollider", RpcTarget.All, currentCastingSkill.areaChildNum, true, deal);
         float _time = 0f;
@@ -208,8 +208,8 @@ public class MonsterControl : MonoBehaviour
     {
         GameObject area = transform.GetChild(childNum).gameObject;
         area.GetComponent<MonsterDirectAttack>().dealOnce = onOff;
-        area.GetComponent<MonsterDirectAttack>().Deal = deal;        
-        area.SetActive(onOff);        
+        area.GetComponent<MonsterDirectAttack>().Deal = deal;
+        area.SetActive(onOff);
     }
 
     [PunRPC]
@@ -228,7 +228,7 @@ public class MonsterControl : MonoBehaviour
             isCastingSkill = false;
             try
             {
-                StopCoroutine(currentCastingSkillCoroutine);                
+                StopCoroutine(currentCastingSkillCoroutine);
             }
             catch { }
             try
@@ -244,7 +244,7 @@ public class MonsterControl : MonoBehaviour
     {
         isAggro = true;
         float _time = 0f;
-        while(_time < time)
+        while (_time < time)
         {
             _time += Time.deltaTime;
             yield return null;
@@ -317,17 +317,17 @@ public class MonsterControl : MonoBehaviour
         {
             if (monsterSpec.haveWalkMotion)
                 animator.SetBool("walk", false);
-            isMoving = false;            
+            isMoving = false;
             return;
         }
         else if (_disVec.sqrMagnitude > maxDistance && isMoving == false)
-        {            
+        {
             isMoving = true;
             if (monsterSpec.haveWalkMotion)
                 animator.SetBool("walk", true);
         }
         if (isMoving == true)
-        {            
+        {
             Vector3 _dirMVec = _dirVec.normalized;
             PV.RPC("direction", RpcTarget.AllBuffered, _dirMVec);
             transform.position += (_dirMVec * monsterSpec.defaultMoveSpeed * Time.deltaTime);
@@ -345,7 +345,7 @@ public class MonsterControl : MonoBehaviour
             foreach (string itemName in monsterSpec.dropItems.Keys)
             {
                 spawnItem(itemName, monsterSpec.dropItems[itemName]);
-            }            
+            }
         }
         Destroy(gameObject, 0.45f);
     }
@@ -355,7 +355,7 @@ public class MonsterControl : MonoBehaviour
         float x = Random.Range(-1f, 1f);
         float y = Random.Range(-0.3f, 0.3f);
         Vector3 spawn_pos = new Vector3(x + transform.position.x, y + transform.position.y, 0);
-        float rnd = Random.Range(0, 100f);        
+        float rnd = Random.Range(0, 100f);
         if (rnd < prob)
         {
             GameObject new_item = PhotonNetwork.InstantiateRoomObject("items/item_prefab", spawn_pos, Quaternion.identity);
@@ -367,7 +367,7 @@ public class MonsterControl : MonoBehaviour
     {
         if (!isDeath)
             StartCoroutine(ExcuteBind(bindTime));
-    }    
+    }
     IEnumerator ExcuteBind(float bindTime)
     {
         attackable = false;
@@ -430,13 +430,16 @@ public class MonsterControl : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (monsterSpec.monsterType.ToLower() == "boss")
+        if (!gameManager.isClearingMonster)
         {
-            gameManager.StageClear(true);
-        }
-        else if (transform.parent.childCount == 1)
-        {
-            gameManager.StageClear(false);
+            if (monsterSpec.monsterType.ToLower() == "boss")
+            {
+                gameManager.StageClear(true);
+            }
+            else if (transform.parent.childCount == 1)
+            {
+                gameManager.StageClear(false);
+            }
         }
     }
 }

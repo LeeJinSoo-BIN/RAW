@@ -73,10 +73,8 @@ public class GameManager : MonoBehaviour
         if (DataBase.Instance.currentMapType == "dungeon")
         {
             portalObject.ActivatePortal(false);
-            DataBase.Instance.isInDungeon = true;
-            if (DataBase.Instance.currentStage > 1 && PhotonNetwork.IsMasterClient)
+            if (DataBase.Instance.currentStage > 1)
                 SpawnMonster();
-            isClearingMonster = false;
         }
     }
 
@@ -86,6 +84,9 @@ public class GameManager : MonoBehaviour
     }
     IEnumerator spawnDelay()
     {
+        isClearingMonster = false;
+        if (!PhotonNetwork.IsMasterClient)
+            yield break;
         float _timer = 0f;
         while (_timer < 0.2)
         {
@@ -108,16 +109,12 @@ public class GameManager : MonoBehaviour
 
     public void StageClear(bool killBoss)
     {
-        if (!isClearingMonster)
-        {
-            portalObject.ActivatePortal(true);
-            if (killBoss)
-                UIManager.Instance.EndGame("clear");
-        }
+        portalObject.ActivatePortal(true);
+        if (killBoss)
+            UIManager.Instance.EndGame("clear");
     }
     public void ReGame(bool nextStage)
     {
-        isClearingMonster = true;
         if (nextStage)
         {
             if (DataBase.Instance.myCharacterState.isDeath || DataBase.Instance.myCharacter == null)
@@ -145,7 +142,7 @@ public class GameManager : MonoBehaviour
             Destroy(item.gameObject);
         }
         Start();
-        if (DataBase.Instance.currentStage == 1 && PhotonNetwork.IsMasterClient)
+        if (DataBase.Instance.currentStage == 1)
             SpawnMonster();
     }
 }
