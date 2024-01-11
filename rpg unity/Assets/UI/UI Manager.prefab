@@ -201,8 +201,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 6
+  oriPos: 6
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &5756809452591965
 GameObject:
@@ -3111,8 +3113,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 17
+  oriPos: 17
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &359855215383883155
 GameObject:
@@ -4233,6 +4237,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 0
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 0
 --- !u!1 &450105628071947713
 GameObject:
@@ -4565,7 +4571,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.7773585, b: 0.7773585, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4825,6 +4831,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 4
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 0
 --- !u!1 &546019370717681113
 GameObject:
@@ -6482,6 +6490,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 0
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &672586909122090876
 GameObject:
@@ -9158,8 +9168,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 11
+  oriPos: 11
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &902537320785660226
 GameObject:
@@ -9434,8 +9446,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: trade
   itemName: 
-  slotPos: 0
+  slotPos: 4
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &928809498744382053
 GameObject:
@@ -10015,6 +10029,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 3
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 0
 --- !u!1 &1010609540095030265
 GameObject:
@@ -10217,8 +10233,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 8
+  oriPos: 8
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &1029754529891153336
 GameObject:
@@ -10621,8 +10639,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: trade
   itemName: 
-  slotPos: 0
+  slotPos: 7
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &1065865835244659313
 GameObject:
@@ -17455,8 +17475,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 19
+  oriPos: 19
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &1702402820525283435
 GameObject:
@@ -17809,6 +17831,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 0
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &1782963534979856641
 GameObject:
@@ -18725,6 +18749,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 0
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &1851852009752156724
 GameObject:
@@ -19616,8 +19642,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 7
+  oriPos: 7
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &1934698955991918264
 GameObject:
@@ -20325,6 +20353,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 3
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 0
 --- !u!1 &2024801707497792955
 GameObject:
@@ -20736,6 +20766,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 0
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &2038098341482373556
 GameObject:
@@ -23868,6 +23900,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 5
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 0
 --- !u!1 &2324383062204197820
 GameObject:
@@ -25748,6 +25782,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 3
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 0
 --- !u!1 &2493659624202880948
 GameObject:
@@ -26219,8 +26255,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 24
+  oriPos: 24
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &2543381084848092913
 GameObject:
@@ -29130,8 +29168,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: trade
   itemName: 
-  slotPos: 0
+  slotPos: 8
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &2810972322277466954
 GameObject:
@@ -29381,8 +29421,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 2
+  oriPos: 2
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &2828628713981371481
 GameObject:
@@ -30203,6 +30245,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 2
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 0
 --- !u!1 &2869874487755325113
 GameObject:
@@ -31497,8 +31541,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 9
+  oriPos: 9
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &3027683819923290754
 GameObject:
@@ -33800,8 +33846,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: trade
   itemName: 
-  slotPos: 0
+  slotPos: 6
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &3290891417085915696
 GameObject:
@@ -34505,8 +34553,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 3
+  oriPos: 3
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &3361581543398397958
 GameObject:
@@ -35687,6 +35737,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 0
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &3472728031437144334
 GameObject:
@@ -37424,6 +37476,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 0
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &3663966085897934466
 GameObject:
@@ -38534,6 +38588,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 0
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &3902625464215164562
 GameObject:
@@ -41233,6 +41289,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 0
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 0
 --- !u!1 &4326375750554405475
 GameObject:
@@ -41783,6 +41841,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 1
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 0
 --- !u!1 &4363284095505021582
 GameObject:
@@ -43789,6 +43849,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 0
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &4566191212745213485
 GameObject:
@@ -47525,8 +47587,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 16
+  oriPos: 16
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &4962310418204827040
 GameObject:
@@ -48320,8 +48384,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: trade
   itemName: 
-  slotPos: 0
+  slotPos: 9
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &5046372962623126461
 GameObject:
@@ -52660,6 +52726,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 2
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 0
 --- !u!1 &5615543316468520775
 GameObject:
@@ -52848,6 +52916,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 1
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 0
 --- !u!1 &5615606997657536789
 GameObject:
@@ -53623,8 +53693,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 12
+  oriPos: 12
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &5700518675090191522
 GameObject:
@@ -54428,8 +54500,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 10
+  oriPos: 10
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &5796762524667599396
 GameObject:
@@ -54891,8 +54965,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 22
+  oriPos: 22
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &5825205738647982378
 GameObject:
@@ -55490,6 +55566,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 0
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &5898296735512400647
 GameObject:
@@ -57049,6 +57127,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 1
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 0
 --- !u!1 &6061333518530036956
 GameObject:
@@ -59548,8 +59628,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 21
+  oriPos: 21
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &6396240061644280524
 GameObject:
@@ -60592,6 +60674,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 0
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &6554016969586988338
 GameObject:
@@ -60731,8 +60815,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: trade
   itemName: 
-  slotPos: 0
+  slotPos: 3
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &6555383706545369924
 GameObject:
@@ -60937,6 +61023,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 0
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 0
 --- !u!1 &6564673094721416839
 GameObject:
@@ -62880,8 +62968,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: trade
   itemName: 
-  slotPos: 0
+  slotPos: 2
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &6779107458614421611
 GameObject:
@@ -64493,8 +64583,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 18
+  oriPos: 18
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &6904781702989689417
 GameObject:
@@ -65399,6 +65491,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 4
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 0
 --- !u!1 &7018422609020406585
 GameObject:
@@ -65601,8 +65695,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 5
+  oriPos: 5
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &7039422197180831324
 GameObject:
@@ -66347,8 +66443,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 14
+  oriPos: 14
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &7082831893324736161
 GameObject:
@@ -67704,8 +67802,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: trade
   itemName: 
-  slotPos: 0
+  slotPos: 5
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &7258835700739377204
 GameObject:
@@ -67947,6 +68047,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 2
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 0
 --- !u!1 &7265261880710932280
 GameObject:
@@ -68832,6 +68934,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 0
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &7362947392682855129
 GameObject:
@@ -70504,8 +70608,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 1
+  oriPos: 1
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &7541317852489573164
 GameObject:
@@ -74721,8 +74827,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 13
+  oriPos: 13
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &7966434052805270003
 GameObject:
@@ -76020,7 +76128,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &7377315346094167800
 RectTransform:
   m_ObjectHideFlags: 0
@@ -77081,8 +77189,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 15
+  oriPos: 15
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &8290449308262838074
 GameObject:
@@ -81462,8 +81572,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: trade
   itemName: 
-  slotPos: 0
+  slotPos: 1
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &8840228018380598955
 GameObject:
@@ -81682,6 +81794,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 0
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 0
 --- !u!1 &8882766702220829705
 GameObject:
@@ -81823,6 +81937,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 0
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &8906575598817316797
 GameObject:
@@ -82103,8 +82219,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 4
+  oriPos: 4
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &8930543372036030936
 GameObject:
@@ -82511,6 +82629,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 0
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!114 &745063005042723551
 MonoBehaviour:
@@ -83227,6 +83347,8 @@ MonoBehaviour:
   itemName: 
   slotPos: 4
   oriPos: 0
+  enchant: 0
+  cnt: 0
   isBlank: 0
 --- !u!1 &9036961901579704471
 GameObject:
@@ -83583,8 +83705,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 23
+  oriPos: 23
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &9135824626240934513
 GameObject:
@@ -83979,8 +84103,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: inven
   itemName: 
-  slotPos: 0
-  oriPos: 0
+  slotPos: 20
+  oriPos: 20
+  enchant: 0
+  cnt: 0
   isBlank: 1
 --- !u!1 &9181798937390642010
 GameObject:

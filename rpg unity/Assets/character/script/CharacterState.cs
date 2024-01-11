@@ -80,14 +80,16 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
         List<InventoryItem> equipment = characterSpec.equipment;
         SPUM_SpriteList spriteList = gameObject.GetComponentInChildren<SPUM_SpriteList>();
         spriteList.resetSprite();
+        float power = 0;
         foreach (InventoryItem item in equipment)
         {
             string current_item_sprite = DataBase.Instance.itemInfoDict[item.itemName].spriteDirectory;
             spriteList.PartsPath[DataBase.Instance.itemInfoDict[item.itemName].itemType] = current_item_sprite;
-            //Debug.Log(spriteList.PartsPath[itemInfoDict[item.itemName].itemType]);
+            power += DataBase.Instance.CalEnchantPower(item.itemName, item.reinforce) * item.reinforce + DataBase.Instance.itemInfoDict[item.itemName].increasePower;
         }
         spriteList._hairAndEyeColor = characterSpec.colors;
         spriteList.setSprite();
+        PV.RPC("syncInfoNum", RpcTarget.AllBuffered, "power", power);
     }
 
 

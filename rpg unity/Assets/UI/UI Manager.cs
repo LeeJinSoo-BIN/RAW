@@ -9,6 +9,7 @@ using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
 using WebSocketSharp;
+using UnityEngine.Android;
 
 
 public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointerUpHandler
@@ -295,9 +296,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 }
                 else if (Input.GetKeyDown(KeyCode.U))
                 {
-                    currentKeyDownPanel = equipmentPanel;
-                    if (!currentKeyDownPanel.activeSelf)
-                        UpdateEquipmentPanel();
+                    currentKeyDownPanel = equipmentPanel;                    
                 }
                 if (currentKeyDownPanel == null)
                     return;
@@ -419,7 +418,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
         ResetSkillPanel();
         UpdateSkillPanel();
-
+        UpdateInventory();
+        UpdateEquipmentPanel();
         makeProfile();
         characterHealth = DataBase.Instance.myCharacterState.health;
         characterMana = DataBase.Instance.myCharacterState.mana;
@@ -604,7 +604,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             consumePotion(itemName);
         }
-        updateInventory();
+        UpdateInventory();
         updateThisQuickSlot(key);
 
     }
@@ -658,36 +658,39 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         if (DataBase.Instance.itemInfoDict[itemName].recoveryMana > 0)
             DataBase.Instance.myCharacterState.ProcessSkill(5, DataBase.Instance.itemInfoDict[itemName].recoveryMana);
     }
-
-    public void updateInventory()
+    
+    public void UpdateInventory()
     {
         inventoryPanel.transform.GetChild(4).GetComponent<TMP_Text>().text = DataBase.Instance.selectedCharacterSpec.money.ToString();
         for (int pos = 0; pos < DataBase.Instance.selectedCharacterSpec.maxInventoryNum; pos++)
         {
             Transform box = inventoryBox.transform.GetChild(pos);
             InventoryItem item = DataBase.Instance.selectedCharacterSpec.inventory[pos];
+            itemslot thisSlot = box.GetChild(1).GetComponent<itemslot>();            
             if (item == null)
             {
-                box.GetChild(2).GetComponent<TMP_Text>().text = "";
+                if (thisSlot.isBlank)
+                    continue;
+                thisSlot.itemName = "";
+                thisSlot.isBlank = true;
+
                 box.GetChild(1).GetComponent<Image>().color = new Color(1f, 1f, 1f, 0);
-                box.GetChild(1).GetComponent<itemslot>().itemName = "";
-                box.GetChild(1).GetComponent<itemslot>().slotPos = pos;
-                box.GetChild(1).GetComponent<itemslot>().isBlank = true;
+                box.GetChild(2).GetComponent<TMP_Text>().text = "";                
             }
             else
             {
-                string itemType = DataBase.Instance.itemInfoDict[item.itemName].itemType;
-                box.GetChild(2).GetComponent<TMP_Text>().text = item.count.ToString();
-                box.GetChild(1).GetComponent<itemslot>().itemName = item.itemName;
-                box.GetChild(1).GetComponent<itemslot>().isBlank = false;
-                box.GetChild(1).GetComponent<itemslot>().slotPos = pos;
+                thisSlot.itemName = item.itemName;
+                thisSlot.isBlank = false;
+                thisSlot.cnt = item.count;
+                thisSlot.enchant = item.reinforce;
+
                 string iconDir = DataBase.Instance.itemInfoDict[item.itemName].iconDirectory;
                 if (iconDir.IsNullOrEmpty())
                     iconDir = DataBase.Instance.itemInfoDict[item.itemName].spriteDirectory;
-
                 box.GetChild(1).GetComponent<Image>().sprite = Resources.Load<Sprite>(iconDir);
                 box.GetChild(1).GetComponent<Image>().preserveAspect = true;
                 box.GetChild(1).GetComponent<Image>().color = Color.white;
+                box.GetChild(2).GetComponent<TMP_Text>().text = item.count.ToString();
             }
         }
     }
@@ -879,7 +882,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         }
         else
         {
-            int pos = slotInfo.slotPos;
+            int pos = slotInfo.oriPos;
             int reinforce = 0;
             if (slotInfo.slotType == "inven" || slotInfo.slotType == "storeInven")
             {
@@ -887,7 +890,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             }
             else if (slotInfo.slotType == "equip")
             {
-                reinforce = DataBase.Instance.selectedCharacterSpec.equipment[-pos - 1].reinforce;
+                reinforce = DataBase.Instance.selectedCharacterSpec.equipment[pos].reinforce;
             }
             else if (slotInfo.slotType == "store")
             {
@@ -895,8 +898,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             }
             else if (slotInfo.slotType == "enchant")
             {
-                if (pos < 0)
-                    reinforce = DataBase.Instance.selectedCharacterSpec.equipment[-pos - 1].reinforce;
+                if (slotInfo.slotPos == -1)
+                    reinforce = DataBase.Instance.selectedCharacterSpec.equipment[pos].reinforce;
                 else
                     reinforce = DataBase.Instance.selectedCharacterSpec.inventory[pos].reinforce;
             }
@@ -906,7 +909,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             }
 
 
-            toolTipSummary = string.Format("공격력 +{0}", DataBase.Instance.CalEnchantPower(toolTipName, reinforce) + DataBase.Instance.itemInfoDict[toolTipName].increasePower);
+            toolTipSummary = string.Format("공격력 +{0}", DataBase.Instance.CalEnchantPower(toolTipName, reinforce) * reinforce + DataBase.Instance.itemInfoDict[toolTipName].increasePower);
             iconDir = DataBase.Instance.itemInfoDict[toolTipName].iconDirectory;
             if (iconDir.IsNullOrEmpty())
                 iconDir = DataBase.Instance.itemInfoDict[toolTipName].spriteDirectory;
@@ -1042,15 +1045,14 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                     return;
                 }
                 desSlot.itemName = dragItemSlot.itemName;
+                desSlot.oriPos = dragItemSlot.oriPos;
                 if (dragItemSlot.slotType == "inven")
                 {
-                    desSlot.slotPos = 1;
-                    desSlot.oriPos = dragItemSlot.slotPos;
+                    desSlot.slotPos = 1;                    
                 }
                 else
                 {
                     desSlot.slotPos = -1;
-                    desSlot.oriPos = dragItemSlot.oriPos;
                 }
                 desSlot.isBlank = false;
                 UpdateEnchantPanel();
@@ -1086,8 +1088,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                             DataBase.Instance.myCharacterControl.getItem(new Item { itemName = dragItemName, itemCount = dragCnt, reinforce = dragReinforce }, false, desSlot.slotPos);
 
                         }
-
-                        updateInventory();
+                        UpdateInventory();
                     }
 
                 }
@@ -1096,7 +1097,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                     if (desSlot.isBlank) // 빈곳이면 장착해제
                     {
                         int equipPos = dragItemSlot.oriPos;
-                        int invenPos = desSlot.slotPos;
+                        int invenPos = desSlot.oriPos;
                         InventoryItem equip = DataBase.Instance.selectedCharacterSpec.equipment[equipPos];
                         DataBase.Instance.myCharacterControl.getItem(new Item { reinforce = equip.reinforce, itemName = equip.itemName, itemCount = 1 }, false, invenPos);
                         DataBase.Instance.selectedCharacterSpec.equipment.Remove(equip);
@@ -1104,14 +1105,14 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
                         DataBase.Instance.myCharacterState.equipItem();
                         UpdateEquipmentPanel();
-                        updateInventory();
+                        UpdateInventory();
 
                     }
                     else if (DataBase.Instance.itemInfoDict[desSlot.itemName].itemType == dragItemSlot.transform.parent.name ||
                         (DataBase.Instance.itemInfoDict[desSlot.itemName].itemType.Contains("weapon") && dragItemSlot.transform.parent.name == "weapon"))
                     { //같은 종류면 스왑
                         int equipPos = dragItemSlot.oriPos;
-                        int invenPos = desSlot.slotPos;
+                        int invenPos = desSlot.oriPos;
 
                         string invenName = DataBase.Instance.selectedCharacterSpec.inventory[invenPos].itemName;
                         int invenRein = DataBase.Instance.selectedCharacterSpec.inventory[invenPos].reinforce;
@@ -1125,7 +1126,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                         DataBase.Instance.selectedCharacterSpec.equipment.Add(new InventoryItem { reinforce = invenRein, itemName = invenName, count = 1 });
                         DataBase.Instance.myCharacterState.equipItem();
                         UpdateEquipmentPanel();
-                        updateInventory();
+                        UpdateInventory();
                     }
                     else
                     {
@@ -1141,7 +1142,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                     if (DataBase.Instance.itemInfoDict[dragItemSlot.itemName].itemType == desSlot.transform.parent.name ||
                         (DataBase.Instance.itemInfoDict[dragItemSlot.itemName].itemType.Contains("weapon") && desSlot.slotPos == 3))
                     {//같은 종류 중
-                        int invenPos = dragItemSlot.slotPos;
+                        int invenPos = dragItemSlot.oriPos;
                         string invenName = DataBase.Instance.selectedCharacterSpec.inventory[invenPos].itemName;
                         int invenRein = DataBase.Instance.selectedCharacterSpec.inventory[invenPos].reinforce;
                         if (desSlot.isBlank)
@@ -1162,7 +1163,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                         }
                         DataBase.Instance.myCharacterState.equipItem();
                         UpdateEquipmentPanel();
-                        updateInventory();
+                        UpdateInventory();
                     }
                     else
                     {
@@ -1180,8 +1181,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 }
                 if (dragItemSlot.slotType == "inven")
                 {
-                    int slotPos = int.Parse(desSlot.transform.parent.parent.name);
-                    popTradeCheckCnt(dragItemSlot.itemName, dragItemSlot.slotPos, slotPos);
+                    popTradeCheckCnt(dragItemSlot.itemName, dragItemSlot.slotPos, desSlot.slotPos);
                 }
             }
             else
@@ -1213,20 +1213,19 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         itemslot itemInfo = pointer_data.pointerClick.GetComponent<itemslot>();
         if (itemInfo.isBlank)
             return;
-        int pos = itemInfo.slotPos;
+        int pos = itemInfo.oriPos;
 
         if (Time.time - itemDoubleClickTimer < 0.25f)
         {
-            if (pos < 0)
+            if (itemInfo.slotType == "equip")
             {
-                pos = -pos - 1;
                 InventoryItem item = DataBase.Instance.selectedCharacterSpec.equipment[pos];
                 string itemName = item.itemName;
                 int reinforce = item.reinforce;
                 DataBase.Instance.selectedCharacterSpec.equipment.Remove(item);
                 DataBase.Instance.myCharacterControl.getItem(new Item { itemName = itemName, itemCount = 1, reinforce = reinforce }, false);
                 DataBase.Instance.myCharacterState.equipItem();
-                updateInventory();
+                UpdateInventory();
                 UpdateEquipmentPanel();
             }
             else
@@ -1257,7 +1256,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                     }
                     else
                     {
-                        InventoryItem equip = DataBase.Instance.selectedCharacterSpec.equipment[-equipSlot.slotPos - 1];
+                        InventoryItem equip = DataBase.Instance.selectedCharacterSpec.equipment[equipSlot.oriPos];
 
                         DataBase.Instance.myCharacterControl.loseItem(itemName, 1, pos);
                         DataBase.Instance.myCharacterControl.getItem(new Item { reinforce = equip.reinforce, itemName = equip.itemName, itemCount = 1 }, false, pos);
@@ -1265,7 +1264,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                         DataBase.Instance.selectedCharacterSpec.equipment.Add(new InventoryItem { reinforce = reinforce, itemName = itemName, count = 1 });
                     }
                     DataBase.Instance.myCharacterState.equipItem();
-                    updateInventory();
+                    UpdateInventory();
                     UpdateEquipmentPanel();
                 }
             }
@@ -1379,7 +1378,15 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             title = "클리어";
             gameOverPanel.transform.GetChild(0).GetComponent<Image>().color = succesColor;
-            content = string.Format("클리어 시간\n{0}초\n\n인 원\n", stageTime.ToString());
+            content = string.Format("클리어 시간\n{0}초\n\n인 원\n\n난이도\n", stageTime.ToString());
+            string level = null;
+            if (DataBase.Instance.currentDungeonLevel == 0)
+                level = "Easy\n";
+            else if (DataBase.Instance.currentDungeonLevel == 1)
+                level = "Normal\n";
+            else if (DataBase.Instance.currentDungeonLevel == 2)
+                level = "Hard\n";
+            content += level;
             gameOverPanel.transform.GetChild(3).gameObject.SetActive(false);
             gameOverPanel.transform.GetChild(4).gameObject.SetActive(false);
             gameOverPanel.transform.GetChild(5).gameObject.SetActive(true);
@@ -2020,7 +2027,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         int sellMoney = sellItemCnt * DataBase.Instance.itemInfoDict[sellItemName].sellPrice;
         DataBase.Instance.selectedCharacterSpec.money += sellMoney;
         DataBase.Instance.myCharacterControl.loseItem(sellItemName, sellItemCnt, invenPos);
-        updateInventory();
+        UpdateInventory();
         UpdateStoreInventory();
         storeSellPanel.transform.GetChild(2).GetChild(3).gameObject.SetActive(false);
         storeSellPanel.SetActive(false);
@@ -2141,13 +2148,17 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             EnchantResult.transform.GetChild(0).GetComponent<TMP_Text>().text = "강화 성공";
             EnchantResult.transform.GetChild(1).GetComponent<TMP_Text>().text = string.Format("{0} -> {1}", reinforce, reinforce + 1);
+            EnchantResult.GetComponent<Image>().color = new Color(200f / 255f, 1f, 200f / 255f);
             if (slotInfo.slotPos == -1)
             {
                 DataBase.Instance.selectedCharacterSpec.equipment[slotInfo.oriPos].reinforce++;
+                DataBase.Instance.myCharacterState.equipItem();
+                UpdateEquipmentPanel();
             }
             else if(slotInfo.slotPos == 1)
             {
-                DataBase.Instance.selectedCharacterSpec.inventory[slotInfo.oriPos].reinforce++;
+                DataBase.Instance.selectedCharacterSpec.inventory[slotInfo.oriPos].reinforce++;                
+                UpdateInventory();
             }
             else
             {
@@ -2158,6 +2169,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             EnchantResult.transform.GetChild(0).GetComponent<TMP_Text>().text = "강화 실패";
             EnchantResult.transform.GetChild(1).GetComponent<TMP_Text>().text = string.Format("{0} -> {1}", reinforce, reinforce);
+            EnchantResult.GetComponent<Image>().color = new Color(1f, 200f / 255f, 200f / 255f);
         }
         string iconDir = DataBase.Instance.itemInfoDict[slotInfo.itemName].iconDirectory;
         if (iconDir.IsNullOrEmpty())
@@ -2186,6 +2198,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     {
         GameObject current_clicked_button = EventSystem.current.currentSelectedGameObject;
         current_clicked_button.SetActive(false);
+        EnchantResult.GetComponent<Image>().color = new Color(1f, 1f, 1f);
         isEnchanting = false;
         UpdateEnchantPanel();
     }
@@ -2274,7 +2287,6 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             myTradeBox.transform.GetChild(k).GetChild(1).GetChild(0).GetComponent<Image>().sprite = null;
             myTradeBox.transform.GetChild(k).GetChild(1).GetChild(0).GetComponent<itemslot>().isBlank = true;
-            myTradeBox.transform.GetChild(k).GetChild(1).GetChild(0).GetComponent<itemslot>().itemName = "";
             myTradeBox.transform.GetChild(k).GetChild(1).GetChild(0).GetChild(0).GetComponent<TMP_Text>().text = "";
             myTradeBox.transform.GetChild(k).GetChild(2).GetComponent<TMP_Text>().text = "";
             myTradeBox.transform.GetChild(k).GetChild(3).gameObject.SetActive(true);
@@ -2307,8 +2319,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             itemslot updatingItemSlot = opTradeBox.transform.GetChild(slotPos).GetChild(1).GetChild(0).GetComponent<itemslot>();
             updatingItemSlot.itemName = itemName;
-            updatingItemSlot.slotPos = enchant;
-            updatingItemSlot.oriPos = cnt;
+            updatingItemSlot.enchant = enchant;
+            updatingItemSlot.cnt = cnt;
             updatingItemSlot.isBlank = false;
             if (DataBase.Instance.itemInfoDict[itemName].iconDirectory.IsNullOrEmpty())
                 opTradeBox.transform.GetChild(slotPos).GetChild(1).GetChild(0).GetComponent<Image>().sprite = Resources.Load<Sprite>(DataBase.Instance.itemInfoDict[itemName].spriteDirectory);
@@ -2326,7 +2338,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             }
         }
     }
-    public void UpdateMyTradeItem(string itemName, int cnt, int slotPos, int invenPos, int enchant)
+    public void UpdateMyTradeItem(string itemName, int cnt, int slotPos, int enchant, int invenPos)
     {
         if (itemName == "money")
         {
@@ -2336,8 +2348,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             itemslot updatingItemSlot = myTradeBox.transform.GetChild(slotPos).GetChild(1).GetChild(0).GetComponent<itemslot>();
             updatingItemSlot.itemName = itemName;
-            updatingItemSlot.transform.GetChild(0).name = cnt.ToString();
-            updatingItemSlot.slotPos = enchant;
+            updatingItemSlot.enchant = enchant;
+            updatingItemSlot.cnt = cnt;            
             updatingItemSlot.oriPos = invenPos;
             updatingItemSlot.isBlank = false;
             if (DataBase.Instance.itemInfoDict[itemName].iconDirectory.IsNullOrEmpty())
@@ -2477,9 +2489,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 continue;
 
             string itemName = updatedItemSlot.itemName;
-            int cnt = int.Parse(myTradeBox.transform.GetChild(k).GetChild(1).GetChild(0).GetChild(0).name);            
+            int cnt = updatedItemSlot.cnt;
             int invenPos = updatedItemSlot.oriPos;
-            int enchant = updatedItemSlot.slotPos;
+            int enchant = updatedItemSlot.enchant;
 
             DataBase.Instance.myCharacterControl.getItem(new Item { reinforce = enchant, itemName = itemName, itemCount = cnt }, false, invenPos);
         }
@@ -2494,8 +2506,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 continue;
 
             string itemName = updatedItemSlot.itemName;
-            int cnt = updatedItemSlot.oriPos;
-            int enchant = updatedItemSlot.slotPos;
+            int cnt = updatedItemSlot.cnt;
+            int enchant = updatedItemSlot.enchant;
             
             DataBase.Instance.myCharacterControl.getItem(new Item { reinforce = enchant, itemName = itemName, itemCount = cnt }, false);
         }
@@ -2510,7 +2522,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             tradeChatLog += "\n" + PhotonNetwork.NickName + " : " + chat;
             tradeChatLogShow.text = tradeChatLog;
 
-            newNetworkManager.Instance.PV.RPC("sendTradeChatLog", inGameUserList[opTradeBox.transform.parent.GetChild(0).name].PV.Owner, PhotonNetwork.NickName + " : " + chat);
+            newNetworkManager.Instance.PV.RPC("sendTradeChatLog", inGameUserList[tradeOpName].PV.Owner, PhotonNetwork.NickName + " : " + chat);
             tradeChatInput.text = "";
             tradeChatEnd = false;
         }
@@ -2574,12 +2586,12 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         }
 
         DataBase.Instance.myCharacterControl.loseItem(upItemName, upItemCnt, invenPos);
-        updateInventory();
+        UpdateInventory();
         
         tradeCheckCntPanel.transform.GetChild(2).GetChild(3).gameObject.SetActive(false);
         tradeCheckCntPanel.SetActive(false);
 
-        UpdateMyTradeItem(upItemName, upItemCnt, slotPos, invenPos, enchant);
+        UpdateMyTradeItem(upItemName, upItemCnt, slotPos, enchant, invenPos);
     }
 
     public void TradeDone(int type)

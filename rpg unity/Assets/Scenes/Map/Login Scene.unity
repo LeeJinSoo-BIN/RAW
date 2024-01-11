@@ -615,9 +615,17 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "2024.01.09\n- \uACF5\uACA9\uC2DC \uD074\uB9AD\uC774 \uC539\uD788\uB294
+  m_text: "2024.01.11\n- \uC7A5\uBE44\uC758 \uACF5\uACA9\uB825\uC5D0 \uB530\uB77C
+    \uACF5\uACA9\uB825\uC774 \uC0C1\uC2B9\uD558\uB3C4\uB85D \uC218\uC815\n- \uB358\uC804
+    \uD074\uB9AC\uC5B4\uB97C \uC2E4\uD328\uD574\uB3C4 \uD074\uB9AC\uC5B4 \uD31D\uC5C5\uC774
+    \uB728\uB294 \uD604\uC0C1 \uC218\uC815\n- \uC778\uBCA4\uD1A0\uB9AC \uC7A5\uBE44\uB97C
+    \uB354\uBE14\uD074\uB9AD \uD574\uC11C \uC7A5\uCC29\uD560 \uB54C\uC758 \uC624\uB958
+    \uC218\uC815\n- \uB358\uC804\uC5D0\uC11C \uB2E4\uC74C \uB358\uC804\uC73C\uB85C
+    \uC774\uB3D9\uC2DC, \uBD80\uD65C\uD558\uC9C0 \uBABB\uD558\uB3C4\uB85D \uC218\uC815,
+    \uC774\uC804 \uB358\uC804\uC758 \uCCB4\uB825\uC744 \uC720\uC9C0\uD558\uB3C4\uB85D
+    \uC218\uC815\n\n2024.01.09\n- \uACF5\uACA9\uC2DC \uD074\uB9AD\uC774 \uC539\uD788\uB294
     \uD604\uC0C1 \uC218\uC815\n\n2024.01.05\n- \uC774\uB3D9\uC2DC \uC7A5\uC560\uBB3C
-    \uC778\uC2DD \uC624\uB958 \uC218\uC815, \uAD50\uD658 \uC624\uB958 \uC218\uC815\n\n2024.01.04\n-
+    \uC778\uC2DD \uC624\uB958 \uC218\uC815\n- \uAD50\uD658 \uC624\uB958 \uC218\uC815\n\n2024.01.04\n-
     \uD328\uCE58\uB178\uD2B8 \uCD94\uAC00\n\n2024.01.03\n- \uAD50\uD658\uAE30\uB2A5
     \uCD94\uAC00"
   m_isRightToLeft: 0
@@ -682,7 +690,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 20, y: 10, z: 20, w: 10}
+  m_margin: {x: 20, y: 10, z: 0, w: 10}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -5469,8 +5477,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 671015653}
   m_HandleRect: {fileID: 671015652}
   m_Direction: 2
-  m_Value: 1.000002
-  m_Size: 0.44580853
+  m_Value: 1.0000008
+  m_Size: 0.22608696
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

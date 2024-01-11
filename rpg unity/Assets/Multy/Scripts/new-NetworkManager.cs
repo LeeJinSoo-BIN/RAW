@@ -6,7 +6,6 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using WebSocketSharp;
 
 public class newNetworkManager : MonoBehaviourPunCallbacks
 {
@@ -146,14 +145,14 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         UIManager.Instance.gameOverPanel.SetActive(false);
         UIManager.Instance.gameClearPanel.SetActive(false);
         DataBase.Instance.currentStage = 1;
-        gameManager.ReGame();
+        gameManager.ReGame(false);
     }
 
     [PunRPC]
     void NextStage()
     {
         DataBase.Instance.currentStage++;
-        gameManager.ReGame();
+        gameManager.ReGame(true);
     }
 
     [PunRPC]
@@ -163,6 +162,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         UIManager.Instance.gameClearPanel.SetActive(false);
         DataBase.Instance.currentMapType = "village";
         DataBase.Instance.currentMapName = "Pallet Town";
+        gameManager.isClearingMonster = true;
         PhotonNetwork.LeaveRoom();
     }
 

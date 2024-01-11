@@ -433,7 +433,6 @@ public class MonsterControl : MonoBehaviour
         if (monsterSpec.monsterType.ToLower() == "boss")
         {
             gameManager.StageClear(true);
-
         }
         else if (transform.parent.childCount == 1)
         {

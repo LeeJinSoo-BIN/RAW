@@ -121,7 +121,6 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
             }
         }        
         UIManager.Instance.quickInventory = quickInventory;
-        UIManager.Instance.updateInventory();
     }
 
     void Update()
@@ -768,7 +767,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 got_item.PV.RPC("piclItem", RpcTarget.All, false);
             }
         }
-        UIManager.Instance.updateInventory();
+        UIManager.Instance.UpdateInventory();
         UIManager.Instance.updateAllQuickSlot();
         
         return gotten;
@@ -789,7 +788,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
                 if (quickInventory[itemName].kindCount == 0)
                     quickInventory.Remove(itemName);
             }
-            UIManager.Instance.updateInventory();
+            UIManager.Instance.UpdateInventory();
             UIManager.Instance.updateAllQuickSlot();
             return true;
         }
@@ -830,7 +829,7 @@ public class MultyPlayer : MonoBehaviourPunCallbacks, IPunObservable
         }
         if (quickInventory[itemName].kindCount == 0)
             quickInventory.Remove(itemName);
-        UIManager.Instance.updateInventory();
+        UIManager.Instance.UpdateInventory();
         UIManager.Instance.updateAllQuickSlot();
         return true;
     }

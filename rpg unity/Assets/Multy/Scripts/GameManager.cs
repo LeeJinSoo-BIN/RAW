@@ -12,7 +12,14 @@ public class GameManager : MonoBehaviour
 {   
     public portal portalObject;
     public bool offLine = false;
-    private bool isClearingMonster;
+    public bool isClearingMonster = false;
+
+    private bool dead = false;
+    private bool loadPrevState = false;
+    private float prevHealth;
+    private float prevMana;
+    private float prevShield;
+
     void Awake()
     {
         if (offLine)
@@ -24,19 +31,26 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
-        GameObject player = PhotonNetwork.Instantiate("Character/Player", Vector3.zero, Quaternion.identity);
-        DataBase.Instance.myCharacter = player;
-        DataBase.Instance.myCharacterControl = player.GetComponent<MultyPlayer>();
-        DataBase.Instance.myCharacterState = player.GetComponent<CharacterState>();
-        newNetworkManager.Instance.gameManager = this;
-        
-        if (GameObject.Find("EasterEgg") != null)
+        if (!dead)
         {
-            GameObject.Find("EasterEgg").GetComponent<EasterEgg>().myCharacter = player;
+            GameObject player = PhotonNetwork.Instantiate("Character/Player", Vector3.zero, Quaternion.identity);
+            DataBase.Instance.myCharacter = player;
+            DataBase.Instance.myCharacterControl = player.GetComponent<MultyPlayer>();
+            DataBase.Instance.myCharacterState = player.GetComponent<CharacterState>();
+            if (GameObject.Find("EasterEgg") != null)
+            {
+                GameObject.Find("EasterEgg").GetComponent<EasterEgg>().myCharacter = player;
+            }
+            setup(player);
+            GameObject.Find("Main Camera").transform.GetComponent<CameraFollow>().myCharacterTransform = player.transform;
         }
-        setup(player);
-        GameObject.Find("Main Camera").transform.GetComponent<CameraFollow>().myCharacterTransform = player.transform;
-
+        else
+        {
+            DataBase.Instance.myCharacter = null;
+            DataBase.Instance.myCharacterControl = null;
+            DataBase.Instance.myCharacterState = null;
+        }
+        newNetworkManager.Instance.gameManager = this;
     }
 
     public void setup(GameObject player)
@@ -50,6 +64,12 @@ public class GameManager : MonoBehaviour
         UIManager.Instance.SetUP();
         //newNetworkManager.Instance.PV.RPC("UpdateParty", RpcTarget.All);
         //Debug.Log("set up ingame ui");
+        if(loadPrevState)
+        {
+            DataBase.Instance.myCharacterState.health.value = prevHealth;
+            DataBase.Instance.myCharacterState.shield.value = prevShield;
+            DataBase.Instance.myCharacterState.mana.value = prevMana;
+        }
         if (DataBase.Instance.currentMapType == "dungeon")
         {
             portalObject.ActivatePortal(false);
@@ -95,9 +115,23 @@ public class GameManager : MonoBehaviour
                 UIManager.Instance.EndGame("clear");
         }
     }
-    public void ReGame()
+    public void ReGame(bool nextStage)
     {
         isClearingMonster = true;
+        if (nextStage)
+        {
+            if (DataBase.Instance.myCharacterState.isDeath || DataBase.Instance.myCharacter == null)
+                dead = true;
+            else
+            {
+                prevHealth = DataBase.Instance.myCharacterState.health.value;
+                prevShield = DataBase.Instance.myCharacterState.shield.value;
+                prevMana = DataBase.Instance.myCharacterState.mana.value;
+                loadPrevState = true;
+            }
+        }
+        else
+            dead = false;
         foreach (Transform player in GameObject.Find("Player Group").transform)
         {
             Destroy(player.gameObject);

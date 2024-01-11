@@ -12,6 +12,8 @@ public class itemslot : MonoBehaviour
     public string itemName;
     public int slotPos;
     public int oriPos;
+    public int enchant;
+    public int cnt;
     public bool isBlank;
     
 }
