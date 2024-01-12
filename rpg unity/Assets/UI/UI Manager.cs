@@ -1358,6 +1358,9 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
     {
         string title = null;
         string content = null;
+        if (timer != null)
+            StopCoroutine(timer);
+    
         if (condition == "time out")
         {
             title = "타임아웃";
@@ -2786,8 +2789,4 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         updateCurrentFocusWindow();
     }
     #endregion
-
-
-
-
 }

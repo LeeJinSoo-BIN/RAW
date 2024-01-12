@@ -85,6 +85,7 @@ public class GameManager : MonoBehaviour
     IEnumerator spawnDelay()
     {
         isClearingMonster = false;
+        Debug.Log("spawnDelay -> isClearing = false");
         if (!PhotonNetwork.IsMasterClient)
             yield break;
         float _timer = 0f;

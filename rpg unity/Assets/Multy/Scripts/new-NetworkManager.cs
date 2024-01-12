@@ -150,6 +150,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         UIManager.Instance.gameClearPanel.SetActive(false);
         DataBase.Instance.currentStage = 1;
         gameManager.isClearingMonster = true;
+        Debug.Log("ReGame -> isClearing = true");
         gameManager.ReGame(false);
     }
 
@@ -158,6 +159,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     {
         DataBase.Instance.currentStage++;
         gameManager.isClearingMonster = true;
+        Debug.Log("NextStage -> isClearing = true");
         gameManager.ReGame(true);
     }
 
@@ -169,6 +171,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         DataBase.Instance.currentMapType = "village";
         DataBase.Instance.currentMapName = "Pallet Town";
         gameManager.isClearingMonster = true;
+        Debug.Log("GoToVillage -> isClearing = true");
         PhotonNetwork.LeaveRoom();
     }
 
