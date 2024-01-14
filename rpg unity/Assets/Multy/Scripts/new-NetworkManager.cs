@@ -65,7 +65,7 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         }
         else if (DataBase.Instance.currentMapType == "village")
         {
-            PhotonNetwork.JoinOrCreateRoom("palletTown", new RoomOptions { MaxPlayers = 20, PublishUserId = true }, null);
+            PhotonNetwork.JoinOrCreateRoom("Pallet Town", new RoomOptions { MaxPlayers = 20, PublishUserId = true }, null);
             DataBase.Instance.isInDungeon = false;
         }
         else if (DataBase.Instance.currentMapType == "character Select")
@@ -104,12 +104,12 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        if (DataBase.Instance.currentMapType == "dungeon")
+        if (PhotonNetwork.CurrentRoom.Name == DataBase.Instance.myPartyCaptainName)
         {
             DataBase.Instance.myPartyMemNum--;
         }
 
-        if (DataBase.Instance.myPartyCaptainName == otherPlayer.UserId)
+        if (DataBase.Instance.currentMapType == "village" && PhotonNetwork.CurrentRoom.Name != DataBase.Instance.myPartyCaptainName && DataBase.Instance.myPartyCaptainName == otherPlayer.UserId)
         {
             UIManager.Instance.popInfo("파티장이 게임을 떠나 파티가 해체됩니다.");
             UIManager.Instance.ClickLeavePartyButton();
@@ -150,7 +150,6 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
         UIManager.Instance.gameClearPanel.SetActive(false);
         DataBase.Instance.currentStage = 1;
         gameManager.isClearingMonster = true;
-        Debug.Log("ReGame -> isClearing = true");
         gameManager.ReGame(false);
     }
 
@@ -159,7 +158,6 @@ public class newNetworkManager : MonoBehaviourPunCallbacks
     {
         DataBase.Instance.currentStage++;
         gameManager.isClearingMonster = true;
-        Debug.Log("NextStage -> isClearing = true");
         gameManager.ReGame(true);
     }
 

@@ -435,12 +435,10 @@ public class MonsterControl : MonoBehaviour
             if (monsterSpec.monsterType.ToLower() == "boss")
             {
                 gameManager.StageClear(true);
-                Debug.Log("stageClear true isClearingMonster = false");
             }
             else if (transform.parent.childCount == 1)
             {
                 gameManager.StageClear(false);
-                Debug.Log("stageClear false isClearingMonster = false");
             }
         }
     }

@@ -380,7 +380,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 }
                 chatEnd = false;
             }
-            if (DataBase.Instance.currentMapType == "village")
+            if (DataBase.Instance.currentMapType == "village" && PhotonNetwork.CurrentRoom.Name == "Pallet Town")
             {
                 if (PlayerGroup.transform.childCount != inGameUserList.Count)
                 {
@@ -1381,15 +1381,14 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             title = "클리어";
             gameOverPanel.transform.GetChild(0).GetComponent<Image>().color = succesColor;
-            content = string.Format("클리어 시간\n{0}초\n\n인 원\n\n난이도\n", stageTime.ToString());
             string level = null;
             if (DataBase.Instance.currentDungeonLevel == 0)
-                level = "Easy\n";
+                level = "Easy";
             else if (DataBase.Instance.currentDungeonLevel == 1)
-                level = "Normal\n";
+                level = "Normal";
             else if (DataBase.Instance.currentDungeonLevel == 2)
-                level = "Hard\n";
-            content += level;
+                level = "Hard";
+            content = string.Format("클리어 시간\n{0}초\n\n난이도\n{1}\n\n인원\n", stageTime.ToString(), level);
             gameOverPanel.transform.GetChild(3).gameObject.SetActive(false);
             gameOverPanel.transform.GetChild(4).gameObject.SetActive(false);
             gameOverPanel.transform.GetChild(5).gameObject.SetActive(true);
@@ -1505,10 +1504,12 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
 
     IEnumerator updateLoadingPanel()
     {
+        Debug.Log("wait for join dungeon");
         while (!DataBase.Instance.isInDungeon)
         {
             yield return null;
         }
+        Debug.Log("wait for other player");
         while (DataBase.Instance.myPartyMemNum != PlayerGroup.transform.childCount)
         {
             yield return null;
@@ -1549,15 +1550,6 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         {
             CharacterState currentUserState = user.GetComponent<CharacterState>();
             inGameUserList.Add(user.name, currentUserState);
-        }
-        /*if(!DataBase.Instance.myPartyCaptainName.IsNullOrEmpty() && !inGameUserList.ContainsKey(DataBase.Instance.myPartyCaptainName))
-        {
-            PhotonNetwork.FindFriends(new string[] { DataBase.Instance.myPartyCaptainName });
-        }*/
-        foreach (Transform user in PlayerGroup.transform)
-        {
-            CharacterState currentUserState = user.GetComponent<CharacterState>();
-
             if (!currentUserState.partyCaptainName.IsNullOrEmpty())
             {
                 if (allPartys.ContainsKey(currentUserState.partyCaptainName))
@@ -1573,10 +1565,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                     allPartys.Add(currentUserState.partyCaptainName, newParty);
                 }
             }
-        }
-        foreach (Transform user in PlayerGroup.transform)
-        {
-            CharacterState currentUserState = inGameUserList[user.name];
+
             if (user.GetComponent<PhotonView>().IsMine || !currentUserState.partyCaptainName.IsNullOrEmpty())
                 continue;
             GameObject userInfo = Instantiate(inGameUserInfo);
@@ -1602,7 +1591,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             }
         }
     }
-    public override void OnFriendListUpdate(List<FriendInfo> friendList)
+    /*public override void OnFriendListUpdate(List<FriendInfo> friendList)
     {
         foreach (FriendInfo friend in friendList)
         {
@@ -1613,7 +1602,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
                 ClickLeavePartyButton();
             }
         }
-    }
+    }*/
     public void UpdatePartyMember()
     {
         for (int k = 0; k < partyMemberBox.transform.childCount; k++)
@@ -2006,7 +1995,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         }
         if (DataBase.Instance.itemInfoDict[sellItemName].itemType == "material" || DataBase.Instance.itemInfoDict[sellItemName].itemType == "potion")
         {
-            if (sellItemCnt > DataBase.Instance.selectedCharacterSpec.inventory[invenPos].count)
+            if (sellItemCnt > quickInventory[sellItemName].kindCount)
             {
                 storeSellPanel.transform.GetChild(2).GetChild(3).GetComponent<TMP_Text>().text =
                     string.Format("아이템이 {0}개 보다 부족합니다.", sellItemCnt);

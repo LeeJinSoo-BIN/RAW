@@ -391,7 +391,7 @@ public class Login : MonoBehaviourPunCallbacks
             if (isDebugMode)
                 PhotonNetwork.JoinOrCreateRoom("Debug Room", new RoomOptions { MaxPlayers = maxNumServerPlayer, PublishUserId = true }, null);
             else
-                PhotonNetwork.JoinOrCreateRoom("palletTown", new RoomOptions { MaxPlayers = maxNumServerPlayer, PublishUserId = true }, null);
+                PhotonNetwork.JoinOrCreateRoom("Pallet Town", new RoomOptions { MaxPlayers = maxNumServerPlayer, PublishUserId = true }, null);
             DataBase.Instance.selectedCharacterSpec = DataBase.Instance.defaultAccountInfo.characterList[whichCharacter];
             DataBase.Instance.currentMapName = DataBase.Instance.defaultAccountInfo.characterList[whichCharacter].lastTown;
             DataBase.Instance.currentMapType = "village";

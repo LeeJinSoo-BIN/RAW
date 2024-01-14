@@ -9,7 +9,7 @@ using UnityEngine.EventSystems;
 using WebSocketSharp;
 
 public class GameManager : MonoBehaviour
-{   
+{
     public portal portalObject;
     public bool offLine = false;
     public bool isClearingMonster = false;
@@ -20,6 +20,9 @@ public class GameManager : MonoBehaviour
     private float prevMana;
     private float prevShield;
 
+    GameObject monsterGroup;
+    GameObject playerGroup;
+    GameObject itemGroup;
     void Awake()
     {
         if (offLine)
@@ -28,6 +31,9 @@ public class GameManager : MonoBehaviour
             PhotonNetwork.CreateRoom("offline");
             //Screen.SetResolution(960, 540, false);
         }
+        playerGroup = GameObject.Find("Player Group");
+        monsterGroup = GameObject.Find("Enemy Group");
+        itemGroup = GameObject.Find("Item Field");
     }
     private void Start()
     {
@@ -57,14 +63,14 @@ public class GameManager : MonoBehaviour
     {
         CharacterSpec loadedSpec = DataBase.Instance.selectedCharacterSpec;
         player.GetComponent<MultyPlayer>().characterState.characterSpec = loadedSpec;
-        player.GetComponent<MultyPlayer>().loadData();        
+        player.GetComponent<MultyPlayer>().loadData();
         //Debug.Log("loaded player data");
         player.GetComponent<MultyPlayer>().characterState.setUp();
         //Debug.Log("set up state");
         UIManager.Instance.SetUP();
         //newNetworkManager.Instance.PV.RPC("UpdateParty", RpcTarget.All);
         //Debug.Log("set up ingame ui");
-        if(loadPrevState)
+        if (loadPrevState)
         {
             DataBase.Instance.myCharacterState.health.value = prevHealth;
             DataBase.Instance.myCharacterState.shield.value = prevShield;
@@ -80,20 +86,21 @@ public class GameManager : MonoBehaviour
 
     public void SpawnMonster()
     {
-        StartCoroutine(spawnDelay());        
+        StartCoroutine(spawnDelay());
     }
     IEnumerator spawnDelay()
-    {
-        isClearingMonster = false;
-        Debug.Log("spawnDelay -> isClearing = false");
-        if (!PhotonNetwork.IsMasterClient)
-            yield break;
+    {        
         float _timer = 0f;
         while (_timer < 0.2)
         {
             _timer += Time.deltaTime;
             yield return null;
         }
+        while (monsterGroup.transform.childCount > 0)
+            yield return null;
+        isClearingMonster = false;
+        if (!PhotonNetwork.IsMasterClient)
+            yield break;
         foreach (DungeonSpec.monsterInfo monster in DataBase.Instance.dungeonInfoDict[DataBase.Instance.currentMapName].monsterInfoList[DataBase.Instance.currentStage - 1].monsterList)
         {
             string monsterName = monster.monsterName;
@@ -129,16 +136,19 @@ public class GameManager : MonoBehaviour
             }
         }
         else
+        {
             dead = false;
-        foreach (Transform player in GameObject.Find("Player Group").transform)
+            loadPrevState = false;
+        }
+        foreach (Transform player in playerGroup.transform)
         {
             Destroy(player.gameObject);
         }
-        foreach (Transform monster in GameObject.Find("Enemy Group").transform)
+        foreach (Transform monster in monsterGroup.transform)
         {
             Destroy(monster.gameObject);
         }
-        foreach(Transform item in GameObject.Find("Item Field").transform)
+        foreach (Transform item in itemGroup.transform)
         {
             Destroy(item.gameObject);
         }
