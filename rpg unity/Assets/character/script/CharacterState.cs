@@ -157,7 +157,7 @@ public class CharacterState : MonoBehaviourPunCallbacks, IPunObservable
                     health.value -= value;
                 if (health.value <= 0 && !isDeath)
                 {
-                    PV.RPC("Death", RpcTarget.All);                    
+                    PV.RPC("Death", RpcTarget.All);
                 }
                 if (type == 4)
                 {

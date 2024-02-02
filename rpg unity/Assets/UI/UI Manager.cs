@@ -382,7 +382,7 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
             }
             if (DataBase.Instance.currentMapType == "village" && PhotonNetwork.CurrentRoom.Name == "Pallet Town")
             {
-                if (PlayerGroup.transform.childCount != inGameUserList.Count)
+                if (PlayerGroup.transform.childCount != inGameUserList.Count && PlayerGroup.transform.childCount != 0)
                 {
                     UpdatePartyPanel();
                 }
@@ -427,15 +427,18 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         updateAllQuickSlot();
         setKeyMap();
         StartCoroutine(update_health());
+
+        
         if (DataBase.Instance.currentMapType == "dungeon")
         {
             StageUiGroup.SetActive(true);
         }
         else if (DataBase.Instance.currentMapType == "village")
         {
-            UpdatePartyPanel();
             stopTimer();
             StageUiGroup.SetActive(false);
+            inGameUserList.Clear();
+            allPartys.Clear();
         }
         BossUiGroup.SetActive(false);
     }
@@ -1423,6 +1426,10 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         foreach (Transform monster in EnemyGroup.transform)
         {
             monster.GetComponent<MonsterControl>().attackable = false;
+            if (condition == "clear")
+            {
+                transform.GetComponent<MonsterControl>().Death();
+            }
         }
 
         gameOverPanel.transform.GetChild(1).GetComponent<TMP_Text>().text = title;
