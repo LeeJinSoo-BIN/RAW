@@ -1664,6 +1664,8 @@ public class UIManager : MonoBehaviourPunCallbacks, IPointerDownHandler, IPointe
         }
         foreach (party partyInfo in allPartys.Values)
         {
+            if (!inGameUserList.ContainsKey(partyInfo.captainName))
+                continue;
             GameObject newParty = Instantiate(partyListInfo);
             newParty.transform.GetChild(0).GetComponent<TMP_Text>().text = "파티장: " + inGameUserList[partyInfo.captainName].nick;
             newParty.transform.GetChild(1).GetComponent<TMP_Text>().text = "파티명: " + partyInfo.partyName;
