@@ -9,7 +9,11 @@
 
 <br>
 
-[다운로드 링크](https://drive.google.com/drive/folders/1PW9t8k2rq5p9VmI_9DbHK7ZLBXoHX4R-?usp=drive_link)
+[다운로드 링크(구글 드라이브)](https://drive.google.com/drive/folders/1PW9t8k2rq5p9VmI_9DbHK7ZLBXoHX4R-?usp=drive_link)
+
+
+[다운로드 링크(Naver MyBox)](http://naver.me/5WHDG7q2)
+
 
 <br>
 
