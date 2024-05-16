@@ -804,3 +804,8 @@ public class StatDB : MonoBehaviour
         return statCode;
     }
 }
+
+public class InGameDB : MonoBehaviour
+{
+
+}
