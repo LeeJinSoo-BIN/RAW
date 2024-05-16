@@ -512,7 +512,7 @@ Changed: Enum DisconnectCause. Replace TimeoutDisconnect with ClientTimeout. Rep
 Added: Enum DisconnectCause.DisconnectByServerReasonUnknown for the case it's neither a ccu-limit, timeout nor a disconnect by the room's logic.
 Changed: Warning-dialog "AppId not set" is not shown, if the configuration points to a Master Server (Photon OnPremise). When the new server SDK expects an AppId, too, this could be reverted.
 Updated: Cockpit demo scene to expose automaticallySyncLevel and load level form. Updated links to docs.
-Updated: The readme.txt.
+Updated: The ./readme.txt.
 Updated: The Photon3Unity3d.dll to v4.1.2.2, which has a few changes. See release_history.txt.
 
 v2.2  (27th September 2018)

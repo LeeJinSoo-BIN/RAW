@@ -364,7 +364,7 @@ Version 4.1.2.15 (07. June 2019 - rev5137)
 Version 4.1.2.14 (16. May 2019 - rev5128)
     Changed: The single "release history" file is now split. There is one "changes" file per api/level. For example: changes-realtime.txt lists the LoadBalancing / Realtime API changes. Find them in the respective subfolders.
     Changed: The structure of the Unity SDK. As in PUN 2, there is a "Photon" folder, which wraps up all apis and libraries within a Unity project.
-    Updated: The readme txt.
+    Updated: The ./readme txt.
 Version 4.1.2.14 (6. May 2019 - rev5097)
     Changed: EventData now has Sender or CustomData properties as well as SenderKey and CustomDataKey. The keys can be defines according to API. The default are the Realtime API values. Sender and CustomData access is cached. If an EventData instance is reused (PhotonPeer.ReuseEventInstance), the values will reset.
 
@@ -497,7 +497,7 @@ Chat:
 
 *** Version 4.1.1.15 (17. July 2017 - rev4232)
 WebSocket:
-    Changed: WebSockets are now treated like "addons", as their implementations are complex and potentially not running on some platforms (be it UWP or some Unity export). The Readme-Photon-WebSocket.txt tells you how to add them to your project and set them up.
+    Changed: WebSockets are now treated like "addons", as their implementations are complex and potentially not running on some platforms (be it UWP or some Unity export). The ./readme-Photon-WebSocket.txt tells you how to add them to your project and set them up.
     Added: Folder "PhotonWebSocket" with SocketWebTcpCoroutine and SocketWebTcpThread classes, to support platforms with and without Thread API.
     Added: PingHttp.cs for Unity WebGL exports, to support "Best Region" selection in PUN.
 LoadBalancing:
@@ -1012,7 +1012,7 @@ LoadBalancing API
 
 *** Version 3.2.0.0 (13.02.2013 - rev2053)
     Note: This release only changed the version, matching the new Server SDK v3.2.0.0
-    Updated: readme.txt
+    Updated: ./readme.txt
     Fixed: Reference for Windows 8 RT and Windows Phone 8 SDKs.
     Added: Particle Demo to Unity Client SDK.
 
@@ -1024,7 +1024,7 @@ Windows 8 RT & Windows 8 Phone:
     Fixed: Serialization of foat and double values. These caused exceptions when used in object-arrays.
 
 *** Version 3.0.1.17 (19.12.2012 - rev1946)
-    Added: New Platform: Mono 4 Android. Please check the Readme.txt for hints how to build the demo in Mono 4 Android.
+    Added: New Platform: Mono 4 Android. Please check the ./readme.txt for hints how to build the demo in Mono 4 Android.
     Changed: The referenced DotNet assemblies used by our libraries, which makes ours compatible with Mono 4 Android and others.
     Changed: The Particle Demo Logic to also handle events sent by JavaScript clients. In case these are used, the types used in event differ from what DotNet or other clients send.
     Changed: PhotonPeer.LocalTimeInMilliSeconds property now uses SupportClass.GetTickCount(). That method is using Environment.TickCount (which can be replaced if needed).
@@ -1223,7 +1223,7 @@ Internal:
 - Added: Initial, simple Loadbalancing demos for each platform (will update and extend those)
 - Note: The API of the client libraries didn't change. The new features were added on top of the known API
 - Added: VS2010 solutions for DotNet and Windows Phone SDKs containing the demos and APIs in the package
-- Added: readme.txt with initial help to setup the Cloud/Loadbalancing demos
+- Added: ./readme.txt with initial help to setup the Cloud/Loadbalancing demos
 - Added: default appId for Loadblanacing demos: "<insert your appid here>"
 
 *** Version 3.0.0.10
